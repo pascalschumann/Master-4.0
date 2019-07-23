@@ -45,5 +45,9 @@ namespace Zpp.ProviderDomain
 
         // TODO: performance: use it less and cache it
         Quantity GetProvidedQuantity(Id articleId);
+
+        Provider GetProviderById(Id id);
+
+        List<Provider> GetAllByArticleId(Id id);
     }
 }

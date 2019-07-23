@@ -35,6 +35,6 @@ namespace Zpp.ProviderDomain
         DueTime GetDueTime();
 
         Id GetId();
-        
+
     }
 }

@@ -198,5 +198,39 @@ namespace Zpp.ProviderDomain
             
             return new Demands(unSatisfiedDemands);
         }
+
+        public Provider GetProviderById(Id id)
+        {
+            // performance: cache this in a dictionary
+            foreach (var provider in _providers)
+            {
+                if (provider.GetId().Equals(id))
+                {
+                    return provider;
+                }
+            }
+
+            return null;
+        }
+
+        public List<Provider> GetAllByArticleId(Id id)
+        {
+            List<Provider> providers = new List<Provider>();
+            // performance: cache this in a dictionary
+            foreach (var provider in _providers)
+            {
+                if (provider.GetArticleId().Equals(id))
+                {
+                    providers.Add(provider);
+                }
+            }
+
+            if (providers.Any() == false)
+            {
+                return null;
+            }
+
+            return providers;
+        }
     }
 }

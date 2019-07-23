@@ -18,6 +18,7 @@ namespace Zpp.ProviderDomain
     {
         protected Demands _dependingDemands;
         protected readonly IProvider _provider;
+        protected readonly DemandToProviderTable _demandToProviderTable = new DemandToProviderTable();
         protected readonly IDbMasterDataCache _dbMasterDataCache;
         protected static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 

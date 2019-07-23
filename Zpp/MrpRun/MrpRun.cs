@@ -44,8 +44,8 @@ namespace Zpp
             // init
             IProviders providers = new Providers();
             IDemands finalAllDemands = new Demands();
-            IDemandToProvidersMap demandToProvidersMap = new DemandToProvidersMap();
-            IProviderToDemandsMap providerToDemandsMap = new ProviderToDemandsMap();
+            IProviderManager providerManager = new ProviderManager();
+            IProviderToDemandsMap providersDependingDemands = new ProviderToDemandsMap();
 
             foreach (var oneDbDemand in dbDemands.GetAll())
             {
@@ -81,15 +81,9 @@ namespace Zpp
                     foreach (Demand demand in currentDemandManager.GetAll())
                     {
 
-                        IProviders providersOfDemand = demand.Satisfy(demandToProvidersMap,
+                        demand.Satisfy(providerManager,
                             dbTransactionData);
-                        if (providersOfDemand.Any() == false)
-                        {
-                            throw new MrpRunException($"No provider were created for {demand}.");
-                        }
-
-                        demandToProvidersMap.AddProvidersForDemand(demand, providersOfDemand);
-                        providers.AddAll(providersOfDemand);
+                        
                         // performance: replace any by directly Adding
                         if (providersOfDemand.AnyDependingDemands())
                         {
@@ -97,7 +91,7 @@ namespace Zpp
                                 providersOfDemand.GetAllDependingDemandsAsMap();
                             IDemands dependingDemands = dependingDemandsAsMap.GetAllDemands();
                             nextDemandManager.AddAll(dependingDemands);
-                            providerToDemandsMap.AddAll(providersOfDemand
+                            providersDependingDemands.AddAll(providersOfDemand
                                 .GetAllDependingDemandsAsMap());
                         }
                     }
@@ -117,9 +111,9 @@ namespace Zpp
 
             dbTransactionData.ProvidersAddAll(providers);
             dbTransactionData.DemandsAddAll(finalAllDemands);
-            dbTransactionData.DemandToProviderAddAll(demandToProvidersMap);
-            dbTransactionData.ProviderToDemandAddAll(providerToDemandsMap);
-            dbTransactionData.PersistDbCache(demandToProvidersMap);
+            dbTransactionData.DemandToProviderAddAll(providerManager);
+            dbTransactionData.ProviderToDemandAddAll(providersDependingDemands);
+            dbTransactionData.PersistDbCache(providerManager);
         }
     }
 }

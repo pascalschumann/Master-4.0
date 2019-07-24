@@ -4,9 +4,6 @@ using Zpp.DemandDomain;
 using Zpp.ProviderDomain;
 using Zpp.WrappersForPrimitives;
 using Master40.DB.DataModel;
-using Master40.DB.Interfaces;
-using Zpp;
-using Zpp.DemandToProviderDomain;
 
 namespace Zpp
 {
@@ -52,10 +49,6 @@ namespace Zpp
 
         IDemands DemandsGetAll();
 
-        void DemandToProviderAddAll(IProviderManager providerManager);
-        
-        void ProviderToDemandAddAll(IProviderToDemandsMap providerToDemands);
-
         IProviderToDemandTable ProviderToDemandGetAll();
         
         IDemandToProviderTable DemandToProviderGetAll();
@@ -63,6 +56,8 @@ namespace Zpp
         Demand DemandsGetById(Id id);
         
         Provider ProvidersGetById(Id id);
-        
+
+        IProviderManager GetProviderManager();
+
     }
 }

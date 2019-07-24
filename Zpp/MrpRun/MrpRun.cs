@@ -3,14 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.Context;
 using Zpp.DemandDomain;
-using Zpp.DemandToProviderDomain;
 using Zpp.ProviderDomain;
 using Zpp.WrappersForPrimitives;
-using Master40.DB.DataModel;
-using Master40.DB.Interfaces;
-using Zpp.ModelExtensions;
-using Zpp.Utils;
-using Zpp;
+
 
 namespace Zpp
 {
@@ -42,10 +37,8 @@ namespace Zpp
             IDemands dbDemands)
         {
             // init
-            IProviders providers = new Providers();
             IDemands finalAllDemands = new Demands();
             IProviderManager providerManager = new ProviderManager();
-            IProviderToDemandsMap providersDependingDemands = new ProviderToDemandsMap();
 
             foreach (var oneDbDemand in dbDemands.GetAll())
             {
@@ -83,17 +76,12 @@ namespace Zpp
 
                         demand.Satisfy(providerManager,
                             dbTransactionData);
-                        
-                        // performance: replace any by directly Adding
-                        if (providersOfDemand.AnyDependingDemands())
+                        Demands nextDemands = providerManager.GetNextDemands();
+                        if (nextDemands != null && nextDemands.Any())
                         {
-                            IProviderToDemandsMap dependingDemandsAsMap =
-                                providersOfDemand.GetAllDependingDemandsAsMap();
-                            IDemands dependingDemands = dependingDemandsAsMap.GetAllDemands();
-                            nextDemandManager.AddAll(dependingDemands);
-                            providersDependingDemands.AddAll(providersOfDemand
-                                .GetAllDependingDemandsAsMap());
+                            nextDemandManager.AddAll(nextDemands);    
                         }
+                        
                     }
 
                     // final reorganizing
@@ -109,10 +97,8 @@ namespace Zpp
                 }
             }
 
-            dbTransactionData.ProvidersAddAll(providers);
+            dbTransactionData.ProvidersAddAll(providerManager.GetProviders());
             dbTransactionData.DemandsAddAll(finalAllDemands);
-            dbTransactionData.DemandToProviderAddAll(providerManager);
-            dbTransactionData.ProviderToDemandAddAll(providersDependingDemands);
             dbTransactionData.PersistDbCache(providerManager);
         }
     }

@@ -11,11 +11,33 @@ namespace Zpp.ProviderDomain
     public class ProviderManager : IProviderManager
     {
         private readonly IDemandToProviderTable _demandToProviderTable;
+        private readonly IProviderToDemandTable _providerToDemandTable;
         private readonly IProviders _providers;
+        private readonly List<Demand> _nextDemands = new List<Demand>();
+
+        public ProviderManager()
+        {
+            _providers = new Providers();
+            _demandToProviderTable = new DemandToProviderTable();
+            _providerToDemandTable = new ProviderToDemandTable();
+        }
+
+        public ProviderManager(IDemandToProviderTable demandToProviderTable, IProviderToDemandTable providerToDemandTable, IProviders providers)
+        {
+            _demandToProviderTable = demandToProviderTable;
+            _providerToDemandTable = providerToDemandTable;
+            _providers = providers;
+        }
 
         public Quantity ReserveQuantityOfExistingProvider(Id demandId, M_Article demandedArticle, Quantity demandedQuantity)
         {
-            foreach (var provider in _providers.GetAllByArticleId(demandedArticle.GetId()))
+            List<Provider> providersForDemand = _providers.GetAllByArticleId(demandedArticle.GetId());
+            if (providersForDemand == null)
+            {
+                return demandedQuantity;
+            }
+            // TODO: performance: naive impl must replaced by one with caching
+            foreach (var provider in providersForDemand)
             {
                 List<T_DemandToProvider> possibleDemandToProviders = _demandToProviderTable.GetAll()
                     .Where(x => x.ProviderId.Equals(provider.GetId().GetValue())).ToList();
@@ -54,23 +76,89 @@ namespace Zpp.ProviderDomain
             demandToProvider.ProviderId = oneProvider.GetId().GetValue();
             demandToProvider.Quantity = oneProvider.GetQuantity().GetValue();
             _demandToProviderTable.Add(demandToProvider);
-
-            return demandedQuantity.Minus(GetSatisfiedQuantityOfDemand(demandId));
+            
+            // save depending demands
+            Demands dependingDemands = oneProvider.GetAllDependingDemands();
+            if (dependingDemands != null)
+            {
+                _nextDemands.AddRange(dependingDemands.GetAll());
+                foreach (var dependingDemand in dependingDemands.GetAll())
+                {
+                    _providerToDemandTable.Add(oneProvider, dependingDemand.GetId());
+                }
+            }
+            
+            Quantity unsatisfiedQuantity =
+                demandedQuantity.Minus(GetSatisfiedQuantityOfDemand(demandId));
+            if (unsatisfiedQuantity.IsNegative())
+            {
+                return Quantity.Null();
+            }
+            return unsatisfiedQuantity;
         }
 
         public Quantity GetSatisfiedQuantityOfDemand(Id demandId)
         {
-            throw new NotImplementedException();
+            Quantity sum = Quantity.Null();
+            foreach (var demandToProvider in _demandToProviderTable.GetAll())
+            {
+                if (demandToProvider.DemandId.Equals(demandId.GetValue()))
+                {
+                    sum.IncrementBy(new Quantity(demandToProvider.Quantity));
+                }
+            }
+
+            return sum;
         }
 
         public Quantity GetReservedQuantityOfProvider(Id providerId)
         {
-            throw new NotImplementedException();
+            Quantity sum = Quantity.Null();
+            foreach (var demandToProvider in _demandToProviderTable.GetAll())
+            {
+                if (demandToProvider.ProviderId.Equals(providerId.GetValue()))
+                {
+                    sum.IncrementBy(new Quantity(demandToProvider.Quantity));
+                }
+            }
+
+            return sum;
         }
 
         public Quantity AddProvider(Demand demand, Provider provider)
         {
             return AddProvider(demand.GetId(), demand.GetQuantity(), provider);
+        }
+
+        public Demands GetNextDemands()
+        {
+            if (_nextDemands.Any() == false)
+            {
+                return null;
+            }
+            Demands nextDemands = new Demands(_nextDemands);
+            _nextDemands.Clear();
+            return nextDemands;
+        }
+
+        public IDemandToProviderTable GetDemandToProviderTable()
+        {
+            return _demandToProviderTable;
+        }
+
+        public IProviderToDemandTable GetProviderToDemandTable()
+        {
+            return _providerToDemandTable;
+        }
+
+        public bool IsSatisfied(Demand demand)
+        {
+            return GetSatisfiedQuantityOfDemand(demand.GetId()).Equals(demand.GetQuantity());
+        }
+
+        public IProviders GetProviders()
+        {
+            return _providers;
         }
     }
 }

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Master40.DB.DataModel;
-using Zpp.DemandToProviderDomain;
+using Zpp.DemandDomain;
 using Zpp.ProviderDomain;
 
 namespace Zpp
@@ -15,6 +15,8 @@ namespace Zpp
 
         void Add(T_DemandToProvider demandToProvider);
 
-
+        bool Contains(Demand demand);
+        
+        bool Contains(Provider provider);
     }
 }

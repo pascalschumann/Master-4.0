@@ -4,7 +4,6 @@ using Zpp.Utils;
 using Zpp.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Master40.DB.Interfaces;
-using Zpp.DemandToProviderDomain;
 
 namespace Zpp.DemandDomain
 {
@@ -44,9 +43,8 @@ namespace Zpp.DemandDomain
                         ProductionOrder.CreateProductionOrder(this, dbTransactionData,
                             _dbMasterDataCache, lotSize);
                     Logger.Debug("ProductionOrder created.");
-                    Quantity providedQuantity = providerManager.AddProvider(this,
+                     remainingQuantity = providerManager.AddProvider(this,
                         productionOrder);
-                    remainingQuantity.DecrementBy(providedQuantity);
                 }
 
                 return remainingQuantity;

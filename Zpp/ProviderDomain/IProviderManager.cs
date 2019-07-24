@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Master40.DB.Interfaces;
@@ -28,10 +29,24 @@ namespace Zpp.ProviderDomain
          */
         Quantity GetSatisfiedQuantityOfDemand(Id demandId);
         
+        bool IsSatisfied(Demand demand);
+        
         /**
          * sum(quantity) over given providerId
          * aka select count(Quantity) where ProviderId=providerId
          */
         Quantity GetReservedQuantityOfProvider(Id providerId);
+
+        /**
+         * aka depending demands of new added providers.
+         * NOTE: you can only call it once, then it will be cleared internally.
+         */
+        Demands GetNextDemands();
+
+        IDemandToProviderTable GetDemandToProviderTable();
+
+        IProviderToDemandTable GetProviderToDemandTable();
+
+        IProviders GetProviders();
     }
 }

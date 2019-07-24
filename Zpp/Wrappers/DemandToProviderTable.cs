@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Zpp.DemandDomain;
-using Zpp.DemandToProviderDomain;
 using Zpp.ProviderDomain;
-using Zpp.Utils;
 
 namespace Zpp
 {
@@ -40,6 +39,22 @@ namespace Zpp
         {
             return _demandToProviderEntities.Count;
         }
-        
+
+        public void Add(T_DemandToProvider demandToProvider)
+        {
+            _demandToProviderEntities.Add(demandToProvider);
+        }
+
+        public bool Contains(Demand demand)
+        {
+            return _demandToProviderEntities.Select(x => x.DemandId).ToList()
+                .Contains(demand.GetId().GetValue());
+        }
+
+        public bool Contains(Provider provider)
+        {
+            return _demandToProviderEntities.Select(x => x.ProviderId).ToList()
+                .Contains(provider.GetId().GetValue());
+        }
     }
 }

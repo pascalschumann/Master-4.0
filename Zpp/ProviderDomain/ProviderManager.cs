@@ -153,7 +153,7 @@ namespace Zpp.ProviderDomain
 
         public bool IsSatisfied(Demand demand)
         {
-            return GetSatisfiedQuantityOfDemand(demand.GetId()).Equals(demand.GetQuantity());
+            return GetSatisfiedQuantityOfDemand(demand.GetId()).IsGreaterThanOrEqualTo(demand.GetQuantity());
         }
 
         public IProviders GetProviders()

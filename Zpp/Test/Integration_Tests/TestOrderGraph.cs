@@ -145,7 +145,7 @@ namespace Zpp.Test
         [Fact]
         public void TestOrderGraphStaysTheSame()
         {
-            string orderGraphFileName = $"..\\..\\..\\Test\\Ordergraphs\\ordergraph_cop_{ORDER_QUANTITY}_lotsize_{DEFAULT_LOT_SIZE}.txt";
+            string orderGraphFileName = $"../../../Test/Ordergraphs/ordergraph_cop_{ORDER_QUANTITY}_lotsize_{DEFAULT_LOT_SIZE}.txt";
             
             // build orderGraph up
             IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);

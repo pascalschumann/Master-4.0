@@ -63,8 +63,8 @@ namespace Zpp.Test
          *
          * Verifies that,
          * for demand (parent) --> provider (child) direction following takes effect:
-         * - COP  --> PuOP | PrO | SE:W
-         * - PrOB --> PuOP | PrO | SE:W
+         * - COP  --> SE:W
+         * - PrOB --> SE:W
          * - SE:I --> PuOP | PrO
          *
          * for provider (parent) --> demand (child) direction following takes effect:
@@ -86,14 +86,12 @@ namespace Zpp.Test
                     typeof(CustomerOrderPart),
                     new Type[]
                     {
-                        typeof(PurchaseOrderPart), typeof(ProductionOrder),
                         typeof(StockExchangeProvider)
                     }
                 },
                 {
                     typeof(ProductionOrderBom), new Type[]
                     {
-                        typeof(PurchaseOrderPart), typeof(ProductionOrder),
                         typeof(StockExchangeProvider)
                     }
                 },

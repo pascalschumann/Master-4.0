@@ -154,10 +154,97 @@ namespace Zpp.Test
             IGraph<INode> orderGraph = new OrderGraph(dbTransactionData);
             
             // for initial creating of the file
-            // File.WriteAllText(orderGraphFileName, orderGraph.ToString(), Encoding.UTF8);
-            
             string expectedOrderGraph = File.ReadAllText(orderGraphFileName, Encoding.UTF8);
-            Assert.True(expectedOrderGraph.Equals(orderGraph.ToString()), "OrderGraph has changed.");
+            string actualOrderGraph = orderGraph.ToString();
+            bool graphStaysTheSame = expectedOrderGraph.Equals(actualOrderGraph);
+            
+            // for debugging
+            if (!graphStaysTheSame)
+            {
+                List<string> lostLines = new List<string>();
+                List<string> newLines = new List<string>();
+                
+                List<string> expectedFileLines = File.ReadLines(orderGraphFileName).ToList();
+                File.WriteAllText(orderGraphFileName, actualOrderGraph, Encoding.UTF8);
+                List<string> actualFileLines = File.ReadLines(orderGraphFileName).ToList();
+                
+                // remove ids
+                expectedFileLines = removeIdsFromOrderGraph(expectedFileLines);
+                string expectedFile = String.Join("\r\n", expectedFileLines);
+                actualFileLines = removeIdsFromOrderGraph(actualFileLines);
+                string actualFile = String.Join("\r\n", actualFileLines);
+                
+                // get lost lines
+                foreach (var line in expectedFileLines)
+                {
+                    int expectedCount = CountSubString(expectedFile, line);
+                    int actualCount = CountSubString(actualFile, line);
+                    
+                        if (actualCount < expectedCount)
+                        {
+                            for (int i = actualCount; i < expectedCount; i++)
+                            {
+                                lostLines.Add(line);
+                            }
+                        }
+                        if (actualCount > expectedCount)
+                        {
+                            for (int i = expectedCount; i < actualCount; i++)
+                            {
+                                newLines.Add(line);
+                            }
+                        }
+                }
+
+                if (lostLines.Any())
+                {
+                    File.WriteAllLines(orderGraphFileName + "_lostLines.txt", lostLines, Encoding.UTF8);
+                }
+                if (newLines.Any())
+                {
+                    File.WriteAllLines(orderGraphFileName+ "_newlines.txt", newLines, Encoding.UTF8);
+                }
+                
+                
+            }
+            
+            Assert.True(graphStaysTheSame, "OrderGraph has changed.");
+        }
+
+        private int CountSubString(string source, string substring)
+        {
+            int count = 0, n = 0;
+
+            if(substring != "")
+            {
+                while ((n = source.IndexOf(substring, n, StringComparison.InvariantCulture)) != -1)
+                {
+                    n += substring.Length;
+                    ++count;
+                }
+            }
+
+            return count;
+        }
+
+        private List<string> removeIdsFromOrderGraph(List<string> orderGraphLines)
+        {
+            List<string> orderGraphWithoutIds = new List<string>();
+            foreach (var orderGraphLine in orderGraphLines)
+            {
+                string newString = "";
+                string[] splitted = orderGraphLine.Split("->");
+                if (splitted.Length == 2)
+                {
+                    newString += splitted[0].Substring(7, splitted[0].Length - 7);
+                    newString += " -> ";
+                    newString += splitted[1].Substring(8, splitted[1].Length - 8);
+                    
+                    orderGraphWithoutIds.Add(newString);
+                }
+            }
+
+            return orderGraphWithoutIds;
         }
     }
 }

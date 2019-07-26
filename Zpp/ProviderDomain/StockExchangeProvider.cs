@@ -33,10 +33,14 @@ namespace Zpp.ProviderDomain
             return new Id(stock.ArticleForeignKey);
         }
 
-        public override Demands CreateNeededDemands(M_Article article,
+        public override void CreateNeededDemands(M_Article article,
             IDbTransactionData dbTransactionData, IDbMasterDataCache dbMasterDataCache,
             Provider parentProvider, Quantity quantity)
         {
+            if (quantity.IsNull())
+            {
+                return;
+            }
             _dependingDemands = new Demands();
             Demand stockExchangeDemand =
                 StockExchangeDemand.CreateStockExchangeStockDemand(article, GetDueTime(), quantity,
@@ -48,7 +52,6 @@ namespace Zpp.ProviderDomain
                                           $"than the needed quantity ({quantity}).");
             }
             _dependingDemands.Add(stockExchangeDemand);
-            return _dependingDemands;
         }
 
         /**
@@ -60,6 +63,10 @@ namespace Zpp.ProviderDomain
             IDbTransactionData dbTransactionData)
         {
             M_Stock stock = dbMasterDataCache.M_StockGetByArticleId(article.GetId());
+            if (stock.Current <= 0)
+            {
+                return null;
+            }
             Quantity currentStockQuantity = new Quantity(stock.Current);
             Quantity providedQuantityByStock =
                 CalcQuantityProvidedByProvider(currentStockQuantity, demandedQuantity);
@@ -84,10 +91,10 @@ namespace Zpp.ProviderDomain
                     Quantity missingQuantity = new Quantity(stock.Max - stock.Current);
                     if (missingQuantity.IsNegative() || missingQuantity.IsNull())
                     { // buildArticle has max == zero --> will always be negative (null if current is also 0)
-                        missingQuantity = new Quantity(1);
+                        missingQuantity = Quantity.Null();
                     }
 
-                    if (stock.Current + missingQuantity.GetValue() <= stock.Min)
+                    if (stock.Current + missingQuantity.GetValue() < stock.Min)
                     {
                         throw new MrpRunException($"Stock will not be refilled correctly.");
                     }

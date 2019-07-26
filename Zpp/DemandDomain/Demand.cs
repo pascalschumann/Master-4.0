@@ -121,8 +121,7 @@ namespace Zpp.DemandDomain
             }
 
             // satisfy by stock only if it's NOT a StockExchangeDemand with ExchangeType Insert
-            if (GetType() != typeof(StockExchangeDemand) ||
-                ((StockExchangeDemand) this).IsTypeOfInsert() == false)
+            if (GetType() != typeof(StockExchangeDemand))
             {
                 remainingQuantity = SatisfyByStock(remainingQuantity, dbTransactionData,
                     providerManager, this);

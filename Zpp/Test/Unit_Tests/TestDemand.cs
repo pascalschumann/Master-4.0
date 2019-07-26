@@ -86,6 +86,19 @@ namespace Zpp.Test
             Assert.True(false);
         }                 
 
-        
+        /**
+         * Verifies, that 
+         * - 
+         */
+        [Fact]
+        public void TestStockExchangeDemandCreateStockExchangeStockDemand()
+        {
+            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+            IDbTransactionData dbTransactionData =
+                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+            
+            // TODO
+            Assert.True(false);
+        }          
     }
 }

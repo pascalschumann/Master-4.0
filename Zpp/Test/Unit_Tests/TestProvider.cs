@@ -14,12 +14,12 @@ using Zpp.Test.WrappersForPrimitives;
 
 namespace Zpp.Test
 {
-    public class TestDemand : AbstractTest
+    public class TestProvider : AbstractTest
     {
         private const int ORDER_QUANTITY = 6;
         private const int DEFAULT_LOT_SIZE = 2;
 
-        public TestDemand()
+        public TestProvider()
         {
             OrderGenerator.GenerateOrdersSyncron(ProductionDomainContext,
                 ContextTest.TestConfiguration(), 1, true, ORDER_QUANTITY);
@@ -69,7 +69,37 @@ namespace Zpp.Test
             
             // TODO
             Assert.True(false);
-        }                   
+        } 
+
+        /**
+         * Verifies, that 
+         * - 
+         */
+        [Fact]
+        public void TestProviderCreateNeededDemands()
+        {
+            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+            IDbTransactionData dbTransactionData =
+                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+            
+            // TODO
+            Assert.True(false);
+        }   
+
+        /**
+         * Verifies, that 
+         * - 
+         */
+        [Fact]
+        public void TestProductionOrderCreateProductionOrderBoms()
+        {
+            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+            IDbTransactionData dbTransactionData =
+                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+            
+            // TODO
+            Assert.True(false);
+        }                                     
         
     }
 }

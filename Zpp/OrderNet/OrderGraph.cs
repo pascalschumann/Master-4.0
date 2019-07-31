@@ -94,7 +94,7 @@ namespace Zpp
                         $"\"{edge.GetToNode().GetId()};{edge.GetToNode().GetGraphizString()}\"";
                     if (quantity.IsNull() == false)
                     {
-                        mystring += $" [ label=\"{quantity}\" ]";    
+                        mystring += $" [ label=\" {quantity}\" ]";    
                     }
                     mystring += ";" + Environment.NewLine;
                 }

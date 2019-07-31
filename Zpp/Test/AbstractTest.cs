@@ -31,6 +31,22 @@ namespace Zpp.Test
             }
         }
 
+        public AbstractTest(Action<ProductionDomainContext> dbInitializer)
+        {
+            ProductionDomainContext = Dbms.getDbContext();
+
+            if (resetDb)
+            {
+                bool isDeleted = ProductionDomainContext.Database.EnsureDeleted();
+                if (!isDeleted)
+                {
+                    LOGGER.Error("Database could not be deleted.");    
+                }
+
+                dbInitializer(ProductionDomainContext);
+            }
+        }
+
         // @after
         public void Dispose()
         {

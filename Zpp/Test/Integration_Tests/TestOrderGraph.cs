@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Master40.DB.Data.Initializer;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.SimulationCore.Helper;
 using Master40.XUnitTest.DBContext;
@@ -16,13 +17,14 @@ namespace Zpp.Test
 {
     public class TestOrderGraph : AbstractTest
     {
-        private const int ORDER_QUANTITY = 6;
-        private const int DEFAULT_LOT_SIZE = 2;
+        private const int ORDER_QUANTITY = 1;
+        private const int DEFAULT_LOT_SIZE = 1;
 
-        public TestOrderGraph()
+        public TestOrderGraph() // : base(MasterDBInitializerMedium.DbInitialize)
         {
-            OrderGenerator.GenerateOrdersSyncron(ProductionDomainContext,
-                ContextTest.TestConfiguration(), 1, true, ORDER_QUANTITY);
+            MasterDataExtension.ExtendByDesk(ProductionDomainContext);
+            MasterDataExtension.CreateCustomerOrdersWithDesks(ProductionDomainContext, ORDER_QUANTITY);
+            // OrderGenerator.GenerateOrdersSyncron(ProductionDomainContext,ContextTest.TestConfiguration(), 1, true, ORDER_QUANTITY);
             LotSize.LotSize.SetDefaultLotSize(new Quantity(DEFAULT_LOT_SIZE));
 
             MrpRun.RunMrp(ProductionDomainContext);

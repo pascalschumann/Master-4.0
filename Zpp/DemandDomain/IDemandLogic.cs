@@ -27,7 +27,7 @@ namespace Zpp.DemandDomain
 
         Id GetId();
 
-        void Satisfy(IProviderManager providerManager,
+        void SatisfyStockExchangeDemand(IProviderManager providerManager,
             IDbTransactionData dbTransactionData);
 
         /**

@@ -41,6 +41,7 @@ namespace Zpp.ProviderDomain
             {
                 return;
             }
+
             _dependingDemands = new Demands();
             Demand stockExchangeDemand =
                 StockExchangeDemand.CreateStockExchangeStockDemand(article, GetDueTime(), quantity,
@@ -51,6 +52,7 @@ namespace Zpp.ProviderDomain
                                           $"quantity ({stockExchangeDemand.GetQuantity()}) " +
                                           $"than the needed quantity ({quantity}).");
             }
+
             _dependingDemands.Add(stockExchangeDemand);
         }
 
@@ -63,55 +65,50 @@ namespace Zpp.ProviderDomain
             IDbTransactionData dbTransactionData)
         {
             M_Stock stock = dbMasterDataCache.M_StockGetByArticleId(article.GetId());
-            if (stock.Current <= 0)
-            {
-                return null;
-            }
             Quantity currentStockQuantity = new Quantity(stock.Current);
             Quantity providedQuantityByStock =
                 CalcQuantityProvidedByProvider(currentStockQuantity, demandedQuantity);
-            if (! providedQuantityByStock.Equals(Quantity.Null()))
+
+            T_StockExchange stockExchange = new T_StockExchange();
+            stockExchange.StockExchangeType = StockExchangeType.Provider;
+            stockExchange.Quantity = providedQuantityByStock.GetValue();
+            stockExchange.State = State.Created;
+
+            stockExchange.Stock = stock;
+            stockExchange.StockId = stock.Id;
+            stockExchange.RequiredOnTime = dueTime.GetValue();
+            stockExchange.ExchangeType = ExchangeType.Withdrawal;
+            StockExchangeProvider stockExchangeProvider =
+                new StockExchangeProvider(stockExchange, dbMasterDataCache);
+
+            // Update stock
+            stock.Current = currentStockQuantity.Minus(providedQuantityByStock).GetValue();
+            if (stock.Current <= stock.Min)
             {
-                T_StockExchange stockExchange = new T_StockExchange();
-                stockExchange.StockExchangeType = StockExchangeType.Provider;
-                stockExchange.Quantity = providedQuantityByStock.GetValue();
-                stockExchange.State = State.Created;
-
-                stockExchange.Stock = stock;
-                stockExchange.StockId = stock.Id;
-                stockExchange.RequiredOnTime = dueTime.GetValue();
-                stockExchange.ExchangeType = ExchangeType.Withdrawal;
-                StockExchangeProvider stockExchangeProvider =
-                    new StockExchangeProvider(stockExchange, dbMasterDataCache);
-
-                // Update stock
-                stock.Current = currentStockQuantity.Minus(providedQuantityByStock).GetValue();
-                if (stock.Current <= stock.Min)
+                Quantity missingQuantity = new Quantity(stock.Max - stock.Current);
+                if (missingQuantity.IsNegative() || missingQuantity.IsNull())
                 {
-                    Quantity missingQuantity = new Quantity(stock.Max - stock.Current);
-                    if (missingQuantity.IsNegative() || missingQuantity.IsNull())
-                    { // buildArticle has max == zero --> will always be negative (null if current is also 0)
-                        missingQuantity = Quantity.Null();
-                    }
-
-                    if (stock.Current + missingQuantity.GetValue() < stock.Min)
-                    {
-                        throw new MrpRunException($"Stock will not be refilled correctly.");
-                    }
-                    stockExchangeProvider.CreateNeededDemands(article, dbTransactionData,
-                        dbMasterDataCache, stockExchangeProvider, missingQuantity);
+                    // buildArticle has max == zero --> will always be negative (null if current is also 0)
+                    missingQuantity = Quantity.Null();
                 }
 
-                return stockExchangeProvider;
+                if (stock.Current + missingQuantity.GetValue() < stock.Min)
+                {
+                    throw new MrpRunException($"Stock will not be refilled correctly.");
+                }
+
+                stockExchangeProvider.CreateNeededDemands(article, dbTransactionData,
+                    dbMasterDataCache, stockExchangeProvider, missingQuantity);
             }
 
-            return null;
+            return stockExchangeProvider;
         }
 
         public override string GetGraphizString()
         {
             // Demand(CustomerOrder);20;Truck
-            string exchangeType = Constants.EnumToString(((T_StockExchange)_provider).ExchangeType, typeof(ExchangeType));
+            string exchangeType =
+                Constants.EnumToString(((T_StockExchange) _provider).ExchangeType, typeof(ExchangeType));
             string graphizString = $"P(SE:{exchangeType[0]});{GetQuantity()};{GetArticle().Name}";
             return graphizString;
         }

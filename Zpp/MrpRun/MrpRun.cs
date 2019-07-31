@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.Context;
+using Master40.DB.Data.WrappersForPrimitives;
 using Zpp.DemandDomain;
 using Zpp.ProviderDomain;
+using Zpp.Utils;
 using Zpp.WrappersForPrimitives;
 
 
@@ -74,7 +76,23 @@ namespace Zpp
                     foreach (Demand demand in currentDemandManager.GetAll())
                     {
 
-                        demand.Satisfy(providerManager,
+                        // satisfy by stock only if it's NOT a StockExchangeDemand with ExchangeType Insert
+                        if (demand.GetType() == typeof(StockExchangeDemand))
+                        {
+                            demand.SatisfyStockExchangeDemand(providerManager, dbTransactionData);
+                        }
+                        // COP or PrOB
+                        else
+                        {
+                            Quantity remainingQuantity = demand.SatisfyByStock(demand.GetQuantity(), dbTransactionData,
+                                providerManager, demand);
+                            if (remainingQuantity.IsNull() == false)
+                            {
+                                throw new MrpRunException($"COP/PrOB {demand} was NOT satisfied.");
+                            }
+                        }
+                        
+                        demand.SatisfyStockExchangeDemand(providerManager,
                             dbTransactionData);
                         Demands nextDemands = providerManager.GetNextDemands();
                         if (nextDemands != null && nextDemands.Any())

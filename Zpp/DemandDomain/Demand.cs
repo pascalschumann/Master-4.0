@@ -109,7 +109,7 @@ namespace Zpp.DemandDomain
             return GetArticle().GetId();
         }
 
-        public void Satisfy(IProviderManager providerManager, IDbTransactionData dbTransactionData)
+        public void SatisfyStockExchangeDemand(IProviderManager providerManager, IDbTransactionData dbTransactionData)
         {
             Quantity remainingQuantity = GetQuantity();
 
@@ -119,18 +119,6 @@ namespace Zpp.DemandDomain
             {
                 return;
             }
-
-            // satisfy by stock only if it's NOT a StockExchangeDemand with ExchangeType Insert
-            if (GetType() != typeof(StockExchangeDemand))
-            {
-                remainingQuantity = SatisfyByStock(remainingQuantity, dbTransactionData,
-                    providerManager, this);
-                if (remainingQuantity.IsNull())
-                {
-                    return;
-                }
-            }
-
 
             // satisfy by order
             Quantity quantityBeforeOrder = new Quantity(remainingQuantity);

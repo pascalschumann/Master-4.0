@@ -38,7 +38,6 @@ namespace Zpp.ProviderDomain
             tProductionOrder.Article = demand.GetArticle();
             tProductionOrder.ArticleId = demand.GetArticle().Id;
             tProductionOrder.Name = $"ProductionOrder for Demand {demand.GetArticle()}";
-            // connects this provider with table T_Provider
             tProductionOrder.Quantity = lotSize.GetValue();
 
             ProductionOrder productionOrder =

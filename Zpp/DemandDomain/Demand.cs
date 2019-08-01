@@ -146,7 +146,7 @@ namespace Zpp.DemandDomain
             IDbTransactionData dbTransactionData, IProviderManager providerManager, Demand demand)
         {
             // satisfy by stock
-            Provider stockExchangeProvider = StockExchangeProvider.CreateStockProvider(GetArticle(),
+            Provider stockExchangeProvider = StockExchangeProvider.CreateStockExchangeProvider(GetArticle(),
                 GetDueTime(), missingQuantity, _dbMasterDataCache, dbTransactionData);
             if (stockExchangeProvider != null)
             {

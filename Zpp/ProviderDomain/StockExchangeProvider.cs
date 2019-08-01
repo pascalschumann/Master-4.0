@@ -60,18 +60,14 @@ namespace Zpp.ProviderDomain
          * returns a provider, which can be a stockExchangeProvider, if article can be fulfilled by stock, else
          * a productionOrder/purchaseOrderPart
          */
-        public static Provider CreateStockProvider(M_Article article, DueTime dueTime,
+        public static Provider CreateStockExchangeProvider(M_Article article, DueTime dueTime,
             Quantity demandedQuantity, IDbMasterDataCache dbMasterDataCache,
             IDbTransactionData dbTransactionData)
         {
             M_Stock stock = dbMasterDataCache.M_StockGetByArticleId(article.GetId());
-            Quantity currentStockQuantity = new Quantity(stock.Current);
-            Quantity providedQuantityByStock =
-                CalcQuantityProvidedByProvider(currentStockQuantity, demandedQuantity);
-
             T_StockExchange stockExchange = new T_StockExchange();
             stockExchange.StockExchangeType = StockExchangeType.Provider;
-            stockExchange.Quantity = providedQuantityByStock.GetValue();
+            stockExchange.Quantity = demandedQuantity.GetValue();
             stockExchange.State = State.Created;
 
             stockExchange.Stock = stock;
@@ -82,14 +78,15 @@ namespace Zpp.ProviderDomain
                 new StockExchangeProvider(stockExchange, dbMasterDataCache);
 
             // Update stock
-            stock.Current = currentStockQuantity.Minus(providedQuantityByStock).GetValue();
+            Quantity currentStockQuantity = new Quantity(stock.Current);
+
+            stock.Current = currentStockQuantity.Minus(demandedQuantity).GetValue();
             if (stock.Current <= stock.Min)
             {
                 Quantity missingQuantity = new Quantity(stock.Max - stock.Current);
                 if (missingQuantity.IsNegative() || missingQuantity.IsNull())
                 {
-                    // buildArticle has max == zero --> will always be negative (null if current is also 0)
-                    missingQuantity = Quantity.Null();
+                    throw new MrpRunException("Should not happen.");
                 }
 
                 if (stock.Current + missingQuantity.GetValue() < stock.Min)

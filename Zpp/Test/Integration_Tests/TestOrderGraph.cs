@@ -23,7 +23,8 @@ namespace Zpp.Test
         public TestOrderGraph() // : base(MasterDBInitializerMedium.DbInitialize)
         {
             MasterDataExtension.ExtendByDesk(ProductionDomainContext);
-            MasterDataExtension.CreateCustomerOrdersWithDesks(ProductionDomainContext, ORDER_QUANTITY);
+            MasterDataExtension.CreateCustomerOrdersWithDesks(ProductionDomainContext,
+                ORDER_QUANTITY);
             // OrderGenerator.GenerateOrdersSyncron(ProductionDomainContext,ContextTest.TestConfiguration(), 1, true, ORDER_QUANTITY);
             LotSize.LotSize.SetDefaultLotSize(new Quantity(DEFAULT_LOT_SIZE));
 
@@ -43,19 +44,19 @@ namespace Zpp.Test
             IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
             IDbTransactionData dbTransactionData =
                 new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
-            
-                IGraph<INode> orderGraph = new OrderGraph(dbTransactionData);
 
-                Assert.True(orderGraph.GetAllToNodes().Count > 0,
-                    "There are no toNodes in the orderGraph.");
+            IGraph<INode> orderGraph = new OrderGraph(dbTransactionData);
 
-                int sumDemandToProviderAndProviderToDemand =
-                    dbTransactionData.DemandToProviderGetAll().Count() +
-                    dbTransactionData.ProviderToDemandGetAll().Count();
+            Assert.True(orderGraph.GetAllToNodes().Count > 0,
+                "There are no toNodes in the orderGraph.");
 
-                Assert.True(sumDemandToProviderAndProviderToDemand == orderGraph.CountEdges(),
-                    $"Should be equal size: sumDemandToProviderAndProviderToDemand " +
-                    $"{sumDemandToProviderAndProviderToDemand} and  sumValuesOfOrderGraph {orderGraph.CountEdges()}");
+            int sumDemandToProviderAndProviderToDemand =
+                dbTransactionData.DemandToProviderGetAll().Count() +
+                dbTransactionData.ProviderToDemandGetAll().Count();
+
+            Assert.True(sumDemandToProviderAndProviderToDemand == orderGraph.CountEdges(),
+                $"Should be equal size: sumDemandToProviderAndProviderToDemand " +
+                $"{sumDemandToProviderAndProviderToDemand} and  sumValuesOfOrderGraph {orderGraph.CountEdges()}");
         }
 
         /**
@@ -121,7 +122,7 @@ namespace Zpp.Test
             IDbTransactionData dbTransactionData =
                 new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
             IGraph<INode> orderGraph = new OrderGraph(dbTransactionData);
-            
+
             // verify edgeTypes
             foreach (var customerOrderPart in dbMasterDataCache.T_CustomerOrderPartGetAll().GetAll()
             )
@@ -145,106 +146,21 @@ namespace Zpp.Test
         [Fact]
         public void TestOrderGraphStaysTheSame()
         {
-            string orderGraphFileName = $"../../../Test/Ordergraphs/ordergraph_cop_{ORDER_QUANTITY}_lotsize_{DEFAULT_LOT_SIZE}.txt";
-            
+            string orderGraphFileName =
+                $"../../../Test/Ordergraphs/ordergraph_cop_{ORDER_QUANTITY}_lotsize_{DEFAULT_LOT_SIZE}.txt";
+
             // build orderGraph up
             IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
             IDbTransactionData dbTransactionData =
                 new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
             IGraph<INode> orderGraph = new OrderGraph(dbTransactionData);
-            
+
             // for initial creating of the file
             string expectedOrderGraph = File.ReadAllText(orderGraphFileName, Encoding.UTF8);
             string actualOrderGraph = orderGraph.ToString();
             bool graphStaysTheSame = expectedOrderGraph.Equals(actualOrderGraph);
-            
-            // for debugging
-            if (!graphStaysTheSame)
-            {
-                List<string> lostLines = new List<string>();
-                List<string> newLines = new List<string>();
-                
-                List<string> expectedFileLines = File.ReadLines(orderGraphFileName).ToList();
-                File.WriteAllText(orderGraphFileName, actualOrderGraph, Encoding.UTF8);
-                List<string> actualFileLines = File.ReadLines(orderGraphFileName).ToList();
-                
-                // remove ids
-                expectedFileLines = removeIdsFromOrderGraph(expectedFileLines);
-                string expectedFile = String.Join("\r\n", expectedFileLines);
-                actualFileLines = removeIdsFromOrderGraph(actualFileLines);
-                string actualFile = String.Join("\r\n", actualFileLines);
-                
-                // get lost lines
-                foreach (var line in expectedFileLines)
-                {
-                    int expectedCount = CountSubString(expectedFile, line);
-                    int actualCount = CountSubString(actualFile, line);
-                    
-                        if (actualCount < expectedCount)
-                        {
-                            for (int i = actualCount; i < expectedCount; i++)
-                            {
-                                lostLines.Add(line);
-                            }
-                        }
-                        if (actualCount > expectedCount)
-                        {
-                            for (int i = expectedCount; i < actualCount; i++)
-                            {
-                                newLines.Add(line);
-                            }
-                        }
-                }
 
-                if (lostLines.Any())
-                {
-                    File.WriteAllLines(orderGraphFileName + "_lostLines.txt", lostLines, Encoding.UTF8);
-                }
-                if (newLines.Any())
-                {
-                    File.WriteAllLines(orderGraphFileName+ "_newlines.txt", newLines, Encoding.UTF8);
-                }
-                
-                
-            }
-            
             Assert.True(graphStaysTheSame, "OrderGraph has changed.");
-        }
-
-        private int CountSubString(string source, string substring)
-        {
-            int count = 0, n = 0;
-
-            if(substring != "")
-            {
-                while ((n = source.IndexOf(substring, n, StringComparison.InvariantCulture)) != -1)
-                {
-                    n += substring.Length;
-                    ++count;
-                }
-            }
-
-            return count;
-        }
-
-        private List<string> removeIdsFromOrderGraph(List<string> orderGraphLines)
-        {
-            List<string> orderGraphWithoutIds = new List<string>();
-            foreach (var orderGraphLine in orderGraphLines)
-            {
-                string newString = "";
-                string[] splitted = orderGraphLine.Split("->");
-                if (splitted.Length == 2)
-                {
-                    newString += splitted[0].Substring(7, splitted[0].Length - 7);
-                    newString += " -> ";
-                    newString += splitted[1].Substring(8, splitted[1].Length - 8);
-                    
-                    orderGraphWithoutIds.Add(newString);
-                }
-            }
-
-            return orderGraphWithoutIds;
         }
     }
 }

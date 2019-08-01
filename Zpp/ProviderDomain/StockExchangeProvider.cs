@@ -81,9 +81,18 @@ namespace Zpp.ProviderDomain
             Quantity currentStockQuantity = new Quantity(stock.Current);
 
             stock.Current = currentStockQuantity.Minus(demandedQuantity).GetValue();
-            if (stock.Current <= stock.Min)
+            if (stock.Current < stock.Min)
             {
-                Quantity missingQuantity = new Quantity(stock.Max - stock.Current);
+                Quantity missingQuantity;
+                if (stock.Min.Equals(0))
+                {
+                    missingQuantity = new Quantity(stock.Current * (-1));
+                }
+                else
+                {
+                    missingQuantity = new Quantity(stock.Min);
+                }
+                    
                 if (missingQuantity.IsNegative() || missingQuantity.IsNull())
                 {
                     throw new MrpRunException("Should not happen.");

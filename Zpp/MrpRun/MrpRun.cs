@@ -91,9 +91,7 @@ namespace Zpp
                                 throw new MrpRunException($"COP/PrOB {demand} was NOT satisfied.");
                             }
                         }
-                        
-                        demand.SatisfyStockExchangeDemand(providerManager,
-                            dbTransactionData);
+
                         Demands nextDemands = providerManager.GetNextDemands();
                         if (nextDemands != null && nextDemands.Any())
                         {

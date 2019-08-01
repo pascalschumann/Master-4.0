@@ -29,6 +29,8 @@ namespace Zpp.Test
          * - Quantity (must equal quantity of demand),
          * - DueTime (must equal dueTime of demand),
          * - Article (must equal article of demand)
+         * - exact one dependingDemands with quantity == (current-demanded) * (-1) if stock.min == 0 else quantity == stock.min(max would
+         * lead to overfilled stock because most time it gets round up due to packsize)
          */
         [Fact]
         public void TestCreateStockExchangeProvider()
@@ -41,12 +43,11 @@ namespace Zpp.Test
             Demand[] demands = new[]
             {
                 EntityFactory.CreateCustomerOrderPart(dbMasterDataCache, new Random().Next(1, 100)),
-                EntityFactory.CreateCustomerOrderPart(dbMasterDataCache, new Random().Next(1000, 2000))
+                EntityFactory.CreateCustomerOrderPart(dbMasterDataCache,
+                    new Random().Next(1000, 2000))
             };
             foreach (var demand in demands)
             {
-
-
                 M_Stock stock = dbMasterDataCache.M_StockGetByArticleId(demand.GetArticleId());
                 decimal oldCurrentStock = stock.Current;
 
@@ -63,15 +64,40 @@ namespace Zpp.Test
                 decimal newCurrentStock = stock.Current;
                 Assert.True(newCurrentStock == oldCurrentStock - demand.GetQuantity().GetValue(),
                     "stock.Current ist not correct.");
-                if (newCurrentStock < 0)
+                // stock provided less than needed
+                if (newCurrentStock < stock.Min)
                 {
                     Assert.True(providerStockExchange.AnyDependingDemands(),
                         $"Provider {providerStockExchange} for demand {demand} " +
                         $"has no depending Demands.");
+
+                    Assert.True(providerStockExchange.GetAllDependingDemands().GetAll().Count == 1,
+                        $"Provider {providerStockExchange} for demand {demand} " +
+                        $"must have exact one depending Demand.");
+
+                    // no inventory article
+                    if (stock.Min.Equals(0))
+                    {
+                        providerStockExchange.GetAllDependingDemands().GetAll()[0].GetQuantity()
+                            .GetValue().Equals(1);
+                    }
+                    // inventory article
+                    else
+                    {
+                        providerStockExchange.GetAllDependingDemands().GetAll()[0].GetQuantity()
+                            .GetValue().Equals(stock.Min);
+                    }
+                }
+                // stock provided more or equal to than needed 
+                else
+                {
+                    Assert.True(providerStockExchange.AnyDependingDemands() == false,
+                        $"Provider {providerStockExchange} for demand {demand} " +
+                        $"has depending Demands.");
                 }
 
-                // ProductionOrderBom TODO
 
+                // ProductionOrderBom TODO
             }
         }
     }

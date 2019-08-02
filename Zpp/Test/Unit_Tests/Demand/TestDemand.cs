@@ -30,7 +30,7 @@ namespace Zpp.Test
          * Verifies, that 
          * - 
          */
-        [Fact]
+        [Fact(Skip = "Not implemented yet.")]
         public void TestSatisfy()
         {
             IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
@@ -45,7 +45,7 @@ namespace Zpp.Test
          * Verifies, that 
          * - 
          */
-        [Fact]
+        [Fact(Skip = "Not implemented yet.")]
         public void TestSatisfyByExistingNonExhaustedProvider()
         {
             IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
@@ -60,7 +60,7 @@ namespace Zpp.Test
          * Verifies, that 
          * - 
          */
-        [Fact]
+        [Fact(Skip = "Not implemented yet.")]
         public void TestSatisfyByStock()
         {
             IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
@@ -75,7 +75,7 @@ namespace Zpp.Test
          * Verifies, that 
          * - 
          */
-        [Fact]
+        [Fact(Skip = "Not implemented yet.")]
         public void TestSatisfyByOrders()
         {
             IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);

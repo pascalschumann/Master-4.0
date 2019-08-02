@@ -90,7 +90,7 @@ namespace Zpp.ProviderDomain
                 }
                 else
                 {
-                    missingQuantity = new Quantity(stock.Min);
+                    missingQuantity = new Quantity(stock.Min + stock.Current * (-1));
                 }
                     
                 if (missingQuantity.IsNegative() || missingQuantity.IsNull())
@@ -100,7 +100,7 @@ namespace Zpp.ProviderDomain
 
                 if (stock.Current + missingQuantity.GetValue() < stock.Min)
                 {
-                    throw new MrpRunException($"Stock will not be refilled correctly.");
+                    throw new MrpRunException($"Stock will not be refilled correctly for {article} with demanded quantity {demandedQuantity}.");
                 }
 
                 stockExchangeProvider.CreateNeededDemands(article, dbTransactionData,

@@ -18,7 +18,7 @@ namespace Zpp.Test
          * Verifies, that 
          * - 
          */
-        [Fact]
+        [Fact(Skip = "Not implemented yet.")]
         public void TestCreateStockExchangeStockDemand()
         {
             IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);

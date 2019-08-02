@@ -31,6 +31,7 @@ namespace Zpp.Test
          * - Article (must equal article of demand)
          * - exact one dependingDemands with quantity == (current-demanded) * (-1) if stock.min == 0 else quantity == stock.min(max would
          * lead to overfilled stock because most time it gets round up due to packsize)
+         * - TODO: sync this with the test impl, since this description is always a step behind
          */
         [Fact]
         public void TestCreateStockExchangeProvider()
@@ -85,7 +86,7 @@ namespace Zpp.Test
                     else
                     {
                         providerStockExchange.GetAllDependingDemands().GetAll()[0].GetQuantity()
-                            .GetValue().Equals(stock.Min);
+                            .GetValue().Equals(stock.Min + stock.Current * (-1));
                     }
                 }
                 // stock provided more or equal to than needed 

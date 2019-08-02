@@ -190,7 +190,7 @@ namespace Zpp.Test
                 // Tischbeine 
                 new M_Operation
                 {
-                    ArticleId = articles.Single(a => a.Name == "Tischbein").Id, Name = "Anschraubplatte anschweißen", Duration = 5,
+                    ArticleId = articles.Single(a => a.Name == "Tischbein").Id, Name = "Anschraubplatte anschweißen", Duration = 20,
                     MachineGroupId = machineGroupMontage.Id, HierarchyNumber = 20, MachineToolId = machineTool
                 },
                 // new WorkSchedule{ ArticleId = articles.Single(a => a.Name == "Tischbein").Id, Name = "Löcher vorbohren", Duration=2, MachineGroupId=machines.Single(n=> n.Name=="Montage 1").MachineGroupId, HierarchyNumber = 20 },

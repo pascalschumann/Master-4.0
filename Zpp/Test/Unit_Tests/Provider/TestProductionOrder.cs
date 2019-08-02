@@ -35,7 +35,7 @@ namespace Zpp.Test
          * Verifies, that 
          * - 
          */
-        [Fact]
+        [Fact(Skip = "Not implemented yet.")]
         public void TestCreateProductionOrderBoms()
         {
             IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);

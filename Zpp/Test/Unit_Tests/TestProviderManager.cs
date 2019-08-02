@@ -30,7 +30,7 @@ namespace Zpp.Test
          * Verifies, that 
          * - 
          */
-        [Fact]
+        [Fact(Skip = "Not implemented yet.")]
         public void TestReserveQuantityOfExistingProvider()
         {
             IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);

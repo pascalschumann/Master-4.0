@@ -17,8 +17,8 @@ namespace Zpp.Test
 {
     public class TestOrderGraph : AbstractTest
     {
-        private const int ORDER_QUANTITY = 1;
-        private const int DEFAULT_LOT_SIZE = 1;
+        private const int ORDER_QUANTITY = 6;
+        private const int DEFAULT_LOT_SIZE = 2;
 
         public TestOrderGraph() // : base(MasterDBInitializerMedium.DbInitialize)
         {
@@ -143,24 +143,67 @@ namespace Zpp.Test
             }
         }
 
+        /**
+         * In case of failing (and the orderGraph change is expected by you):
+         * delete corresponding ordergraph_cop_*.txt files ind Folder Test/OrderGraphs
+         */
         [Fact]
         public void TestOrderGraphStaysTheSame()
         {
             string orderGraphFileName =
                 $"../../../Test/Ordergraphs/ordergraph_cop_{ORDER_QUANTITY}_lotsize_{DEFAULT_LOT_SIZE}.txt";
+            string orderGraphFileNameWithIds =
+                $"../../../Test/Ordergraphs/ordergraph_cop_{ORDER_QUANTITY}_lotsize_{DEFAULT_LOT_SIZE}_with_ids.txt";
 
             // build orderGraph up
             IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
             IDbTransactionData dbTransactionData =
                 new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
             IGraph<INode> orderGraph = new OrderGraph(dbTransactionData);
+            
+            // with ids
+            string actualOrderGraphWithIds = orderGraph.ToString();
+            if (File.Exists(orderGraphFileName) == false)
+            {
+                File.WriteAllText(orderGraphFileNameWithIds, actualOrderGraphWithIds,
+                    Encoding.UTF8);
+            }
 
-            // for initial creating of the file
+            // without ids: for initial creating of the file (remove ids so it's comparable)
+            string actualOrderGraph = removeIdsFromOrderGraph(actualOrderGraphWithIds);
+            
+            // create initial file, if it doesn't exists (must be committed then)
+            if (File.Exists(orderGraphFileName) == false)
+            {
+                File.WriteAllText(orderGraphFileName, actualOrderGraph, Encoding.UTF8);
+            }
+            
             string expectedOrderGraph = File.ReadAllText(orderGraphFileName, Encoding.UTF8);
-            string actualOrderGraph = orderGraph.ToString();
-            bool graphStaysTheSame = expectedOrderGraph.Equals(actualOrderGraph);
+            string expectedOrderGraphWithIds = File.ReadAllText(orderGraphFileNameWithIds, Encoding.UTF8);
 
-            Assert.True(graphStaysTheSame, "OrderGraph has changed.");
+            Assert.True(expectedOrderGraph.Equals(actualOrderGraph), "OrderGraph without ids has changed.");
+            Assert.True(expectedOrderGraphWithIds.Equals(actualOrderGraphWithIds), "OrderGraph with ids has changed.");
+        }
+
+        private string removeIdsFromOrderGraph(string orderGraph)
+        {
+            string[] orderGraphLines = orderGraph.Split("\r\n");
+            List<string> orderGraphWithoutIds = new List<string>();
+            foreach (var orderGraphLine in orderGraphLines)
+            {
+                string newString = "";
+                string[] splitted = orderGraphLine.Split("->");
+                if (splitted.Length == 2)
+                {
+                    newString += "\"" + splitted[0].Substring(7, splitted[0].Length - 7);
+                    newString += " -> ";
+                    newString += "\"" + splitted[1].Substring(8, splitted[1].Length - 8);
+
+                    orderGraphWithoutIds.Add(newString);
+                }
+            }
+
+            return String.Join("\r\n", orderGraphWithoutIds);
         }
     }
 }

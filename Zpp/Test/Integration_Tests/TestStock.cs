@@ -81,10 +81,7 @@ namespace Zpp.Test
                     $"({currentStockLevel}) must be greaterThan/EqualTo 0.");
 
                 decimal maxStock = originalStock.Max;
-                if (maxStock < 1)
-                {
-                    maxStock = ORDER_QUANTITY;
-                }
+                Assert.True(maxStock > 0, $"stock.max for {originalStock.Article} must be greater than zero.");
 
                 Assert.True(currentStockLevel < maxStock + new decimal(0.01),
                     $"Stock level for stock {originalStock.Id} must be " +

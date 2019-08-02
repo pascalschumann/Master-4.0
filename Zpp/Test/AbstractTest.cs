@@ -27,7 +27,8 @@ namespace Zpp.Test
                 {
                     LOGGER.Error("Database could not be deleted.");    
                 }
-                MasterDBInitializerSmall.DbInitialize(ProductionDomainContext);
+                // MasterDBInitializerSmall.DbInitialize(ProductionDomainContext);
+                MasterDBInitializerLarge.DbInitialize(ProductionDomainContext);
             }
         }
 

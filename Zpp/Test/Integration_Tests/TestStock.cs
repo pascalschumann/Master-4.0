@@ -24,6 +24,7 @@ namespace Zpp.Test
          * - 
          * - sum(stockExchangeDemands=withdrawal) <= sum(stockExchangeProviders=insert)
          * for every stock
+         * TODO: sync this describtion with the impl
          */
         [Fact]
         public void TestStockExchanges()

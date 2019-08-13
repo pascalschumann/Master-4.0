@@ -25,7 +25,7 @@ namespace Zpp.Test
             InitThisTest(testConfigurationFileName);
             
             string orderGraphAsGanttChartFile =
-                $"../../../Test/Ordergraphs/GanttChart/gantt_chart_{TestConfiguration.Name}.txt";
+                $"../../../Test/Ordergraphs/GanttChart/gantt_chart_{TestConfiguration.Name}.json";
 
             // build orderGraph up
             IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);

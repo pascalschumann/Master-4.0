@@ -97,5 +97,7 @@ namespace Zpp.DemandDomain
         {
             throw new System.NotImplementedException();
         }
+        
+        public abstract DueTime GetStartTime(IDbTransactionData dbTransactionData);
     }
 }

@@ -131,5 +131,7 @@ namespace Zpp.ProviderDomain
         {
             throw new System.NotImplementedException();
         }
+
+        public abstract DueTime GetStartTime(IDbTransactionData dbTransactionData);
     }
 }

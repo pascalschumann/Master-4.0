@@ -155,7 +155,7 @@ namespace Zpp
             {
                 if (tProductionOrderBom.ProductionOrderOperation != null)
                 {
-                    tProductionOrderOperations.Add(tProductionOrderBom.ProductionOrderOperation);    
+                    tProductionOrderOperations.Push(tProductionOrderBom.ProductionOrderOperation);    
                 }
             }
 

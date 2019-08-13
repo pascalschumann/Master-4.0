@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Zpp.DemandDomain;
+using Zpp.GraphicalRepresentation;
 using Zpp.Utils;
 
 namespace Zpp
@@ -25,6 +26,17 @@ namespace Zpp
 
         List<INode> GetAllToNodes();
         
+        List<INode> GetAllFromNodes();
+
+        /**
+         * No duplicates should be contained
+         */
+        List<INode> GetAllUniqueNode();
+
+        List<IEdge> GetAllEdgesForFromNode(INode fromNode);
+        
         List<INode> TraverseDepthFirst(Action<INode, List<INode>, List<INode>> action, CustomerOrderPart startNode);
+
+        GanttChart GetAsGanttChart(IDbTransactionData dbTransactionData);
     }
 }

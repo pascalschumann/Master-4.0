@@ -26,7 +26,9 @@ namespace Zpp.DemandDomain
         DueTime GetDueTime(IDbTransactionData dbTransactionData);
 
         Id GetId();
-        
+
+        DueTime GetStartTime(IDbTransactionData dbTransactionData);
+
 
     }
 }

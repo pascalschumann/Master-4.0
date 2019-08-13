@@ -28,7 +28,8 @@ namespace Zpp.DemandDomain
         /// <param name="productionOrderOperation">use already created, null if no one was created before</param>
         /// <returns></returns>
         public static ProductionOrderBom CreateProductionOrderBom(M_ArticleBom articleBom,
-            Provider parentProductionOrder, IDbMasterDataCache dbMasterDataCache, Quantity quantity, ProductionOrderOperation productionOrderOperation)
+            Provider parentProductionOrder, IDbMasterDataCache dbMasterDataCache, Quantity quantity,
+            ProductionOrderOperation productionOrderOperation)
         {
             T_ProductionOrderBom productionOrderBom = new T_ProductionOrderBom();
             // TODO: Terminierung+Maschinenbelegung
@@ -38,15 +39,15 @@ namespace Zpp.DemandDomain
                 (T_ProductionOrder) parentProductionOrder.ToIProvider();
             productionOrderBom.ProductionOrderParentId =
                 productionOrderBom.ProductionOrderParent.Id;
-            
+
             // bom is toPurchase if articleBom.Operation == null
             if (productionOrderOperation != null)
             {
-                productionOrderBom.ProductionOrderOperation =
-                    productionOrderOperation.GetValue();
+                productionOrderBom.ProductionOrderOperation = productionOrderOperation.GetValue();
                 productionOrderBom.ProductionOrderOperationId =
                     productionOrderBom.ProductionOrderOperation.Id;
-            }            
+            }
+
             if (productionOrderOperation == null && articleBom.Operation != null)
             {
                 productionOrderBom.ProductionOrderOperation =
@@ -55,7 +56,7 @@ namespace Zpp.DemandDomain
                 productionOrderBom.ProductionOrderOperationId =
                     productionOrderBom.ProductionOrderOperation.Id;
             }
-            
+
 
             productionOrderBom.ArticleChild = articleBom.ArticleChild;
             productionOrderBom.ArticleChildId = articleBom.ArticleChildId;
@@ -76,7 +77,7 @@ namespace Zpp.DemandDomain
 
         /**
          * @return:
-         *   if ProductionOrderOperation is backwardsScheduled --> startBackward
+         *   if ProductionOrderOperation is backwardsScheduled --> EndBackward
          *   else ProductionOrderParent.dueTime
          */
         public override DueTime GetDueTime(IDbTransactionData dbTransactionData)
@@ -95,10 +96,10 @@ namespace Zpp.DemandDomain
 
             DueTime dueTime;
             if (productionOrderBom.ProductionOrderOperation != null &&
-                productionOrderBom.ProductionOrderOperation.StartBackward != null)
+                productionOrderBom.ProductionOrderOperation.EndBackward != null)
             {
-                // backwards scheduling was already done --> return StartBackward
-                dueTime = new DueTime(productionOrderBom.ProductionOrderOperation.StartBackward
+                // backwards scheduling was already done --> return EndBackward
+                dueTime = new DueTime(productionOrderBom.ProductionOrderOperation.EndBackward
                     .GetValueOrDefault());
                 return dueTime;
             }
@@ -197,10 +198,47 @@ namespace Zpp.DemandDomain
             return newOperationBackwardsSchedule;
         }
 
-        public ProductionOrderOperation GetProductionOrderOperation()
+        public ProductionOrderOperation GetProductionOrderOperation(IDbTransactionData dbTransactionData)
         {
-            return new ProductionOrderOperation(((T_ProductionOrderBom) _demand)
-                .ProductionOrderOperation, _dbMasterDataCache);
+            T_ProductionOrderBom productionOrderBom = (T_ProductionOrderBom) _demand;
+            if (productionOrderBom.ProductionOrderOperationId == null)
+            {
+                return null;
+            }
+            if (productionOrderBom.ProductionOrderOperation == null)
+            // load it
+            {
+                productionOrderBom.ProductionOrderOperation =
+                    dbTransactionData.ProductionOrderOperationGetById(
+                        new Id(productionOrderBom.ProductionOrderOperationId.GetValueOrDefault()));
+            }
+            
+            return new ProductionOrderOperation(productionOrderBom.ProductionOrderOperation,
+                _dbMasterDataCache);
+        }
+
+        public override DueTime GetStartTime(IDbTransactionData dbTransactionData)
+        {
+            T_ProductionOrderBom productionOrderBom = ((T_ProductionOrderBom) _demand);
+
+            T_ProductionOrderBom tProductionOrderBom = ((T_ProductionOrderBom) _demand);
+            if (tProductionOrderBom.ProductionOrderOperationId != null)
+            {
+                if (tProductionOrderBom.ProductionOrderOperation == null)
+                {
+                    tProductionOrderBom.ProductionOrderOperation =
+                        dbTransactionData.ProductionOrderOperationGetById(new Id(tProductionOrderBom
+                            .ProductionOrderOperationId.GetValueOrDefault()));
+                }
+
+                T_ProductionOrderOperation tProductionOrderOperation =
+                    tProductionOrderBom.ProductionOrderOperation;
+                return new DueTime(tProductionOrderOperation.EndBackward.GetValueOrDefault());
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

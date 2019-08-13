@@ -10,9 +10,9 @@ namespace Zpp.MachineDomain
      */
     public interface IStackSet<T>: IEnumerable<T>
     {
-        void Add(T element);
+        void Push(T element);
         
-        void AddAll(IEnumerable<T> elements);
+        void PushAll(IEnumerable<T> elements);
 
         void Remove(T element);
 
@@ -21,6 +21,11 @@ namespace Zpp.MachineDomain
         T PopAny();
 
         T GetAny();
+
+        /**
+         * Should return a new list which contains all elements
+         */
+        List<T> GetAll();
 
         int Count();
     }

@@ -20,7 +20,7 @@ namespace Zpp.MachineDomain
                 new StackSet<ProductionOrderOperation>();
             // must only contain unstarted operations (= schedulable),
             // which is not the case, will be sorted out in loop (performance reason)
-            schedulableOperations.AddAll(dbTransactionData.ProductionOrderOperationGetAll());
+            schedulableOperations.PushAll(dbTransactionData.ProductionOrderOperationGetAll());
 
             /* R_k hat Attribute (Maschine):
              g_j: Startzeitgrenze = _idleStartTime, ist der früheste Zeitpunkt, an dem eine Operation auf der Maschine starten kann
@@ -56,7 +56,7 @@ namespace Zpp.MachineDomain
             )
             {
                 productionOrderOperationPaths.AddAll(
-                    TraverseDepthFirst((CustomerOrderPart) customerOrderPart, orderGraph));
+                    TraverseDepthFirst((CustomerOrderPart) customerOrderPart, orderGraph, dbTransactionData));
             }
 
             // start algorithm
@@ -68,7 +68,7 @@ namespace Zpp.MachineDomain
                 {
                     List<Machine> machinesToAdd = productionOrderOperationOfLastLevel.GetMachines();
 
-                    machines.AddAll(machinesToAdd);
+                    machines.PushAll(machinesToAdd);
                 }
 
                 while (machines.Any())
@@ -92,7 +92,7 @@ namespace Zpp.MachineDomain
         }
 
         private static Paths<ProductionOrderOperation> TraverseDepthFirst(
-            CustomerOrderPart startNode, IGraph<INode> orderGraph)
+            CustomerOrderPart startNode, IGraph<INode> orderGraph, IDbTransactionData dbTransactionData)
         {
             var stack = new Stack<INode>();
             Paths<ProductionOrderOperation> productionOrderOperationPaths =
@@ -122,7 +122,7 @@ namespace Zpp.MachineDomain
                     {
                         ProductionOrderOperation productionOrderOperation =
                             ((ProductionOrderBom) poppedNode.GetEntity())
-                            .GetProductionOrderOperation();
+                            .GetProductionOrderOperation(dbTransactionData);
                         traversedOperations.Push(productionOrderOperation);
                     }
 

@@ -10,7 +10,7 @@ namespace Zpp.MachineDomain
         private int _count = 0;
         private Dictionary<T, int> _indices = new Dictionary<T, int>();
         
-        public void Add(T element)
+        public void Push(T element)
         {
             if (_indices.ContainsKey(element) == false)
             {
@@ -55,17 +55,25 @@ namespace Zpp.MachineDomain
             return _list.GetEnumerator();
         }
 
-        public void AddAll(IEnumerable<T> elements)
+        public void PushAll(IEnumerable<T> elements)
         {
             foreach (var element in elements)
             {
-                Add(element);
+                Push(element);
             }
         }
 
         public int Count()
         {
             return _count;
+        }
+
+        public List<T> GetAll()
+        {
+            // create a copy of list
+            List<T> all = new List<T>();
+            all.AddRange(_list);
+            return all;
         }
     }
 }

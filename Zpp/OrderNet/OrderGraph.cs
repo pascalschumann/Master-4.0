@@ -4,6 +4,8 @@ using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Xunit;
 using Zpp.DemandDomain;
+using Zpp.GraphicalRepresentation;
+using Zpp.MachineDomain;
 using Zpp.ProviderDomain;
 using Zpp.Utils;
 
@@ -84,12 +86,17 @@ namespace Zpp
             return GetAllToNodes().Count;
         }
 
+        public List<IEdge> GetAllEdgesForFromNode(INode fromNode)
+        {
+            return _adjacencyList[fromNode];
+        }
+
         public override string ToString()
         {
             string mystring = "";
-            foreach (var fromNode in _adjacencyList.Keys)
+            foreach (var fromNode in GetAllFromNodes())
             {
-                foreach (var edge in _adjacencyList[fromNode])
+                foreach (var edge in GetAllEdgesForFromNode(fromNode))
                 {
                     // <Type>, <Menge>, <ItemName> and on edges: <Menge>
                     Quantity quantity = new Quantity(edge.GetDemandToProvider().Quantity);
@@ -171,6 +178,81 @@ namespace Zpp
             }
 
             return traversed;
+        }
+
+        public List<INode> GetAllFromNodes()
+        {
+            return _adjacencyList.Keys.ToList();
+        }
+
+        public List<INode> GetAllUniqueNode()
+        {
+            List<INode> fromNodes = GetAllFromNodes();
+            List<INode> toNodes = GetAllToNodes();
+            IStackSet<INode> uniqueNodes = new StackSet<INode>();
+            uniqueNodes.PushAll(fromNodes);
+            uniqueNodes.PushAll(toNodes);
+
+            return uniqueNodes.GetAll();
+        }
+
+        public GanttChart GetAsGanttChart(IDbTransactionData dbTransactionData)
+        {
+            GanttChart ganttChart = new GanttChart();
+
+                foreach (var node in GetAllUniqueNode())
+                {
+                    if (node.GetNodeType().Equals(NodeType.Demand))
+                    {
+                        Demand demand = (Demand) node.GetEntity();
+                        GanttChartBar ganttChartBar = new GanttChartBar()
+                        {
+                            article = demand.GetArticle().Name,
+                            articleId = demand.GetArticle().Id.ToString(),
+                            end = demand.GetDueTime(dbTransactionData).ToString(),
+                        };
+                        if (demand.GetStartTime(dbTransactionData) != null)
+                        {
+                            ganttChartBar.start = demand.GetStartTime(dbTransactionData).ToString();
+                        }
+
+                        if (demand.GetType() == typeof(ProductionOrderBom))
+                        {
+                            ProductionOrderBom productionOrderBom =
+                                (ProductionOrderBom) demand.GetEntity();
+                            
+                            ProductionOrderOperation productionOrderOperation =
+                                productionOrderBom.GetProductionOrderOperation(dbTransactionData);
+                            if (productionOrderOperation != null)
+                            {
+                                ganttChartBar.operation = productionOrderOperation.GetValue().Name;
+                                ganttChartBar.operationId = productionOrderOperation.GetValue().Id.ToString();
+                            }
+                        }
+                        
+                        ganttChart.AddGanttChartBar(ganttChartBar);
+                    }
+                    else if (node.GetNodeType().Equals(NodeType.Provider))
+                    {
+                        Provider provider = (Provider) node.GetEntity();
+                        GanttChartBar ganttChartBar = new GanttChartBar()
+                        {
+                            article = provider.GetArticle().Name,
+                            articleId = provider.GetArticle().Id.ToString(),
+                            end = provider.GetDueTime(dbTransactionData).ToString()
+                        };
+                        if (provider.GetStartTime(dbTransactionData) != null)
+                        {
+                            ganttChartBar.start = provider.GetStartTime(dbTransactionData).ToString();
+                        }
+                        
+                        ganttChart.AddGanttChartBar(ganttChartBar);
+                    }
+                    
+                    
+                }
+
+            return ganttChart;
         }
     }
 }

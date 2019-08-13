@@ -1,0 +1,938 @@
+﻿[
+  {
+    "article": "Tisch",
+    "articleId": "15959",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": null,
+    "end": "125"
+  },
+  {
+    "article": "Tisch",
+    "articleId": "15959",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "125",
+    "end": "125"
+  },
+  {
+    "article": "Tischplatte",
+    "articleId": "15960",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": null,
+    "end": "125"
+  },
+  {
+    "article": "Tischbein",
+    "articleId": "15961",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": null,
+    "end": "125"
+  },
+  {
+    "article": "Schrauben",
+    "articleId": "15962",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": null,
+    "end": "125"
+  },
+  {
+    "article": "Tischbein",
+    "articleId": "15961",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "125",
+    "end": "125"
+  },
+  {
+    "article": "Anschraubplatte",
+    "articleId": "15963",
+    "operation": "Anschraubplatte anschweißen",
+    "operationId": "16158",
+    "resource": null,
+    "start": "115",
+    "end": "115"
+  },
+  {
+    "article": "Stahlrohr",
+    "articleId": "15964",
+    "operation": "Anschraubplatte anschweißen",
+    "operationId": "16158",
+    "resource": null,
+    "start": "115",
+    "end": "115"
+  },
+  {
+    "article": "Anschraubplatte",
+    "articleId": "15963",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "115",
+    "end": "115"
+  },
+  {
+    "article": "Stahlrohr",
+    "articleId": "15964",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "115",
+    "end": "115"
+  },
+  {
+    "article": "Filzgleiter",
+    "articleId": "15965",
+    "operation": "Flizgleiter anstecken",
+    "operationId": "16162",
+    "resource": null,
+    "start": "125",
+    "end": "125"
+  },
+  {
+    "article": "Tischplatte",
+    "articleId": "15960",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "125",
+    "end": "125"
+  },
+  {
+    "article": "Filzgleiter",
+    "articleId": "15965",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "125",
+    "end": "125"
+  },
+  {
+    "article": "Tischbein",
+    "articleId": "15961",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "125",
+    "end": "125"
+  },
+  {
+    "article": "Anschraubplatte",
+    "articleId": "15963",
+    "operation": "Anschraubplatte anschweißen",
+    "operationId": "16194",
+    "resource": null,
+    "start": "115",
+    "end": "115"
+  },
+  {
+    "article": "Stahlrohr",
+    "articleId": "15964",
+    "operation": "Anschraubplatte anschweißen",
+    "operationId": "16194",
+    "resource": null,
+    "start": "115",
+    "end": "115"
+  },
+  {
+    "article": "Schrauben",
+    "articleId": "15962",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "125",
+    "end": "125"
+  },
+  {
+    "article": "Filzgleiter",
+    "articleId": "15965",
+    "operation": "Flizgleiter anstecken",
+    "operationId": "16198",
+    "resource": null,
+    "start": "125",
+    "end": "125"
+  },
+  {
+    "article": "Montageanleitung",
+    "articleId": "15966",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": null,
+    "end": "125"
+  },
+  {
+    "article": "Montageanleitung",
+    "articleId": "15966",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "125",
+    "end": "125"
+  },
+  {
+    "article": "Tisch",
+    "articleId": "15959",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": null,
+    "end": "160"
+  },
+  {
+    "article": "Tisch",
+    "articleId": "15959",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": null,
+    "end": "262"
+  },
+  {
+    "article": "Tisch",
+    "articleId": "15959",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "262",
+    "end": "262"
+  },
+  {
+    "article": "Tischplatte",
+    "articleId": "15960",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": null,
+    "end": "262"
+  },
+  {
+    "article": "Montageanleitung",
+    "articleId": "15966",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": null,
+    "end": "262"
+  },
+  {
+    "article": "Tischplatte",
+    "articleId": "15960",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "262",
+    "end": "262"
+  },
+  {
+    "article": "Schrauben",
+    "articleId": "15962",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": null,
+    "end": "262"
+  },
+  {
+    "article": "Tischbein",
+    "articleId": "15961",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": null,
+    "end": "262"
+  },
+  {
+    "article": "Tischbein",
+    "articleId": "15961",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "262",
+    "end": "262"
+  },
+  {
+    "article": "Anschraubplatte",
+    "articleId": "15963",
+    "operation": "Anschraubplatte anschweißen",
+    "operationId": "16251",
+    "resource": null,
+    "start": "252",
+    "end": "252"
+  },
+  {
+    "article": "Stahlrohr",
+    "articleId": "15964",
+    "operation": "Anschraubplatte anschweißen",
+    "operationId": "16251",
+    "resource": null,
+    "start": "252",
+    "end": "252"
+  },
+  {
+    "article": "Anschraubplatte",
+    "articleId": "15963",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "252",
+    "end": "252"
+  },
+  {
+    "article": "Stahlrohr",
+    "articleId": "15964",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "252",
+    "end": "252"
+  },
+  {
+    "article": "Filzgleiter",
+    "articleId": "15965",
+    "operation": "Flizgleiter anstecken",
+    "operationId": "16255",
+    "resource": null,
+    "start": "262",
+    "end": "262"
+  },
+  {
+    "article": "Tischbein",
+    "articleId": "15961",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "262",
+    "end": "262"
+  },
+  {
+    "article": "Anschraubplatte",
+    "articleId": "15963",
+    "operation": "Anschraubplatte anschweißen",
+    "operationId": "16284",
+    "resource": null,
+    "start": "252",
+    "end": "252"
+  },
+  {
+    "article": "Stahlrohr",
+    "articleId": "15964",
+    "operation": "Anschraubplatte anschweißen",
+    "operationId": "16284",
+    "resource": null,
+    "start": "252",
+    "end": "252"
+  },
+  {
+    "article": "Filzgleiter",
+    "articleId": "15965",
+    "operation": "Flizgleiter anstecken",
+    "operationId": "16288",
+    "resource": null,
+    "start": "262",
+    "end": "262"
+  },
+  {
+    "article": "Filzgleiter",
+    "articleId": "15965",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "262",
+    "end": "262"
+  },
+  {
+    "article": "Tisch",
+    "articleId": "15959",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": null,
+    "end": "270"
+  },
+  {
+    "article": "Tisch",
+    "articleId": "15959",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": null,
+    "end": "498"
+  },
+  {
+    "article": "Tisch",
+    "articleId": "15959",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "498",
+    "end": "498"
+  },
+  {
+    "article": "Tischplatte",
+    "articleId": "15960",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": null,
+    "end": "498"
+  },
+  {
+    "article": "Montageanleitung",
+    "articleId": "15966",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": null,
+    "end": "498"
+  },
+  {
+    "article": "Tischplatte",
+    "articleId": "15960",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "498",
+    "end": "498"
+  },
+  {
+    "article": "Schrauben",
+    "articleId": "15962",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": null,
+    "end": "498"
+  },
+  {
+    "article": "Tischbein",
+    "articleId": "15961",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": null,
+    "end": "498"
+  },
+  {
+    "article": "Tischbein",
+    "articleId": "15961",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "498",
+    "end": "498"
+  },
+  {
+    "article": "Anschraubplatte",
+    "articleId": "15963",
+    "operation": "Anschraubplatte anschweißen",
+    "operationId": "16334",
+    "resource": null,
+    "start": "488",
+    "end": "488"
+  },
+  {
+    "article": "Stahlrohr",
+    "articleId": "15964",
+    "operation": "Anschraubplatte anschweißen",
+    "operationId": "16334",
+    "resource": null,
+    "start": "488",
+    "end": "488"
+  },
+  {
+    "article": "Filzgleiter",
+    "articleId": "15965",
+    "operation": "Flizgleiter anstecken",
+    "operationId": "16338",
+    "resource": null,
+    "start": "498",
+    "end": "498"
+  },
+  {
+    "article": "Tischbein",
+    "articleId": "15961",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "498",
+    "end": "498"
+  },
+  {
+    "article": "Anschraubplatte",
+    "articleId": "15963",
+    "operation": "Anschraubplatte anschweißen",
+    "operationId": "16349",
+    "resource": null,
+    "start": "488",
+    "end": "488"
+  },
+  {
+    "article": "Stahlrohr",
+    "articleId": "15964",
+    "operation": "Anschraubplatte anschweißen",
+    "operationId": "16349",
+    "resource": null,
+    "start": "488",
+    "end": "488"
+  },
+  {
+    "article": "Anschraubplatte",
+    "articleId": "15963",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "488",
+    "end": "488"
+  },
+  {
+    "article": "Stahlrohr",
+    "articleId": "15964",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "488",
+    "end": "488"
+  },
+  {
+    "article": "Filzgleiter",
+    "articleId": "15965",
+    "operation": "Flizgleiter anstecken",
+    "operationId": "16353",
+    "resource": null,
+    "start": "498",
+    "end": "498"
+  },
+  {
+    "article": "Filzgleiter",
+    "articleId": "15965",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "498",
+    "end": "498"
+  },
+  {
+    "article": "Tisch",
+    "articleId": "15959",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "125",
+    "end": "125"
+  },
+  {
+    "article": "Tisch",
+    "articleId": "15959",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": null,
+    "end": "125"
+  },
+  {
+    "article": "Tischplatte",
+    "articleId": "15960",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "125",
+    "end": "125"
+  },
+  {
+    "article": "Tischbein",
+    "articleId": "15961",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "125",
+    "end": "125"
+  },
+  {
+    "article": "Tischbein",
+    "articleId": "15961",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "125",
+    "end": "125"
+  },
+  {
+    "article": "Schrauben",
+    "articleId": "15962",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "125",
+    "end": "125"
+  },
+  {
+    "article": "Tischbein",
+    "articleId": "15961",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": null,
+    "end": "125"
+  },
+  {
+    "article": "Anschraubplatte",
+    "articleId": "15963",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "115",
+    "end": "115"
+  },
+  {
+    "article": "Stahlrohr",
+    "articleId": "15964",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "115",
+    "end": "115"
+  },
+  {
+    "article": "Filzgleiter",
+    "articleId": "15965",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "125",
+    "end": "125"
+  },
+  {
+    "article": "Tischbein",
+    "articleId": "15961",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": null,
+    "end": "125"
+  },
+  {
+    "article": "Montageanleitung",
+    "articleId": "15966",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "125",
+    "end": "125"
+  },
+  {
+    "article": "Tisch",
+    "articleId": "15959",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "262",
+    "end": "262"
+  },
+  {
+    "article": "Tisch",
+    "articleId": "15959",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": null,
+    "end": "262"
+  },
+  {
+    "article": "Tischplatte",
+    "articleId": "15960",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "262",
+    "end": "262"
+  },
+  {
+    "article": "Tischbein",
+    "articleId": "15961",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "262",
+    "end": "262"
+  },
+  {
+    "article": "Tischbein",
+    "articleId": "15961",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "262",
+    "end": "262"
+  },
+  {
+    "article": "Tischbein",
+    "articleId": "15961",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": null,
+    "end": "262"
+  },
+  {
+    "article": "Anschraubplatte",
+    "articleId": "15963",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "252",
+    "end": "252"
+  },
+  {
+    "article": "Stahlrohr",
+    "articleId": "15964",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "252",
+    "end": "252"
+  },
+  {
+    "article": "Filzgleiter",
+    "articleId": "15965",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "262",
+    "end": "262"
+  },
+  {
+    "article": "Tischbein",
+    "articleId": "15961",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": null,
+    "end": "262"
+  },
+  {
+    "article": "Tisch",
+    "articleId": "15959",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "498",
+    "end": "498"
+  },
+  {
+    "article": "Tisch",
+    "articleId": "15959",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": null,
+    "end": "498"
+  },
+  {
+    "article": "Tischplatte",
+    "articleId": "15960",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "498",
+    "end": "498"
+  },
+  {
+    "article": "Tischbein",
+    "articleId": "15961",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "498",
+    "end": "498"
+  },
+  {
+    "article": "Tischbein",
+    "articleId": "15961",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "498",
+    "end": "498"
+  },
+  {
+    "article": "Tischbein",
+    "articleId": "15961",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": null,
+    "end": "498"
+  },
+  {
+    "article": "Tischbein",
+    "articleId": "15961",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": null,
+    "end": "498"
+  },
+  {
+    "article": "Anschraubplatte",
+    "articleId": "15963",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "488",
+    "end": "488"
+  },
+  {
+    "article": "Stahlrohr",
+    "articleId": "15964",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "488",
+    "end": "488"
+  },
+  {
+    "article": "Filzgleiter",
+    "articleId": "15965",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "498",
+    "end": "498"
+  },
+  {
+    "article": "Anschraubplatte",
+    "articleId": "15963",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "-885",
+    "end": "115"
+  },
+  {
+    "article": "Stahlrohr",
+    "articleId": "15964",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "-885",
+    "end": "115"
+  },
+  {
+    "article": "Tischplatte",
+    "articleId": "15960",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "-875",
+    "end": "125"
+  },
+  {
+    "article": "Filzgleiter",
+    "articleId": "15965",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "-875",
+    "end": "125"
+  },
+  {
+    "article": "Schrauben",
+    "articleId": "15962",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "-875",
+    "end": "125"
+  },
+  {
+    "article": "Montageanleitung",
+    "articleId": "15966",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "-875",
+    "end": "125"
+  },
+  {
+    "article": "Tischplatte",
+    "articleId": "15960",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "-738",
+    "end": "262"
+  },
+  {
+    "article": "Anschraubplatte",
+    "articleId": "15963",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "-748",
+    "end": "252"
+  },
+  {
+    "article": "Stahlrohr",
+    "articleId": "15964",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "-748",
+    "end": "252"
+  },
+  {
+    "article": "Filzgleiter",
+    "articleId": "15965",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "-738",
+    "end": "262"
+  },
+  {
+    "article": "Tischplatte",
+    "articleId": "15960",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "-502",
+    "end": "498"
+  },
+  {
+    "article": "Anschraubplatte",
+    "articleId": "15963",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "-512",
+    "end": "488"
+  },
+  {
+    "article": "Stahlrohr",
+    "articleId": "15964",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "-512",
+    "end": "488"
+  },
+  {
+    "article": "Filzgleiter",
+    "articleId": "15965",
+    "operation": null,
+    "operationId": null,
+    "resource": null,
+    "start": "-502",
+    "end": "498"
+  }
+]

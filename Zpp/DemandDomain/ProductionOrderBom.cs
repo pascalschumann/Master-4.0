@@ -233,7 +233,7 @@ namespace Zpp.DemandDomain
 
                 T_ProductionOrderOperation tProductionOrderOperation =
                     tProductionOrderBom.ProductionOrderOperation;
-                return new DueTime(tProductionOrderOperation.EndBackward.GetValueOrDefault());
+                return new DueTime(tProductionOrderOperation.StartBackward.GetValueOrDefault());
             }
             else
             {

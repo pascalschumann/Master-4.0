@@ -6,7 +6,7 @@
     "operationId": null,
     "resource": null,
     "start": null,
-    "end": "291"
+    "end": "162"
   },
   {
     "article": "Tisch",
@@ -14,8 +14,8 @@
     "operation": null,
     "operationId": null,
     "resource": null,
-    "start": "291",
-    "end": "291"
+    "start": "162",
+    "end": "162"
   },
   {
     "article": "Tischplatte",
@@ -24,7 +24,7 @@
     "operationId": null,
     "resource": null,
     "start": null,
-    "end": "291"
+    "end": "162"
   },
   {
     "article": "Montageanleitung",
@@ -33,7 +33,7 @@
     "operationId": null,
     "resource": null,
     "start": null,
-    "end": "291"
+    "end": "162"
   },
   {
     "article": "Tischplatte",
@@ -41,8 +41,8 @@
     "operation": null,
     "operationId": null,
     "resource": null,
-    "start": "291",
-    "end": "291"
+    "start": "162",
+    "end": "162"
   },
   {
     "article": "Montageanleitung",
@@ -50,8 +50,8 @@
     "operation": null,
     "operationId": null,
     "resource": null,
-    "start": "291",
-    "end": "291"
+    "start": "162",
+    "end": "162"
   },
   {
     "article": "Schrauben",
@@ -60,7 +60,7 @@
     "operationId": null,
     "resource": null,
     "start": null,
-    "end": "291"
+    "end": "162"
   },
   {
     "article": "Tischbein",
@@ -69,7 +69,7 @@
     "operationId": null,
     "resource": null,
     "start": null,
-    "end": "291"
+    "end": "162"
   },
   {
     "article": "Schrauben",
@@ -77,8 +77,8 @@
     "operation": null,
     "operationId": null,
     "resource": null,
-    "start": "291",
-    "end": "291"
+    "start": "162",
+    "end": "162"
   },
   {
     "article": "Tischbein",
@@ -86,8 +86,8 @@
     "operation": null,
     "operationId": null,
     "resource": null,
-    "start": "291",
-    "end": "291"
+    "start": "162",
+    "end": "162"
   },
   {
     "article": "Anschraubplatte",
@@ -95,8 +95,8 @@
     "operation": "Anschraubplatte anschweißen",
     "operationId": "10205",
     "resource": null,
-    "start": "281",
-    "end": "281"
+    "start": "132",
+    "end": "152"
   },
   {
     "article": "Stahlrohr",
@@ -104,8 +104,8 @@
     "operation": "Anschraubplatte anschweißen",
     "operationId": "10205",
     "resource": null,
-    "start": "281",
-    "end": "281"
+    "start": "132",
+    "end": "152"
   },
   {
     "article": "Anschraubplatte",
@@ -113,8 +113,8 @@
     "operation": null,
     "operationId": null,
     "resource": null,
-    "start": "281",
-    "end": "281"
+    "start": "152",
+    "end": "152"
   },
   {
     "article": "Stahlrohr",
@@ -122,8 +122,8 @@
     "operation": null,
     "operationId": null,
     "resource": null,
-    "start": "281",
-    "end": "281"
+    "start": "152",
+    "end": "152"
   },
   {
     "article": "Filzgleiter",
@@ -131,8 +131,8 @@
     "operation": "Flizgleiter anstecken",
     "operationId": "10209",
     "resource": null,
-    "start": "291",
-    "end": "291"
+    "start": "152",
+    "end": "162"
   },
   {
     "article": "Filzgleiter",
@@ -140,8 +140,8 @@
     "operation": null,
     "operationId": null,
     "resource": null,
-    "start": "291",
-    "end": "291"
+    "start": "162",
+    "end": "162"
   },
   {
     "article": "Tisch",
@@ -149,8 +149,8 @@
     "operation": null,
     "operationId": null,
     "resource": null,
-    "start": "291",
-    "end": "291"
+    "start": "162",
+    "end": "162"
   },
   {
     "article": "Tisch",
@@ -159,7 +159,7 @@
     "operationId": null,
     "resource": null,
     "start": null,
-    "end": "291"
+    "end": "162"
   },
   {
     "article": "Tischplatte",
@@ -167,8 +167,8 @@
     "operation": null,
     "operationId": null,
     "resource": null,
-    "start": "291",
-    "end": "291"
+    "start": "162",
+    "end": "162"
   },
   {
     "article": "Montageanleitung",
@@ -176,8 +176,8 @@
     "operation": null,
     "operationId": null,
     "resource": null,
-    "start": "291",
-    "end": "291"
+    "start": "162",
+    "end": "162"
   },
   {
     "article": "Schrauben",
@@ -185,8 +185,8 @@
     "operation": null,
     "operationId": null,
     "resource": null,
-    "start": "291",
-    "end": "291"
+    "start": "162",
+    "end": "162"
   },
   {
     "article": "Tischbein",
@@ -194,8 +194,8 @@
     "operation": null,
     "operationId": null,
     "resource": null,
-    "start": "291",
-    "end": "291"
+    "start": "162",
+    "end": "162"
   },
   {
     "article": "Tischbein",
@@ -204,7 +204,7 @@
     "operationId": null,
     "resource": null,
     "start": null,
-    "end": "291"
+    "end": "162"
   },
   {
     "article": "Anschraubplatte",
@@ -212,8 +212,8 @@
     "operation": null,
     "operationId": null,
     "resource": null,
-    "start": "281",
-    "end": "281"
+    "start": "152",
+    "end": "152"
   },
   {
     "article": "Stahlrohr",
@@ -221,8 +221,8 @@
     "operation": null,
     "operationId": null,
     "resource": null,
-    "start": "281",
-    "end": "281"
+    "start": "152",
+    "end": "152"
   },
   {
     "article": "Filzgleiter",
@@ -230,8 +230,8 @@
     "operation": null,
     "operationId": null,
     "resource": null,
-    "start": "291",
-    "end": "291"
+    "start": "162",
+    "end": "162"
   },
   {
     "article": "Tischplatte",
@@ -239,8 +239,8 @@
     "operation": null,
     "operationId": null,
     "resource": null,
-    "start": "-709",
-    "end": "291"
+    "start": "-838",
+    "end": "162"
   },
   {
     "article": "Montageanleitung",
@@ -248,8 +248,8 @@
     "operation": null,
     "operationId": null,
     "resource": null,
-    "start": "-709",
-    "end": "291"
+    "start": "-838",
+    "end": "162"
   },
   {
     "article": "Schrauben",
@@ -257,8 +257,8 @@
     "operation": null,
     "operationId": null,
     "resource": null,
-    "start": "-709",
-    "end": "291"
+    "start": "-838",
+    "end": "162"
   },
   {
     "article": "Anschraubplatte",
@@ -266,8 +266,8 @@
     "operation": null,
     "operationId": null,
     "resource": null,
-    "start": "-719",
-    "end": "281"
+    "start": "-848",
+    "end": "152"
   },
   {
     "article": "Stahlrohr",
@@ -275,8 +275,8 @@
     "operation": null,
     "operationId": null,
     "resource": null,
-    "start": "-719",
-    "end": "281"
+    "start": "-848",
+    "end": "152"
   },
   {
     "article": "Filzgleiter",
@@ -284,7 +284,7 @@
     "operation": null,
     "operationId": null,
     "resource": null,
-    "start": "-709",
-    "end": "291"
+    "start": "-838",
+    "end": "162"
   }
 ]

@@ -148,5 +148,10 @@ namespace Zpp.ProviderDomain
         {
             return null;
         }
+
+        public ProductionOrderBoms GetProductionOrderBoms(IDbTransactionData dbTransactionData)
+        {
+            return dbTransactionData.GetAggregator().GetProductionOrderBomsOfProductionOrder(this);
+        }
     }
 }

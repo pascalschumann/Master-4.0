@@ -62,12 +62,9 @@ namespace Zpp
             return _productionOrderOperation;
         }
 
-        public List<Machine> GetMachines()
+        public List<Machine> GetMachines(IDbTransactionData dbTransactionData)
         {
-            List<Machine> machines = new List<Machine>();
-            return _dbMasterDataCache.M_MachineGetAll().Where(x =>
-                x.GetMachineGroupId().GetValue().Equals(_productionOrderOperation.MachineGroupId)).ToList();
-            return machines;
+            return dbTransactionData.GetAggregator().GetMachinesOfProductionOrderOperation(this);
         }
 
         public override bool Equals(object obj)

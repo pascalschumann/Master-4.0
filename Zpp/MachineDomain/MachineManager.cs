@@ -8,14 +8,15 @@ namespace Zpp.MachineDomain
 {
     public class MachineManager : IMachineManager
     {
+        
         public static void JobSchedulingWithGifflerThompson(IDbTransactionData dbTransactionData,
-            IDbMasterDataCache dbMasterDataCache)
+            IDbMasterDataCache dbMasterDataCache, Action priorityRule)
         {
             /*2 Mengen:
              R: enthält die zubelegenden Maschinen (resources)
              S: einplanbare Operationen 
              */
-            IStackSet<Machine> machines;
+            IStackSet<Machine> machinesSetR;
             IStackSet<ProductionOrderOperation> schedulableOperations =
                 new StackSet<ProductionOrderOperation>();
             // must only contain unstarted operations (= schedulable),
@@ -55,23 +56,28 @@ namespace Zpp.MachineDomain
             foreach (var customerOrderPart in dbMasterDataCache.T_CustomerOrderPartGetAll().GetAll()
             )
             {
-                productionOrderOperationPaths.AddAll(
-                    TraverseDepthFirst((CustomerOrderPart) customerOrderPart, orderGraph, dbTransactionData));
+                productionOrderOperationPaths.AddAll(TraverseDepthFirst(
+                    (CustomerOrderPart) customerOrderPart, orderGraph, dbTransactionData));
             }
+            // remember operations on each machine
+            Dictionary<Machine, List<ProductionOrderOperation>> machineToOperation =
+                new Dictionary<Machine, List<ProductionOrderOperation>>();
+            // TODO
 
             // start algorithm
             while (schedulableOperations.Any())
             {
-                machines = new StackSet<Machine>();
+                // collect machines which have the earliest dueTime
+                machinesSetR = new StackSet<Machine>();
                 foreach (var productionOrderOperationOfLastLevel in productionOrderOperationPaths
                     .PopLevel())
                 {
-                    List<Machine> machinesToAdd = productionOrderOperationOfLastLevel.GetMachines();
+                    List<Machine> machinesToAdd = productionOrderOperationOfLastLevel.GetMachines(dbTransactionData);
 
-                    machines.PushAll(machinesToAdd);
+                    machinesSetR.PushAll(machinesToAdd);
                 }
 
-                while (machines.Any())
+                while (machinesSetR.Any())
                 {
                     /*while R not empty:
                         Entnehme R eine Maschine r (soll aus R entfernt werden)
@@ -82,9 +88,8 @@ namespace Zpp.MachineDomain
                         O_lr aus S entnehmen, diese gilt als geplant, der vorläufige Startzeitpunkt s_ij wird somit endgültig
                         Alle übrigen Operationen der Maschine r: addiere Laufzeit t_ij von O_lr auf s_ij der Operationen, addiere Laufzeit t_ij auf g_r von Maschine r
                     */
-                    Machine machine = machines.PopAny();
-                    // TODO prioRule
-                    
+                    Machine machine_r = machinesSetR.PopAny();
+                    priorityRule(); // see above "remember operations on each machine"
                 }
             }
 
@@ -92,7 +97,8 @@ namespace Zpp.MachineDomain
         }
 
         private static Paths<ProductionOrderOperation> TraverseDepthFirst(
-            CustomerOrderPart startNode, IGraph<INode> orderGraph, IDbTransactionData dbTransactionData)
+            CustomerOrderPart startNode, IGraph<INode> orderGraph,
+            IDbTransactionData dbTransactionData)
         {
             var stack = new Stack<INode>();
             Paths<ProductionOrderOperation> productionOrderOperationPaths =

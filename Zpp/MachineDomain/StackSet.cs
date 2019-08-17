@@ -12,6 +12,7 @@ namespace Zpp.MachineDomain
         
         public void Push(T element)
         {
+            // a set contains the element only once, else skip adding
             if (_indices.ContainsKey(element) == false)
             {
                 _list.Add(element);

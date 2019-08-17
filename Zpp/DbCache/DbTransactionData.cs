@@ -53,6 +53,8 @@ namespace Zpp
         // others
         private readonly List<T_PurchaseOrder> _purchaseOrders;
         private readonly List<T_ProductionOrderOperation> _productionOrderOperations;
+        
+        private readonly IAggregator _aggregator = new Aggregator();
 
         public DbTransactionData(ProductionDomainContext productionDomainContext,
             IDbMasterDataCache dbMasterDataCache)
@@ -413,6 +415,11 @@ namespace Zpp
         public StockExchangeDemands StockExchangeDemandsGetAll()
         {
             return _stockExchangeDemands;
+        }
+
+        public IAggregator GetAggregator()
+        {
+            return _aggregator;
         }
     }
 }

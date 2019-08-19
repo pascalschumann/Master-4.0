@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Master40.DB.Data.WrappersForPrimitives;
 using Zpp.DemandDomain;
 using Zpp.MachineDomain;
 using Zpp.ProviderDomain;
@@ -35,8 +36,13 @@ namespace Zpp
 
         public List<ProductionOrderOperation> GetProductionOrderOperationsOfProductionOrder(ProductionOrder productionOrder)
         {
+            return GetProductionOrderOperationsOfProductionOrder(productionOrder.GetId());
+        }
+        
+        public List<ProductionOrderOperation> GetProductionOrderOperationsOfProductionOrder(Id productionOrderId)
+        {
             return _dbTransactionData.ProductionOrderOperationGetAll()
-                .Where(x => x.GetProductionOrderId().Equals(productionOrder.GetId())).ToList();
+                .Where(x => x.GetProductionOrderId().Equals(productionOrderId)).ToList();
         }
 
         public Demands GetDemandsOfProvider(Provider provider)

@@ -136,13 +136,10 @@ namespace Zpp.MachineDomain
             t(o): Startzeit der Operation o (=Start)
             d(o): Fertigstellungszeitpunkt von Arbeitsoperation o (=End)
             d_min: Minimum der Fertigstellungszeitpunkte
-            o_min: Operaton mit minimalem Fertigstellungszeitpunkt
+            o_min: Operation mit minimalem Fertigstellungszeitpunkt
             o1: beliebige Operation aus K (o_dach bei Zäpfel)
             */
             IStackSet<ProductionOrderOperation> S = new StackSet<ProductionOrderOperation>();
-            IStackSet<ProductionOrderOperation> a = new StackSet<ProductionOrderOperation>();
-            IStackSet<ProductionOrderOperation> N = new StackSet<ProductionOrderOperation>();
-            IStackSet<ProductionOrderOperation> M = new StackSet<ProductionOrderOperation>();
             IStackSet<ProductionOrderOperation> K = new StackSet<ProductionOrderOperation>();
 
             /*
@@ -178,8 +175,10 @@ namespace Zpp.MachineDomain
                 // while K not empty do
                 while (K.Any())
                 {
-                    // o1 = K.popAny()
-                    ProductionOrderOperation o1 = K.PopAny();
+                    // Entnehme Operation mit höchster Prio (o1) aus K
+                    ProductionOrderOperation o1 = GetHighestPriorityOperation(now,
+                        minStartNextOfParentProvider, productionOrderOperations, dbTransactionData);
+
                     // t(o) = d(o1) für alle o aus K ohne o1
                     foreach (var o in K.GetAll())
                     {
@@ -189,7 +188,10 @@ namespace Zpp.MachineDomain
                     /*if N(o1) not empty then
                         S = S vereinigt N(o1) ohne o1
                      */
-                    N = new StackSet<ProductionOrderOperation>(productionOrderOperationGraph.GetPredecessorNodesAs<ProductionOrderOperation>(o1));
+                    IStackSet<ProductionOrderOperation>
+                        N = new StackSet<ProductionOrderOperation>();
+                    N = new StackSet<ProductionOrderOperation>(productionOrderOperationGraph
+                        .GetPredecessorNodesAs<ProductionOrderOperation>(o1));
                     productionOrderOperationGraph.RemoveNode(o1);
                     S = CreateS(productionOrderGraph, productionOrderOperationGraph);
 

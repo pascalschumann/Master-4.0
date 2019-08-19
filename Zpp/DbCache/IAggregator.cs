@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Master40.DB.Data.WrappersForPrimitives;
 using Zpp.DemandDomain;
 using Zpp.MachineDomain;
 using Zpp.ProviderDomain;
@@ -17,6 +18,8 @@ namespace Zpp
         List<ProductionOrderOperation> GetProductionOrderOperationsOfMachine(Machine machine);
         
         List<ProductionOrderOperation> GetProductionOrderOperationsOfProductionOrder(ProductionOrder productionOrder);
+        
+        List<ProductionOrderOperation> GetProductionOrderOperationsOfProductionOrder(Id productionOrderId);
 
         Demands GetDemandsOfProvider(Provider provider);
     }

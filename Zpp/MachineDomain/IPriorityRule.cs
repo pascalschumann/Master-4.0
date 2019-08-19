@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Zpp.DemandDomain;
 using Zpp.WrappersForPrimitives;
 
@@ -5,7 +6,13 @@ namespace Zpp.MachineDomain
 {
     public interface IPriorityRule
     {
-        DueTime GetPriorityOfProductionOrderOperation(DueTime now,
-            ProductionOrderBom productionOrderBom, IDbTransactionData dbTransactionData);
+        Priority GetPriorityOfProductionOrderOperation(DueTime now,
+            ProductionOrderOperation givenProductionOrderOperation,
+            IDbTransactionData dbTransactionData, DueTime minStartNextOfParentProvider);
+
+        ProductionOrderOperation GetHighestPriorityOperation(DueTime now,
+            DueTime minStartNextOfParentProvider,
+            List<ProductionOrderOperation> productionOrderOperations,
+            IDbTransactionData dbTransactionData);
     }
 }

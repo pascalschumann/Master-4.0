@@ -14,6 +14,7 @@ namespace Zpp
     {
         private readonly T_ProductionOrderOperation _productionOrderOperation;
         private readonly IDbMasterDataCache _dbMasterDataCache;
+        private Priority _priority = null;
 
         public ProductionOrderOperation(T_ProductionOrderOperation productionOrderOperation,
             IDbMasterDataCache dbMasterDataCache)
@@ -127,6 +128,16 @@ namespace Zpp
         public override string ToString()
         {
             return $"{_productionOrderOperation.GetId()}: {_productionOrderOperation.Name}";
+        }
+
+        public void SetPriority(Priority priority)
+        {
+            _priority = priority;
+        }
+
+        public Priority GetPriority()
+        {
+            return _priority;
         }
     }
 }

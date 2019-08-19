@@ -5,6 +5,7 @@ using Master40.DB.Enums;
 using Zpp.MachineDomain;
 using Zpp.ProviderDomain;
 using Zpp.Utils;
+using Zpp.WrappersForPrimitives;
 
 namespace Zpp
 {
@@ -76,6 +77,16 @@ namespace Zpp
         public override int GetHashCode()
         {
             return _productionOrderOperation.Id.GetHashCode();
+        }
+
+        public HierarchyNumber GetHierarchyNumber()
+        {
+            return new HierarchyNumber(_productionOrderOperation.HierarchyNumber);
+        }
+
+        public DueTime GetDuration()
+        {
+            return new DueTime(_productionOrderOperation.Duration);
         }
     }
 }

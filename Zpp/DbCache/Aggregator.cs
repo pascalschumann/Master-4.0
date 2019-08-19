@@ -32,5 +32,23 @@ namespace Zpp
         {
             throw new System.NotImplementedException();
         }
+
+        public List<ProductionOrderOperation> GetProductionOrderOperationsOfProductionOrder(ProductionOrder productionOrder)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Demands GetDemandsOfProvider(Provider provider)
+        {
+            List<Demand> demands = new List<Demand>();
+            foreach (var demandToProvider in _dbTransactionData.DemandToProviderGetAll().GetAll())
+            {
+                if (demandToProvider.GetProviderId().Equals(provider.GetId()))
+                {
+                    demands.Add(_dbTransactionData.DemandsGetById(demandToProvider.GetDemandId()));
+                }
+            }
+            return new Demands(demands);
+        }
     }
 }

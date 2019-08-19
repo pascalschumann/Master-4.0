@@ -28,7 +28,7 @@ namespace Zpp.MachineDomain
 
             foreach (var productionOrderOperation in productionOrderOperations)
             {
-                foreach (var machine in productionOrderOperation.GetMachines())
+                foreach (var machine in productionOrderOperation.GetMachines(_dbTransactionData))
                 {
                     if (_machineToOperations.ContainsKey(machine) == false)
                     {

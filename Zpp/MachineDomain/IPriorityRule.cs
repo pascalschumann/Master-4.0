@@ -1,7 +1,11 @@
+using Zpp.DemandDomain;
+using Zpp.WrappersForPrimitives;
+
 namespace Zpp.MachineDomain
 {
     public interface IPriorityRule
     {
-        void PriorityRule();
+        DueTime GetPriorityOfProductionOrderOperation(DueTime now,
+            ProductionOrderBom productionOrderBom, IDbTransactionData dbTransactionData);
     }
 }

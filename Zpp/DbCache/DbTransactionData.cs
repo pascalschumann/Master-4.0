@@ -53,14 +53,15 @@ namespace Zpp
         // others
         private readonly List<T_PurchaseOrder> _purchaseOrders;
         private readonly List<T_ProductionOrderOperation> _productionOrderOperations;
-        
-        private readonly IAggregator _aggregator = new Aggregator();
+
+        private readonly IAggregator _aggregator;
 
         public DbTransactionData(ProductionDomainContext productionDomainContext,
             IDbMasterDataCache dbMasterDataCache)
         {
             _productionDomainContext = productionDomainContext;
             _dbMasterDataCache = dbMasterDataCache;
+            _aggregator = new Aggregator(dbMasterDataCache, this);
 
             // cache tables
             // TODO: These 3 lines should be removed

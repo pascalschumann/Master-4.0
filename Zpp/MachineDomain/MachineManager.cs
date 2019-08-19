@@ -10,7 +10,7 @@ namespace Zpp.MachineDomain
     {
         
         public static void JobSchedulingWithGifflerThompson(IDbTransactionData dbTransactionData,
-            IDbMasterDataCache dbMasterDataCache, Action priorityRule)
+            IDbMasterDataCache dbMasterDataCache, IPriorityRule priorityRule)
         {
             /*2 Mengen:
              R: enthält die zubelegenden Maschinen (resources)
@@ -49,7 +49,7 @@ namespace Zpp.MachineDomain
                  */
 
             // init
-            IGraph<INode> orderGraph = new OrderGraph(dbTransactionData);
+            IDirectedGraph<INode> orderDirectedGraph = new DemandToProviderDirectedGraph(dbTransactionData);
             // build up stacks of ProductionOrderOperations
             Paths<ProductionOrderOperation> productionOrderOperationPaths =
                 new Paths<ProductionOrderOperation>();
@@ -57,12 +57,8 @@ namespace Zpp.MachineDomain
             )
             {
                 productionOrderOperationPaths.AddAll(TraverseDepthFirst(
-                    (CustomerOrderPart) customerOrderPart, orderGraph, dbTransactionData));
+                    (CustomerOrderPart) customerOrderPart, orderDirectedGraph, dbTransactionData));
             }
-            // remember operations on each machine
-            Dictionary<Machine, List<ProductionOrderOperation>> machineToOperation =
-                new Dictionary<Machine, List<ProductionOrderOperation>>();
-            // TODO
 
             // start algorithm
             while (schedulableOperations.Any())
@@ -73,7 +69,6 @@ namespace Zpp.MachineDomain
                     .PopLevel())
                 {
                     List<Machine> machinesToAdd = productionOrderOperationOfLastLevel.GetMachines(dbTransactionData);
-
                     machinesSetR.PushAll(machinesToAdd);
                 }
 
@@ -89,15 +84,97 @@ namespace Zpp.MachineDomain
                         Alle übrigen Operationen der Maschine r: addiere Laufzeit t_ij von O_lr auf s_ij der Operationen, addiere Laufzeit t_ij auf g_r von Maschine r
                     */
                     Machine machine_r = machinesSetR.PopAny();
-                    priorityRule(); // see above "remember operations on each machine"
+                    // priorityRule.GetPriorityOfProductionOrderOperation(, prod, dbTransactionData);
                 }
             }
 
             // Quelle: Sonnleithner_Studienarbeit_20080407 S. 8
         }
+        
+        public static void JobSchedulingWithGifflerThompsonAsZaepfel(IDbTransactionData dbTransactionData,
+            IDbMasterDataCache dbMasterDataCache, IPriorityRule priorityRule)
+        {
+            IDirectedGraph<INode> orderDirectedGraph = new DemandToProviderDirectedGraph(dbTransactionData);
+            // build up stacks of ProductionOrderOperations
+            Paths<ProductionOrderOperation> productionOrderOperationPaths =
+                new Paths<ProductionOrderOperation>();
+            foreach (var customerOrderPart in dbMasterDataCache.T_CustomerOrderPartGetAll().GetAll()
+            )
+            {
+                productionOrderOperationPaths.AddAll(TraverseDepthFirst(
+                    (CustomerOrderPart) customerOrderPart, orderDirectedGraph, dbTransactionData));
+            }
+            
+            /*
+            S: Menge der aktuell einplanbaren Arbeitsvorgänge
+            a: Menge der technologisch an erster Stelle eines Fertigungsauftrags stehenden Arbeitsvorgänge
+            N(o): Menge der technologisch direkt nachfolgenden Arbeitsoperationen von Arbeitsoperation o
+            M(o): Maschine auf der die Arbeitsoperation o durchgeführt wird
+            K: Konfliktmenge (die auf einer bestimmten Maschine gleichzeitig einplanbaren Arbeitsvorgänge)            
+            p(o): Bearbeitungszeit von Arbeitsoperation o (=Duration)
+            t(o): Startzeit der Operation o (=Start)
+            d(o): Fertigstellungszeitpunkt von Arbeitsoperation o (=End)
+            d_min: Minimum der Fertigstellungszeitpunkte
+            o_min: Operaton mit minimalem Fertigstellungszeitpunkt
+            o1: beliebige Operation aus K (o_dach bei Zäpfel)
+            */
+            IStackSet<ProductionOrderOperation> S = new StackSet<ProductionOrderOperation>();
+            IStackSet<ProductionOrderOperation> a = new StackSet<ProductionOrderOperation>();
+            IStackSet<ProductionOrderOperation> N = new StackSet<ProductionOrderOperation>();
+            IStackSet<ProductionOrderOperation> M = new StackSet<ProductionOrderOperation>();
+            IStackSet<ProductionOrderOperation> K = new StackSet<ProductionOrderOperation>();
+            
+            /*
+            Bestimme initiale Menge: S = a
+            t(o) = 0 für alle o aus S (default is always 0 for int)
+            */
+            S = productionOrderOperationPaths.PopLevel();
+            // while S not empty do
+            while (S.Any())
+            {
+                int d_min = Int32.MaxValue;
+                foreach (var o in S.GetAll())
+                {
+                    // Berechne d(o) = t(o) + p(o) für alle o aus S
+                    o.GetValue().End =
+                        o.GetValue().Start + o.GetValue().Duration;
+                    // Bestimme d_min = min{ d(o) | o aus S }
+                    if (o.GetValue().End < d_min)
+                    {
+                        d_min = o.GetValue().End;
+                    }
+                }
+                // Bilde Konfliktmenge K = { o | o aus S UND M(o) == M(o_min) UND t(o) < d_min }
+                foreach (var o in S.GetAll())
+                {
+                    if (o.GetValue().End.Equals(d_min) && o.GetValue().Start < d_min)
+                    {
+                        K.Push(o);   
+                    }
+                }
+                // while K not empty do
+                while (K.Any())
+                {
+                    // o1 = K.popAny()
+                    ProductionOrderOperation o1 = K.PopAny();
+                    // t(o) = d(o1) für alle o aus K ohne o1
+                    foreach (var o in K.GetAll())
+                    {
+                        o.GetValue().Start = o1.GetValue().End;
+                    }
+                    /*if N(o1) not empty then
+                        S = S vereinigt N(o1) ohne o1
+                    t(o) = d(o1) für alle o aus N(o1)*/
+                    // if ()
+                    {
+                        
+                    }
+                }
+            }
+        }
 
         private static Paths<ProductionOrderOperation> TraverseDepthFirst(
-            CustomerOrderPart startNode, IGraph<INode> orderGraph,
+            CustomerOrderPart startNode, IDirectedGraph<INode> orderDirectedGraph,
             IDbTransactionData dbTransactionData)
         {
             var stack = new Stack<INode>();
@@ -133,7 +210,7 @@ namespace Zpp.MachineDomain
                     }
 
                     discovered[poppedNode] = true;
-                    List<INode> childNodes = orderGraph.GetChildNodes(poppedNode);
+                    List<INode> childNodes = orderDirectedGraph.GetSuccessorNodes(poppedNode);
 
                     // action
                     if (childNodes == null)

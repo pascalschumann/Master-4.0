@@ -10,13 +10,16 @@ namespace Zpp
      * NOTE: TNode is just a representation of a node, it can occur multiple time
      * and is not a unique runtime object, but equal should return true.
      */
-    public interface IGraph<TNode>
+    // TODO: rename From --> Tail, To --> Head
+    public interface IDirectedGraph<TNode>
     {
         /**
          * one fromNode has many toNodes
          * @return: toNodes
          */
-        List<TNode> GetChildNodes(TNode fromNode);
+        List<TNode> GetSuccessorNodes(TNode tailNode);
+        
+        List<TNode> GetPredecessorNodes(TNode headNode);
 
         void AddEdges(TNode fromNode, List<IEdge> edges);
         
@@ -24,19 +27,30 @@ namespace Zpp
 
         int CountEdges();
 
-        List<INode> GetAllToNodes();
+        List<INode> GetAllHeadNodes();
         
-        List<INode> GetAllFromNodes();
+        List<INode> GetAllTailNodes();
 
         /**
          * No duplicates should be contained
          */
         List<INode> GetAllUniqueNode();
 
-        List<IEdge> GetAllEdgesForFromNode(INode fromNode);
+        List<IEdge> GetAllEdgesFromTailNode(INode tailNode);
+        
+        List<IEdge> GetAllEdgesTowardsHeadNode(INode headNode);
         
         List<INode> TraverseDepthFirst(Action<INode, List<INode>, List<INode>> action, CustomerOrderPart startNode);
 
         GanttChart GetAsGanttChart(IDbTransactionData dbTransactionData);
+
+        /**
+         * This removed the node, the edges towards it will point to its childs afterwards
+         */
+        void RemoveNode(INode node);
+
+        void RemoveAllEdgesFromTailNode(INode tailNode);
+
+        void RemoveAllEdgesTowardsHeadNode(INode headNode);
     }
 }

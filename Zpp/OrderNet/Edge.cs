@@ -14,13 +14,19 @@ namespace Zpp
             _fromNode = fromNode;
             _toToNode = toNode;
         }
+        
+        public Edge(INode fromNode, INode toNode)
+        {
+            _fromNode = fromNode;
+            _toToNode = toNode;
+        }
 
-        public INode GetFromNode()
+        public INode GetTailNode()
         {
             return _fromNode;
         }
         
-        public INode GetToNode()
+        public INode GetHeadNode()
         {
             return _toToNode;
         }

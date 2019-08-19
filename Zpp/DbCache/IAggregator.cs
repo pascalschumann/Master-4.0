@@ -15,5 +15,9 @@ namespace Zpp
         List<Machine> GetMachinesOfProductionOrderOperation(ProductionOrderOperation productionOrderOperation);
 
         List<ProductionOrderOperation> GetProductionOrderOperationsOfMachine(Machine machine);
+        
+        List<ProductionOrderOperation> GetProductionOrderOperationsOfProductionOrder(ProductionOrder productionOrder);
+
+        Demands GetDemandsOfProvider(Provider provider);
     }
 }

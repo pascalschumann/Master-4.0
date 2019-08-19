@@ -147,7 +147,7 @@ namespace Zpp.DemandDomain
 
         public bool HasOperation()
         {
-            return ((T_ProductionOrderBom) _demand).ProductionOrderOperation != null;
+            return ((T_ProductionOrderBom) _demand).ProductionOrderOperationId != null;
         }
 
         public OperationBackwardsSchedule ScheduleBackwards(
@@ -242,6 +242,11 @@ namespace Zpp.DemandDomain
             {
                 return null;
             }
+        }
+
+        public ProductionOrder GetProductionOrder()
+        {
+            return new ProductionOrder(((T_ProductionOrderBom) _demand).ProductionOrderParent, _dbMasterDataCache);
         }
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Master40.DB.Enums;
 using Zpp.MachineDomain;
@@ -9,7 +10,7 @@ using Zpp.WrappersForPrimitives;
 
 namespace Zpp
 {
-    public class ProductionOrderOperation
+    public class ProductionOrderOperation : INode
     {
         private readonly T_ProductionOrderOperation _productionOrderOperation;
         private readonly IDbMasterDataCache _dbMasterDataCache;
@@ -87,6 +88,45 @@ namespace Zpp
         public DueTime GetDuration()
         {
             return new DueTime(_productionOrderOperation.Duration);
+        }
+
+        public Id GetId()
+        {
+            return _productionOrderOperation.GetId();
+        }
+
+        public NodeType GetNodeType()
+        {
+            return NodeType.Operation;
+        }
+
+        public INode GetEntity()
+        {
+            return this;
+        }
+
+        public string GetGraphizString(IDbTransactionData dbTransactionData)
+        {
+            return $"{_productionOrderOperation.Name}";
+        }
+
+        public string GetJsonString(IDbTransactionData dbTransactionData)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Id GetProductionOrderId()
+        {
+            if (_productionOrderOperation.ProductionOrderId == null)
+            {
+                return null;
+            }
+            return new Id(_productionOrderOperation.ProductionOrderId.GetValueOrDefault());
+        }
+
+        public override string ToString()
+        {
+            return $"{_productionOrderOperation.GetId()}: {_productionOrderOperation.Name}";
         }
     }
 }

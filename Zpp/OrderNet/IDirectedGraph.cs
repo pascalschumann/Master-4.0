@@ -52,5 +52,15 @@ namespace Zpp
         void RemoveAllEdgesFromTailNode(INode tailNode);
 
         void RemoveAllEdgesTowardsHeadNode(INode headNode);
+
+        List<INode> GetLeafNodes();
+
+        List<INode> GetStartNodes();
+
+        void ReplaceNodeByDirectedGraph(INode node);
+
+        List<IEdge> GetAllEdges();
+
+        Dictionary<INode, List<IEdge>> GetAdjacencyList();
     }
 }

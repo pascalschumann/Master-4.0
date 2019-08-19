@@ -95,15 +95,8 @@ namespace Zpp.MachineDomain
             IDbMasterDataCache dbMasterDataCache, IPriorityRule priorityRule)
         {
             IDirectedGraph<INode> orderDirectedGraph = new DemandToProviderDirectedGraph(dbTransactionData);
-            // build up stacks of ProductionOrderOperations
-            Paths<ProductionOrderOperation> productionOrderOperationPaths =
-                new Paths<ProductionOrderOperation>();
-            foreach (var customerOrderPart in dbMasterDataCache.T_CustomerOrderPartGetAll().GetAll()
-            )
-            {
-                productionOrderOperationPaths.AddAll(TraverseDepthFirst(
-                    (CustomerOrderPart) customerOrderPart, orderDirectedGraph, dbTransactionData));
-            }
+            
+            
             
             /*
             S: Menge der aktuell einplanbaren Arbeitsvorgänge

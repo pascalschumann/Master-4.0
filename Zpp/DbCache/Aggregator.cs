@@ -35,7 +35,8 @@ namespace Zpp
 
         public List<ProductionOrderOperation> GetProductionOrderOperationsOfProductionOrder(ProductionOrder productionOrder)
         {
-            throw new System.NotImplementedException();
+            return _dbTransactionData.ProductionOrderOperationGetAll()
+                .Where(x => x.GetProductionOrderId().Equals(productionOrder.GetId())).ToList();
         }
 
         public Demands GetDemandsOfProvider(Provider provider)

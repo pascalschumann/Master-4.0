@@ -4,6 +4,7 @@ using Master40.DB.DataModel;
 using Microsoft.EntityFrameworkCore.Internal;
 using Zpp.DemandDomain;
 using Zpp.ProviderDomain;
+using Zpp.WrappersForPrimitives;
 
 namespace Zpp.MachineDomain
 {
@@ -141,7 +142,8 @@ namespace Zpp.MachineDomain
             */
             IStackSet<ProductionOrderOperation> S = new StackSet<ProductionOrderOperation>();
             IStackSet<ProductionOrderOperation> K = new StackSet<ProductionOrderOperation>();
-
+            DueTime now = DueTime.Null();
+            
             /*
             Bestimme initiale Menge: S = a
             t(o) = 0 für alle o aus S (default is always 0 for int)
@@ -176,8 +178,8 @@ namespace Zpp.MachineDomain
                 while (K.Any())
                 {
                     // Entnehme Operation mit höchster Prio (o1) aus K
-                    ProductionOrderOperation o1 = GetHighestPriorityOperation(now,
-                        minStartNextOfParentProvider, productionOrderOperations, dbTransactionData);
+                    ProductionOrderOperation o1 = priorityRule.GetHighestPriorityOperation(now,
+                        K.GetAll(), dbTransactionData);
 
                     // t(o) = d(o1) für alle o aus K ohne o1
                     foreach (var o in K.GetAll())
@@ -200,6 +202,9 @@ namespace Zpp.MachineDomain
                     {
                         productionOrderOperation.GetValue().Start = o1.GetValue().End;
                     }
+                    
+                    // adapt now
+                    now = new DueTime(o1.GetValue().End);
                 }
             }
         }

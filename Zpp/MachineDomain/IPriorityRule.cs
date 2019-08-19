@@ -11,7 +11,6 @@ namespace Zpp.MachineDomain
             IDbTransactionData dbTransactionData, DueTime minStartNextOfParentProvider);
 
         ProductionOrderOperation GetHighestPriorityOperation(DueTime now,
-            DueTime minStartNextOfParentProvider,
             List<ProductionOrderOperation> productionOrderOperations,
             IDbTransactionData dbTransactionData);
     }

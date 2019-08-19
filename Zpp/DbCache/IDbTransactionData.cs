@@ -51,6 +51,8 @@ namespace Zpp
         List<T_PurchaseOrder> PurchaseOrderGetAll();
 
         ProductionOrders ProductionOrderGetAll();
+        
+        ProductionOrder ProductionOrderGetById(Id id);
 
         IDemands DemandsGetAll();
 

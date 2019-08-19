@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Zpp.DemandDomain;
+using Zpp.ProviderDomain;
 using Zpp.WrappersForPrimitives;
 
 namespace Zpp.MachineDomain
@@ -9,12 +10,17 @@ namespace Zpp.MachineDomain
     public class PriorityRule : IPriorityRule
     {
         public ProductionOrderOperation GetHighestPriorityOperation(DueTime now,
-            DueTime minStartNextOfParentProvider,
             List<ProductionOrderOperation> productionOrderOperations,
             IDbTransactionData dbTransactionData)
         {
             foreach (var productionOrderOperation in productionOrderOperations)
             {
+                ProductionOrder productionOrder =
+                    dbTransactionData.ProductionOrderGetById(productionOrderOperation
+                        .GetProductionOrderId());
+                // TODO: This is different from specification
+                DueTime minStartNextOfParentProvider =
+                    productionOrder.GetDueTime(dbTransactionData);
                 productionOrderOperation.SetPriority(GetPriorityOfProductionOrderOperation(now,
                     productionOrderOperation, dbTransactionData, minStartNextOfParentProvider));
             }
@@ -63,7 +69,8 @@ namespace Zpp.MachineDomain
                 }
             }
 
-            return new Priority(minStartNextOfParentProvider.Minus(now).Minus(sumDurationsOfOperations).GetValue());
+            return new Priority(minStartNextOfParentProvider.Minus(now)
+                .Minus(sumDurationsOfOperations).GetValue());
         }
     }
 }

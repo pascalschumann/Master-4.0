@@ -20,6 +20,8 @@ namespace Zpp
         List<TNode> GetSuccessorNodes(TNode tailNode);
         
         List<TNode> GetPredecessorNodes(TNode headNode);
+        
+        List<T> GetPredecessorNodesAs<T>(TNode headNode);
 
         void AddEdges(TNode fromNode, List<IEdge> edges);
         
@@ -54,6 +56,7 @@ namespace Zpp
         void RemoveAllEdgesTowardsHeadNode(INode headNode);
 
         List<INode> GetLeafNodes();
+        List<T> GetLeafNodesAs<T>();
 
         List<INode> GetStartNodes();
 

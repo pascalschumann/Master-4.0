@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using Master40.DB.DataModel;
 using Microsoft.EntityFrameworkCore.Internal;
 using Zpp.DemandDomain;
+using Zpp.ProviderDomain;
 
 namespace Zpp.MachineDomain
 {
     public class MachineManager : IMachineManager
     {
-        
         public static void JobSchedulingWithGifflerThompson(IDbTransactionData dbTransactionData,
             IDbMasterDataCache dbMasterDataCache, IPriorityRule priorityRule)
         {
@@ -49,7 +49,8 @@ namespace Zpp.MachineDomain
                  */
 
             // init
-            IDirectedGraph<INode> orderDirectedGraph = new DemandToProviderDirectedGraph(dbTransactionData);
+            IDirectedGraph<INode> orderDirectedGraph =
+                new DemandToProviderDirectedGraph(dbTransactionData);
             // build up stacks of ProductionOrderOperations
             Paths<ProductionOrderOperation> productionOrderOperationPaths =
                 new Paths<ProductionOrderOperation>();
@@ -68,7 +69,8 @@ namespace Zpp.MachineDomain
                 foreach (var productionOrderOperationOfLastLevel in productionOrderOperationPaths
                     .PopLevel())
                 {
-                    List<Machine> machinesToAdd = productionOrderOperationOfLastLevel.GetMachines(dbTransactionData);
+                    List<Machine> machinesToAdd =
+                        productionOrderOperationOfLastLevel.GetMachines(dbTransactionData);
                     machinesSetR.PushAll(machinesToAdd);
                 }
 
@@ -90,14 +92,40 @@ namespace Zpp.MachineDomain
 
             // Quelle: Sonnleithner_Studienarbeit_20080407 S. 8
         }
-        
-        public static void JobSchedulingWithGifflerThompsonAsZaepfel(IDbTransactionData dbTransactionData,
-            IDbMasterDataCache dbMasterDataCache, IPriorityRule priorityRule)
+
+        private static IStackSet<ProductionOrderOperation> CreateS(
+            IDirectedGraph<INode> productionOrderGraph,
+            ProductionOrderOperationDirectedGraph productionOrderOperationGraph)
         {
-            IDirectedGraph<INode> orderDirectedGraph = new DemandToProviderDirectedGraph(dbTransactionData);
-            
-            
-            
+            IStackSet<ProductionOrderOperation> S = new StackSet<ProductionOrderOperation>();
+            foreach (var productionOrder in productionOrderGraph.GetLeafNodes())
+            {
+                var productionOrderOperationLeafsOfProductionOrder = productionOrderOperationGraph
+                    .GetProductionOrderOperationGraphOfProductionOrder(
+                        (ProductionOrder) productionOrder.GetEntity())
+                    .GetLeafNodesAs<ProductionOrderOperation>();
+                if (productionOrderOperationLeafsOfProductionOrder == null)
+                {
+                    productionOrderGraph.RemoveNode(productionOrder);
+                    continue;
+                }
+
+                S.PushAll(productionOrderOperationLeafsOfProductionOrder);
+            }
+
+            return S;
+        }
+
+        public static void JobSchedulingWithGifflerThompsonAsZaepfel(
+            IDbTransactionData dbTransactionData, IDbMasterDataCache dbMasterDataCache,
+            IPriorityRule priorityRule)
+        {
+            IDirectedGraph<INode> productionOrderGraph =
+                new ProductionOrderDirectedGraph(dbTransactionData);
+            ProductionOrderOperationDirectedGraph productionOrderOperationGraph =
+                new ProductionOrderOperationDirectedGraph(dbTransactionData);
+
+
             /*
             S: Menge der aktuell einplanbaren Arbeitsvorgänge
             a: Menge der technologisch an erster Stelle eines Fertigungsauftrags stehenden Arbeitsvorgänge
@@ -116,12 +144,13 @@ namespace Zpp.MachineDomain
             IStackSet<ProductionOrderOperation> N = new StackSet<ProductionOrderOperation>();
             IStackSet<ProductionOrderOperation> M = new StackSet<ProductionOrderOperation>();
             IStackSet<ProductionOrderOperation> K = new StackSet<ProductionOrderOperation>();
-            
+
             /*
             Bestimme initiale Menge: S = a
             t(o) = 0 für alle o aus S (default is always 0 for int)
             */
-            S = productionOrderOperationPaths.PopLevel();
+            S = CreateS(productionOrderGraph, productionOrderOperationGraph);
+
             // while S not empty do
             while (S.Any())
             {
@@ -129,22 +158,23 @@ namespace Zpp.MachineDomain
                 foreach (var o in S.GetAll())
                 {
                     // Berechne d(o) = t(o) + p(o) für alle o aus S
-                    o.GetValue().End =
-                        o.GetValue().Start + o.GetValue().Duration;
+                    o.GetValue().End = o.GetValue().Start + o.GetValue().Duration;
                     // Bestimme d_min = min{ d(o) | o aus S }
                     if (o.GetValue().End < d_min)
                     {
                         d_min = o.GetValue().End;
                     }
                 }
+
                 // Bilde Konfliktmenge K = { o | o aus S UND M(o) == M(o_min) UND t(o) < d_min }
                 foreach (var o in S.GetAll())
                 {
                     if (o.GetValue().End.Equals(d_min) && o.GetValue().Start < d_min)
                     {
-                        K.Push(o);   
+                        K.Push(o);
                     }
                 }
+
                 // while K not empty do
                 while (K.Any())
                 {
@@ -155,12 +185,18 @@ namespace Zpp.MachineDomain
                     {
                         o.GetValue().Start = o1.GetValue().End;
                     }
+
                     /*if N(o1) not empty then
                         S = S vereinigt N(o1) ohne o1
-                    t(o) = d(o1) für alle o aus N(o1)*/
-                    // if ()
+                     */
+                    N = new StackSet<ProductionOrderOperation>(productionOrderOperationGraph.GetPredecessorNodesAs<ProductionOrderOperation>(o1));
+                    productionOrderOperationGraph.RemoveNode(o1);
+                    S = CreateS(productionOrderGraph, productionOrderOperationGraph);
+
+                    // t(o) = d(o1) für alle o aus N(o1)
+                    foreach (var productionOrderOperation in N.GetAll())
                     {
-                        
+                        productionOrderOperation.GetValue().Start = o1.GetValue().End;
                     }
                 }
             }

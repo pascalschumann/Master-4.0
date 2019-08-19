@@ -330,6 +330,11 @@ namespace Zpp
                 }
             }
 
+            if (leafs.Any() == false)
+            {
+                return null;
+            }
+
             return leafs;
         }
 
@@ -382,6 +387,16 @@ namespace Zpp
         public Dictionary<INode, List<IEdge>> GetAdjacencyList()
         {
             return _adjacencyList;
+        }
+
+        public List<T> GetPredecessorNodesAs<T>(INode headNode)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<T> GetLeafNodesAs<T>()
+        {
+            throw new NotImplementedException();
         }
     }
 }

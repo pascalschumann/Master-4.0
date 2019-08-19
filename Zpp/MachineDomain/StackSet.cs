@@ -9,6 +9,15 @@ namespace Zpp.MachineDomain
         private List<T> _list = new List<T>();
         private int _count = 0;
         private Dictionary<T, int> _indices = new Dictionary<T, int>();
+
+        public StackSet()
+        {
+        }
+        
+        public StackSet(List<T> list)
+        {
+            PushAll(list);
+        }
         
         public void Push(T element)
         {

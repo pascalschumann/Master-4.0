@@ -71,7 +71,7 @@ namespace Zpp
                     .GetAdjacencyList();
         }
 
-        IDirectedGraph<INode> GetProductionOrderOperationGraphOfProductionOrder(
+        public IDirectedGraph<INode> GetProductionOrderOperationGraphOfProductionOrder(
             ProductionOrder productionOrder)
         {
             if (_directedProductionOrderOperationGraphs.ContainsKey(productionOrder) == false)

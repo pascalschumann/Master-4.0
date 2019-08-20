@@ -91,5 +91,23 @@ namespace Zpp.Test
             }
             Console.Out.Write("Test");
         }
+
+        [Theory]
+        [InlineData(TestConfigurationFileNames.DESK_COP_5_LOTSIZE_2)]
+        [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
+        public void TestJobShopScheduling(string testConfigurationFileName)
+        {
+            InitThisTest(testConfigurationFileName);
+            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+            IDbTransactionData dbTransactionData =
+                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+            foreach (var productionOrderOperation in dbTransactionData.ProductionOrderOperationGetAll())
+            {
+                T_ProductionOrderOperation tProductionOrderOperation =
+                    productionOrderOperation.GetValue();
+                Assert.True(tProductionOrderOperation.End != 0, $"{productionOrderOperation} was not scheduled.");
+                Assert.True(tProductionOrderOperation.MachineId != null, $"{productionOrderOperation} was not scheduled.");
+            }
+        }
     }
 }

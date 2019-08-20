@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Microsoft.EntityFrameworkCore.Internal;
 using Zpp.DemandDomain;
@@ -99,6 +101,11 @@ namespace Zpp.MachineDomain
             ProductionOrderOperationDirectedGraph productionOrderOperationGraph)
         {
             IStackSet<ProductionOrderOperation> S = new StackSet<ProductionOrderOperation>();
+            if (productionOrderGraph.GetLeafNodes() == null)
+            {
+                return S;
+            }
+
             foreach (var productionOrder in productionOrderGraph.GetLeafNodes())
             {
                 var productionOrderOperationLeafsOfProductionOrder = productionOrderOperationGraph
@@ -117,6 +124,7 @@ namespace Zpp.MachineDomain
             return S;
         }
 
+        // TODO: apply this after MrpRun
         public static void JobSchedulingWithGifflerThompsonAsZaepfel(
             IDbTransactionData dbTransactionData, IDbMasterDataCache dbMasterDataCache,
             IPriorityRule priorityRule)
@@ -126,6 +134,13 @@ namespace Zpp.MachineDomain
             ProductionOrderOperationDirectedGraph productionOrderOperationGraph =
                 new ProductionOrderOperationDirectedGraph(dbTransactionData);
 
+            Dictionary<Id, List<Machine>> machinesByMachineGroupId =
+                new Dictionary<Id, List<Machine>>();
+            foreach (var machineGroup in dbMasterDataCache.M_MachineGroupGetAll())
+            {
+                machinesByMachineGroupId.Add(machineGroup.GetId(),
+                    dbMasterDataCache.M_MachineGetAllByMachineGroupId(machineGroup.GetId()));
+            }
 
             /*
             S: Menge der aktuell einplanbaren Arbeitsvorgänge
@@ -142,8 +157,7 @@ namespace Zpp.MachineDomain
             */
             IStackSet<ProductionOrderOperation> S = new StackSet<ProductionOrderOperation>();
             IStackSet<ProductionOrderOperation> K = new StackSet<ProductionOrderOperation>();
-            DueTime now = DueTime.Null();
-            
+
             /*
             Bestimme initiale Menge: S = a
             t(o) = 0 für alle o aus S (default is always 0 for int)
@@ -154,6 +168,7 @@ namespace Zpp.MachineDomain
             while (S.Any())
             {
                 int d_min = Int32.MaxValue;
+                ProductionOrderOperation o_min = null;
                 foreach (var o in S.GetAll())
                 {
                     // Berechne d(o) = t(o) + p(o) für alle o aus S
@@ -162,13 +177,15 @@ namespace Zpp.MachineDomain
                     if (o.GetValue().End < d_min)
                     {
                         d_min = o.GetValue().End;
+                        o_min = o;
                     }
                 }
 
                 // Bilde Konfliktmenge K = { o | o aus S UND M(o) == M(o_min) UND t(o) < d_min }
                 foreach (var o in S.GetAll())
                 {
-                    if (o.GetValue().End.Equals(d_min) && o.GetValue().Start < d_min)
+                    if (o.GetValue().MachineGroupId.Equals(o_min.GetValue().MachineGroupId) &&
+                        o.GetValue().Start < d_min)
                     {
                         K.Push(o);
                     }
@@ -177,9 +194,32 @@ namespace Zpp.MachineDomain
                 // while K not empty do
                 while (K.Any())
                 {
-                    // Entnehme Operation mit höchster Prio (o1) aus K
-                    ProductionOrderOperation o1 = priorityRule.GetHighestPriorityOperation(now,
+                    // Entnehme Operation mit höchster Prio (o1) aus K und plane auf nächster freier Machine ein
+                    ProductionOrderOperation o1 = null;
+
+                    machinesByMachineGroupId[o_min.GetMachineGroupId()]
+                        .OrderBy(x => x.GetIdleStartTime().GetValue());
+                    Machine machine = machinesByMachineGroupId[o_min.GetMachineGroupId()][0];
+                    o1 = priorityRule.GetHighestPriorityOperation(machine.GetIdleStartTime(),
                         K.GetAll(), dbTransactionData);
+                    K.Remove(o1);
+                    o1.SetMachine(machine);
+                    // every productionOrderBom whith this operation o1 has the same forward/backward-schedule
+                    ProductionOrderBom productionOrderBom = dbTransactionData.GetAggregator()
+                        .GetAnyProductionOrderBomByProductionOrderOperation(o1);
+                    if (machine.GetIdleStartTime()
+                        .IsGreaterThan(productionOrderBom.GetStartTime(dbTransactionData)))
+                    {
+                        o1.GetValue().Start = machine.GetIdleStartTime().GetValue();
+                    }
+                    else
+                    {
+                        o1.GetValue().Start = productionOrderBom.GetStartTime(dbTransactionData)
+                            .GetValue();
+                    }
+
+                    o1.GetValue().End = o1.GetValue().Start + o1.GetValue().Duration;
+                    machine.SetIdleStartTime(new DueTime(o1.GetValue().End));
 
                     // t(o) = d(o1) für alle o aus K ohne o1
                     foreach (var o in K.GetAll())
@@ -202,9 +242,6 @@ namespace Zpp.MachineDomain
                     {
                         productionOrderOperation.GetValue().Start = o1.GetValue().End;
                     }
-                    
-                    // adapt now
-                    now = new DueTime(o1.GetValue().End);
                 }
             }
         }
@@ -224,7 +261,7 @@ namespace Zpp.MachineDomain
             stack.Push(startNode);
             INode parentNode;
 
-            while (stack.Any())
+            while (EnumerableExtensions.Any(stack))
             {
                 INode poppedNode = stack.Pop();
 

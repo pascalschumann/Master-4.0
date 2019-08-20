@@ -65,6 +65,16 @@ namespace Zpp
             return _productionOrderOperation;
         }
 
+        public Id GetMachineGroupId()
+        {
+            return new Id(_productionOrderOperation.MachineGroupId);
+        }
+
+        public void SetMachine(Machine machine)
+        {
+            _productionOrderOperation.Machine = machine.GetValue();
+        }
+
         public List<Machine> GetMachines(IDbTransactionData dbTransactionData)
         {
             return dbTransactionData.GetAggregator().GetMachinesOfProductionOrderOperation(this);

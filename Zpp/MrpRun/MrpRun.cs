@@ -7,6 +7,7 @@ using Master40.DB.DataModel;
 using Priority_Queue;
 using Priority_Queue_Example;
 using Zpp.DemandDomain;
+using Zpp.MachineDomain;
 using Zpp.ProductionDomain;
 using Zpp.ProviderDomain;
 using Zpp.PurchaseDomain;
@@ -155,8 +156,8 @@ namespace Zpp
                 DemandQueueNode firstDemandInQueue = demandQueue.Dequeue();
 
                 IDemands nextDemands = ProcessNextDemand(dbTransactionData,
-                    firstDemandInQueue.GetDemand(), dbMasterDataCache,
-                    orderManager, stockManager, providerManager, providingManager);
+                    firstDemandInQueue.GetDemand(), dbMasterDataCache, orderManager, stockManager,
+                    providerManager, providingManager);
                 if (nextDemands != null)
                 {
                     finalAllDemands.AddAll(nextDemands);
@@ -181,13 +182,16 @@ namespace Zpp
                 return;
             }
             */
+            
+            // job shop scheduling
+            MachineManager.JobSchedulingWithGifflerThompsonAsZaepfel(dbTransactionData,
+                dbMasterDataCache, new PriorityRule());
 
             // persisting data
             globalStockManager.AdaptStock(stockManager);
             dbTransactionData.DemandsAddAll(finalAllDemands);
             dbTransactionData.ProvidersAddAll(providerManager.GetProviders());
             dbTransactionData.PersistDbCache(providerManager);
-            // job shop
 
             LOGGER.Info("MrpRun done.");
         }

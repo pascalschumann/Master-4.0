@@ -11,22 +11,26 @@ namespace Zpp
     {
         private readonly IDbMasterDataCache _dbMasterDataCache;
         private readonly IDbTransactionData _dbTransactionData;
-        
-        public Aggregator(IDbMasterDataCache dbMasterDataCache, IDbTransactionData dbTransactionData)
+
+        public Aggregator(IDbMasterDataCache dbMasterDataCache,
+            IDbTransactionData dbTransactionData)
         {
             _dbTransactionData = dbTransactionData;
             _dbMasterDataCache = dbMasterDataCache;
         }
 
-        public ProductionOrderBoms GetProductionOrderBomsOfProductionOrder(ProductionOrder productionOrder)
+        public ProductionOrderBoms GetProductionOrderBomsOfProductionOrder(
+            ProductionOrder productionOrder)
         {
             throw new System.NotImplementedException();
         }
 
-        public List<Machine> GetMachinesOfProductionOrderOperation(ProductionOrderOperation productionOrderOperation)
+        public List<Machine> GetMachinesOfProductionOrderOperation(
+            ProductionOrderOperation productionOrderOperation)
         {
             return _dbMasterDataCache.M_MachineGetAll().Where(x =>
-                x.GetMachineGroupId().GetValue().Equals(productionOrderOperation.GetValue().MachineGroupId)).ToList();
+                x.GetMachineGroupId().GetValue()
+                    .Equals(productionOrderOperation.GetValue().MachineGroupId)).ToList();
         }
 
         public List<ProductionOrderOperation> GetProductionOrderOperationsOfMachine(Machine machine)
@@ -34,12 +38,14 @@ namespace Zpp
             throw new System.NotImplementedException();
         }
 
-        public List<ProductionOrderOperation> GetProductionOrderOperationsOfProductionOrder(ProductionOrder productionOrder)
+        public List<ProductionOrderOperation> GetProductionOrderOperationsOfProductionOrder(
+            ProductionOrder productionOrder)
         {
             return GetProductionOrderOperationsOfProductionOrder(productionOrder.GetId());
         }
-        
-        public List<ProductionOrderOperation> GetProductionOrderOperationsOfProductionOrder(Id productionOrderId)
+
+        public List<ProductionOrderOperation> GetProductionOrderOperationsOfProductionOrder(
+            Id productionOrderId)
         {
             return _dbTransactionData.ProductionOrderOperationGetAll()
                 .Where(x => x.GetProductionOrderId().Equals(productionOrderId)).ToList();
@@ -55,7 +61,17 @@ namespace Zpp
                     demands.Add(_dbTransactionData.DemandsGetById(demandToProvider.GetDemandId()));
                 }
             }
+
             return new Demands(demands);
+        }
+
+        public ProductionOrderBom GetAnyProductionOrderBomByProductionOrderOperation(
+            ProductionOrderOperation productionOrderOperation)
+        {
+            return _dbTransactionData.ProductionOrderBomGetAll().GetAllAs<ProductionOrderBom>()
+                .Find(x =>
+                    x.GetProductionOrderOperation(_dbTransactionData).GetId()
+                        .Equals(productionOrderOperation.GetId()));
         }
     }
 }

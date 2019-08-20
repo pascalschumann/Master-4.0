@@ -22,5 +22,7 @@ namespace Zpp
         List<ProductionOrderOperation> GetProductionOrderOperationsOfProductionOrder(Id productionOrderId);
 
         Demands GetDemandsOfProvider(Provider provider);
+
+        ProductionOrderBom GetAnyProductionOrderBomByProductionOrderOperation(ProductionOrderOperation productionOrderOperation);
     }
 }

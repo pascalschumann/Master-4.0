@@ -422,5 +422,10 @@ namespace Zpp
         {
             return _aggregator;
         }
+
+        public ProductionOrder ProductionOrderGetById(Id id)
+        {
+            return _productionOrders.GetAllAs<ProductionOrder>().Single(x => x.GetId().Equals(id));
+        }
     }
 }

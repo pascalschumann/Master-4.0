@@ -21,8 +21,10 @@ namespace Zpp.MachineDomain
                 // TODO: This is different from specification
                 DueTime minStartNextOfParentProvider =
                     productionOrder.GetDueTime(dbTransactionData);
-                productionOrderOperation.SetPriority(GetPriorityOfProductionOrderOperation(now,
-                    productionOrderOperation, dbTransactionData, minStartNextOfParentProvider));
+                
+                Priority priority = GetPriorityOfProductionOrderOperation(now,
+                    productionOrderOperation, dbTransactionData, minStartNextOfParentProvider);
+                productionOrderOperation.SetPriority(priority);
             }
 
             productionOrderOperations.OrderBy(x => x.GetPriority().GetValue());

@@ -40,9 +40,13 @@ namespace Zpp
 
         Machine M_MachineGetById(Id id);
         
+        List<Machine> M_MachineGetAllByMachineGroupId(Id id);
+        
         List<Machine> M_MachineGetAll();
 
         M_MachineGroup M_MachineGroupGetById(Id id);
+        
+        List<M_MachineGroup> M_MachineGroupGetAll();
 
         M_MachineTool M_MachineToolGetById(Id id);
 

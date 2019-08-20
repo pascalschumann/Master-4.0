@@ -25,6 +25,8 @@ namespace Zpp
         List<M_Article> M_ArticleGetArticlesToBuy();
 
         M_ArticleBom M_ArticleBomGetById(Id id);
+        
+        M_ArticleBom M_ArticleBomGetByArticleChildId(Id id);
 
         List<M_BusinessPartner> M_BusinessPartnerGetAll();
         

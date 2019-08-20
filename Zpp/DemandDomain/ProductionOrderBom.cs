@@ -12,9 +12,12 @@ namespace Zpp.DemandDomain
 {
     public class ProductionOrderBom : Demand, IDemandLogic
     {
+        private  readonly T_ProductionOrderBom _productionOrderBom;
+        
         public ProductionOrderBom(IDemand demand, IDbMasterDataCache dbMasterDataCache) : base(
             demand, dbMasterDataCache)
         {
+            _productionOrderBom = (T_ProductionOrderBom) _demand;
         }
 
         /// <summary>
@@ -66,12 +69,12 @@ namespace Zpp.DemandDomain
 
         public override IDemand GetIDemand()
         {
-            return (T_ProductionOrderBom) _demand;
+            return _productionOrderBom;
         }
 
         public override M_Article GetArticle()
         {
-            Id articleId = new Id(((T_ProductionOrderBom) _demand).ArticleChildId);
+            Id articleId = new Id(_productionOrderBom.ArticleChildId);
             return _dbMasterDataCache.M_ArticleGetById(articleId);
         }
 
@@ -82,37 +85,35 @@ namespace Zpp.DemandDomain
          */
         public override DueTime GetDueTime(IDbTransactionData dbTransactionData)
         {
-            T_ProductionOrderBom productionOrderBom = ((T_ProductionOrderBom) _demand);
-
             // load ProductionOrderOperation if not done yet
-            if (productionOrderBom.ProductionOrderOperation == null)
+            if (_productionOrderBom.ProductionOrderOperation == null)
             {
                 Id productionOrderOperationId =
-                    new Id(productionOrderBom.ProductionOrderOperationId.GetValueOrDefault());
-                productionOrderBom.ProductionOrderOperation = dbTransactionData
+                    new Id(_productionOrderBom.ProductionOrderOperationId.GetValueOrDefault());
+                _productionOrderBom.ProductionOrderOperation = dbTransactionData
                     .ProductionOrderOperationGetById(productionOrderOperationId);
             }
 
 
             DueTime dueTime;
-            if (productionOrderBom.ProductionOrderOperation != null &&
-                productionOrderBom.ProductionOrderOperation.EndBackward != null)
+            if (_productionOrderBom.ProductionOrderOperation != null &&
+                _productionOrderBom.ProductionOrderOperation.EndBackward != null)
             {
                 // backwards scheduling was already done --> return EndBackward
-                dueTime = new DueTime(productionOrderBom.ProductionOrderOperation.EndBackward
+                dueTime = new DueTime(_productionOrderBom.ProductionOrderOperation.EndBackward
                     .GetValueOrDefault());
                 return dueTime;
             }
             // backwards scheduling was not yet done --> return dueTime of ProductionOrderParent
 
-            if (productionOrderBom.ProductionOrderParent == null)
+            if (_productionOrderBom.ProductionOrderParent == null)
             {
-                Id productionOrderId = new Id(productionOrderBom.ProductionOrderParentId);
-                productionOrderBom.ProductionOrderParent = (T_ProductionOrder) dbTransactionData
+                Id productionOrderId = new Id(_productionOrderBom.ProductionOrderParentId);
+                _productionOrderBom.ProductionOrderParent = (T_ProductionOrder) dbTransactionData
                     .ProvidersGetById(productionOrderId).ToIProvider();
             }
 
-            dueTime = new DueTime(productionOrderBom.ProductionOrderParent.DueTime);
+            dueTime = new DueTime(_productionOrderBom.ProductionOrderParent.DueTime);
             return dueTime;
         }
 
@@ -121,18 +122,17 @@ namespace Zpp.DemandDomain
             // Demand(CustomerOrder);20;Truck
 
             string graphizString;
-            T_ProductionOrderBom tProductionOrderBom = ((T_ProductionOrderBom) _demand);
-            if (tProductionOrderBom.ProductionOrderOperationId != null)
+            if (_productionOrderBom.ProductionOrderOperationId != null)
             {
-                if (tProductionOrderBom.ProductionOrderOperation == null)
+                if (_productionOrderBom.ProductionOrderOperation == null)
                 {
-                    tProductionOrderBom.ProductionOrderOperation =
-                        dbTransactionData.ProductionOrderOperationGetById(new Id(tProductionOrderBom
+                    _productionOrderBom.ProductionOrderOperation =
+                        dbTransactionData.ProductionOrderOperationGetById(new Id(_productionOrderBom
                             .ProductionOrderOperationId.GetValueOrDefault()));
                 }
 
                 T_ProductionOrderOperation tProductionOrderOperation =
-                    tProductionOrderBom.ProductionOrderOperation;
+                    _productionOrderBom.ProductionOrderOperation;
                 graphizString = $"D(PrOB);{base.GetGraphizString(dbTransactionData)};" +
                                 $"bs({tProductionOrderOperation.StartBackward});" +
                                 $"be({tProductionOrderOperation.EndBackward});\\n{tProductionOrderOperation}";
@@ -147,33 +147,31 @@ namespace Zpp.DemandDomain
 
         public bool HasOperation()
         {
-            return ((T_ProductionOrderBom) _demand).ProductionOrderOperationId != null;
+            return _productionOrderBom.ProductionOrderOperationId != null;
         }
 
         public OperationBackwardsSchedule ScheduleBackwards(
             OperationBackwardsSchedule lastOperationBackwardsSchedule)
         {
-            T_ProductionOrderBom tProductionOrderBom = (T_ProductionOrderBom) _demand;
-
             DueTime TIME_BETWEEN_OPERATIONS =
-                new DueTime(tProductionOrderBom.ProductionOrderOperation.Duration * 3);
+                new DueTime(_productionOrderBom.ProductionOrderOperation.Duration * 3);
             int? startBackwards;
             int? endBackwards;
             // case: equal hierarchyNumber --> PrOO runs in parallel
             if (lastOperationBackwardsSchedule.GetHierarchyNumber() == null ||
                 (lastOperationBackwardsSchedule.GetHierarchyNumber() != null &&
-                 tProductionOrderBom.ProductionOrderOperation.HierarchyNumber.Equals(
+                 _productionOrderBom.ProductionOrderOperation.HierarchyNumber.Equals(
                      lastOperationBackwardsSchedule.GetHierarchyNumber().GetValue())))
             {
                 endBackwards = lastOperationBackwardsSchedule.GetEndBackwards().GetValue();
                 startBackwards = lastOperationBackwardsSchedule.GetEndBackwards().GetValue() -
-                                 tProductionOrderBom.ProductionOrderOperation.Duration;
+                                 _productionOrderBom.ProductionOrderOperation.Duration;
             }
             // case: greaterHierarchyNumber --> PrOO runs after the last PrOO
             else
             {
                 if (lastOperationBackwardsSchedule.GetHierarchyNumber().GetValue() <
-                    tProductionOrderBom.ProductionOrderOperation.HierarchyNumber)
+                    _productionOrderBom.ProductionOrderOperation.HierarchyNumber)
                 {
                     throw new MrpRunException(
                         "This is not allowed: hierarchyNumber of lastBackwardsSchedule " +
@@ -182,11 +180,11 @@ namespace Zpp.DemandDomain
 
                 endBackwards = lastOperationBackwardsSchedule.GetStartBackwards().GetValue();
                 startBackwards = lastOperationBackwardsSchedule.GetStartBackwards().GetValue() -
-                                 tProductionOrderBom.ProductionOrderOperation.Duration;
+                                 _productionOrderBom.ProductionOrderOperation.Duration;
             }
 
-            tProductionOrderBom.ProductionOrderOperation.EndBackward = endBackwards;
-            tProductionOrderBom.ProductionOrderOperation.StartBackward = startBackwards;
+            _productionOrderBom.ProductionOrderOperation.EndBackward = endBackwards;
+            _productionOrderBom.ProductionOrderOperation.StartBackward = startBackwards;
 
             // create return value
             OperationBackwardsSchedule newOperationBackwardsSchedule =
@@ -194,7 +192,7 @@ namespace Zpp.DemandDomain
                     new DueTime(endBackwards.GetValueOrDefault() -
                                 TIME_BETWEEN_OPERATIONS.GetValue()),
                     new HierarchyNumber(
-                        tProductionOrderBom.ProductionOrderOperation.HierarchyNumber));
+                        _productionOrderBom.ProductionOrderOperation.HierarchyNumber));
 
             return newOperationBackwardsSchedule;
         }
@@ -202,40 +200,36 @@ namespace Zpp.DemandDomain
         public ProductionOrderOperation GetProductionOrderOperation(
             IDbTransactionData dbTransactionData)
         {
-            T_ProductionOrderBom productionOrderBom = (T_ProductionOrderBom) _demand;
-            if (productionOrderBom.ProductionOrderOperationId == null)
+            if (_productionOrderBom.ProductionOrderOperationId == null)
             {
                 return null;
             }
 
-            if (productionOrderBom.ProductionOrderOperation == null)
+            if (_productionOrderBom.ProductionOrderOperation == null)
                 // load it
             {
-                productionOrderBom.ProductionOrderOperation =
+                _productionOrderBom.ProductionOrderOperation =
                     dbTransactionData.ProductionOrderOperationGetById(
-                        new Id(productionOrderBom.ProductionOrderOperationId.GetValueOrDefault()));
+                        new Id(_productionOrderBom.ProductionOrderOperationId.GetValueOrDefault()));
             }
 
-            return new ProductionOrderOperation(productionOrderBom.ProductionOrderOperation,
+            return new ProductionOrderOperation(_productionOrderBom.ProductionOrderOperation,
                 _dbMasterDataCache);
         }
 
         public override DueTime GetStartTime(IDbTransactionData dbTransactionData)
         {
-            T_ProductionOrderBom productionOrderBom = ((T_ProductionOrderBom) _demand);
-
-            T_ProductionOrderBom tProductionOrderBom = ((T_ProductionOrderBom) _demand);
-            if (tProductionOrderBom.ProductionOrderOperationId != null)
+            if (_productionOrderBom.ProductionOrderOperationId != null)
             {
-                if (tProductionOrderBom.ProductionOrderOperation == null)
+                if (_productionOrderBom.ProductionOrderOperation == null)
                 {
-                    tProductionOrderBom.ProductionOrderOperation =
-                        dbTransactionData.ProductionOrderOperationGetById(new Id(tProductionOrderBom
+                    _productionOrderBom.ProductionOrderOperation =
+                        dbTransactionData.ProductionOrderOperationGetById(new Id(_productionOrderBom
                             .ProductionOrderOperationId.GetValueOrDefault()));
                 }
 
                 T_ProductionOrderOperation tProductionOrderOperation =
-                    tProductionOrderBom.ProductionOrderOperation;
+                    _productionOrderBom.ProductionOrderOperation;
                 return new DueTime(tProductionOrderOperation.StartBackward.GetValueOrDefault());
             }
             else
@@ -246,7 +240,21 @@ namespace Zpp.DemandDomain
 
         public ProductionOrder GetProductionOrder()
         {
-            return new ProductionOrder(((T_ProductionOrderBom) _demand).ProductionOrderParent, _dbMasterDataCache);
+            return new ProductionOrder(_productionOrderBom.ProductionOrderParent, _dbMasterDataCache);
+        }
+
+        public M_ArticleBom GetArticleBom()
+        {
+            return _dbMasterDataCache.M_ArticleBomGetByArticleChildId(
+                new Id(_productionOrderBom.ArticleChildId));
+        }
+
+        public void CreateProductionOrderOperation(ProductionOrder parentProductionOrder)
+        {
+            _productionOrderBom.ProductionOrderOperation = ProductionOrderOperation.CreateProductionOrderOperation(GetArticleBom(),
+                parentProductionOrder);
+            _productionOrderBom.ProductionOrderOperationId =
+                _productionOrderBom.ProductionOrderOperation.Id;
         }
     }
 }

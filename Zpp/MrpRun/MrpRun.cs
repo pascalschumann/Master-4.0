@@ -183,15 +183,18 @@ namespace Zpp
             }
             */
             
+            // write data to dbTransactionData
+            globalStockManager.AdaptStock(stockManager);
+            dbTransactionData.DemandsAddAll(finalAllDemands);
+            dbTransactionData.ProvidersAddAll(providerManager.GetProviders());
+            dbTransactionData.SetProviderManager(providerManager);
+            
             // job shop scheduling
             MachineManager.JobSchedulingWithGifflerThompsonAsZaepfel(dbTransactionData,
                 dbMasterDataCache, new PriorityRule());
 
             // persisting data
-            globalStockManager.AdaptStock(stockManager);
-            dbTransactionData.DemandsAddAll(finalAllDemands);
-            dbTransactionData.ProvidersAddAll(providerManager.GetProviders());
-            dbTransactionData.PersistDbCache(providerManager);
+            dbTransactionData.PersistDbCache();
 
             LOGGER.Info("MrpRun done.");
         }

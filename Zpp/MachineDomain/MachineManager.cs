@@ -110,7 +110,7 @@ namespace Zpp.MachineDomain
             {
                 var productionOrderOperationLeafsOfProductionOrder = productionOrderOperationGraph
                     .GetProductionOrderOperationGraphOfProductionOrder(
-                        (ProductionOrder) productionOrder.GetEntity())
+                        (ProductionOrder) productionOrder)
                     .GetLeafNodesAs<ProductionOrderOperation>();
                 if (productionOrderOperationLeafsOfProductionOrder == null)
                 {
@@ -131,6 +131,7 @@ namespace Zpp.MachineDomain
         {
             IDirectedGraph<INode> productionOrderGraph =
                 new ProductionOrderDirectedGraph(dbTransactionData);
+            
             ProductionOrderOperationDirectedGraph productionOrderOperationGraph =
                 new ProductionOrderOperationDirectedGraph(dbTransactionData);
 
@@ -157,13 +158,11 @@ namespace Zpp.MachineDomain
             */
             IStackSet<ProductionOrderOperation> S = new StackSet<ProductionOrderOperation>();
             IStackSet<ProductionOrderOperation> K = new StackSet<ProductionOrderOperation>();
-
-            /*
-            Bestimme initiale Menge: S = a
-            t(o) = 0 für alle o aus S (default is always 0 for int)
-            */
+            
+            // Bestimme initiale Menge: S = a
             S = CreateS(productionOrderGraph, productionOrderOperationGraph);
-
+            // t(o) = 0 für alle o aus S (default is always 0 for int)
+            
             // while S not empty do
             while (S.Any())
             {
@@ -274,10 +273,10 @@ namespace Zpp.MachineDomain
                 // if node is not discovered
                 if (!discovered[poppedNode])
                 {
-                    if (poppedNode.GetEntity().GetType() == typeof(ProductionOrderBom))
+                    if (poppedNode.GetType() == typeof(ProductionOrderBom))
                     {
                         ProductionOrderOperation productionOrderOperation =
-                            ((ProductionOrderBom) poppedNode.GetEntity())
+                            ((ProductionOrderBom) poppedNode)
                             .GetProductionOrderOperation(dbTransactionData);
                         traversedOperations.Push(productionOrderOperation);
                     }

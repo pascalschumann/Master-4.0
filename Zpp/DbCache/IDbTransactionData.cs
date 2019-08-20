@@ -26,7 +26,9 @@ namespace Zpp
         /// 
         /// </summary>
         /// <param name="demandToProvidersMap">is used to generate T_Demand and T_Provider tables</param>
-        void PersistDbCache(IProviderManager providerManager);
+        void PersistDbCache();
+
+        void SetProviderManager(IProviderManager providerManager);
 
         void DemandsAdd(Demand demand);
         

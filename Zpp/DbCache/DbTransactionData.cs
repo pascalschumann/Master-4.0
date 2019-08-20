@@ -51,8 +51,8 @@ namespace Zpp
         private readonly ProductionOrders _productionOrders;
         
         // others
-        private readonly List<T_PurchaseOrder> _purchaseOrders;
-        private readonly List<T_ProductionOrderOperation> _productionOrderOperations;
+        private List<T_PurchaseOrder> _purchaseOrders;
+        private List<T_ProductionOrderOperation> _productionOrderOperations;
 
         private readonly IAggregator _aggregator;
 
@@ -132,10 +132,8 @@ namespace Zpp
                 .DemandToProviders);
         }
 
-        public void PersistDbCache(IProviderManager providerManager)
+        public void PersistDbCache()
         {
-            _providerManager = providerManager;
-            
             // TODO: performance issue: Batch insert, since those T_* didn't exist before anyways, update is useless
             // TODO: SaveChanges at the end only once
 
@@ -151,43 +149,24 @@ namespace Zpp
             List<T_PurchaseOrderPart> tPurchaseOrderParts =
                 _purchaseOrderParts.GetAllAs<T_PurchaseOrderPart>();
 
-            // T_ProductionOrderOperation
-            IStackSet<T_ProductionOrderOperation> tProductionOrderOperations =
-                new StackSet<T_ProductionOrderOperation>();
-            foreach (var tProductionOrderBom in tProductionOrderBoms)
-            {
-                if (tProductionOrderBom.ProductionOrderOperation != null)
-                {
-                    tProductionOrderOperations.Push(tProductionOrderBom.ProductionOrderOperation);    
-                }
-            }
-
-            // T_PurchaseOrders
-            List<T_PurchaseOrder> tPurchaseOrders = new List<T_PurchaseOrder>();
-            
-            foreach (var tPurchaseOrderPart in tPurchaseOrderParts)
-            {
-                tPurchaseOrders.Add(tPurchaseOrderPart.PurchaseOrder);
-            }
-
             // Insert all T_* entities
 
             InsertOrUpdateRange(tProductionOrderBoms, _productionDomainContext.ProductionOrderBoms);
-            InsertOrUpdateRange(tProductionOrderOperations,
+            InsertOrUpdateRange(_productionOrderOperations,
                 _productionDomainContext.ProductionOrderOperations);
             InsertOrUpdateRange(tStockExchangeDemands, _productionDomainContext.StockExchanges);
             // providers
             InsertOrUpdateRange(tStockExchangesProviders, _productionDomainContext.StockExchanges);
             InsertOrUpdateRange(tProductionOrders, _productionDomainContext.ProductionOrders);
             InsertOrUpdateRange(tPurchaseOrderParts, _productionDomainContext.PurchaseOrderParts);
-            InsertOrUpdateRange(tPurchaseOrders, _productionDomainContext.PurchaseOrders);
+            InsertOrUpdateRange(_purchaseOrders, _productionDomainContext.PurchaseOrders);
 
             // at the end: T_DemandToProvider & T_ProviderToDemand
-            InsertOrUpdateRange(_providerManager.GetDemandToProviderTable().GetAll(),
+            InsertOrUpdateRange(DemandToProviderGetAll().GetAll(),
                 _productionDomainContext.DemandToProviders);
-            if (_providerManager.GetProviderToDemandTable().Any())
+            if (ProviderToDemandGetAll().Any())
             {
-                InsertOrUpdateRange(_providerManager.GetProviderToDemandTable().GetAll(),
+                InsertOrUpdateRange(ProviderToDemandGetAll().GetAll(),
                     _productionDomainContext.ProviderToDemand);
             }
             
@@ -353,6 +332,18 @@ namespace Zpp
             {
                 DemandsAdd(demand);
             }
+            
+            // T_ProductionOrderOperation
+            IStackSet<T_ProductionOrderOperation> tProductionOrderOperations =
+                new StackSet<T_ProductionOrderOperation>();
+            foreach (var tProductionOrderBom in _productionOrderBoms.GetAllAsT_ProductionOrderBom())
+            {
+                if (tProductionOrderBom.ProductionOrderOperation != null)
+                {
+                    tProductionOrderOperations.Push(tProductionOrderBom.ProductionOrderOperation);    
+                }
+            }
+            _productionOrderOperations = tProductionOrderOperations.GetAll();
         }
 
         public void ProvidersAddAll(IProviders providers)
@@ -360,6 +351,12 @@ namespace Zpp
             foreach (var provider in providers.GetAll())
             {
                 ProvidersAdd(provider);
+            }
+
+            // T_PurchaseOrders
+            foreach (var tPurchaseOrderPart in _purchaseOrderParts.GetAllAs<T_PurchaseOrderPart>())
+            {
+                _purchaseOrders.Add(tPurchaseOrderPart.PurchaseOrder);
             }
         }
 
@@ -426,6 +423,11 @@ namespace Zpp
         public ProductionOrder ProductionOrderGetById(Id id)
         {
             return _productionOrders.GetAllAs<ProductionOrder>().Single(x => x.GetId().Equals(id));
+        }
+
+        public void SetProviderManager(IProviderManager providerManager)
+        {
+            _providerManager = providerManager;
         }
     }
 }

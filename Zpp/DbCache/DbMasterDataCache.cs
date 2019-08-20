@@ -248,5 +248,10 @@ namespace Zpp
         {
             return _machineGroups.GetAll();
         }
+
+        public M_ArticleBom M_ArticleBomGetByArticleChildId(Id id)
+        {
+            return _articleBoms.GetAll().Single(x => x.ArticleChildId.Equals(id.GetValue()));
+        }
     }
 }

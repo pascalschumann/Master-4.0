@@ -13,7 +13,6 @@ namespace Zpp.Test
             
         }
 
-        
         [Theory]
         [InlineData(TestConfigurationFileNames.DESK_COP_1_LOTSIZE_1)]
         [InlineData(TestConfigurationFileNames.DESK_COP_1_LOT_ORDER_QUANTITY)]

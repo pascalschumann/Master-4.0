@@ -190,8 +190,7 @@ namespace Zpp
             dbTransactionData.SetProviderManager(providerManager);
             
             // job shop scheduling
-            MachineManager.JobSchedulingWithGifflerThompsonAsZaepfel(dbTransactionData,
-                dbMasterDataCache, new PriorityRule());
+            // MachineManager.JobSchedulingWithGifflerThompsonAsZaepfel(dbTransactionData,dbMasterDataCache, new PriorityRule());
 
             // persisting data
             dbTransactionData.PersistDbCache();

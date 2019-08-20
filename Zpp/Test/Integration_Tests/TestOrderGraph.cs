@@ -54,7 +54,7 @@ namespace Zpp.Test
 
             IDirectedGraph<INode> orderDirectedGraph = new DemandToProviderDirectedGraph(dbTransactionData);
 
-            Assert.True(orderDirectedGraph.GetAllHeadNodes().Count > 0,
+            Assert.True(orderDirectedGraph.GetAllHeadNodes().Any(),
                 "There are no toNodes in the orderGraph.");
 
             int sumDemandToProviderAndProviderToDemand =

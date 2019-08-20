@@ -8,17 +8,20 @@ namespace Zpp
     public class ProductionOrderOperationDirectedGraph : ProductionOrderDirectedGraph,
         IDirectedGraph<INode>
     {
-        private readonly Dictionary<ProductionOrder, IDirectedGraph<INode>>
-            _directedProductionOrderOperationGraphs = new Dictionary<ProductionOrder, IDirectedGraph<INode>>();
+        /*private readonly Dictionary<ProductionOrder, IDirectedGraph<INode>>
+            _directedProductionOrderOperationGraphs = new Dictionary<ProductionOrder, IDirectedGraph<INode>>();*/
 
         public ProductionOrderOperationDirectedGraph(IDbTransactionData dbTransactionData) : base(
             dbTransactionData)
         {
+            Dictionary<ProductionOrder, IDirectedGraph<INode>>
+                directedProductionOrderOperationGraphs = new Dictionary<ProductionOrder, IDirectedGraph<INode>>();
+            
             foreach (var uniqueNode in GetAllUniqueNode())
             {
                 ProductionOrder productionOrder = (ProductionOrder) uniqueNode.GetEntity();
                 IDirectedGraph<INode> directedGraph = new DirectedGraph(_dbTransactionData);
-                _directedProductionOrderOperationGraphs.Add(productionOrder, directedGraph);
+                directedProductionOrderOperationGraphs.Add(productionOrder, directedGraph);
                 Dictionary<HierarchyNumber, List<ProductionOrderOperation>>
                     hierarchyToProductionOrderOperation =
                         new Dictionary<HierarchyNumber, List<ProductionOrderOperation>>();
@@ -67,11 +70,11 @@ namespace Zpp
             }
 
             _adjacencyList =
-                MergeDirectedGraphs(_directedProductionOrderOperationGraphs.Values.ToList())
+                MergeDirectedGraphs(directedProductionOrderOperationGraphs.Values.ToList())
                     .GetAdjacencyList();
         }
 
-        public IDirectedGraph<INode> GetProductionOrderOperationGraphOfProductionOrder(
+        /*public IDirectedGraph<INode> GetProductionOrderOperationGraphOfProductionOrder(
             ProductionOrder productionOrder)
         {
             if (_directedProductionOrderOperationGraphs.ContainsKey(productionOrder) == false)
@@ -80,6 +83,6 @@ namespace Zpp
             }
 
             return _directedProductionOrderOperationGraphs[productionOrder];
-        }
+        }*/
     }
 }

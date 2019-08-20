@@ -17,11 +17,9 @@ namespace Zpp
          * one fromNode has many toNodes
          * @return: toNodes
          */
-        List<TNode> GetSuccessorNodes(TNode tailNode);
+        INodes GetSuccessorNodes(TNode tailNode);
         
-        List<TNode> GetPredecessorNodes(TNode headNode);
-        
-        List<T> GetPredecessorNodesAs<T>(TNode headNode);
+        INodes GetPredecessorNodes(TNode headNode);
 
         void AddEdges(TNode fromNode, List<IEdge> edges);
         
@@ -29,41 +27,42 @@ namespace Zpp
 
         int CountEdges();
 
-        List<INode> GetAllHeadNodes();
+        INodes GetAllHeadNodes();
         
-        List<INode> GetAllTailNodes();
+        INodes GetAllTailNodes();
 
         /**
          * No duplicates should be contained
          */
-        List<INode> GetAllUniqueNode();
+        INodes GetAllUniqueNode();
 
-        List<IEdge> GetAllEdgesFromTailNode(INode tailNode);
+        List<IEdge> GetAllEdgesFromTailNode(TNode tailNode);
         
-        List<IEdge> GetAllEdgesTowardsHeadNode(INode headNode);
+        List<IEdge> GetAllEdgesTowardsHeadNode(TNode headNode);
         
-        List<INode> TraverseDepthFirst(Action<INode, List<INode>, List<INode>> action, CustomerOrderPart startNode);
+        INodes TraverseDepthFirst(Action<TNode, List<INode>, List<INode>> action, CustomerOrderPart startNode);
 
         GanttChart GetAsGanttChart(IDbTransactionData dbTransactionData);
 
         /**
          * This removed the node, the edges towards it will point to its childs afterwards
          */
-        void RemoveNode(INode node);
+        void RemoveNode(TNode node);
 
-        void RemoveAllEdgesFromTailNode(INode tailNode);
+        void RemoveAllEdgesFromTailNode(TNode tailNode);
 
-        void RemoveAllEdgesTowardsHeadNode(INode headNode);
+        void RemoveAllEdgesTowardsHeadNode(TNode headNode);
 
-        List<INode> GetLeafNodes();
-        List<T> GetLeafNodesAs<T>();
+        INodes GetLeafNodes();
 
-        List<INode> GetStartNodes();
+        INodes GetStartNodes();
 
-        void ReplaceNodeByDirectedGraph(INode node);
+        void ReplaceNodeByDirectedGraph(TNode node);
 
         List<IEdge> GetAllEdges();
 
-        Dictionary<INode, List<IEdge>> GetAdjacencyList();
+        Dictionary<TNode, List<IEdge>> GetAdjacencyList();
+        
+        
     }
 }

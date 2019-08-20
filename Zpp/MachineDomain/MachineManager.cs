@@ -6,6 +6,7 @@ using Master40.DB.DataModel;
 using Microsoft.EntityFrameworkCore.Internal;
 using Zpp.DemandDomain;
 using Zpp.ProviderDomain;
+using Zpp.Utils;
 using Zpp.WrappersForPrimitives;
 
 namespace Zpp.MachineDomain
@@ -106,11 +107,27 @@ namespace Zpp.MachineDomain
                 return S;
             }
 
-            foreach (var productionOrder in productionOrderGraph.GetLeafNodes())
+            INodes leafs = productionOrderOperationGraph.GetLeafNodes();
+            foreach (var leaf in leafs)
+            {
+                if (leaf.GetType() == typeof(ProductionOrder))
+                {
+                    productionOrderGraph.RemoveNode(leaf);
+                    productionOrderOperationGraph.RemoveNode(leaf);
+                }
+                else if (leaf.GetType() == typeof(ProductionOrderOperation))
+                {
+                    ProductionOrderOperation productionOrderOperation =
+                        (ProductionOrderOperation) leaf.GetEntity();
+                    S.Push(productionOrderOperation);
+                }
+            }
+
+            /*foreach (var productionOrder in productionOrderGraph.GetLeafNodesAs<ProductionOrder>())
             {
                 var productionOrderOperationLeafsOfProductionOrder = productionOrderOperationGraph
                     .GetProductionOrderOperationGraphOfProductionOrder(
-                        (ProductionOrder) productionOrder)
+                        productionOrder)
                     .GetLeafNodesAs<ProductionOrderOperation>();
                 if (productionOrderOperationLeafsOfProductionOrder == null)
                 {
@@ -119,7 +136,7 @@ namespace Zpp.MachineDomain
                 }
 
                 S.PushAll(productionOrderOperationLeafsOfProductionOrder);
-            }
+            }*/
 
             return S;
         }
@@ -131,7 +148,7 @@ namespace Zpp.MachineDomain
         {
             IDirectedGraph<INode> productionOrderGraph =
                 new ProductionOrderDirectedGraph(dbTransactionData);
-            
+
             ProductionOrderOperationDirectedGraph productionOrderOperationGraph =
                 new ProductionOrderOperationDirectedGraph(dbTransactionData);
 
@@ -158,11 +175,11 @@ namespace Zpp.MachineDomain
             */
             IStackSet<ProductionOrderOperation> S = new StackSet<ProductionOrderOperation>();
             IStackSet<ProductionOrderOperation> K = new StackSet<ProductionOrderOperation>();
-            
+
             // Bestimme initiale Menge: S = a
             S = CreateS(productionOrderGraph, productionOrderOperationGraph);
             // t(o) = 0 für alle o aus S (default is always 0 for int)
-            
+
             // while S not empty do
             while (S.Any())
             {
@@ -201,7 +218,12 @@ namespace Zpp.MachineDomain
                     Machine machine = machinesByMachineGroupId[o_min.GetMachineGroupId()][0];
                     o1 = priorityRule.GetHighestPriorityOperation(machine.GetIdleStartTime(),
                         K.GetAll(), dbTransactionData);
+                    if (o1 == null)
+                    {
+                        throw new MrpRunException("This is not possible if K.Any() is true.");
+                    }
                     K.Remove(o1);
+
                     o1.SetMachine(machine);
                     // every productionOrderBom whith this operation o1 has the same forward/backward-schedule
                     ProductionOrderBom productionOrderBom = dbTransactionData.GetAggregator()
@@ -229,17 +251,28 @@ namespace Zpp.MachineDomain
                     /*if N(o1) not empty then
                         S = S vereinigt N(o1) ohne o1
                      */
-                    IStackSet<ProductionOrderOperation>
-                        N = new StackSet<ProductionOrderOperation>();
-                    N = new StackSet<ProductionOrderOperation>(productionOrderOperationGraph
-                        .GetPredecessorNodesAs<ProductionOrderOperation>(o1));
+                    INodes predecessorNodes = productionOrderOperationGraph.GetPredecessorNodes(o1);
+                    IStackSet<INode> N = null;
+                    if (predecessorNodes != null)
+                    {
+                        N = new StackSet<INode>(predecessorNodes);
+                    }
+
                     productionOrderOperationGraph.RemoveNode(o1);
                     S = CreateS(productionOrderGraph, productionOrderOperationGraph);
 
                     // t(o) = d(o1) für alle o aus N(o1)
-                    foreach (var productionOrderOperation in N.GetAll())
+                    if (N != null)
                     {
-                        productionOrderOperation.GetValue().Start = o1.GetValue().End;
+                        foreach (var node in N.GetAll())
+                        {
+                            if (node.GetEntity().GetType() == typeof(ProductionOrderOperation))
+                            {
+                                ProductionOrderOperation productionOrderOperation =
+                                    (ProductionOrderOperation) node.GetEntity();
+                                productionOrderOperation.GetValue().Start = o1.GetValue().End;
+                            }
+                        }
                     }
                 }
             }
@@ -276,13 +309,13 @@ namespace Zpp.MachineDomain
                     if (poppedNode.GetType() == typeof(ProductionOrderBom))
                     {
                         ProductionOrderOperation productionOrderOperation =
-                            ((ProductionOrderBom) poppedNode)
-                            .GetProductionOrderOperation(dbTransactionData);
+                            ((ProductionOrderBom) poppedNode).GetProductionOrderOperation(
+                                dbTransactionData);
                         traversedOperations.Push(productionOrderOperation);
                     }
 
                     discovered[poppedNode] = true;
-                    List<INode> childNodes = orderDirectedGraph.GetSuccessorNodes(poppedNode);
+                    INodes childNodes = orderDirectedGraph.GetSuccessorNodes(poppedNode);
 
                     // action
                     if (childNodes == null)

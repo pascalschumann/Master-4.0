@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
+using Master40.DB.DataModel;
 using Zpp.DemandDomain;
 using Zpp.MachineDomain;
 using Zpp.ProviderDomain;
@@ -68,10 +69,10 @@ namespace Zpp
         public ProductionOrderBom GetAnyProductionOrderBomByProductionOrderOperation(
             ProductionOrderOperation productionOrderOperation)
         {
-            return _dbTransactionData.ProductionOrderBomGetAll().GetAllAs<ProductionOrderBom>()
+            return new ProductionOrderBom(_dbTransactionData.ProductionOrderBomGetAll().GetAllAs<T_ProductionOrderBom>()
                 .Find(x =>
-                    x.GetProductionOrderOperation(_dbTransactionData).GetId()
-                        .Equals(productionOrderOperation.GetId()));
+                    x.ProductionOrderOperationId
+                        .Equals(productionOrderOperation.GetId().GetValue())),_dbMasterDataCache);
         }
     }
 }

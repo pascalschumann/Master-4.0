@@ -13,6 +13,10 @@ namespace Zpp.MachineDomain
             List<ProductionOrderOperation> productionOrderOperations,
             IDbTransactionData dbTransactionData)
         {
+            if (productionOrderOperations.Any()==false)
+            {
+                return null;
+            }
             foreach (var productionOrderOperation in productionOrderOperations)
             {
                 ProductionOrder productionOrder =

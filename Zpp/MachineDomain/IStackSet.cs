@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Zpp.MachineDomain
@@ -6,7 +7,9 @@ namespace Zpp.MachineDomain
      * own Set impl, since HashSet ist not useful if:
      * - get any element e.g. first with O(1)
      * - pop any element with O(1)
-     * but remains the ide of a mathematical set: every item exists only once
+     * - remove O(n), since list must be reindexed
+     * - push() O(1)
+     * but remains the idea of a mathematical set: every item exists only once
      */
     public interface IStackSet<T>: IEnumerable<T>
     {

@@ -39,6 +39,9 @@ namespace Zpp.Test
             stackSet.Remove(testNumber);
             Assert.True(stackSet.GetAny().Equals(testNumber2) && stackSet.Count() == 1,
                 "Remove didn't work.");
+            stackSet.Remove(testNumber2);
+            Assert.True(stackSet.Any() == false && stackSet.Count() == 0,
+                "Remove didn't work.");
         }
 
         [Fact]

@@ -14,7 +14,7 @@ namespace Zpp.MachineDomain
         {
         }
         
-        public StackSet(List<T> list)
+        public StackSet(IEnumerable<T> list)
         {
             PushAll(list);
         }
@@ -33,8 +33,22 @@ namespace Zpp.MachineDomain
 
         public void Remove(T element)
         {
+            if (element==null)
+            {
+                return;
+            }
             _list.RemoveAt(_indices[element]);
             _count--;
+            reIndexList();
+        }
+
+        private void reIndexList()
+        {
+            _indices = new Dictionary<T, int>();
+            for(int i = 0; i < _count; i++)
+            {
+                _indices.Add(_list[i], i);
+            }
         }
 
         public bool Any()
@@ -85,5 +99,7 @@ namespace Zpp.MachineDomain
             all.AddRange(_list);
             return all;
         }
+        
+        
     }
 }

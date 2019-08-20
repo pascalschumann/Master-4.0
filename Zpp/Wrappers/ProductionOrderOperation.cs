@@ -82,6 +82,10 @@ namespace Zpp
 
         public override bool Equals(object obj)
         {
+            if (obj.GetType()!=typeof(ProductionOrderOperation))
+            {
+                return false;
+            }
             ProductionOrderOperation productionOrderOperation = (ProductionOrderOperation) obj;
             return _productionOrderOperation.GetId().Equals(productionOrderOperation._productionOrderOperation.GetId());
         }

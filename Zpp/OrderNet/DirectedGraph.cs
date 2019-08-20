@@ -21,25 +21,29 @@ namespace Zpp
             _dbTransactionData = dbTransactionData;
         }
         
-        public List<INode> GetSuccessorNodes(INode tailNode)
+        public INodes GetSuccessorNodes(INode tailNode)
         {
-            if (!_adjacencyList.ContainsKey(tailNode))
+            if (!_adjacencyList.ContainsKey(tailNode) || _adjacencyList[tailNode].Any()==false)
             {
                 return null;
             }
 
-            return _adjacencyList[tailNode].Select(x => x.GetHeadNode()).ToList();
+            return new Nodes(_adjacencyList[tailNode].Select(x => x.GetHeadNode()).ToList());
         }
 
-        public List<INode> GetPredecessorNodes(INode headNode)
+        public INodes GetPredecessorNodes(INode headNode)
         {
             List<INode> predecessorNodes = new List<INode>();
+            if (GetAllEdgesTowardsHeadNode(headNode)==null)
+            {
+                return null;
+            }
             foreach (var edge in GetAllEdgesTowardsHeadNode(headNode))
             {
                 predecessorNodes.Add(edge.GetTailNode());
             }
 
-            return predecessorNodes;
+            return new Nodes(predecessorNodes);
         }
 
         public void AddEdges(INode fromNode, List<IEdge> edges)
@@ -65,7 +69,7 @@ namespace Zpp
 
         public int CountEdges()
         {
-            return GetAllHeadNodes().Count;
+            return GetAllHeadNodes().Count();
         }
 
         public List<IEdge> GetAllEdgesFromTailNode(INode tailNode)
@@ -130,7 +134,7 @@ namespace Zpp
             return mystring;
         }
 
-        public List<INode> GetAllHeadNodes()
+        public INodes GetAllHeadNodes()
         {
             List<INode> toNodes = new List<INode>();
 
@@ -142,7 +146,7 @@ namespace Zpp
                 }
             }
 
-            return toNodes;
+            return new Nodes(toNodes);
         }
 
         // 
@@ -155,7 +159,7 @@ namespace Zpp
         /// <returns>
         ///    The List of the traversed nodes in exact order
         /// </returns>
-        public List<INode> TraverseDepthFirst(Action<INode, List<INode>, List<INode>> action,
+        public INodes TraverseDepthFirst(Action<INode, List<INode>, List<INode>> action,
             CustomerOrderPart startNode)
         {
             var stack = new Stack<INode>();
@@ -181,7 +185,7 @@ namespace Zpp
                 {
                     traversed.Add(poppedNode);
                     discovered[poppedNode] = true;
-                    List<INode> childNodes = GetSuccessorNodes(poppedNode);
+                    List<INode> childNodes = GetSuccessorNodes(poppedNode).GetAll();
                     action(poppedNode, childNodes, traversed);
 
                     if (childNodes != null)
@@ -194,23 +198,23 @@ namespace Zpp
                 }
             }
 
-            return traversed;
+            return new Nodes(traversed);
         }
 
-        public List<INode> GetAllTailNodes()
+        public INodes GetAllTailNodes()
         {
-            return _adjacencyList.Keys.ToList();
+            return new Nodes(_adjacencyList.Keys.ToList());
         }
 
-        public List<INode> GetAllUniqueNode()
+        public INodes GetAllUniqueNode()
         {
-            List<INode> fromNodes = GetAllTailNodes();
-            List<INode> toNodes = GetAllHeadNodes();
+            INodes fromNodes = GetAllTailNodes();
+            INodes toNodes = GetAllHeadNodes();
             IStackSet<INode> uniqueNodes = new StackSet<INode>();
             uniqueNodes.PushAll(fromNodes);
             uniqueNodes.PushAll(toNodes);
 
-            return uniqueNodes.GetAll();
+            return new Nodes(uniqueNodes.GetAll());
         }
 
         public GanttChart GetAsGanttChart(IDbTransactionData dbTransactionData)
@@ -291,6 +295,8 @@ namespace Zpp
                     }
                 }
             }
+
+            _adjacencyList.Remove(node);
         }
 
         public void RemoveAllEdgesFromTailNode(INode tailNode)
@@ -318,12 +324,12 @@ namespace Zpp
             }
         }
 
-        public List<INode> GetLeafNodes()
+        public INodes GetLeafNodes()
         {
             List<INode> leafs = new List<INode>();
             foreach (var uniqueNode in GetAllUniqueNode())
             {
-                List<INode> successors = GetSuccessorNodes(uniqueNode);
+                INodes successors = GetSuccessorNodes(uniqueNode);
                 if (successors == null)
                 {
                     leafs.Add(uniqueNode);
@@ -335,22 +341,22 @@ namespace Zpp
                 return null;
             }
 
-            return leafs;
+            return new Nodes(leafs);
         }
 
-        public List<INode> GetStartNodes()
+        public INodes GetStartNodes()
         {
             List<INode> starts = new List<INode>();
             foreach (var uniqueNode in GetAllUniqueNode())
             {
-                List<INode> predecessor = GetPredecessorNodes(uniqueNode);
+                INodes predecessor = GetPredecessorNodes(uniqueNode);
                 if (predecessor == null)
                 {
                     starts.Add(uniqueNode);
                 }
             }
 
-            return starts;
+            return new Nodes(starts);
         }
 
         public void ReplaceNodeByDirectedGraph(INode node)
@@ -388,15 +394,6 @@ namespace Zpp
         {
             return _adjacencyList;
         }
-
-        public List<T> GetPredecessorNodesAs<T>(INode headNode)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<T> GetLeafNodesAs<T>()
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 }

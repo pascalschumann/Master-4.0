@@ -20,10 +20,10 @@ namespace Zpp
         {
             _dbTransactionData = dbTransactionData;
         }
-        
+
         public INodes GetSuccessorNodes(INode tailNode)
         {
-            if (!_adjacencyList.ContainsKey(tailNode) || _adjacencyList[tailNode].Any()==false)
+            if (!_adjacencyList.ContainsKey(tailNode) || _adjacencyList[tailNode].Any() == false)
             {
                 return null;
             }
@@ -34,10 +34,11 @@ namespace Zpp
         public INodes GetPredecessorNodes(INode headNode)
         {
             List<INode> predecessorNodes = new List<INode>();
-            if (GetAllEdgesTowardsHeadNode(headNode)==null)
+            if (GetAllEdgesTowardsHeadNode(headNode) == null)
             {
                 return null;
             }
+
             foreach (var edge in GetAllEdgesTowardsHeadNode(headNode))
             {
                 predecessorNodes.Add(edge.GetTailNode());
@@ -223,6 +224,13 @@ namespace Zpp
 
             foreach (var node in GetAllUniqueNode())
             {
+                if (node.GetEntity().GetType() != typeof(ProductionOrderBom) &&
+                    node.GetEntity().GetType() != typeof(ProductionOrderOperation) &&
+                    node.GetEntity().GetType() != typeof(PurchaseOrderPart))
+                {
+                    continue;
+                }
+
                 if (node.GetNodeType().Equals(NodeType.Demand))
                 {
                     Demand demand = (Demand) node.GetEntity();
@@ -249,6 +257,7 @@ namespace Zpp
                             ganttChartBar.operation = productionOrderOperation.GetValue().Name;
                             ganttChartBar.operationId =
                                 productionOrderOperation.GetValue().Id.ToString();
+                            ganttChartBar.resource = productionOrderOperation.GetValue().MachineId.ToString();
                         }
                     }
 
@@ -269,6 +278,43 @@ namespace Zpp
                     }
 
                     ganttChart.AddGanttChartBar(ganttChartBar);
+                }
+            }
+
+            // TODO: remove this once forward scheduling is implemented
+            int min = 0;
+            foreach (var ganttChartBar in ganttChart.GetAllGanttChartBars())
+            {
+                if (ganttChartBar.start == null)
+                {
+                    ganttChartBar.start = ganttChartBar.end;
+                }
+
+                if (ganttChartBar.start != null)
+                {
+                    int start = int.Parse(ganttChartBar.start);
+                    if (start < min)
+                    {
+                        min = start;
+                    }
+                }
+            }
+
+            if (min < 0)
+            {
+                foreach (var ganttChartBar in ganttChart.GetAllGanttChartBars())
+                {
+                    if (ganttChartBar.start != null)
+                    {
+                        int start = int.Parse(ganttChartBar.start);
+                        ganttChartBar.start = (Math.Abs(min) + start).ToString();
+                    }
+
+                    if (ganttChartBar.end != null)
+                    {
+                        int end = int.Parse(ganttChartBar.end);
+                        ganttChartBar.end = (Math.Abs(min) + end).ToString();
+                    }
                 }
             }
 
@@ -373,7 +419,6 @@ namespace Zpp
                 {
                     mergedDirectedGraph.AddEdge(edge.GetTailNode(), edge);
                 }
-                
             }
 
             return mergedDirectedGraph;
@@ -394,6 +439,5 @@ namespace Zpp
         {
             return _adjacencyList;
         }
-        
     }
 }

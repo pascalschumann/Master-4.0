@@ -1,290 +1,29 @@
 ﻿[
   {
-    "article": "Tisch",
-    "articleId": "10017",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "162"
-  },
-  {
-    "article": "Tisch",
-    "articleId": "10017",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "162",
-    "end": "162"
-  },
-  {
-    "article": "Tischplatte",
-    "articleId": "10018",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "162"
-  },
-  {
-    "article": "Montageanleitung",
-    "articleId": "10024",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "162"
-  },
-  {
-    "article": "Tischplatte",
-    "articleId": "10018",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "162",
-    "end": "162"
-  },
-  {
-    "article": "Montageanleitung",
-    "articleId": "10024",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "162",
-    "end": "162"
-  },
-  {
-    "article": "Schrauben",
-    "articleId": "10020",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "162"
-  },
-  {
-    "article": "Tischbein",
-    "articleId": "10019",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "162"
-  },
-  {
-    "article": "Schrauben",
-    "articleId": "10020",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "162",
-    "end": "162"
-  },
-  {
-    "article": "Tischbein",
-    "articleId": "10019",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "162",
-    "end": "162"
-  },
-  {
     "article": "Anschraubplatte",
     "articleId": "10021",
     "operation": "Anschraubplatte anschweißen",
     "operationId": "10205",
-    "resource": null,
-    "start": "132",
-    "end": "152"
+    "resource": "10012",
+    "start": "49",
+    "end": "69"
   },
   {
     "article": "Stahlrohr",
     "articleId": "10022",
     "operation": "Anschraubplatte anschweißen",
     "operationId": "10205",
-    "resource": null,
-    "start": "132",
-    "end": "152"
-  },
-  {
-    "article": "Anschraubplatte",
-    "articleId": "10021",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "152",
-    "end": "152"
-  },
-  {
-    "article": "Stahlrohr",
-    "articleId": "10022",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "152",
-    "end": "152"
+    "resource": "10012",
+    "start": "49",
+    "end": "69"
   },
   {
     "article": "Filzgleiter",
     "articleId": "10023",
     "operation": "Flizgleiter anstecken",
     "operationId": "10209",
-    "resource": null,
-    "start": "152",
-    "end": "162"
-  },
-  {
-    "article": "Filzgleiter",
-    "articleId": "10023",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "162",
-    "end": "162"
-  },
-  {
-    "article": "Tisch",
-    "articleId": "10017",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "162",
-    "end": "162"
-  },
-  {
-    "article": "Tisch",
-    "articleId": "10017",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "162"
-  },
-  {
-    "article": "Tischplatte",
-    "articleId": "10018",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "162",
-    "end": "162"
-  },
-  {
-    "article": "Montageanleitung",
-    "articleId": "10024",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "162",
-    "end": "162"
-  },
-  {
-    "article": "Schrauben",
-    "articleId": "10020",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "162",
-    "end": "162"
-  },
-  {
-    "article": "Tischbein",
-    "articleId": "10019",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "162",
-    "end": "162"
-  },
-  {
-    "article": "Tischbein",
-    "articleId": "10019",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "162"
-  },
-  {
-    "article": "Anschraubplatte",
-    "articleId": "10021",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "152",
-    "end": "152"
-  },
-  {
-    "article": "Stahlrohr",
-    "articleId": "10022",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "152",
-    "end": "152"
-  },
-  {
-    "article": "Filzgleiter",
-    "articleId": "10023",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "162",
-    "end": "162"
-  },
-  {
-    "article": "Tischplatte",
-    "articleId": "10018",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-838",
-    "end": "162"
-  },
-  {
-    "article": "Montageanleitung",
-    "articleId": "10024",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-838",
-    "end": "162"
-  },
-  {
-    "article": "Schrauben",
-    "articleId": "10020",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-838",
-    "end": "162"
-  },
-  {
-    "article": "Anschraubplatte",
-    "articleId": "10021",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-848",
-    "end": "152"
-  },
-  {
-    "article": "Stahlrohr",
-    "articleId": "10022",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-848",
-    "end": "152"
-  },
-  {
-    "article": "Filzgleiter",
-    "articleId": "10023",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-838",
-    "end": "162"
+    "resource": "10014",
+    "start": "89",
+    "end": "99"
   }
 ]

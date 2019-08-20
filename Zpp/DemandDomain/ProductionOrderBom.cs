@@ -99,9 +99,8 @@ namespace Zpp.DemandDomain
             if (_productionOrderBom.ProductionOrderOperation != null &&
                 _productionOrderBom.ProductionOrderOperation.EndBackward != null)
             {
-                // backwards scheduling was already done --> return EndBackward
-                dueTime = new DueTime(_productionOrderBom.ProductionOrderOperation.EndBackward
-                    .GetValueOrDefault());
+                // backwards scheduling was already done --> job-shop-scheduling was done --> return End
+                dueTime = new DueTime(_productionOrderBom.ProductionOrderOperation.End);
                 return dueTime;
             }
             // backwards scheduling was not yet done --> return dueTime of ProductionOrderParent
@@ -230,7 +229,7 @@ namespace Zpp.DemandDomain
 
                 T_ProductionOrderOperation tProductionOrderOperation =
                     _productionOrderBom.ProductionOrderOperation;
-                return new DueTime(tProductionOrderOperation.StartBackward.GetValueOrDefault());
+                return new DueTime(tProductionOrderOperation.Start);
             }
             else
             {

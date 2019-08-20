@@ -225,8 +225,9 @@ namespace Zpp
             foreach (var node in GetAllUniqueNode())
             {
                 if (node.GetEntity().GetType() != typeof(ProductionOrderBom) &&
-                    node.GetEntity().GetType() != typeof(ProductionOrderOperation) &&
-                    node.GetEntity().GetType() != typeof(PurchaseOrderPart))
+                    node.GetEntity().GetType() != typeof(ProductionOrderOperation) 
+                    // && node.GetEntity().GetType() != typeof(PurchaseOrderPart)
+                    )
                 {
                     continue;
                 }
@@ -252,13 +253,16 @@ namespace Zpp
 
                         ProductionOrderOperation productionOrderOperation =
                             productionOrderBom.GetProductionOrderOperation(dbTransactionData);
-                        if (productionOrderOperation != null)
+                        if (productionOrderOperation == null)
                         {
-                            ganttChartBar.operation = productionOrderOperation.GetValue().Name;
+                            continue;
+                        }
+
+                        ganttChartBar.operation = productionOrderOperation.GetValue().Name;
                             ganttChartBar.operationId =
                                 productionOrderOperation.GetValue().Id.ToString();
                             ganttChartBar.resource = productionOrderOperation.GetValue().MachineId.ToString();
-                        }
+                        
                     }
 
                     ganttChart.AddGanttChartBar(ganttChartBar);

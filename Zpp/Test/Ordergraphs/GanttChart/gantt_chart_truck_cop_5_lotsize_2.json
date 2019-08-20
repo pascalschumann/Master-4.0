@@ -1,3710 +1,614 @@
 ﻿[
   {
-    "article": "Dump-Truck",
-    "articleId": "10462",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1300"
-  },
-  {
-    "article": "Dump-Truck",
-    "articleId": "10462",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
     "article": "Skeleton",
-    "articleId": "10464",
+    "articleId": "10494",
     "operation": "Dump-Truck: Wedding",
-    "operationId": "11059",
-    "resource": null,
-    "start": "1275",
-    "end": "1290"
+    "operationId": "11089",
+    "resource": "10484",
+    "start": "1255",
+    "end": "1270"
   },
   {
     "article": "Chassis Type: Dump",
-    "articleId": "10466",
+    "articleId": "10496",
     "operation": "Dump-Truck: Wedding",
-    "operationId": "11059",
-    "resource": null,
-    "start": "1275",
-    "end": "1290"
+    "operationId": "11089",
+    "resource": "10484",
+    "start": "1255",
+    "end": "1270"
   },
   {
     "article": "Glue",
-    "articleId": "10482",
+    "articleId": "10512",
     "operation": "Dump-Truck: Wedding",
-    "operationId": "11059",
-    "resource": null,
-    "start": "1275",
-    "end": "1290"
-  },
-  {
-    "article": "Skeleton",
-    "articleId": "10464",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1290",
-    "end": "1290"
+    "operationId": "11089",
+    "resource": "10484",
+    "start": "1255",
+    "end": "1270"
   },
   {
     "article": "Base plate",
-    "articleId": "10477",
+    "articleId": "10507",
     "operation": "mount poles with wheels to Skeleton",
-    "operationId": "11113",
-    "resource": null,
-    "start": "1265",
-    "end": "1275"
+    "operationId": "11143",
+    "resource": "10484",
+    "start": "1215",
+    "end": "1225"
   },
   {
     "article": "Pole",
-    "articleId": "10484",
+    "articleId": "10514",
     "operation": "mount poles with wheels to Skeleton",
-    "operationId": "11113",
-    "resource": null,
-    "start": "1265",
-    "end": "1275"
-  },
-  {
-    "article": "Base plate",
-    "articleId": "10477",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1275",
-    "end": "1275"
-  },
-  {
-    "article": "Pole",
-    "articleId": "10484",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1275",
-    "end": "1275"
-  },
-  {
-    "article": "Timber Plate 1,5m x 3,0m",
-    "articleId": "10480",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1275"
-  },
-  {
-    "article": "Pole",
-    "articleId": "10484",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1275",
-    "end": "1275"
-  },
-  {
-    "article": "Timber Plate 1,5m x 3,0m",
-    "articleId": "10480",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1275",
-    "end": "1275"
+    "operationId": "11143",
+    "resource": "10484",
+    "start": "1215",
+    "end": "1225"
   },
   {
     "article": "Washer",
-    "articleId": "10479",
+    "articleId": "10509",
     "operation": "Screw wheels onto poles",
-    "operationId": "11117",
-    "resource": null,
-    "start": "1275",
-    "end": "1285"
+    "operationId": "11147",
+    "resource": "10484",
+    "start": "1245",
+    "end": "1255"
   },
   {
     "article": "Wheel",
-    "articleId": "10476",
+    "articleId": "10506",
     "operation": "Screw wheels onto poles",
-    "operationId": "11117",
-    "resource": null,
-    "start": "1275",
-    "end": "1285"
-  },
-  {
-    "article": "Washer",
-    "articleId": "10479",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1285",
-    "end": "1285"
-  },
-  {
-    "article": "Wheel",
-    "articleId": "10476",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1285",
-    "end": "1285"
-  },
-  {
-    "article": "Wheel",
-    "articleId": "10476",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1285",
-    "end": "1285"
-  },
-  {
-    "article": "Wheel",
-    "articleId": "10476",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1285",
-    "end": "1285"
-  },
-  {
-    "article": "Wheel",
-    "articleId": "10476",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1285",
-    "end": "1285"
-  },
-  {
-    "article": "Washer",
-    "articleId": "10479",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1285",
-    "end": "1285"
-  },
-  {
-    "article": "Washer",
-    "articleId": "10479",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1285",
-    "end": "1285"
-  },
-  {
-    "article": "Washer",
-    "articleId": "10479",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1285",
-    "end": "1285"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1290",
-    "end": "1290"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1290",
-    "end": "1290"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1290",
-    "end": "1290"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1290",
-    "end": "1290"
+    "operationId": "11147",
+    "resource": "10484",
+    "start": "1245",
+    "end": "1255"
   },
   {
     "article": "Semitrailer",
-    "articleId": "10478",
+    "articleId": "10508",
     "operation": "Glue Semitrailer",
-    "operationId": "11121",
-    "resource": null,
-    "start": "1285",
-    "end": "1290"
+    "operationId": "11151",
+    "resource": "10484",
+    "start": "1265",
+    "end": "1270"
   },
   {
     "article": "Glue",
-    "articleId": "10482",
+    "articleId": "10512",
     "operation": "Glue Semitrailer",
-    "operationId": "11121",
-    "resource": null,
-    "start": "1285",
-    "end": "1290"
-  },
-  {
-    "article": "Semitrailer",
-    "articleId": "10478",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1290",
-    "end": "1290"
-  },
-  {
-    "article": "Chassis Type: Dump",
-    "articleId": "10466",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1290",
-    "end": "1290"
+    "operationId": "11151",
+    "resource": "10484",
+    "start": "1265",
+    "end": "1270"
   },
   {
     "article": "Cabin",
-    "articleId": "10469",
+    "articleId": "10499",
     "operation": "Dump-Truck: Assemble Lamps",
-    "operationId": "11247",
-    "resource": null,
-    "start": "1280",
-    "end": "1285"
+    "operationId": "11277",
+    "resource": "10484",
+    "start": "1250",
+    "end": "1255"
   },
   {
     "article": "Pegs",
-    "articleId": "10483",
+    "articleId": "10513",
     "operation": "Dump-Truck: Assemble Lamps",
-    "operationId": "11247",
-    "resource": null,
-    "start": "1280",
-    "end": "1285"
+    "operationId": "11277",
+    "resource": "10484",
+    "start": "1250",
+    "end": "1255"
   },
   {
     "article": "Button",
-    "articleId": "10485",
+    "articleId": "10515",
     "operation": "Dump-Truck: Assemble Lamps",
-    "operationId": "11247",
-    "resource": null,
-    "start": "1280",
-    "end": "1285"
-  },
-  {
-    "article": "Cabin",
-    "articleId": "10469",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1285",
-    "end": "1285"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1285",
-    "end": "1285"
-  },
-  {
-    "article": "Button",
-    "articleId": "10485",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1285",
-    "end": "1285"
-  },
-  {
-    "article": "Button",
-    "articleId": "10485",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1285",
-    "end": "1285"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1285",
-    "end": "1285"
-  },
-  {
-    "article": "Timber Block 0,20m x 0,20m",
-    "articleId": "10481",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1285"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1285",
-    "end": "1285"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1285",
-    "end": "1285"
-  },
-  {
-    "article": "Timber Block 0,20m x 0,20m",
-    "articleId": "10481",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1285",
-    "end": "1285"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1290",
-    "end": "1290"
+    "operationId": "11277",
+    "resource": "10484",
+    "start": "1250",
+    "end": "1255"
   },
   {
     "article": "Engine-Block",
-    "articleId": "10470",
+    "articleId": "10500",
     "operation": "Dump-Truck: Mount Engine to Cabin",
-    "operationId": "11252",
-    "resource": null,
-    "start": "1285",
-    "end": "1290"
+    "operationId": "11282",
+    "resource": "10484",
+    "start": "1265",
+    "end": "1270"
   },
   {
     "article": "Glue",
-    "articleId": "10482",
+    "articleId": "10512",
     "operation": "Dump-Truck: Mount Engine to Cabin",
-    "operationId": "11252",
-    "resource": null,
-    "start": "1285",
-    "end": "1290"
-  },
-  {
-    "article": "Engine-Block",
-    "articleId": "10470",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1290",
-    "end": "1290"
-  },
-  {
-    "article": "Timber Block 0,20m x 0,20m",
-    "articleId": "10481",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1290"
+    "operationId": "11282",
+    "resource": "10484",
+    "start": "1265",
+    "end": "1270"
   },
   {
     "article": "Pole",
-    "articleId": "10484",
+    "articleId": "10514",
     "operation": "Glue Truck-Bed",
-    "operationId": "11064",
-    "resource": null,
+    "operationId": "11094",
+    "resource": "10484",
     "start": "1290",
     "end": "1300"
   },
   {
     "article": "Button",
-    "articleId": "10485",
+    "articleId": "10515",
     "operation": "Glue Truck-Bed",
-    "operationId": "11064",
-    "resource": null,
+    "operationId": "11094",
+    "resource": "10484",
     "start": "1290",
     "end": "1300"
   },
   {
     "article": "Pegs",
-    "articleId": "10483",
+    "articleId": "10513",
     "operation": "Glue Truck-Bed",
-    "operationId": "11064",
-    "resource": null,
+    "operationId": "11094",
+    "resource": "10484",
     "start": "1290",
     "end": "1300"
   },
   {
-    "article": "Packing",
-    "articleId": "10486",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1300"
-  },
-  {
-    "article": "User Manual",
-    "articleId": "10487",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1300"
-  },
-  {
-    "article": "Packing",
-    "articleId": "10486",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "User Manual",
-    "articleId": "10487",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
     "article": "Glue",
-    "articleId": "10482",
+    "articleId": "10512",
     "operation": "Glue Truck-Bed",
-    "operationId": "11064",
-    "resource": null,
+    "operationId": "11094",
+    "resource": "10484",
     "start": "1290",
     "end": "1300"
   },
   {
     "article": "Truck-Bed",
-    "articleId": "10465",
+    "articleId": "10495",
     "operation": "Glue Truck-Bed",
-    "operationId": "11064",
-    "resource": null,
+    "operationId": "11094",
+    "resource": "10484",
     "start": "1290",
     "end": "1300"
   },
   {
-    "article": "Truck-Bed",
-    "articleId": "10465",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
     "article": "Side wall long",
-    "articleId": "10471",
+    "articleId": "10501",
     "operation": "Glue side walls and base plate together",
-    "operationId": "11385",
-    "resource": null,
-    "start": "1290",
-    "end": "1295"
+    "operationId": "11415",
+    "resource": "10484",
+    "start": "1280",
+    "end": "1285"
   },
   {
     "article": "Side wall short",
-    "articleId": "10472",
+    "articleId": "10502",
     "operation": "Glue side walls and base plate together",
-    "operationId": "11385",
-    "resource": null,
-    "start": "1290",
-    "end": "1295"
+    "operationId": "11415",
+    "resource": "10484",
+    "start": "1280",
+    "end": "1285"
   },
   {
     "article": "Base plate Truck-Bed",
-    "articleId": "10473",
+    "articleId": "10503",
     "operation": "Glue side walls and base plate together",
-    "operationId": "11385",
-    "resource": null,
-    "start": "1290",
-    "end": "1295"
-  },
-  {
-    "article": "Side wall long",
-    "articleId": "10471",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1295",
-    "end": "1295"
-  },
-  {
-    "article": "Side wall short",
-    "articleId": "10472",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1295",
-    "end": "1295"
-  },
-  {
-    "article": "Base plate Truck-Bed",
-    "articleId": "10473",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1295",
-    "end": "1295"
-  },
-  {
-    "article": "Timber Plate 1,5m x 3,0m",
-    "articleId": "10480",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1295"
-  },
-  {
-    "article": "Timber Plate 1,5m x 3,0m",
-    "articleId": "10480",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1295"
-  },
-  {
-    "article": "Timber Plate 1,5m x 3,0m",
-    "articleId": "10480",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1295"
-  },
-  {
-    "article": "Side wall long",
-    "articleId": "10471",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1295",
-    "end": "1295"
-  },
-  {
-    "article": "Timber Plate 1,5m x 3,0m",
-    "articleId": "10480",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1295"
+    "operationId": "11415",
+    "resource": "10484",
+    "start": "1280",
+    "end": "1285"
   },
   {
     "article": "Pegs",
-    "articleId": "10483",
+    "articleId": "10513",
     "operation": "Mount hatchback",
-    "operationId": "11390",
-    "resource": null,
+    "operationId": "11420",
+    "resource": "10484",
     "start": "1295",
     "end": "1300"
   },
   {
     "article": "Pole",
-    "articleId": "10484",
+    "articleId": "10514",
     "operation": "Mount hatchback",
-    "operationId": "11390",
-    "resource": null,
+    "operationId": "11420",
+    "resource": "10484",
     "start": "1295",
     "end": "1300"
   },
   {
     "article": "Glue",
-    "articleId": "10482",
+    "articleId": "10512",
     "operation": "Mount hatchback",
-    "operationId": "11390",
-    "resource": null,
+    "operationId": "11420",
+    "resource": "10484",
     "start": "1295",
     "end": "1300"
   },
   {
     "article": "Button",
-    "articleId": "10485",
+    "articleId": "10515",
     "operation": "Mount hatchback",
-    "operationId": "11390",
-    "resource": null,
+    "operationId": "11420",
+    "resource": "10484",
     "start": "1295",
     "end": "1300"
   },
   {
     "article": "Side wall short",
-    "articleId": "10472",
+    "articleId": "10502",
     "operation": "Mount hatchback",
-    "operationId": "11390",
-    "resource": null,
+    "operationId": "11420",
+    "resource": "10484",
     "start": "1295",
     "end": "1300"
   },
   {
     "article": "Dump Joint",
-    "articleId": "10474",
+    "articleId": "10504",
     "operation": "Mount hatchback",
-    "operationId": "11390",
-    "resource": null,
+    "operationId": "11420",
+    "resource": "10484",
     "start": "1295",
     "end": "1300"
-  },
-  {
-    "article": "Side wall short",
-    "articleId": "10472",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Dump Joint",
-    "articleId": "10474",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Timber Plate 1,5m x 3,0m",
-    "articleId": "10480",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1300"
-  },
-  {
-    "article": "Race-Truck",
-    "articleId": "10463",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1324"
-  },
-  {
-    "article": "Race-Truck",
-    "articleId": "10463",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1324",
-    "end": "1324"
   },
   {
     "article": "Skeleton",
-    "articleId": "10464",
+    "articleId": "10494",
     "operation": "Race-Truck: Wedding",
-    "operationId": "11510",
-    "resource": null,
-    "start": "1304",
-    "end": "1319"
+    "operationId": "11540",
+    "resource": "10484",
+    "start": "1294",
+    "end": "1309"
   },
   {
     "article": "Chassis Type: Race",
-    "articleId": "10467",
+    "articleId": "10497",
     "operation": "Race-Truck: Wedding",
-    "operationId": "11510",
-    "resource": null,
-    "start": "1304",
-    "end": "1319"
-  },
-  {
-    "article": "Skeleton",
-    "articleId": "10464",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1319",
-    "end": "1319"
+    "operationId": "11540",
+    "resource": "10484",
+    "start": "1294",
+    "end": "1309"
   },
   {
     "article": "Base plate",
-    "articleId": "10477",
+    "articleId": "10507",
     "operation": "mount poles with wheels to Skeleton",
-    "operationId": "11544",
-    "resource": null,
-    "start": "1294",
-    "end": "1304"
+    "operationId": "11574",
+    "resource": "10484",
+    "start": "1254",
+    "end": "1264"
   },
   {
     "article": "Pole",
-    "articleId": "10484",
+    "articleId": "10514",
     "operation": "mount poles with wheels to Skeleton",
-    "operationId": "11544",
-    "resource": null,
-    "start": "1294",
-    "end": "1304"
-  },
-  {
-    "article": "Base plate",
-    "articleId": "10477",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1304",
-    "end": "1304"
-  },
-  {
-    "article": "Timber Plate 1,5m x 3,0m",
-    "articleId": "10480",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1304"
+    "operationId": "11574",
+    "resource": "10484",
+    "start": "1254",
+    "end": "1264"
   },
   {
     "article": "Washer",
-    "articleId": "10479",
+    "articleId": "10509",
     "operation": "Screw wheels onto poles",
-    "operationId": "11548",
-    "resource": null,
-    "start": "1304",
-    "end": "1314"
+    "operationId": "11578",
+    "resource": "10484",
+    "start": "1284",
+    "end": "1294"
   },
   {
     "article": "Wheel",
-    "articleId": "10476",
+    "articleId": "10506",
     "operation": "Screw wheels onto poles",
-    "operationId": "11548",
-    "resource": null,
-    "start": "1304",
-    "end": "1314"
-  },
-  {
-    "article": "Chassis Type: Race",
-    "articleId": "10467",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1319",
-    "end": "1319"
+    "operationId": "11578",
+    "resource": "10484",
+    "start": "1284",
+    "end": "1294"
   },
   {
     "article": "Cabin",
-    "articleId": "10469",
+    "articleId": "10499",
     "operation": "Race-Truck: Assemble Lamps",
-    "operationId": "11594",
-    "resource": null,
-    "start": "1304",
-    "end": "1309"
+    "operationId": "11624",
+    "resource": "10484",
+    "start": "1274",
+    "end": "1279"
   },
   {
     "article": "Pegs",
-    "articleId": "10483",
+    "articleId": "10513",
     "operation": "Race-Truck: Assemble Lamps",
-    "operationId": "11594",
-    "resource": null,
-    "start": "1304",
-    "end": "1309"
+    "operationId": "11624",
+    "resource": "10484",
+    "start": "1274",
+    "end": "1279"
   },
   {
     "article": "Button",
-    "articleId": "10485",
+    "articleId": "10515",
     "operation": "Race-Truck: Assemble Lamps",
-    "operationId": "11594",
-    "resource": null,
-    "start": "1304",
-    "end": "1309"
-  },
-  {
-    "article": "Cabin",
-    "articleId": "10469",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1309",
-    "end": "1309"
-  },
-  {
-    "article": "Timber Block 0,20m x 0,20m",
-    "articleId": "10481",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1309"
+    "operationId": "11624",
+    "resource": "10484",
+    "start": "1274",
+    "end": "1279"
   },
   {
     "article": "Engine Race Extension",
-    "articleId": "10475",
+    "articleId": "10505",
     "operation": "Mount Engine Extension",
-    "operationId": "11599",
-    "resource": null,
-    "start": "1309",
-    "end": "1314"
+    "operationId": "11629",
+    "resource": "10484",
+    "start": "1289",
+    "end": "1294"
   },
   {
     "article": "Engine-Block",
-    "articleId": "10470",
+    "articleId": "10500",
     "operation": "Mount Engine Extension",
-    "operationId": "11599",
-    "resource": null,
-    "start": "1309",
-    "end": "1314"
-  },
-  {
-    "article": "Engine Race Extension",
-    "articleId": "10475",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1314",
-    "end": "1314"
-  },
-  {
-    "article": "Engine-Block",
-    "articleId": "10470",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1314",
-    "end": "1314"
-  },
-  {
-    "article": "Timber Block 0,20m x 0,20m",
-    "articleId": "10481",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1314"
-  },
-  {
-    "article": "Timber Block 0,20m x 0,20m",
-    "articleId": "10481",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1314"
+    "operationId": "11629",
+    "resource": "10484",
+    "start": "1289",
+    "end": "1294"
   },
   {
     "article": "Glue",
-    "articleId": "10482",
+    "articleId": "10512",
     "operation": "Race-Truck: Mount Engine to Cabin",
-    "operationId": "11603",
-    "resource": null,
-    "start": "1314",
-    "end": "1319"
+    "operationId": "11633",
+    "resource": "10484",
+    "start": "1304",
+    "end": "1309"
   },
   {
     "article": "Semitrailer",
-    "articleId": "10478",
+    "articleId": "10508",
     "operation": "Glue Semitrailer",
-    "operationId": "11552",
-    "resource": null,
-    "start": "1314",
-    "end": "1319"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": "Race-Truck: Wedding",
-    "operationId": "11510",
-    "resource": null,
+    "operationId": "11582",
+    "resource": "10484",
     "start": "1304",
-    "end": "1319"
+    "end": "1309"
   },
   {
     "article": "Glue",
-    "articleId": "10482",
+    "articleId": "10512",
+    "operation": "Race-Truck: Wedding",
+    "operationId": "11540",
+    "resource": "10484",
+    "start": "1294",
+    "end": "1309"
+  },
+  {
+    "article": "Glue",
+    "articleId": "10512",
     "operation": "Glue Semitrailer",
-    "operationId": "11552",
-    "resource": null,
-    "start": "1314",
-    "end": "1319"
-  },
-  {
-    "article": "Packing",
-    "articleId": "10486",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1324"
+    "operationId": "11582",
+    "resource": "10484",
+    "start": "1304",
+    "end": "1309"
   },
   {
     "article": "Glue",
-    "articleId": "10482",
+    "articleId": "10512",
     "operation": "Glue Race Wing",
-    "operationId": "11514",
-    "resource": null,
+    "operationId": "11544",
+    "resource": "10484",
     "start": "1319",
     "end": "1324"
   },
   {
     "article": "Pole",
-    "articleId": "10484",
+    "articleId": "10514",
     "operation": "Glue Race Wing",
-    "operationId": "11514",
-    "resource": null,
+    "operationId": "11544",
+    "resource": "10484",
     "start": "1319",
     "end": "1324"
   },
   {
     "article": "Race Wing",
-    "articleId": "10468",
+    "articleId": "10498",
     "operation": "Glue Race Wing",
-    "operationId": "11514",
-    "resource": null,
+    "operationId": "11544",
+    "resource": "10484",
     "start": "1319",
     "end": "1324"
   },
   {
     "article": "Pegs",
-    "articleId": "10483",
+    "articleId": "10513",
     "operation": "Glue Race Wing",
-    "operationId": "11514",
-    "resource": null,
+    "operationId": "11544",
+    "resource": "10484",
     "start": "1319",
-    "end": "1324"
-  },
-  {
-    "article": "Race Wing",
-    "articleId": "10468",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1324",
     "end": "1324"
   },
   {
     "article": "Button",
-    "articleId": "10485",
+    "articleId": "10515",
     "operation": "Glue Race Wing",
-    "operationId": "11514",
-    "resource": null,
+    "operationId": "11544",
+    "resource": "10484",
     "start": "1319",
     "end": "1324"
   },
   {
-    "article": "Timber Plate 1,5m x 3,0m",
-    "articleId": "10480",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1324"
+    "article": "Skeleton",
+    "articleId": "10494",
+    "operation": "Race-Truck: Wedding",
+    "operationId": "11762",
+    "resource": "10484",
+    "start": "1571",
+    "end": "1586"
   },
   {
-    "article": "User Manual",
-    "articleId": "10487",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1324"
+    "article": "Chassis Type: Race",
+    "articleId": "10497",
+    "operation": "Race-Truck: Wedding",
+    "operationId": "11762",
+    "resource": "10484",
+    "start": "1571",
+    "end": "1586"
   },
   {
-    "article": "Dump-Truck",
-    "articleId": "10462",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1403"
+    "article": "Glue",
+    "articleId": "10512",
+    "operation": "Race-Truck: Wedding",
+    "operationId": "11762",
+    "resource": "10484",
+    "start": "1571",
+    "end": "1586"
   },
   {
-    "article": "Race-Truck",
-    "articleId": "10463",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
+    "article": "Base plate",
+    "articleId": "10507",
+    "operation": "mount poles with wheels to Skeleton",
+    "operationId": "11806",
+    "resource": "10484",
+    "start": "1531",
+    "end": "1541"
+  },
+  {
+    "article": "Pole",
+    "articleId": "10514",
+    "operation": "mount poles with wheels to Skeleton",
+    "operationId": "11806",
+    "resource": "10484",
+    "start": "1531",
+    "end": "1541"
+  },
+  {
+    "article": "Wheel",
+    "articleId": "10506",
+    "operation": "Screw wheels onto poles",
+    "operationId": "11810",
+    "resource": "10484",
+    "start": "1561",
+    "end": "1571"
+  },
+  {
+    "article": "Washer",
+    "articleId": "10509",
+    "operation": "Screw wheels onto poles",
+    "operationId": "11810",
+    "resource": "10484",
+    "start": "1561",
+    "end": "1571"
+  },
+  {
+    "article": "Semitrailer",
+    "articleId": "10508",
+    "operation": "Glue Semitrailer",
+    "operationId": "11814",
+    "resource": "10484",
+    "start": "1581",
+    "end": "1586"
+  },
+  {
+    "article": "Glue",
+    "articleId": "10512",
+    "operation": "Glue Semitrailer",
+    "operationId": "11814",
+    "resource": "10484",
+    "start": "1581",
+    "end": "1586"
+  },
+  {
+    "article": "Cabin",
+    "articleId": "10499",
+    "operation": "Race-Truck: Assemble Lamps",
+    "operationId": "11868",
+    "resource": "10484",
+    "start": "1551",
     "end": "1556"
   },
   {
-    "article": "Race-Truck",
-    "articleId": "10463",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1601"
-  },
-  {
-    "article": "Race-Truck",
-    "articleId": "10463",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1601",
-    "end": "1601"
-  },
-  {
-    "article": "Skeleton",
-    "articleId": "10464",
-    "operation": "Race-Truck: Wedding",
-    "operationId": "11732",
-    "resource": null,
-    "start": "1581",
-    "end": "1596"
-  },
-  {
-    "article": "Chassis Type: Race",
-    "articleId": "10467",
-    "operation": "Race-Truck: Wedding",
-    "operationId": "11732",
-    "resource": null,
-    "start": "1581",
-    "end": "1596"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": "Race-Truck: Wedding",
-    "operationId": "11732",
-    "resource": null,
-    "start": "1581",
-    "end": "1596"
-  },
-  {
-    "article": "Skeleton",
-    "articleId": "10464",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1596",
-    "end": "1596"
-  },
-  {
-    "article": "Base plate",
-    "articleId": "10477",
-    "operation": "mount poles with wheels to Skeleton",
-    "operationId": "11776",
-    "resource": null,
-    "start": "1571",
-    "end": "1581"
-  },
-  {
-    "article": "Pole",
-    "articleId": "10484",
-    "operation": "mount poles with wheels to Skeleton",
-    "operationId": "11776",
-    "resource": null,
-    "start": "1571",
-    "end": "1581"
-  },
-  {
-    "article": "Base plate",
-    "articleId": "10477",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1581",
-    "end": "1581"
-  },
-  {
-    "article": "Timber Plate 1,5m x 3,0m",
-    "articleId": "10480",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1581"
-  },
-  {
-    "article": "Wheel",
-    "articleId": "10476",
-    "operation": "Screw wheels onto poles",
-    "operationId": "11780",
-    "resource": null,
-    "start": "1581",
-    "end": "1591"
-  },
-  {
-    "article": "Washer",
-    "articleId": "10479",
-    "operation": "Screw wheels onto poles",
-    "operationId": "11780",
-    "resource": null,
-    "start": "1581",
-    "end": "1591"
-  },
-  {
-    "article": "Semitrailer",
-    "articleId": "10478",
-    "operation": "Glue Semitrailer",
-    "operationId": "11784",
-    "resource": null,
-    "start": "1591",
-    "end": "1596"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": "Glue Semitrailer",
-    "operationId": "11784",
-    "resource": null,
-    "start": "1591",
-    "end": "1596"
-  },
-  {
-    "article": "Chassis Type: Race",
-    "articleId": "10467",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1596",
-    "end": "1596"
-  },
-  {
-    "article": "Cabin",
-    "articleId": "10469",
-    "operation": "Race-Truck: Assemble Lamps",
-    "operationId": "11838",
-    "resource": null,
-    "start": "1581",
-    "end": "1586"
-  },
-  {
     "article": "Pegs",
-    "articleId": "10483",
+    "articleId": "10513",
     "operation": "Race-Truck: Assemble Lamps",
-    "operationId": "11838",
-    "resource": null,
-    "start": "1581",
-    "end": "1586"
-  },
-  {
-    "article": "Cabin",
-    "articleId": "10469",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1586",
-    "end": "1586"
+    "operationId": "11868",
+    "resource": "10484",
+    "start": "1551",
+    "end": "1556"
   },
   {
     "article": "Button",
-    "articleId": "10485",
+    "articleId": "10515",
     "operation": "Race-Truck: Assemble Lamps",
-    "operationId": "11838",
-    "resource": null,
-    "start": "1581",
-    "end": "1586"
-  },
-  {
-    "article": "Timber Block 0,20m x 0,20m",
-    "articleId": "10481",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1586"
+    "operationId": "11868",
+    "resource": "10484",
+    "start": "1551",
+    "end": "1556"
   },
   {
     "article": "Engine Race Extension",
-    "articleId": "10475",
+    "articleId": "10505",
     "operation": "Mount Engine Extension",
-    "operationId": "11843",
-    "resource": null,
-    "start": "1586",
-    "end": "1591"
+    "operationId": "11873",
+    "resource": "10484",
+    "start": "1566",
+    "end": "1571"
   },
   {
     "article": "Engine-Block",
-    "articleId": "10470",
+    "articleId": "10500",
     "operation": "Mount Engine Extension",
-    "operationId": "11843",
-    "resource": null,
-    "start": "1586",
-    "end": "1591"
-  },
-  {
-    "article": "Engine Race Extension",
-    "articleId": "10475",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1591",
-    "end": "1591"
-  },
-  {
-    "article": "Engine-Block",
-    "articleId": "10470",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1591",
-    "end": "1591"
-  },
-  {
-    "article": "Timber Block 0,20m x 0,20m",
-    "articleId": "10481",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1591"
-  },
-  {
-    "article": "Timber Block 0,20m x 0,20m",
-    "articleId": "10481",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1591"
+    "operationId": "11873",
+    "resource": "10484",
+    "start": "1566",
+    "end": "1571"
   },
   {
     "article": "Glue",
-    "articleId": "10482",
+    "articleId": "10512",
     "operation": "Race-Truck: Mount Engine to Cabin",
-    "operationId": "11847",
-    "resource": null,
-    "start": "1591",
-    "end": "1596"
-  },
-  {
-    "article": "User Manual",
-    "articleId": "10487",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1601"
-  },
-  {
-    "article": "Pole",
-    "articleId": "10484",
-    "operation": "Glue Race Wing",
-    "operationId": "11736",
-    "resource": null,
-    "start": "1596",
-    "end": "1601"
-  },
-  {
-    "article": "Packing",
-    "articleId": "10486",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1601"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": "Glue Race Wing",
-    "operationId": "11736",
-    "resource": null,
-    "start": "1596",
-    "end": "1601"
-  },
-  {
-    "article": "Button",
-    "articleId": "10485",
-    "operation": "Glue Race Wing",
-    "operationId": "11736",
-    "resource": null,
-    "start": "1596",
-    "end": "1601"
-  },
-  {
-    "article": "Race Wing",
-    "articleId": "10468",
-    "operation": "Glue Race Wing",
-    "operationId": "11736",
-    "resource": null,
-    "start": "1596",
-    "end": "1601"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": "Glue Race Wing",
-    "operationId": "11736",
-    "resource": null,
-    "start": "1596",
-    "end": "1601"
-  },
-  {
-    "article": "Race Wing",
-    "articleId": "10468",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1601",
-    "end": "1601"
-  },
-  {
-    "article": "Timber Plate 1,5m x 3,0m",
-    "articleId": "10480",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1601"
-  },
-  {
-    "article": "Dump-Truck",
-    "articleId": "10462",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Dump-Truck",
-    "articleId": "10462",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1300"
-  },
-  {
-    "article": "Skeleton",
-    "articleId": "10464",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1290",
-    "end": "1290"
-  },
-  {
-    "article": "Chassis Type: Dump",
-    "articleId": "10466",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1290",
-    "end": "1290"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1290",
-    "end": "1290"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1290",
-    "end": "1290"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1290",
-    "end": "1290"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1290",
-    "end": "1290"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1290",
-    "end": "1290"
-  },
-  {
-    "article": "Skeleton",
-    "articleId": "10464",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1290"
-  },
-  {
-    "article": "Base plate",
-    "articleId": "10477",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1275",
-    "end": "1275"
-  },
-  {
-    "article": "Pole",
-    "articleId": "10484",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1275",
-    "end": "1275"
-  },
-  {
-    "article": "Pole",
-    "articleId": "10484",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1275",
-    "end": "1275"
-  },
-  {
-    "article": "Base plate",
-    "articleId": "10477",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1275"
-  },
-  {
-    "article": "Timber Plate 1,5m x 3,0m",
-    "articleId": "10480",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1275",
-    "end": "1275"
-  },
-  {
-    "article": "Washer",
-    "articleId": "10479",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1285",
-    "end": "1285"
-  },
-  {
-    "article": "Washer",
-    "articleId": "10479",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1285",
-    "end": "1285"
-  },
-  {
-    "article": "Washer",
-    "articleId": "10479",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1285",
-    "end": "1285"
-  },
-  {
-    "article": "Washer",
-    "articleId": "10479",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1285",
-    "end": "1285"
-  },
-  {
-    "article": "Wheel",
-    "articleId": "10476",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1285",
-    "end": "1285"
-  },
-  {
-    "article": "Wheel",
-    "articleId": "10476",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1285",
-    "end": "1285"
-  },
-  {
-    "article": "Wheel",
-    "articleId": "10476",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1285",
-    "end": "1285"
-  },
-  {
-    "article": "Wheel",
-    "articleId": "10476",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1285",
-    "end": "1285"
-  },
-  {
-    "article": "Semitrailer",
-    "articleId": "10478",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1290",
-    "end": "1290"
-  },
-  {
-    "article": "Chassis Type: Dump",
-    "articleId": "10466",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1290"
-  },
-  {
-    "article": "Cabin",
-    "articleId": "10469",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1285",
-    "end": "1285"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1285",
-    "end": "1285"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1285",
-    "end": "1285"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1285",
-    "end": "1285"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1285",
-    "end": "1285"
-  },
-  {
-    "article": "Button",
-    "articleId": "10485",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1285",
-    "end": "1285"
-  },
-  {
-    "article": "Button",
-    "articleId": "10485",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1285",
-    "end": "1285"
-  },
-  {
-    "article": "Cabin",
-    "articleId": "10469",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1285"
-  },
-  {
-    "article": "Timber Block 0,20m x 0,20m",
-    "articleId": "10481",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1285",
-    "end": "1285"
-  },
-  {
-    "article": "Engine-Block",
-    "articleId": "10470",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1290",
-    "end": "1290"
-  },
-  {
-    "article": "Engine-Block",
-    "articleId": "10470",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1290"
-  },
-  {
-    "article": "Packing",
-    "articleId": "10486",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "User Manual",
-    "articleId": "10487",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Truck-Bed",
-    "articleId": "10465",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Truck-Bed",
-    "articleId": "10465",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1300"
-  },
-  {
-    "article": "Side wall long",
-    "articleId": "10471",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1295",
-    "end": "1295"
-  },
-  {
-    "article": "Side wall long",
-    "articleId": "10471",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1295",
-    "end": "1295"
-  },
-  {
-    "article": "Side wall short",
-    "articleId": "10472",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1295",
-    "end": "1295"
-  },
-  {
-    "article": "Base plate Truck-Bed",
-    "articleId": "10473",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1295",
-    "end": "1295"
-  },
-  {
-    "article": "Side wall long",
-    "articleId": "10471",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1295"
-  },
-  {
-    "article": "Side wall short",
-    "articleId": "10472",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1295"
-  },
-  {
-    "article": "Base plate Truck-Bed",
-    "articleId": "10473",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1295"
-  },
-  {
-    "article": "Side wall long",
-    "articleId": "10471",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1295"
-  },
-  {
-    "article": "Side wall short",
-    "articleId": "10472",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Dump Joint",
-    "articleId": "10474",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Side wall short",
-    "articleId": "10472",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1300"
-  },
-  {
-    "article": "Race-Truck",
-    "articleId": "10463",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1324",
-    "end": "1324"
-  },
-  {
-    "article": "Race-Truck",
-    "articleId": "10463",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1324"
-  },
-  {
-    "article": "Skeleton",
-    "articleId": "10464",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1319",
-    "end": "1319"
-  },
-  {
-    "article": "Chassis Type: Race",
-    "articleId": "10467",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1319",
-    "end": "1319"
-  },
-  {
-    "article": "Skeleton",
-    "articleId": "10464",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1319"
-  },
-  {
-    "article": "Base plate",
-    "articleId": "10477",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1304",
-    "end": "1304"
-  },
-  {
-    "article": "Base plate",
-    "articleId": "10477",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1304"
-  },
-  {
-    "article": "Chassis Type: Race",
-    "articleId": "10467",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1319"
-  },
-  {
-    "article": "Cabin",
-    "articleId": "10469",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1309",
-    "end": "1309"
-  },
-  {
-    "article": "Cabin",
-    "articleId": "10469",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1309"
-  },
-  {
-    "article": "Engine Race Extension",
-    "articleId": "10475",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1314",
-    "end": "1314"
-  },
-  {
-    "article": "Engine-Block",
-    "articleId": "10470",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1314",
-    "end": "1314"
-  },
-  {
-    "article": "Engine Race Extension",
-    "articleId": "10475",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1314"
-  },
-  {
-    "article": "Engine-Block",
-    "articleId": "10470",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1314"
-  },
-  {
-    "article": "Race Wing",
-    "articleId": "10468",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1324",
-    "end": "1324"
-  },
-  {
-    "article": "Race Wing",
-    "articleId": "10468",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1324"
-  },
-  {
-    "article": "Race-Truck",
-    "articleId": "10463",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1601",
-    "end": "1601"
-  },
-  {
-    "article": "Race-Truck",
-    "articleId": "10463",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1601"
-  },
-  {
-    "article": "Skeleton",
-    "articleId": "10464",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1596",
-    "end": "1596"
-  },
-  {
-    "article": "Chassis Type: Race",
-    "articleId": "10467",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1596",
-    "end": "1596"
-  },
-  {
-    "article": "Skeleton",
-    "articleId": "10464",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1596"
-  },
-  {
-    "article": "Base plate",
-    "articleId": "10477",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
+    "operationId": "11877",
+    "resource": "10484",
     "start": "1581",
-    "end": "1581"
-  },
-  {
-    "article": "Base plate",
-    "articleId": "10477",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1581"
-  },
-  {
-    "article": "Chassis Type: Race",
-    "articleId": "10467",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1596"
-  },
-  {
-    "article": "Cabin",
-    "articleId": "10469",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1586",
     "end": "1586"
   },
   {
-    "article": "Cabin",
-    "articleId": "10469",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1586"
+    "article": "Pole",
+    "articleId": "10514",
+    "operation": "Glue Race Wing",
+    "operationId": "11766",
+    "resource": "10484",
+    "start": "1596",
+    "end": "1601"
   },
   {
-    "article": "Engine Race Extension",
-    "articleId": "10475",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1591",
-    "end": "1591"
+    "article": "Pegs",
+    "articleId": "10513",
+    "operation": "Glue Race Wing",
+    "operationId": "11766",
+    "resource": "10484",
+    "start": "1596",
+    "end": "1601"
   },
   {
-    "article": "Engine-Block",
-    "articleId": "10470",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1591",
-    "end": "1591"
-  },
-  {
-    "article": "Engine Race Extension",
-    "articleId": "10475",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1591"
-  },
-  {
-    "article": "Engine-Block",
-    "articleId": "10470",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1591"
-  },
-  {
-    "article": "Race Wing",
-    "articleId": "10468",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1601",
+    "article": "Button",
+    "articleId": "10515",
+    "operation": "Glue Race Wing",
+    "operationId": "11766",
+    "resource": "10484",
+    "start": "1596",
     "end": "1601"
   },
   {
     "article": "Race Wing",
-    "articleId": "10468",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": null,
-    "end": "1601"
-  },
-  {
-    "article": "Pole",
-    "articleId": "10484",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-165",
-    "end": "1275"
-  },
-  {
-    "article": "Pole",
-    "articleId": "10484",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-165",
-    "end": "1275"
-  },
-  {
-    "article": "Timber Plate 1,5m x 3,0m",
-    "articleId": "10480",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-165",
-    "end": "1275"
-  },
-  {
-    "article": "Washer",
-    "articleId": "10479",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-155",
-    "end": "1285"
-  },
-  {
-    "article": "Wheel",
-    "articleId": "10476",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-155",
-    "end": "1285"
-  },
-  {
-    "article": "Wheel",
-    "articleId": "10476",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-155",
-    "end": "1285"
-  },
-  {
-    "article": "Wheel",
-    "articleId": "10476",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-155",
-    "end": "1285"
-  },
-  {
-    "article": "Wheel",
-    "articleId": "10476",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-155",
-    "end": "1285"
-  },
-  {
-    "article": "Washer",
-    "articleId": "10479",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-155",
-    "end": "1285"
-  },
-  {
-    "article": "Washer",
-    "articleId": "10479",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-155",
-    "end": "1285"
-  },
-  {
-    "article": "Washer",
-    "articleId": "10479",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-155",
-    "end": "1285"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-150",
-    "end": "1290"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-150",
-    "end": "1290"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-150",
-    "end": "1290"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-150",
-    "end": "1290"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1290",
-    "end": "1290"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1290",
-    "end": "1290"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1290",
-    "end": "1290"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1290",
-    "end": "1290"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1290",
-    "end": "1290"
-  },
-  {
-    "article": "Semitrailer",
-    "articleId": "10478",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-150",
-    "end": "1290"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-155",
-    "end": "1285"
-  },
-  {
-    "article": "Button",
-    "articleId": "10485",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-155",
-    "end": "1285"
-  },
-  {
-    "article": "Button",
-    "articleId": "10485",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-155",
-    "end": "1285"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-155",
-    "end": "1285"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-155",
-    "end": "1285"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-155",
-    "end": "1285"
-  },
-  {
-    "article": "Timber Block 0,20m x 0,20m",
-    "articleId": "10481",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-155",
-    "end": "1285"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-150",
-    "end": "1290"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1290",
-    "end": "1290"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1290",
-    "end": "1290"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1290",
-    "end": "1290"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1290",
-    "end": "1290"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1290",
-    "end": "1290"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1290",
-    "end": "1290"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1290",
-    "end": "1290"
-  },
-  {
-    "article": "Timber Block 0,20m x 0,20m",
-    "articleId": "10481",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1290",
-    "end": "1290"
-  },
-  {
-    "article": "Pole",
-    "articleId": "10484",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Button",
-    "articleId": "10485",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Button",
-    "articleId": "10485",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Packing",
-    "articleId": "10486",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-140",
-    "end": "1300"
-  },
-  {
-    "article": "User Manual",
-    "articleId": "10487",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-140",
-    "end": "1300"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Timber Plate 1,5m x 3,0m",
-    "articleId": "10480",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1295",
-    "end": "1295"
-  },
-  {
-    "article": "Timber Plate 1,5m x 3,0m",
-    "articleId": "10480",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1295",
-    "end": "1295"
-  },
-  {
-    "article": "Timber Plate 1,5m x 3,0m",
-    "articleId": "10480",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1295",
-    "end": "1295"
-  },
-  {
-    "article": "Timber Plate 1,5m x 3,0m",
-    "articleId": "10480",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1295",
-    "end": "1295"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Pole",
-    "articleId": "10484",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Button",
-    "articleId": "10485",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Button",
-    "articleId": "10485",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Dump Joint",
-    "articleId": "10474",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "-140",
-    "end": "1300"
-  },
-  {
-    "article": "Timber Plate 1,5m x 3,0m",
-    "articleId": "10480",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1300",
-    "end": "1300"
-  },
-  {
-    "article": "Pole",
-    "articleId": "10484",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1304",
-    "end": "1304"
-  },
-  {
-    "article": "Pole",
-    "articleId": "10484",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1304",
-    "end": "1304"
-  },
-  {
-    "article": "Timber Plate 1,5m x 3,0m",
-    "articleId": "10480",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1304",
-    "end": "1304"
-  },
-  {
-    "article": "Washer",
-    "articleId": "10479",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1314",
-    "end": "1314"
-  },
-  {
-    "article": "Washer",
-    "articleId": "10479",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1314",
-    "end": "1314"
-  },
-  {
-    "article": "Washer",
-    "articleId": "10479",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1314",
-    "end": "1314"
-  },
-  {
-    "article": "Washer",
-    "articleId": "10479",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1314",
-    "end": "1314"
-  },
-  {
-    "article": "Wheel",
-    "articleId": "10476",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1314",
-    "end": "1314"
-  },
-  {
-    "article": "Wheel",
-    "articleId": "10476",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1314",
-    "end": "1314"
-  },
-  {
-    "article": "Wheel",
-    "articleId": "10476",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1314",
-    "end": "1314"
-  },
-  {
-    "article": "Wheel",
-    "articleId": "10476",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1314",
-    "end": "1314"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1309",
-    "end": "1309"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1309",
-    "end": "1309"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1309",
-    "end": "1309"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1309",
-    "end": "1309"
-  },
-  {
-    "article": "Button",
-    "articleId": "10485",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1309",
-    "end": "1309"
-  },
-  {
-    "article": "Button",
-    "articleId": "10485",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1309",
-    "end": "1309"
-  },
-  {
-    "article": "Timber Block 0,20m x 0,20m",
-    "articleId": "10481",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1309",
-    "end": "1309"
-  },
-  {
-    "article": "Timber Block 0,20m x 0,20m",
-    "articleId": "10481",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1314",
-    "end": "1314"
-  },
-  {
-    "article": "Timber Block 0,20m x 0,20m",
-    "articleId": "10481",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1314",
-    "end": "1314"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1319",
-    "end": "1319"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1319",
-    "end": "1319"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1319",
-    "end": "1319"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1319",
-    "end": "1319"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1319",
-    "end": "1319"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1319",
-    "end": "1319"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1319",
-    "end": "1319"
-  },
-  {
-    "article": "Semitrailer",
-    "articleId": "10478",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1319",
-    "end": "1319"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1319",
-    "end": "1319"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1319",
-    "end": "1319"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1319",
-    "end": "1319"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1319",
-    "end": "1319"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1319",
-    "end": "1319"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1319",
-    "end": "1319"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1319",
-    "end": "1319"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1319",
-    "end": "1319"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1319",
-    "end": "1319"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1319",
-    "end": "1319"
-  },
-  {
-    "article": "Packing",
-    "articleId": "10486",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1324",
-    "end": "1324"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1324",
-    "end": "1324"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1324",
-    "end": "1324"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1324",
-    "end": "1324"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1324",
-    "end": "1324"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1324",
-    "end": "1324"
-  },
-  {
-    "article": "Pole",
-    "articleId": "10484",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1324",
-    "end": "1324"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1324",
-    "end": "1324"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1324",
-    "end": "1324"
-  },
-  {
-    "article": "Button",
-    "articleId": "10485",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1324",
-    "end": "1324"
-  },
-  {
-    "article": "Button",
-    "articleId": "10485",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1324",
-    "end": "1324"
-  },
-  {
-    "article": "Timber Plate 1,5m x 3,0m",
-    "articleId": "10480",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1324",
-    "end": "1324"
-  },
-  {
-    "article": "User Manual",
-    "articleId": "10487",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1324",
-    "end": "1324"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
+    "articleId": "10498",
+    "operation": "Glue Race Wing",
+    "operationId": "11766",
+    "resource": "10484",
     "start": "1596",
-    "end": "1596"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1596",
-    "end": "1596"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1596",
-    "end": "1596"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1596",
-    "end": "1596"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1596",
-    "end": "1596"
-  },
-  {
-    "article": "Pole",
-    "articleId": "10484",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1581",
-    "end": "1581"
-  },
-  {
-    "article": "Pole",
-    "articleId": "10484",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1581",
-    "end": "1581"
-  },
-  {
-    "article": "Timber Plate 1,5m x 3,0m",
-    "articleId": "10480",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1581",
-    "end": "1581"
-  },
-  {
-    "article": "Wheel",
-    "articleId": "10476",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1591",
-    "end": "1591"
-  },
-  {
-    "article": "Wheel",
-    "articleId": "10476",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1591",
-    "end": "1591"
-  },
-  {
-    "article": "Wheel",
-    "articleId": "10476",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1591",
-    "end": "1591"
-  },
-  {
-    "article": "Wheel",
-    "articleId": "10476",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1591",
-    "end": "1591"
-  },
-  {
-    "article": "Washer",
-    "articleId": "10479",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1591",
-    "end": "1591"
-  },
-  {
-    "article": "Washer",
-    "articleId": "10479",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1591",
-    "end": "1591"
-  },
-  {
-    "article": "Washer",
-    "articleId": "10479",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1591",
-    "end": "1591"
-  },
-  {
-    "article": "Washer",
-    "articleId": "10479",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1591",
-    "end": "1591"
-  },
-  {
-    "article": "Semitrailer",
-    "articleId": "10478",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1596",
-    "end": "1596"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1596",
-    "end": "1596"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1596",
-    "end": "1596"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1596",
-    "end": "1596"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1596",
-    "end": "1596"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1596",
-    "end": "1596"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1586",
-    "end": "1586"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1586",
-    "end": "1586"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1586",
-    "end": "1586"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1586",
-    "end": "1586"
-  },
-  {
-    "article": "Button",
-    "articleId": "10485",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1586",
-    "end": "1586"
-  },
-  {
-    "article": "Button",
-    "articleId": "10485",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1586",
-    "end": "1586"
-  },
-  {
-    "article": "Timber Block 0,20m x 0,20m",
-    "articleId": "10481",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1586",
-    "end": "1586"
-  },
-  {
-    "article": "Timber Block 0,20m x 0,20m",
-    "articleId": "10481",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1591",
-    "end": "1591"
-  },
-  {
-    "article": "Timber Block 0,20m x 0,20m",
-    "articleId": "10481",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1591",
-    "end": "1591"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1596",
-    "end": "1596"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1596",
-    "end": "1596"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1596",
-    "end": "1596"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1596",
-    "end": "1596"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1596",
-    "end": "1596"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1596",
-    "end": "1596"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1596",
-    "end": "1596"
-  },
-  {
-    "article": "User Manual",
-    "articleId": "10487",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1601",
-    "end": "1601"
-  },
-  {
-    "article": "Pole",
-    "articleId": "10484",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1601",
-    "end": "1601"
-  },
-  {
-    "article": "Packing",
-    "articleId": "10486",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1601",
-    "end": "1601"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1601",
-    "end": "1601"
-  },
-  {
-    "article": "Pegs",
-    "articleId": "10483",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1601",
-    "end": "1601"
-  },
-  {
-    "article": "Button",
-    "articleId": "10485",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1601",
-    "end": "1601"
-  },
-  {
-    "article": "Button",
-    "articleId": "10485",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1601",
     "end": "1601"
   },
   {
     "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1601",
-    "end": "1601"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1601",
-    "end": "1601"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1601",
-    "end": "1601"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1601",
-    "end": "1601"
-  },
-  {
-    "article": "Glue",
-    "articleId": "10482",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1601",
-    "end": "1601"
-  },
-  {
-    "article": "Timber Plate 1,5m x 3,0m",
-    "articleId": "10480",
-    "operation": null,
-    "operationId": null,
-    "resource": null,
-    "start": "1601",
+    "articleId": "10512",
+    "operation": "Glue Race Wing",
+    "operationId": "11766",
+    "resource": "10484",
+    "start": "1596",
     "end": "1601"
   }
 ]

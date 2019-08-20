@@ -40,7 +40,7 @@ namespace Zpp
         
         List<IEdge> GetAllEdgesTowardsHeadNode(TNode headNode);
         
-        INodes TraverseDepthFirst(Action<TNode, List<INode>, List<INode>> action, CustomerOrderPart startNode);
+        INodes TraverseDepthFirst(Action<TNode, INodes, INodes> action, CustomerOrderPart startNode);
 
         GanttChart GetAsGanttChart(IDbTransactionData dbTransactionData);
 

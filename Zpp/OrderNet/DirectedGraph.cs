@@ -159,13 +159,13 @@ namespace Zpp
         /// <returns>
         ///    The List of the traversed nodes in exact order
         /// </returns>
-        public INodes TraverseDepthFirst(Action<INode, List<INode>, List<INode>> action,
+        public INodes TraverseDepthFirst(Action<INode, INodes, INodes> action,
             CustomerOrderPart startNode)
         {
             var stack = new Stack<INode>();
 
             Dictionary<INode, bool> discovered = new Dictionary<INode, bool>();
-            List<INode> traversed = new List<INode>();
+            INodes traversed = new Nodes();
 
             stack.Push(startNode);
             INode parentNode;
@@ -185,7 +185,7 @@ namespace Zpp
                 {
                     traversed.Add(poppedNode);
                     discovered[poppedNode] = true;
-                    List<INode> childNodes = GetSuccessorNodes(poppedNode).GetAll();
+                    INodes childNodes = GetSuccessorNodes(poppedNode);
                     action(poppedNode, childNodes, traversed);
 
                     if (childNodes != null)
@@ -198,7 +198,7 @@ namespace Zpp
                 }
             }
 
-            return new Nodes(traversed);
+            return traversed;
         }
 
         public INodes GetAllTailNodes()

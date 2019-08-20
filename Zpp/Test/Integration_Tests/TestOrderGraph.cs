@@ -140,7 +140,7 @@ namespace Zpp.Test
             foreach (var customerOrderPart in dbMasterDataCache.T_CustomerOrderPartGetAll().GetAll()
             )
             {
-                orderDirectedGraph.TraverseDepthFirst((INode parentNode, List<INode> childNodes, List<INode> traversed) =>
+                orderDirectedGraph.TraverseDepthFirst((INode parentNode, INodes childNodes, INodes traversed) =>
                 {
                     if (childNodes != null && childNodes.Any())
                     {

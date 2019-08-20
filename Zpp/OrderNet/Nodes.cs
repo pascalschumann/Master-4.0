@@ -5,7 +5,11 @@ namespace Zpp
 {
     public class Nodes : INodes
     {
-        private readonly List<INode> _nodes;
+        private readonly List<INode> _nodes = new List<INode>();
+
+        public Nodes()
+        {
+        }
 
         public Nodes(List<INode> nodes)
         {
@@ -36,6 +40,11 @@ namespace Zpp
         public IEnumerator<INode> GetEnumerator()
         {
             return _nodes.GetEnumerator();
+        }
+
+        public void Add(INode node)
+        {
+            _nodes.Add(node);
         }
     }
 }

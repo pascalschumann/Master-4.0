@@ -8,5 +8,7 @@ namespace Zpp
         List<T> GetAllAs<T>();
 
         List<INode> GetAll();
+
+        void Add(INode node);
     }
 }

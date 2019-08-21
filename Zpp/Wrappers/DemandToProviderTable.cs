@@ -24,13 +24,13 @@ namespace Zpp
 
         public bool Contains(Demand demand)
         {
-            return _list.Select(x => x.DemandId).ToList()
+            return List.Select(x => x.DemandId).ToList()
                 .Contains(demand.GetId().GetValue());
         }
 
         public bool Contains(Provider provider)
         {
-            return _list.Select(x => x.ProviderId).ToList()
+            return List.Select(x => x.ProviderId).ToList()
                 .Contains(provider.GetId().GetValue());
         }
 

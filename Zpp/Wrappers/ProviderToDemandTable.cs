@@ -25,7 +25,7 @@ namespace Zpp
             providerToDemand.DemandId = demandId.GetValue();
             providerToDemand.ProviderId = provider.GetId().GetValue();
 
-            _list.Add(providerToDemand);
+            List.Add(providerToDemand);
         }
         
     }

@@ -5,7 +5,7 @@ namespace Zpp
 {
     public class CollectionWrapperWithList<T>: ICollectionWrapper<T>
     {
-        protected readonly List<T> _list = new List<T>();
+        protected readonly List<T> List = new List<T>();
 
         /**
          * Init collectionWrapper with a copy of given list
@@ -14,7 +14,7 @@ namespace Zpp
         {
             foreach (var item in list)
             {
-                _list.Add(item);
+                List.Add(item);
             }
         }
 
@@ -24,27 +24,27 @@ namespace Zpp
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return _list.GetEnumerator();
+            return List.GetEnumerator();
         }
 
         public IEnumerator<T> GetEnumerator()
         {
-            return _list.GetEnumerator();
+            return List.GetEnumerator();
         }
 
         public List<T> GetAll()
         {
-            return _list;
+            return List;
         }
 
         public void Add(T item)
         {
-            _list.Add(item);
+            List.Add(item);
         }
 
         public void AddAll(IEnumerable<T> items)
         {
-            _list.AddRange(items);
+            List.AddRange(items);
         }
     }
 }

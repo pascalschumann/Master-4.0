@@ -26,7 +26,7 @@ namespace Zpp.DemandDomain
         public List<IDemand> GetAllAsIDemand()
         {
             List<IDemand> iDemands = new List<IDemand>();
-            foreach (var iDemand in _list)
+            foreach (var iDemand in List)
             {
                 iDemands.Add(iDemand.GetIDemand());
             }
@@ -37,7 +37,7 @@ namespace Zpp.DemandDomain
         public List<T> GetAllAs<T>()
         {
             List<T> productionOrderBoms = new List<T>();
-            foreach (var demand in _list)
+            foreach (var demand in List)
             {
                 productionOrderBoms.Add((T)demand.GetIDemand());
             }
@@ -48,9 +48,9 @@ namespace Zpp.DemandDomain
         public void OrderDemandsByUrgency(IDbTransactionData dbTransactionData)
         {
             // sort only, if there are more than one element
-            if (_list.Count > 1)
+            if (List.Count > 1)
             {
-                _list.Sort((x, y) =>
+                List.Sort((x, y) =>
                 {
                     return x.GetDueTime(dbTransactionData).CompareTo(y.GetDueTime(dbTransactionData));
                 });
@@ -64,13 +64,13 @@ namespace Zpp.DemandDomain
 
         public void Clear()
         {
-            _list.Clear();
+            List.Clear();
         }
 
         public Quantity GetQuantityOfAll()
         {
             Quantity sumQuantity = Quantity.Null();
-            foreach (var demand in _list)
+            foreach (var demand in List)
             {
                 sumQuantity.IncrementBy(demand.GetQuantity());
             }

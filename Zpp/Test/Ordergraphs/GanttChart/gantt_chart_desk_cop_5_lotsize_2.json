@@ -57,7 +57,7 @@
     "article": "Anschraubplatte",
     "articleId": "16545",
     "operation": "Anschraubplatte anschweißen",
-    "operationId": "16833",
+    "operationId": "16834",
     "resource": "16536",
     "start": "40",
     "end": "60"
@@ -66,7 +66,7 @@
     "article": "Filzgleiter",
     "articleId": "16547",
     "operation": "Flizgleiter anstecken",
-    "operationId": "16837",
+    "operationId": "16838",
     "resource": "16538",
     "start": "60",
     "end": "70"
@@ -75,7 +75,7 @@
     "article": "Stahlrohr",
     "articleId": "16546",
     "operation": "Anschraubplatte anschweißen",
-    "operationId": "16833",
+    "operationId": "16834",
     "resource": "16536",
     "start": "40",
     "end": "60"
@@ -84,7 +84,16 @@
     "article": "Anschraubplatte",
     "articleId": "16545",
     "operation": "Anschraubplatte anschweißen",
-    "operationId": "16869",
+    "operationId": "16870",
+    "resource": "16537",
+    "start": "60",
+    "end": "80"
+  },
+  {
+    "article": "Stahlrohr",
+    "articleId": "16546",
+    "operation": "Anschraubplatte anschweißen",
+    "operationId": "16870",
     "resource": "16537",
     "start": "60",
     "end": "80"
@@ -93,19 +102,10 @@
     "article": "Filzgleiter",
     "articleId": "16547",
     "operation": "Flizgleiter anstecken",
-    "operationId": "16873",
+    "operationId": "16874",
     "resource": "16539",
     "start": "80",
     "end": "90"
-  },
-  {
-    "article": "Stahlrohr",
-    "articleId": "16546",
-    "operation": "Anschraubplatte anschweißen",
-    "operationId": "16869",
-    "resource": "16537",
-    "start": "60",
-    "end": "80"
   },
   {
     "article": "Anschraubplatte",

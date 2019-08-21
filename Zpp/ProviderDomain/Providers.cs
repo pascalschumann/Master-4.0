@@ -26,7 +26,7 @@ namespace Zpp.ProviderDomain
         public List<T> GetAllAs<T>()
         {
             List<T> providers = new List<T>();
-            foreach (var provider in _list)
+            foreach (var provider in List)
             {
                 providers.Add((T) provider.ToIProvider());
             }
@@ -43,7 +43,7 @@ namespace Zpp.ProviderDomain
         {
             Quantity providedQuantity = new Quantity(Quantity.Null());
 
-            foreach (var provider in _list)
+            foreach (var provider in List)
             {
                 if (articleId.Equals(provider.GetArticleId()))
                 {
@@ -56,12 +56,12 @@ namespace Zpp.ProviderDomain
 
         public void Clear()
         {
-            _list.Clear();
+            List.Clear();
         }
 
         public bool AnyDependingDemands()
         {
-            foreach (var provider in _list)
+            foreach (var provider in List)
             {
                 if (provider.AnyDependingDemands())
                 {
@@ -94,7 +94,7 @@ namespace Zpp.ProviderDomain
             List<Demand> unSatisfiedDemands = new List<Demand>();
             Dictionary<Provider, Quantity> reservableQuantityToProvider =
                 new Dictionary<Provider, Quantity>();
-            foreach (var provider in _list)
+            foreach (var provider in List)
             {
                 reservableQuantityToProvider.Add(provider, provider.GetQuantity());
             }
@@ -102,7 +102,7 @@ namespace Zpp.ProviderDomain
             foreach (var demand in demands.GetAll())
             {
                 Quantity neededQuantity = demand.GetQuantity();
-                foreach (var provider in _list)
+                foreach (var provider in List)
                 {
                     Quantity reservableQuantity = reservableQuantityToProvider[provider];
                     if (provider.GetArticleId().Equals(demand.GetArticleId()) &&
@@ -133,7 +133,7 @@ namespace Zpp.ProviderDomain
         public Provider GetProviderById(Id id)
         {
             // performance: cache this in a dictionary
-            foreach (var provider in _list)
+            foreach (var provider in List)
             {
                 if (provider.GetId().Equals(id))
                 {
@@ -148,7 +148,7 @@ namespace Zpp.ProviderDomain
         {
             List<Provider> providers = new List<Provider>();
             // performance: cache this in a dictionary
-            foreach (var provider in _list)
+            foreach (var provider in List)
             {
                 if (provider.GetArticleId().Equals(id))
                 {

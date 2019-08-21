@@ -19,7 +19,7 @@ namespace Zpp
         public List<T_PurchaseOrder> GetAllAsT_PurchaseOrder()
         {
             List<T_PurchaseOrder> productionOrderBoms = new List<T_PurchaseOrder>();
-            foreach (var demand in _list)
+            foreach (var demand in List)
             {
                 productionOrderBoms.Add(demand.ToT_PurchaseOrder());
             }

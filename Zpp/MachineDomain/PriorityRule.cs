@@ -31,8 +31,7 @@ namespace Zpp.MachineDomain
                 productionOrderOperation.SetPriority(priority);
             }
 
-            productionOrderOperations.OrderBy(x => x.GetPriority().GetValue());
-            return productionOrderOperations[0];
+            return productionOrderOperations.OrderBy(x => x.GetPriority().GetValue()).ToList()[0];
         }
 
         public Priority GetPriorityOfProductionOrderOperation(DueTime now,

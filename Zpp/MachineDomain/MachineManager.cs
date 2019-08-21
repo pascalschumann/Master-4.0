@@ -213,9 +213,8 @@ namespace Zpp.MachineDomain
                     // Entnehme Operation mit höchster Prio (o1) aus K und plane auf nächster freier Machine ein
                     ProductionOrderOperation o1 = null;
 
-                    machinesByMachineGroupId[o_min.GetMachineGroupId()]
-                        .OrderBy(x => x.GetIdleStartTime().GetValue());
-                    Machine machine = machinesByMachineGroupId[o_min.GetMachineGroupId()][0];
+                    Machine machine = machinesByMachineGroupId[o_min.GetMachineGroupId()]
+                        .OrderBy(x => x.GetIdleStartTime().GetValue()).ToList()[0];
                     o1 = priorityRule.GetHighestPriorityOperation(machine.GetIdleStartTime(),
                         K.GetAll(), dbTransactionData);
                     if (o1 == null)

@@ -5,17 +5,8 @@
     "operation": "Anschraubplatte anschweißen",
     "operationId": "10205",
     "resource": "10012",
-    "start": "49",
-    "end": "69"
-  },
-  {
-    "article": "Stahlrohr",
-    "articleId": "10022",
-    "operation": "Anschraubplatte anschweißen",
-    "operationId": "10205",
-    "resource": "10012",
-    "start": "49",
-    "end": "69"
+    "start": "0",
+    "end": "20"
   },
   {
     "article": "Filzgleiter",
@@ -23,7 +14,16 @@
     "operation": "Flizgleiter anstecken",
     "operationId": "10209",
     "resource": "10014",
-    "start": "89",
-    "end": "99"
+    "start": "20",
+    "end": "30"
+  },
+  {
+    "article": "Stahlrohr",
+    "articleId": "10022",
+    "operation": "Anschraubplatte anschweißen",
+    "operationId": "10205",
+    "resource": "10012",
+    "start": "0",
+    "end": "20"
   }
 ]

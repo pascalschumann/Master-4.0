@@ -3,48 +3,14 @@ using System.Collections.Generic;
 
 namespace Zpp
 {
-    public class Nodes : INodes
+    public class Nodes : CollectionWrapperWithList<INode>, INodes
     {
-        private readonly List<INode> _nodes = new List<INode>();
+        public Nodes(List<INode> list) : base(list)
+        {
+        }
 
         public Nodes()
         {
-        }
-
-        public Nodes(List<INode> nodes)
-        {
-            _nodes = nodes;
-        }
-
-        public List<T> GetAllAs<T>()
-        {
-            List<T> typedNodes = new List<T>();
-            foreach (var node in _nodes)
-            {
-                typedNodes.Add((T)node.GetEntity());
-            }
-
-            return typedNodes;
-        }
-
-        public List<INode> GetAll()
-        {
-            return _nodes;
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return _nodes.GetEnumerator();
-        }
-
-        public IEnumerator<INode> GetEnumerator()
-        {
-            return _nodes.GetEnumerator();
-        }
-
-        public void Add(INode node)
-        {
-            _nodes.Add(node);
         }
     }
 }

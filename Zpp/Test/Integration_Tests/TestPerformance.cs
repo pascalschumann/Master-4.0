@@ -11,7 +11,7 @@ namespace Zpp.Test
         
         private const int MAX_TIME_FOR_MRP_RUN = 90;
 
-        public TestPerformance()
+        public TestPerformance() : base(true, true)
         {
 
         }

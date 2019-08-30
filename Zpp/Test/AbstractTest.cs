@@ -39,9 +39,9 @@ namespace Zpp.Test
          * --> seems a bit strange, but is needed to enable parameterized tests:
          * the default db should not be initialized in this case, but the testConfig is not available as constructor parameter
          */
-        public AbstractTest(bool initDefaultTestConfig)
+        public AbstractTest(bool initDefaultTestConfig, bool useLocalDb = false)
         {
-            ProductionDomainContext = Dbms.getDbContext();
+            ProductionDomainContext = Dbms.getDbContext(useLocalDb);
 
             if (initDefaultTestConfig)
             {

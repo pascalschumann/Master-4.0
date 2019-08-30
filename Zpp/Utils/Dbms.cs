@@ -22,7 +22,7 @@ namespace Zpp.Utils
         }*/
         );
 
-        public static ProductionDomainContext getDbContext()
+        public static ProductionDomainContext getDbContext(bool local = false)
         {
             ProductionDomainContext productionDomainContext;
 
@@ -31,8 +31,15 @@ namespace Zpp.Utils
             /*_productionDomainContext = new ProductionDomainContext(new DbContextOptionsBuilder<MasterDBContext>()
                 .UseInMemoryDatabase(databaseName: "InMemoryDB")
                 .Options);*/
-
-            if (Constants.IsWindows)
+            if (local)
+            {
+                productionDomainContext = new ProductionDomainContext(
+                    new DbContextOptionsBuilder<MasterDBContext>().UseLoggerFactory(MyLoggerFactory)
+                        .UseSqlServer(
+                            // Constants.DbConnectionZppLocalDb)
+                            Constants.DbConnectionZppLocalDb).Options);
+                    Constants.IsLocalDb = true;
+            } else if (Constants.IsWindows)
             {
                 // Windows
                 productionDomainContext = new ProductionDomainContext(
@@ -48,13 +55,6 @@ namespace Zpp.Utils
                 productionDomainContext = new ProductionDomainContext(
                     new DbContextOptionsBuilder<MasterDBContext>().UseLoggerFactory(MyLoggerFactory)
                         .UseSqlServer(Constants.DbConnectionZppSqlServer()).Options);
-
-                // sqlite
-                // _productionDomainContext = InMemoryContext.CreateInMemoryContext();
-                // inMemory
-                /*_productionDomainContext = new ProductionDomainContext(new DbContextOptionsBuilder<MasterDBContext>()
-                    .UseInMemoryDatabase(databaseName: "InMemoryDB")
-                    .Options);*/
             }
 
             MyLoggerFactory.AddNLog();

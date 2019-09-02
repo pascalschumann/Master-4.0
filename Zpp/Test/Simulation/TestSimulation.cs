@@ -16,9 +16,9 @@ namespace Zpp.Test
         public void TestSimulationWithResults()
         {
 
-            var Simulator = new Simulator();
-            var simulationInval = new SimulationInterval(0, 1440);
-            Simulator.ProcessCurrentInterval(simulationInval, ProductionDomainContext);
+            var simulator = new Simulator();
+            var simulationInterval = new SimulationInterval(0, 1440);
+            simulator.ProcessCurrentInterval(simulationInterval, ProductionDomainContext);
         }
     }
 }

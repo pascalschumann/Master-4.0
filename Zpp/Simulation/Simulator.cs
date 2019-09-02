@@ -61,9 +61,9 @@ namespace Zpp.Simulation
 
             // example to monitor for FinishWork Messages.
 
-            var monitor = _akkaSimulation.ActorSystem.ActorOf(props: WorkTimeMonitor
-                    .Props(time: 0),
-                name: "SimulationMonitor");
+            var monitor = _akkaSimulation.ActorSystem
+                                         .ActorOf(props: WorkTimeMonitor.Props(time: 0),
+                                                   name: "SimulationMonitor");
             if(_akkaSimulation.IsReady())
             {
                 _akkaSimulation.RunAsync();
@@ -72,7 +72,7 @@ namespace Zpp.Simulation
 
 
 
-            Debug.WriteLine("Systen shutdown. . . ");
+            Debug.WriteLine("System shutdown. . . ");
             Debug.WriteLine("System Runtime " + _akkaSimulation.ActorSystem.Uptime);
             return true;
         }
@@ -105,18 +105,19 @@ namespace Zpp.Simulation
                                          .Where(x => x.ExchangeType == ExchangeType.Insert
                                            && x.RequiredOnTime <= simulationInterval.EndAd
                                            && x.RequiredOnTime >= simulationInterval.StartAt
-                                           && x.Stock.Article.ToPurchase).ToList();
+                                           && x.Stock.Article.ToPurchase);
             foreach (var demand in puchaseDemands)
             {
                 demand.State = State.Finished;
             }
-            Debug.WriteLine($"Just set {puchaseDemands.Count} to Finished!");
-            _dBcontext.SaveChanges();
+            Debug.WriteLine($"Just set {puchaseDemands.Count()} Stock Exchanges to Finished!");
+            _dBcontext.SaveChanges();   
         }
 
         private void CreateResource(IActorRef jobDistributor, AkkaSim.Simulation sim)
         {
-            foreach (var machine in _dBcontext.Machines.ToList())
+            var machines = _dBcontext.Machines.AsNoTracking().ToList();
+            foreach (var machine in machines)
             {
                 var createMachines = JobDistributor.AddMachine.Create(machine, jobDistributor);
                 sim.SimulationContext.Tell(createMachines, ActorRefs.Nobody);

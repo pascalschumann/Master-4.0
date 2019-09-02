@@ -9,7 +9,7 @@ namespace Zpp.Utils
     {
         public static readonly bool IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
-        public static bool IsLocalDb = true;
+        public static bool IsLocalDb = false;
         // TODO: the random/dateTime is a workaround, remove this if drop database query in Dispose() in TestClasses is added
         private static readonly string random = $"{new Random().Next(1, 1000000)}";
 
@@ -34,7 +34,7 @@ namespace Zpp.Utils
             return DateTime.Now.ToString("MM-dd_HH:mm") + $"__{ticks.Substring(10, ticks.Length-10)}";
         }
         
-        public static String DbConnectionZppLocalDb { get; }=
+        public static String DbConnectionZppLocalDb { get; } =
             $"Server=(localdb)\\mssqllocaldb;Database=UnitTestDB;Trusted_Connection=True;MultipleActiveResultSets=true";
 
         public static String DbConnectionZppSqlServer()

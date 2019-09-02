@@ -55,7 +55,14 @@ namespace Zpp.Simulation.Agents.JobDistributor
             var operation = ResourceManager.NextElementFor(machineRef);
             if (operation == null) return;
             var msg = Resource.Work.Create(operation, machineRef);
-            _SimulationContext.Tell(msg, this.Self);
+
+            // Operation is on Time or Delayed
+            if (operation.Start <= TimePeriod)
+            {
+                _SimulationContext.Tell(msg, this.Self);
+                return;
+            } // else operation starts in the future and has to wait.
+            Schedule(operation.Start - TimePeriod, msg);
         }
 
         private void CreateMachines(M_Machine machine, long time)

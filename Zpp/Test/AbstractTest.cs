@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Xunit;
 using Xunit.Abstractions;
-using Zpp.Test.Configurations;
-using Zpp.Test.Configurations.Scenarios;
+using Zpp.Test.Configuration;
+using Zpp.Test.Configuration.Scenarios;
 
 namespace Zpp.Test
 {

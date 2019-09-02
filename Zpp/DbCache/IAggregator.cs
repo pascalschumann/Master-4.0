@@ -24,5 +24,10 @@ namespace Zpp
         Demands GetDemandsOfProvider(Provider provider);
 
         ProductionOrderBom GetAnyProductionOrderBomByProductionOrderOperation(ProductionOrderOperation productionOrderOperation);
+
+        ProductionOrderBoms GetAllProductionOrderBomsBy(
+            ProductionOrderOperation productionOrderOperation);
+
+        Providers GetAllProviderOfDemand(Demand demand, IDbTransactionData dbTransactionData);
     }
 }

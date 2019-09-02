@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
@@ -84,6 +85,32 @@ namespace Zpp
             }
                 
             return new ProductionOrderBom(productionOrderBom,_dbMasterDataCache);
+        }
+
+        public ProductionOrderBoms GetAllProductionOrderBomsBy(ProductionOrderOperation productionOrderOperation)
+        {
+            List<T_ProductionOrderBom> productionOrderBoms = _dbTransactionData.ProductionOrderBomGetAll().GetAllAs<T_ProductionOrderBom>().FindAll(x =>
+                x.ProductionOrderOperationId.Equals(productionOrderOperation.GetId().GetValue()));
+            if (productionOrderBoms == null || productionOrderBoms.Any() == false)
+            {
+                throw new MrpRunException("How could an productionOrderOperation without an T_ProductionOrderBom exists?");
+            }
+                
+            return new ProductionOrderBoms(productionOrderBoms, _dbMasterDataCache);
+        }
+
+        public Providers GetAllProviderOfDemand(Demand demand, IDbTransactionData dbTransactionData)
+        {
+            Providers providers = new Providers();
+            foreach (var demandToProvider in dbTransactionData.DemandToProviderGetAll())
+            {
+                if (demandToProvider.GetDemandId().Equals(demand.GetId()))
+                {
+                    providers.Add(dbTransactionData.ProvidersGetById(demandToProvider.GetProviderId()));
+                }
+                
+            }
+            return providers;
         }
     }
 }

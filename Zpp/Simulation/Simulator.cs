@@ -1,11 +1,12 @@
-﻿using Akka.Actor;
+﻿using System;
+using Akka.Actor;
 using AkkaSim.Definitions;
-using Master40.DB.Data.Context;
 using Master40.DB.Enums;
-using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
-using System.Linq;
+using System.Threading;
+using Zpp.DbCache;
 using Zpp.Simulation.Agents.JobDistributor;
+using Zpp.Simulation.Agents.JobDistributor.Types;
 using Zpp.Simulation.Monitors;
 using Zpp.Simulation.Types;
 
@@ -13,9 +14,10 @@ namespace Zpp.Simulation
 {
     public class Simulator
     {
+        private readonly IDbMasterDataCache _dbMasterDataCache;
+        private readonly IDbTransactionData _dbTransactionData;
         private long _currentTime { get; set; } = 0;
         private SimulationConfig _simulationConfig { get; }
-        private ProductionDomainContext _dBcontext { get; set; }
         private AkkaSim.Simulation _akkaSimulation { get; set; }
         public Simulator()
         {
@@ -23,10 +25,10 @@ namespace Zpp.Simulation
         }
 
 
-        public bool ProcessCurrentInterval(SimulationInterval simulationInterval, ProductionDomainContext context)
+        public bool ProcessCurrentInterval(SimulationInterval simulationInterval, IDbMasterDataCache dbMasterDataCache, IDbTransactionData dbTransactionData)
         {
             Debug.WriteLine("Start simulation system. . . ");
-            _dBcontext = context;
+
             _currentTime = simulationInterval.StartAt;
             _akkaSimulation = new AkkaSim.Simulation(_simulationConfig);
 
@@ -79,18 +81,18 @@ namespace Zpp.Simulation
 
         private void ProvideJobDistributor(SimulationInterval simulationInterval, IActorRef jobDistributor)
         {
-            var productionOrderOperations = _dBcontext.ProductionOrderOperations
-                                                    .Include(x => x.Machine)
-                                                    .Include(x => x.ProductionOrderBoms)
-                                                      .ThenInclude(x => x.ArticleChild)
-                                                    .Include(x => x.ProductionOrderBoms)
-                                                      .ThenInclude(x => x.ProductionOrderParent)
-                                                    .Where(x => x.Start < simulationInterval.EndAd
-                                                             && x.ProducingState == ProducingState.Created)
-                                                    .ToList();
-            ;
-
-            _akkaSimulation.SimulationContext.Tell(JobDistributor.OperationsToDistibute.Create(productionOrderOperations, jobDistributor), ActorRefs.NoSender);
+            // var productionOrderOperations = _dBcontext.ProductionOrderOperations
+            //                                         .Include(x => x.Machine)
+            //                                         .Include(x => x.ProductionOrderBoms)
+            //                                           .ThenInclude(x => x.ArticleChild)
+            //                                         .Include(x => x.ProductionOrderBoms)
+            //                                           .ThenInclude(x => x.ProductionOrderParent)
+            //                                         .Where(x => x.Start < simulationInterval.EndAt
+            //                                                  && x.ProducingState == ProducingState.Created)
+            //                                         .ToList();
+            // ;
+            // 
+            // _akkaSimulation.SimulationContext.Tell(JobDistributor.OperationsToDistibute.Create(productionOrderOperations, jobDistributor), ActorRefs.NoSender);
         }
 
         /// <summary>
@@ -99,29 +101,19 @@ namespace Zpp.Simulation
         /// <param name="simulationInterval"></param>
         private void ProvideRequiredPurchaseForThisInterval(SimulationInterval simulationInterval)
         {
-            var puchaseDemands = _dBcontext.StockExchanges
-                                         .Include(x => x.Stock)
-                                             .ThenInclude(x => x.Article)
-                                         .Where(x => x.ExchangeType == ExchangeType.Insert
-                                           && x.RequiredOnTime <= simulationInterval.EndAd
-                                           && x.RequiredOnTime >= simulationInterval.StartAt
-                                           && x.Stock.Article.ToPurchase);
-            foreach (var demand in puchaseDemands)
-            {
-                demand.State = State.Finished;
-            }
-            Debug.WriteLine($"Just set {puchaseDemands.Count()} Stock Exchanges to Finished!");
-            _dBcontext.SaveChanges();   
+            var stockExchanges = _dbTransactionData.GetAggregator().GetProviderForCurrent(simulationInterval); 
+                // .GetAll StockExchangeProvidersGetAll().GetAll();
+                foreach (var stockExchange in stockExchanges)
+                {
+                    stockExchange.SetProvided(stockExchange.GetDueTime());
+                }
         }
 
         private void CreateResource(IActorRef jobDistributor, AkkaSim.Simulation sim)
         {
-            var machines = _dBcontext.Machines.AsNoTracking().ToList();
-            foreach (var machine in machines)
-            {
-                var createMachines = JobDistributor.AddMachine.Create(machine, jobDistributor);
-                sim.SimulationContext.Tell(createMachines, ActorRefs.Nobody);
-            }
+            var machines = ResourceManager.GetResources(_dbMasterDataCache);
+            var createMachines = JobDistributor.AddMachines.Create(machines, jobDistributor);
+            sim.SimulationContext.Tell(createMachines, ActorRefs.Nobody);
         }
 
         private static void Continuation(Inbox inbox, AkkaSim.Simulation sim)

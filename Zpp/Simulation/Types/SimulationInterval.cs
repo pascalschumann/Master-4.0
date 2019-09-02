@@ -14,6 +14,6 @@ namespace Zpp.Simulation.Types
         }
         public long StartAt { get; }
         public long Interval { get;  }
-        public long EndAd => StartAt + Interval;
+        public long EndAt => StartAt + Interval;
     }
 }

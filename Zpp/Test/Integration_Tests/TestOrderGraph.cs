@@ -7,6 +7,7 @@ using Xunit;
 using Zpp.Common.DemandDomain.Wrappers;
 using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.DbCache;
+using Zpp.Mrp;
 using Zpp.OrderGraph;
 using Zpp.Test.Configuration;
 using Zpp.Utils;
@@ -25,7 +26,7 @@ namespace Zpp.Test.Integration_Tests
         {
             InitTestScenario(testConfiguration);
 
-            MrpRun.MrpRun.RunMrp(ProductionDomainContext);
+            MrpRun.Start(ProductionDomainContext);
         }
 
         /**

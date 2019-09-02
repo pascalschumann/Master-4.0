@@ -1,37 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Akka.Actor;
-using Master40.DB.DataModel;
-using Master40.DB.Enums;
-using Microsoft.EntityFrameworkCore.Internal;
+﻿using Zpp.Common.ProviderDomain.Wrappers;
+using Zpp.DbCache;
+using Zpp.Mrp.MachineManagement;
+using Zpp.Mrp.ProductionManagement.ProductionTypes;
+using Zpp.OrderGraph;
 
 namespace Zpp.Simulation.Agents.JobDistributor.Types
 {
     public class OperationManager
     {
-        public M_Machine Machine  { get; set; }
-        public bool IsWorking { get; set; }
-        public IActorRef ResourceRef { get; set; }
-        public Queue<T_ProductionOrderOperation> JobQueue { get; set; }
+        private readonly IDbMasterDataCache _dbMasterDataCache;
+        private readonly IDbTransactionData _dbTransactionData;
+        private readonly IDirectedGraph<INode> _productionOrderGraph;
+        private readonly ProductionOrderOperationGraphs _productionOrderOperationGraphs;
+        
 
-        public OperationManager()
+
+        public OperationManager(IDbMasterDataCache dbMasterDataCache, 
+                              IDbTransactionData dbTransactionData)
         {
-            JobQueue = new Queue<T_ProductionOrderOperation>();
+            _dbTransactionData = dbTransactionData;
+            _dbMasterDataCache = dbMasterDataCache;
+            _productionOrderGraph = new ProductionOrderDirectedGraph(_dbTransactionData, false);
+            _productionOrderOperationGraphs = new ProductionOrderOperationGraphs();
+            Init();
         }
 
-        public bool SetStatusForFirstItemInQueue(ProducingState state)
+        private void Init()
         {
-            if (JobQueue.Count == 0) return false;
-
-            JobQueue.Peek().ProducingState = ProducingState.Waiting;
-            return true;
+            foreach (var productionOrder in _dbTransactionData.ProductionOrderGetAll())
+            {
+                IDirectedGraph<INode> productionOrderOperationGraph =
+                    new ProductionOrderOperationDirectedGraph(_dbTransactionData,
+                        (ProductionOrder)productionOrder);
+                _productionOrderOperationGraphs.Add((ProductionOrder)productionOrder,
+                    productionOrderOperationGraph);
+            }
         }
 
-        public bool HasJobs()
+        /// <summary>
+        /// returns the mature cherry's
+        /// </summary>
+        /// <returns></returns>
+        public IStackSet<ProductionOrderOperation> GetLeafs()
         {
-            return JobQueue.Any(x => x.ProducingState == ProducingState.Waiting);
+            var productionOrderOperations
+                    = MachineManager.CreateS(_productionOrderGraph, _productionOrderOperationGraphs);
+            return productionOrderOperations;
         }
     }
 }

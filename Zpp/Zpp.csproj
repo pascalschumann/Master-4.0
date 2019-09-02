@@ -33,12 +33,6 @@
       <Folder Include="DbCache\" />
       <Folder Include="GraphicalRepresentation\" />
       <Folder Include="LotSize\" />
-      <Folder Include="MrpRun\MachineManagement\" />
-      <Folder Include="MrpRun\NodeManagement\" />
-      <Folder Include="MrpRun\ProductionManagement\ProductionTypes\" />
-      <Folder Include="MrpRun\PurchaseManagement\" />
-      <Folder Include="MrpRun\Scheduling\" />
-      <Folder Include="MrpRun\StockManagement\" />
       <Folder Include="OrderGraph\" />
       <Folder Include="Test\Configuration\Scenarios\" />
       <Folder Include="Test\Integration_Tests\" />

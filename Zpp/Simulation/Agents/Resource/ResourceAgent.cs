@@ -3,9 +3,8 @@ using System.Diagnostics;
 using Akka.Actor;
 using AkkaSim;
 using Master40.DB.DataModel;
-using SimTest.Domain;
 
-namespace Zpp.Simulation.Agents
+namespace Zpp.Simulation.Agents.Resource
 {
     partial class Resource : SimulationElement
     {

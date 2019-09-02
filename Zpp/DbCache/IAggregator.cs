@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using Master40.DB.Data.WrappersForPrimitives;
+using Master40.DB.DataModel;
 using Zpp.Common.DemandDomain;
 using Zpp.Common.DemandDomain.Wrappers;
 using Zpp.Common.DemandDomain.WrappersForCollections;
 using Zpp.Common.ProviderDomain;
 using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.Common.ProviderDomain.WrappersForCollections;
-using Zpp.MrpRun.MachineManagement;
+using Zpp.Mrp.MachineManagement;
+using Zpp.Simulation.Types;
 
 namespace Zpp.DbCache
 {
@@ -32,6 +34,7 @@ namespace Zpp.DbCache
         ProductionOrderBoms GetAllProductionOrderBomsBy(
             ProductionOrderOperation productionOrderOperation);
 
-        Providers GetAllProviderOfDemand(Demand demand, IDbTransactionData dbTransactionData);
+        Providers GetAllProviderOfDemand(Demand demand);
+        List<Provider> GetProviderForCurrent(SimulationInterval simulationInterval);
     }
 }

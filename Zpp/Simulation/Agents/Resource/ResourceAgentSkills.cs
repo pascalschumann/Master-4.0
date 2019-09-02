@@ -2,7 +2,7 @@
 using AkkaSim.Definitions;
 using Master40.DB.DataModel;
 
-namespace Zpp.Simulation.Agents
+namespace Zpp.Simulation.Agents.Resource
 {
     partial class Resource
     {

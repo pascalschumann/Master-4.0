@@ -3,7 +3,6 @@ using AkkaSim;
 using AkkaSim.Definitions;
 using Master40.DB.DataModel;
 using Master40.SimulationCore.Helper;
-using SimTest.Domain;
 using System;
 using System.Collections.Generic;
 using Zpp.Simulation.Agents.JobDistributor.Types;
@@ -27,7 +26,7 @@ namespace Zpp.Simulation.Agents.JobDistributor
         {
             switch (o)
             {
-                case AddMachine m: CreateMachines(m.GetMachine, TimePeriod); break;
+                // case AddMachine m: CreateMachines(m.GetMachine, TimePeriod); break;
                 case OperationsToDistibute m  : InitializeDistribution(m.GetOperations); break;
                 case Command.GetWork    : PushWorkToResource(Sender); break;
                 case ProductionOrderFinished m: ProvideMaterial(m.GetOperation); break;
@@ -37,41 +36,41 @@ namespace Zpp.Simulation.Agents.JobDistributor
 
         private void InitializeDistribution(List<T_ProductionOrderOperation> operations)
         {
-            ResourceManager.AddOperationQueue(operations);
+            // ResourceManager.AddOperationQueue(operations);
             // TODO Check is Item is in Stock ? 
 
             // Start Work
-            var machineRefs = ResourceManager.GetMachineRefs();
-            foreach (var machineRef in machineRefs)
-            {
-                PushWorkToResource(machineRef);
-            }
+            // var machineRefs = ResourceManager.GetMachineRefs();
+            // foreach (var machineRef in machineRefs)
+            // {
+            //     PushWorkToResource(machineRef);
+            // }
 
         }
 
 
         private void PushWorkToResource(IActorRef machineRef)
         {
-            var operation = ResourceManager.NextElementFor(machineRef);
-            if (operation == null) return;
-            var msg = Resource.Work.Create(operation, machineRef);
-
-            // Operation is on Time or Delayed
-            if (operation.Start <= TimePeriod)
-            {
-                _SimulationContext.Tell(msg, this.Self);
-                return;
-            } // else operation starts in the future and has to wait.
-            Schedule(operation.Start - TimePeriod, msg);
+            // var operation = ResourceManager.NextElementFor(machineRef);
+            // if (operation == null) return;
+            // var msg = Resource.Resource.Work.Create(operation, machineRef);
+            // 
+            // // Operation is on Time or Delayed
+            // if (operation.Start <= TimePeriod)
+            // {
+            //     _SimulationContext.Tell(msg, this.Self);
+            //     return;
+            // } // else operation starts in the future and has to wait.
+            // Schedule(operation.Start - TimePeriod, msg);
         }
 
         private void CreateMachines(M_Machine machine, long time)
         {
             var machineNumber = ResourceManager.Count + 1;
             var agentName = $"{machine.Name}({machineNumber})".ToActorName();
-            var resourceRef = Context.ActorOf(Resource.Props(_SimulationContext, time)
+            var resourceRef = Context.ActorOf(Resource.Resource.Props(_SimulationContext, time)
                                                                 , agentName);
-            var resource = new OperationManager { Machine = machine, ResourceRef = resourceRef, IsWorking = true};
+            var resource = new ResourceDetails(machine, resourceRef);
             ResourceManager.AddResource(resource);
 
         }

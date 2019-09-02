@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Collections.ObjectModel;
-using Zpp.Simulation.Messages;
 
-namespace SimTest.Domain
+namespace Zpp.Simulation.Messages
 {
     public class MaterialRequest : IComparable<MaterialRequest>
     {

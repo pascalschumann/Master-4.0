@@ -2,6 +2,7 @@
 using Akka.Actor;
 using AkkaSim.Definitions;
 using Master40.DB.DataModel;
+using Zpp.Mrp.MachineManagement;
 
 namespace Zpp.Simulation.Agents.JobDistributor
 {
@@ -35,16 +36,16 @@ namespace Zpp.Simulation.Agents.JobDistributor
             public T_ProductionOrderOperation GetOperation => this.Message  as T_ProductionOrderOperation;
         }
 
-        public class AddMachine : SimulationMessage
+        public class AddMachines : SimulationMessage
         {
-            public static AddMachine Create(M_Machine machine, IActorRef target)
+            public static AddMachines Create(ResourceDictionary machines, IActorRef target)
             {
-                return new AddMachine(machine, target);
+                return new AddMachines(machines, target);
             }
-            private AddMachine(object message, IActorRef target) : base(message, target)
+            private AddMachines(object message, IActorRef target) : base(message, target)
             {
             }
-            public M_Machine GetMachine => this.Message as M_Machine;
+            public ResourceDictionary GetMachine => this.Message as ResourceDictionary;
         }
     }
 }

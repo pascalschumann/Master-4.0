@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Master40.DB.DataModel;
 using Xunit;
 using Zpp.DbCache;
+using Zpp.Mrp;
 using Zpp.Test.Configuration;
 using Zpp.WrappersForPrimitives;
 
@@ -18,7 +19,7 @@ namespace Zpp.Test.Integration_Tests
         {
             InitTestScenario(testConfiguration);
 
-            MrpRun.MrpRun.RunMrp(ProductionDomainContext);
+            MrpRun.Start(ProductionDomainContext);
         }
         
 

@@ -9,8 +9,10 @@ using Zpp.Common.DemandDomain.WrappersForCollections;
 using Zpp.Common.ProviderDomain;
 using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.Common.ProviderDomain.WrappersForCollections;
-using Zpp.MrpRun.MachineManagement;
+using Zpp.Mrp.MachineManagement;
+using Zpp.Simulation.Types;
 using Zpp.Utils;
+using Zpp.WrappersForPrimitives;
 
 namespace Zpp.DbCache
 {
@@ -103,18 +105,26 @@ namespace Zpp.DbCache
             return new ProductionOrderBoms(productionOrderBoms, _dbMasterDataCache);
         }
 
-        public Providers GetAllProviderOfDemand(Demand demand, IDbTransactionData dbTransactionData)
+        public Providers GetAllProviderOfDemand(Demand demand)
         {
             Providers providers = new Providers();
-            foreach (var demandToProvider in dbTransactionData.DemandToProviderGetAll())
+            foreach (var demandToProvider in _dbTransactionData.DemandToProviderGetAll())
             {
                 if (demandToProvider.GetDemandId().Equals(demand.GetId()))
                 {
-                    providers.Add(dbTransactionData.ProvidersGetById(demandToProvider.GetProviderId()));
+                    providers.Add(_dbTransactionData.ProvidersGetById(demandToProvider.GetProviderId()));
                 }
                 
             }
             return providers;
+        }
+
+        public List<Provider> GetProviderForCurrent(SimulationInterval simulationInterval)
+        {
+            var providers = _dbTransactionData.StockExchangeProvidersGetAll().GetAll();
+            var currentProviders = providers.FindAll(x => x.GetDueTime(_dbTransactionData).GetValue() >= simulationInterval.StartAt
+                                                       && x.GetDueTime(_dbTransactionData).GetValue() <= simulationInterval.EndAt);
+            return currentProviders;
         }
     }
 }

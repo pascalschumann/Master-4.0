@@ -5,7 +5,7 @@ using Master40.DB.Interfaces;
 using Zpp.Common.ProviderDomain;
 using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.DbCache;
-using Zpp.MrpRun.ProductionManagement;
+using Zpp.Mrp.ProductionManagement;
 using Zpp.WrappersForPrimitives;
 
 namespace Zpp.Common.DemandDomain.Wrappers

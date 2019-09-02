@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Akka.Actor;
 using AkkaSim;
-using SimTest.Domain;
 using Zpp.Simulation.Agents;
+using Zpp.Simulation.Agents.Resource;
+using Zpp.Simulation.Messages;
 
 namespace Zpp.Simulation.Monitors
 {

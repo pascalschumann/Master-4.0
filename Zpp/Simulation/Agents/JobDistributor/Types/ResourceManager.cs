@@ -1,54 +1,37 @@
-﻿using Akka.Actor;
-using Master40.DB.DataModel;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using Master40.DB.Enums;
+using System.Text;
+using Master40.DB.Data.WrappersForPrimitives;
+using Master40.DB.DataModel;
+using Zpp.DbCache;
+using Zpp.Mrp.MachineManagement;
 
 namespace Zpp.Simulation.Agents.JobDistributor.Types
 {
-    public class ResourceManager
+    public class ResourceManager 
     {
-        private readonly Dictionary<IActorRef, OperationManager> _resources = new Dictionary<IActorRef, OperationManager>();
+        private Dictionary<Id, ResourceDetails> Resources = new Dictionary<Id, ResourceDetails>();
 
-        public bool AddResource(OperationManager resource)
+        public int Count => Resources.Count;
+
+        internal void AddResource(ResourceDetails resource)
         {
-            return _resources.TryAdd(resource.ResourceRef, resource);
+            Resources.TryAdd(resource.Machine.GetId(), resource);
         }
 
-        public void AddOperationQueue(List<T_ProductionOrderOperation> operations)
-        { 
-            var operationsByMachine = operations.GroupBy(x => x.Machine
-                                                        , x => x
-                                                        , (machine, operationsForThisMachine) 
-                                                            => new { Key = machine
-                                                                    , operationsForThisMachine });
-
-            foreach (var item in operationsByMachine)
+        /// <summary>
+        /// Get all available Resources as Dictionary<Id, Machine>
+        /// </summary>
+        /// <returns>ResourceDictionary</returns>
+        public static ResourceDictionary GetResources(IDbMasterDataCache masterDataCache)
+        {
+            var resources = new ResourceDictionary();
+            foreach (var machineGroup in masterDataCache.M_MachineGroupGetAll())
             {
-                var resource = _resources.Values.Single(x => x.Machine.Id == item.Key.Id);
-                resource.JobQueue = new Queue<T_ProductionOrderOperation>(item.operationsForThisMachine);
-                resource.SetStatusForFirstItemInQueue(ProducingState.Waiting);
+                resources.Add(machineGroup.GetId(),
+                    masterDataCache.M_MachineGetAllByMachineGroupId(machineGroup.GetId()));
             }
-        }
-
-        public List<IActorRef> GetMachineRefs()
-        {
-            return _resources.Select(x => x.Key).ToList();
-        }
-
-        public int Count => _resources.Count;
-
-        public T_ProductionOrderOperation NextElementFor(IActorRef machineRef)
-        {
-            _resources.TryGetValue(machineRef, out OperationManager operationManager);
-            
-            if (operationManager != null && operationManager.HasJobs())
-            {
-                var operation = operationManager.JobQueue.Dequeue();
-                operationManager.SetStatusForFirstItemInQueue(ProducingState.Waiting);
-                return operation;
-            }
-            return null;
+            return resources;
         }
     }
 }

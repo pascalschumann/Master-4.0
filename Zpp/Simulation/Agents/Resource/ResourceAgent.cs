@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Akka.Actor;
 using AkkaSim;
 using Master40.DB.DataModel;
+using Zpp.Common.ProviderDomain.Wrappers;
 
 namespace Zpp.Simulation.Agents.Resource
 {
@@ -30,20 +31,25 @@ namespace Zpp.Simulation.Agents.Resource
             }
         }
 
-        private void DoWork(T_ProductionOrderOperation operation)
+        private void DoWork(ProductionOrderOperation operation)
         {
-            var dur = operation.Duration + r.Next(-1, 2);
-            
+            var dur = operation.GetDuration().GetValue() + r.Next(-1, 2);
+            var rawOperation = operation.GetValue();
+            rawOperation.Start = (int)TimePeriod;
+            rawOperation.End = rawOperation.Start + dur;
+
+            // TODO Handle TimeInterval Endings.
+
             Schedule(dur, FinishWork.Create(operation, Self));
             //_SimulationContext.Tell(s, null);
-            Debug.WriteLine("Time: " + TimePeriod + " - " + Self.Path + " - Working on: " + operation.Name);
+            Debug.WriteLine("Time: " + TimePeriod + " - " + Self.Path + " - Working on: " + operation.GetValue().Name);
         }
 
-        private void WorkDone(T_ProductionOrderOperation operation)
+        private void WorkDone(ProductionOrderOperation operation)
         {
 
             _SimulationContext.Tell(JobDistributor.JobDistributor.ProductionOrderFinished.Create(operation, Context.Parent), Self);
-            Debug.WriteLine("Time: " + TimePeriod + " - " + Self.Path + " Finished: " + operation.Name);
+            Debug.WriteLine("Time: " + TimePeriod + " - " + Self.Path + " Finished: " + operation.GetValue().Name);
         }
 
         protected override void Finish()

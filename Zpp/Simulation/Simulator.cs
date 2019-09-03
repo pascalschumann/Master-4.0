@@ -19,15 +19,18 @@ namespace Zpp.Simulation
         private long _currentTime { get; set; } = 0;
         private SimulationConfig _simulationConfig { get; }
         private AkkaSim.Simulation _akkaSimulation { get; set; }
-        public Simulator()
+        public Simulator(IDbMasterDataCache dbMasterDataCache, IDbTransactionData dbTransactionData)
         {
             _simulationConfig = new SimulationConfig(false, 1440);
+            _dbTransactionData = dbTransactionData;
+            _dbMasterDataCache = dbMasterDataCache;
         }
 
 
-        public bool ProcessCurrentInterval(SimulationInterval simulationInterval, IDbMasterDataCache dbMasterDataCache, IDbTransactionData dbTransactionData)
+        public bool ProcessCurrentInterval(SimulationInterval simulationInterval)
         {
             Debug.WriteLine("Start simulation system. . . ");
+
 
             _currentTime = simulationInterval.StartAt;
             _akkaSimulation = new AkkaSim.Simulation(_simulationConfig);
@@ -81,6 +84,12 @@ namespace Zpp.Simulation
 
         private void ProvideJobDistributor(SimulationInterval simulationInterval, IActorRef jobDistributor)
         {
+            var operationManager = new OperationManager(_dbMasterDataCache, _dbTransactionData);
+            _akkaSimulation.SimulationContext
+                           .Tell(JobDistributor.OperationsToDistibute
+                                                     .Create(operationManager, jobDistributor)
+                                                            , ActorRefs.NoSender);
+
             // var productionOrderOperations = _dBcontext.ProductionOrderOperations
             //                                         .Include(x => x.Machine)
             //                                         .Include(x => x.ProductionOrderBoms)
@@ -92,7 +101,7 @@ namespace Zpp.Simulation
             //                                         .ToList();
             // ;
             // 
-            // _akkaSimulation.SimulationContext.Tell(JobDistributor.OperationsToDistibute.Create(productionOrderOperations, jobDistributor), ActorRefs.NoSender);
+
         }
 
         /// <summary>
@@ -112,7 +121,7 @@ namespace Zpp.Simulation
         private void CreateResource(IActorRef jobDistributor, AkkaSim.Simulation sim)
         {
             var machines = ResourceManager.GetResources(_dbMasterDataCache);
-            var createMachines = JobDistributor.AddMachines.Create(machines, jobDistributor);
+            var createMachines = JobDistributor.AddResources.Create(machines, jobDistributor);
             sim.SimulationContext.Tell(createMachines, ActorRefs.Nobody);
         }
 

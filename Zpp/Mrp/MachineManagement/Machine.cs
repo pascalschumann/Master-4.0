@@ -6,7 +6,7 @@ namespace Zpp.Mrp.MachineManagement
 {
     public class Machine : IMachine
     {
-        private M_Machine _machine;
+        private readonly M_Machine _machine;
         private int _idleStartTime = 0;
 
         public Machine(M_Machine machine)
@@ -26,8 +26,8 @@ namespace Zpp.Mrp.MachineManagement
 
         public override bool Equals(object obj)
         {
-            Machine other = (Machine) obj;
-            return _machine.Equals(other._machine);
+            var other = (Machine) obj;
+            return _machine.Equals(other?._machine);
         }
 
         public override int GetHashCode()

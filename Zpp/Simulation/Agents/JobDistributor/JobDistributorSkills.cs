@@ -2,7 +2,9 @@
 using Akka.Actor;
 using AkkaSim.Definitions;
 using Master40.DB.DataModel;
+using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.Mrp.MachineManagement;
+using Zpp.Simulation.Agents.JobDistributor.Types;
 
 namespace Zpp.Simulation.Agents.JobDistributor
 {
@@ -14,38 +16,38 @@ namespace Zpp.Simulation.Agents.JobDistributor
         }
         public class OperationsToDistibute : SimulationMessage
         {
-            public static OperationsToDistibute Create(List<T_ProductionOrderOperation> machine, IActorRef target)
+            public static OperationsToDistibute Create(OperationManager machine, IActorRef target)
             {
                 return new OperationsToDistibute(machine, target);
             }
             private OperationsToDistibute(object message, IActorRef target) : base(message, target)
             {
             }
-            public List<T_ProductionOrderOperation> GetOperations => this.Message as List<T_ProductionOrderOperation>;
+            public OperationManager GetOperations => this.Message as OperationManager;
         }
 
         public class ProductionOrderFinished : SimulationMessage
         {
-            public static ProductionOrderFinished Create(T_ProductionOrderOperation operation, IActorRef target)
+            public static ProductionOrderFinished Create(ProductionOrderOperation operation, IActorRef target)
             {
                 return new ProductionOrderFinished(operation, target);
             }
             public ProductionOrderFinished(object message, IActorRef target) : base(message, target)
             {
             }
-            public T_ProductionOrderOperation GetOperation => this.Message  as T_ProductionOrderOperation;
+            public ProductionOrderOperation GetOperation => this.Message  as ProductionOrderOperation;
         }
 
-        public class AddMachines : SimulationMessage
+        public class AddResources : SimulationMessage
         {
-            public static AddMachines Create(ResourceDictionary machines, IActorRef target)
+            public static AddResources Create(ResourceDictionary machines, IActorRef target)
             {
-                return new AddMachines(machines, target);
+                return new AddResources(machines, target);
             }
-            private AddMachines(object message, IActorRef target) : base(message, target)
+            private AddResources(object message, IActorRef target) : base(message, target)
             {
             }
-            public ResourceDictionary GetMachine => this.Message as ResourceDictionary;
+            public ResourceDictionary GetMachines => this.Message as ResourceDictionary;
         }
     }
 }

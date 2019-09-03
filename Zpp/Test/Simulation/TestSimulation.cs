@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Internal;
-using Xunit;
-using Zpp.Common.DemandDomain.WrappersForCollections;
-using Zpp.Common.ProviderDomain.WrappersForCollections;
+﻿using Xunit;
 using Zpp.DbCache;
 using Zpp.Mrp;
 using Zpp.Simulation;
@@ -24,14 +21,13 @@ namespace Zpp.Test.Simulation
         [Fact]
         public void TestSimulationWithResults()
         {
-            var Simulator = new Simulator();
+            var Simulator = new Simulator(_dbMasterDataCache, _dbTransactionData);
             var simulationInterval = new SimulationInterval(0, 1440);
-            Simulator.ProcessCurrentInterval(simulationInterval, _dbMasterDataCache, _dbTransactionData);
-
-
+            Simulator.ProcessCurrentInterval(simulationInterval);
+            _dbTransactionData.PersistDbCache();
         }
 
-        [Fact]
+        [Fact(Skip = "Only for single Execution.")]
         public void ProvideStockExchanges()
         {
             var simulationInterval = new SimulationInterval(0, 1440);

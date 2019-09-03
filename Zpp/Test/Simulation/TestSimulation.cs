@@ -39,13 +39,5 @@ namespace Zpp.Test.Simulation
             }
             _dbTransactionData.PersistDbCache();
         }
-
-        [Fact]
-        public void TestPrimitives()
-        {
-            int? integer = null;
-
-            Assert.True(integer.GetType() == typeof(int?));
-        }
     }
 }

@@ -31,7 +31,7 @@ namespace Zpp.Utils
             /*_productionDomainContext = new ProductionDomainContext(new DbContextOptionsBuilder<MasterDBContext>()
                 .UseInMemoryDatabase(databaseName: "InMemoryDB")
                 .Options);*/
-            if (local)
+            if (local && Constants.IsWindows)
             {
                 productionDomainContext = new ProductionDomainContext(
                     new DbContextOptionsBuilder<MasterDBContext>().UseLoggerFactory(MyLoggerFactory)

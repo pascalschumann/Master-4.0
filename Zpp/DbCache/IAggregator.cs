@@ -34,7 +34,11 @@ namespace Zpp.DbCache
         ProductionOrderBoms GetAllProductionOrderBomsBy(
             ProductionOrderOperation productionOrderOperation);
 
-        Providers GetAllProviderOfDemand(Demand demand);
-        List<Provider> GetProviderForCurrent(SimulationInterval simulationInterval);
+        Providers GetAllProvidersOf(Demand demand);
+
+        Demands GetAllDemandsOf(Provider provider);
+        
+        List<Provider> GetProvidersForCurrent(SimulationInterval simulationInterval);
+        
     }
 }

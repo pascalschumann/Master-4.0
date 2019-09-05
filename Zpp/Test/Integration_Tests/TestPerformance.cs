@@ -9,7 +9,7 @@ namespace Zpp.Test.Integration_Tests
         
         private const int MAX_TIME_FOR_MRP_RUN = 90;
 
-        public TestPerformance() : base(true)
+        public TestPerformance() : base(true, true)
         {
 
         }

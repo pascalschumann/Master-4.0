@@ -1,7 +1,6 @@
 using System;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
-using Master40.DB.Enums;
 using Master40.DB.Interfaces;
 using Zpp.Common.ProviderDomain;
 using Zpp.Common.ProviderDomain.Wrappers;

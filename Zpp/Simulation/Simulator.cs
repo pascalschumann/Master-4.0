@@ -110,7 +110,7 @@ namespace Zpp.Simulation
         /// <param name="simulationInterval"></param>
         private void ProvideRequiredPurchaseForThisInterval(SimulationInterval simulationInterval)
         {
-            var stockExchanges = _dbTransactionData.GetAggregator().GetProviderForCurrent(simulationInterval); 
+            var stockExchanges = _dbTransactionData.GetAggregator().GetProvidersForCurrent(simulationInterval); 
                 // .GetAll StockExchangeProvidersGetAll().GetAll();
                 foreach (var stockExchange in stockExchanges)
                 {

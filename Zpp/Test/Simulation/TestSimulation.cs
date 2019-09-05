@@ -31,7 +31,7 @@ namespace Zpp.Test.Simulation
         public void ProvideStockExchanges()
         {
             var simulationInterval = new SimulationInterval(0, 1440);
-            var stockExchanges = _dbTransactionData.GetAggregator().GetProviderForCurrent(simulationInterval);
+            var stockExchanges = _dbTransactionData.GetAggregator().GetProvidersForCurrent(simulationInterval);
             // .GetAll StockExchangeProvidersGetAll().GetAll();
             foreach (var stockExchange in stockExchanges)
             {

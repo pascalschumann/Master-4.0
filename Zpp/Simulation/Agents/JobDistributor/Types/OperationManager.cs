@@ -1,7 +1,7 @@
 ﻿using Master40.DB.Enums;
 using Master40.DB.DataModel;
+using Zpp.Common.DemandDomain.Wrappers;
 using Zpp.Common.ProviderDomain.Wrappers;
-using Zpp.Common.ProviderDomain.WrappersForCollections;
 using Zpp.DbCache;
 using Zpp.Mrp.MachineManagement;
 using Zpp.Mrp.ProductionManagement.ProductionTypes;
@@ -74,25 +74,29 @@ namespace Zpp.Simulation.Agents.JobDistributor.Types
             foreach (var productionOrderBom in productionOrderBoms)
             {
                 var providers = _dbTransactionData.GetAggregator().GetAllChildProvidersOf(productionOrderBom);
-                InsertMaterials(providers, time);
+                foreach (var provider in providers)
+                {
+                    var stockExchangeProvider = (StockExchangeProvider)provider;
+                    var stockExchange = (T_StockExchange)stockExchangeProvider.ToIProvider();
+                    stockExchange.State = State.Finished;
+                    stockExchange.Time = (int)time;
+                }
             }
         }
 
         public void InsertMaterialsIntoStock(ProductionOrderOperation operation, long time)
         {
-            var productionOrderBom = _dbTransactionData.GetAggregator().GetAnyProductionOrderBomByProductionOrderOperation(operation);
-            var providers = _aggregator.GetAllParentDemandsOf(productionOrderBom);
-            InsertMaterials(providers, time);
-        }
+            var productionOrderBom = _dbTransactionData.GetAggregator()
+                .GetAnyProductionOrderBomByProductionOrderOperation(operation);
 
-        private void InsertMaterials(Providers providers, long time)
-        {
-            foreach (var provider in providers)
+
+            var demands = _aggregator.GetAllParentDemandsOf(productionOrderBom.GetProductionOrder(_dbTransactionData));
+            foreach (var demand in demands)
             {
-                var stockExchangeProvider = (StockExchangeProvider)provider;
-                var stockExchange = (T_StockExchange)stockExchangeProvider.ToIProvider();
+                var stockExchangeProvider = (StockExchangeDemand) demand;
+                var stockExchange = (T_StockExchange) stockExchangeProvider.ToIDemand();
                 stockExchange.State = State.Finished;
-                stockExchange.Time = (int)time;
+                stockExchange.Time = (int) time;
             }
         }
     }

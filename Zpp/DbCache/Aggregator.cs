@@ -119,11 +119,11 @@ namespace Zpp.DbCache
             return providers;
         }
 
-        public List<Provider> GetProvidersForCurrent(SimulationInterval simulationInterval)
+        public List<Provider> GetProvidersForInterval(DueTime from, DueTime to)
         {
             var providers = _dbTransactionData.StockExchangeProvidersGetAll().GetAll();
-            var currentProviders = providers.FindAll(x => x.GetDueTime(_dbTransactionData).GetValue() >= simulationInterval.StartAt
-                                                       && x.GetDueTime(_dbTransactionData).GetValue() <= simulationInterval.EndAt);
+            var currentProviders = providers.FindAll(x => x.GetDueTime(_dbTransactionData).GetValue() >= from.GetValue()
+                                                       && x.GetDueTime(_dbTransactionData).GetValue() <= to.GetValue());
             return currentProviders;
         }
         

@@ -3,6 +3,7 @@ using Zpp.DbCache;
 using Zpp.Mrp;
 using Zpp.Simulation;
 using Zpp.Simulation.Types;
+using Zpp.WrappersForPrimitives;
 
 namespace Zpp.Test.Simulation
 {
@@ -22,7 +23,7 @@ namespace Zpp.Test.Simulation
         public void TestSimulationWithResults()
         {
             var Simulator = new Simulator(_dbMasterDataCache, _dbTransactionData);
-            var simulationInterval = new SimulationInterval(0, 300, 1);
+            var simulationInterval = new SimulationInterval(0, 300);
             Simulator.ProcessCurrentInterval(simulationInterval);
             _dbTransactionData.PersistDbCache();
         }
@@ -30,8 +31,9 @@ namespace Zpp.Test.Simulation
         [Fact(Skip = "Only for single Execution.")]
         public void ProvideStockExchanges()
         {
-            var simulationInterval = new SimulationInterval(0, 1440,1);
-            var stockExchanges = _dbTransactionData.GetAggregator().GetProviderForCurrent(simulationInterval);
+            var from = new DueTime(0);
+            var to = new DueTime(1440);
+            var stockExchanges = _dbTransactionData.GetAggregator().GetProvidersForInterval(from, to);
             // .GetAll StockExchangeProvidersGetAll().GetAll();
             foreach (var stockExchange in stockExchanges)
             {

@@ -9,6 +9,7 @@ using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.Common.ProviderDomain.WrappersForCollections;
 using Zpp.Mrp.MachineManagement;
 using Zpp.Simulation.Types;
+using Zpp.WrappersForPrimitives;
 
 namespace Zpp.DbCache
 {
@@ -38,7 +39,7 @@ namespace Zpp.DbCache
 
         Demands GetAllDemandsOf(Provider provider);
         
-        List<Provider> GetProvidersForCurrent(SimulationInterval simulationInterval);
+        List<Provider> GetProvidersForInterval(DueTime from, DueTime to);
         
     }
 }

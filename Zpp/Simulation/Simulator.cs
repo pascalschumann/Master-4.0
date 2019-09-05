@@ -6,6 +6,7 @@ using Zpp.Simulation.Agents.JobDistributor;
 using Zpp.Simulation.Agents.JobDistributor.Types;
 using Zpp.Simulation.Monitors;
 using Zpp.Simulation.Types;
+using Zpp.WrappersForPrimitives;
 
 namespace Zpp.Simulation
 {
@@ -36,6 +37,9 @@ namespace Zpp.Simulation
             var jobDistributor = _akkaSimulation.ActorSystem
                                                 .ActorOf(props: JobDistributor.Props(_akkaSimulation.SimulationContext, _currentTime)
                                                         , name: "JobDistributor");
+
+            // ToDo reflect CurrentTimespawn ?
+            _akkaSimulation.Shutdown(simulationInterval.EndAt);
             // Create a Machines
             CreateResource(jobDistributor);
             
@@ -82,7 +86,9 @@ namespace Zpp.Simulation
         /// <param name="simulationInterval"></param>
         private void ProvideRequiredPurchaseForThisInterval(SimulationInterval simulationInterval)
         {
-            var stockExchanges = _dbTransactionData.GetAggregator().GetProvidersForCurrent(simulationInterval); 
+            var from = new DueTime(0);
+            var to = new DueTime(1440);
+            var stockExchanges = _dbTransactionData.GetAggregator().GetProvidersForInterval(from, to); 
                 // .GetAll StockExchangeProvidersGetAll().GetAll();
                 foreach (var stockExchange in stockExchanges)
                 {
@@ -109,8 +115,7 @@ namespace Zpp.Simulation
                     break;
                 case SimulationMessage.SimulationState.Stopped:
                     Debug.WriteLine($"Simulation Stop.", "AKKA");
-                    sim.ActorSystem.Terminate();
-                    //sim.Continue();
+                    sim.Continue();
                     Continuation(inbox, sim);
                     break;
                 case SimulationMessage.SimulationState.Finished:

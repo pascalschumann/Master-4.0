@@ -105,7 +105,7 @@ namespace Zpp.DbCache
             return new ProductionOrderBoms(productionOrderBoms, _dbMasterDataCache);
         }
 
-        public Providers GetAllProviderOfDemand(Demand demand)
+        public Providers GetAllProvidersOf(Demand demand)
         {
             Providers providers = new Providers();
             foreach (var demandToProvider in _dbTransactionData.DemandToProviderGetAll())
@@ -119,12 +119,26 @@ namespace Zpp.DbCache
             return providers;
         }
 
-        public List<Provider> GetProviderForCurrent(SimulationInterval simulationInterval)
+        public List<Provider> GetProvidersForCurrent(SimulationInterval simulationInterval)
         {
             var providers = _dbTransactionData.StockExchangeProvidersGetAll().GetAll();
             var currentProviders = providers.FindAll(x => x.GetDueTime(_dbTransactionData).GetValue() >= simulationInterval.StartAt
                                                        && x.GetDueTime(_dbTransactionData).GetValue() <= simulationInterval.EndAt);
             return currentProviders;
+        }
+        
+        public Demands GetAllDemandsOf(Provider provider)
+        {
+            Demands demands = new Demands();
+            foreach (var demandToProvider in _dbTransactionData.DemandToProviderGetAll())
+            {
+                if (demandToProvider.GetProviderId().Equals(provider.GetId()))
+                {
+                    demands.Add(_dbTransactionData.DemandsGetById(demandToProvider.GetDemandId()));
+                }
+                
+            }
+            return demands;
         }
     }
 }

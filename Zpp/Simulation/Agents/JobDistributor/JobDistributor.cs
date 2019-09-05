@@ -1,16 +1,14 @@
 ﻿using Akka.Actor;
 using AkkaSim;
-using Master40.DB.DataModel;
+using Master40.DB.Data.WrappersForPrimitives;
+using Master40.DB.Enums;
 using Master40.SimulationCore.Helper;
 using System;
 using System.Linq;
-using Akka.Event;
-using Master40.DB.Data.WrappersForPrimitives;
 using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.Mrp.MachineManagement;
 using Zpp.Simulation.Agents.JobDistributor.Types;
-using Zpp.WrappersForPrimitives;
-using Debug = System.Diagnostics.Debug;
+using System.Diagnostics;
 
 namespace Zpp.Simulation.Agents.JobDistributor
 {
@@ -119,7 +117,9 @@ namespace Zpp.Simulation.Agents.JobDistributor
         private void ProvideMaterial(ProductionOrderOperation operation)
         {
             // TODO Check for Preconditions (Previous job is finished and Material is Provided.)
-            var machineId = operation.GetValue().MachineId;
+            var rawOperation = operation.GetValue();
+            rawOperation.ProducingState = ProducingState.Finished;
+            var machineId = rawOperation.MachineId;
             if (machineId == null)
                 throw new Exception("Machine not found.");
 

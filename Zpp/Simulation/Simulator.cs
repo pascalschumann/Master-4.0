@@ -1,9 +1,6 @@
-﻿using System;
-using Akka.Actor;
+﻿using Akka.Actor;
 using AkkaSim.Definitions;
-using Master40.DB.Enums;
 using System.Diagnostics;
-using System.Threading;
 using Zpp.DbCache;
 using Zpp.Simulation.Agents.JobDistributor;
 using Zpp.Simulation.Agents.JobDistributor.Types;
@@ -19,9 +16,11 @@ namespace Zpp.Simulation
         private long _currentTime { get; set; } = 0;
         private SimulationConfig _simulationConfig { get; }
         private AkkaSim.Simulation _akkaSimulation { get; set; }
+        public SimulationInterval _simulationInterval { get; private set; }
+
         public Simulator(IDbMasterDataCache dbMasterDataCache, IDbTransactionData dbTransactionData)
         {
-            _simulationConfig = new SimulationConfig(false, 1440);
+            _simulationConfig = new SimulationConfig(false, 300);
             _dbTransactionData = dbTransactionData;
             _dbMasterDataCache = dbMasterDataCache;
         }
@@ -30,14 +29,15 @@ namespace Zpp.Simulation
         public bool ProcessCurrentInterval(SimulationInterval simulationInterval)
         {
             Debug.WriteLine("Start simulation system. . . ");
-
+            _simulationInterval = simulationInterval;
 
             _currentTime = simulationInterval.StartAt;
             _akkaSimulation = new AkkaSim.Simulation(_simulationConfig);
-
-            var jobDistributor = _akkaSimulation.ActorSystem.ActorOf(JobDistributor.Props(_akkaSimulation.SimulationContext, _currentTime), "JobDistributor");
+            var jobDistributor = _akkaSimulation.ActorSystem
+                                                .ActorOf(props: JobDistributor.Props(_akkaSimulation.SimulationContext, _currentTime)
+                                                        , name: "JobDistributor");
             // Create a Machines
-            CreateResource(jobDistributor, _akkaSimulation);
+            CreateResource(jobDistributor);
             
             // Set purchased Demands finished.
             ProvideRequiredPurchaseForThisInterval(simulationInterval);
@@ -50,24 +50,9 @@ namespace Zpp.Simulation
             /// b. delete all Stockexchanges that are "ToProduce"
             /// --> _c. satisfy the first not yet satisfied Stockexchange 
             // Handle JobFinish
-            
-
-
-            // Handle Simulation End
-
-            // 
-
-            // for (int i = 0; i < 3000; i++)
-            // {
-            //     var materialRequest = new MaterialRequest(CreateBOM(), new Dictionary<int, bool>(), 0, r.Next(50, 500), true);
-            //     var request = new JobDistributor.ProductionOrder(materialRequest, jobDistributor);
-            //     sim.SimulationContext.Tell(request, null);
-            // }
-
-            // example to monitor for FinishWork Messages.
 
             var monitor = _akkaSimulation.ActorSystem
-                                         .ActorOf(props: WorkTimeMonitor.Props(time: 0),
+                                         .ActorOf(props: WorkTimeMonitor.Props(time: _currentTime),
                                                    name: "SimulationMonitor");
             if(_akkaSimulation.IsReady())
             {
@@ -89,19 +74,6 @@ namespace Zpp.Simulation
                            .Tell(JobDistributor.OperationsToDistibute
                                                      .Create(operationManager, jobDistributor)
                                                             , ActorRefs.NoSender);
-
-            // var productionOrderOperations = _dBcontext.ProductionOrderOperations
-            //                                         .Include(x => x.Machine)
-            //                                         .Include(x => x.ProductionOrderBoms)
-            //                                           .ThenInclude(x => x.ArticleChild)
-            //                                         .Include(x => x.ProductionOrderBoms)
-            //                                           .ThenInclude(x => x.ProductionOrderParent)
-            //                                         .Where(x => x.Start < simulationInterval.EndAt
-            //                                                  && x.ProducingState == ProducingState.Created)
-            //                                         .ToList();
-            // ;
-            // 
-
         }
 
         /// <summary>
@@ -118,11 +90,11 @@ namespace Zpp.Simulation
                 }
         }
 
-        private void CreateResource(IActorRef jobDistributor, AkkaSim.Simulation sim)
+        private void CreateResource(IActorRef jobDistributor)
         {
             var machines = ResourceManager.GetResources(_dbMasterDataCache);
             var createMachines = JobDistributor.AddResources.Create(machines, jobDistributor);
-            sim.SimulationContext.Tell(createMachines, ActorRefs.Nobody);
+            _akkaSimulation.SimulationContext.Tell(createMachines, ActorRefs.Nobody);
         }
 
         private static void Continuation(Inbox inbox, AkkaSim.Simulation sim)
@@ -132,13 +104,17 @@ namespace Zpp.Simulation
             switch (something)
             {
                 case SimulationMessage.SimulationState.Started:
+                    Debug.WriteLine($"Simulation Start", "AKKA");
                     Continuation(inbox, sim);
                     break;
                 case SimulationMessage.SimulationState.Stopped:
-                    sim.Continue();
+                    Debug.WriteLine($"Simulation Stop.", "AKKA");
+                    sim.ActorSystem.Terminate();
+                    //sim.Continue();
                     Continuation(inbox, sim);
                     break;
                 case SimulationMessage.SimulationState.Finished:
+                    Debug.WriteLine($"Simulation Finish.", "AKKA");
                     sim.ActorSystem.Terminate();
                     break;
                 default:

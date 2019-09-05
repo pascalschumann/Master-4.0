@@ -22,7 +22,7 @@ namespace Zpp.Test.Simulation
         public void TestSimulationWithResults()
         {
             var Simulator = new Simulator(_dbMasterDataCache, _dbTransactionData);
-            var simulationInterval = new SimulationInterval(0, 1440);
+            var simulationInterval = new SimulationInterval(0, 300, 1);
             Simulator.ProcessCurrentInterval(simulationInterval);
             _dbTransactionData.PersistDbCache();
         }
@@ -30,7 +30,7 @@ namespace Zpp.Test.Simulation
         [Fact(Skip = "Only for single Execution.")]
         public void ProvideStockExchanges()
         {
-            var simulationInterval = new SimulationInterval(0, 1440);
+            var simulationInterval = new SimulationInterval(0, 1440,1);
             var stockExchanges = _dbTransactionData.GetAggregator().GetProviderForCurrent(simulationInterval);
             // .GetAll StockExchangeProvidersGetAll().GetAll();
             foreach (var stockExchange in stockExchanges)

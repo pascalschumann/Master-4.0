@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Akka.Actor;
 using AkkaSim;
 using Master40.DB.DataModel;
+using Master40.DB.Enums;
 using Zpp.Common.ProviderDomain.Wrappers;
 
 namespace Zpp.Simulation.Agents.Resource
@@ -37,6 +38,7 @@ namespace Zpp.Simulation.Agents.Resource
             var rawOperation = operation.GetValue();
             rawOperation.Start = (int)TimePeriod;
             rawOperation.End = rawOperation.Start + dur;
+            rawOperation.ProducingState = ProducingState.Producing;
 
             // TODO Handle TimeInterval Endings.
 

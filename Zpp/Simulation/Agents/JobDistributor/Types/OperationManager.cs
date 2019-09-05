@@ -73,7 +73,7 @@ namespace Zpp.Simulation.Agents.JobDistributor.Types
             var productionOrderBoms = _dbTransactionData.GetAggregator().GetAllProductionOrderBomsBy(operation);
             foreach (var productionOrderBom in productionOrderBoms)
             {
-                var providers = _dbTransactionData.GetAggregator().GetAllProvidersOf(productionOrderBom);
+                var providers = _dbTransactionData.GetAggregator().GetAllChildProvidersOf(productionOrderBom);
                 InsertMaterials(providers, time);
             }
         }
@@ -81,7 +81,7 @@ namespace Zpp.Simulation.Agents.JobDistributor.Types
         public void InsertMaterialsIntoStock(ProductionOrderOperation operation, long time)
         {
             var productionOrderBom = _dbTransactionData.GetAggregator().GetAnyProductionOrderBomByProductionOrderOperation(operation);
-            var providers = _aggregator.GetAllDemandsOf(productionOrderBom);
+            var providers = _aggregator.GetAllParentDemandsOf(productionOrderBom);
             InsertMaterials(providers, time);
         }
 

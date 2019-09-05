@@ -66,20 +66,6 @@ namespace Zpp.DbCache
             return productionOrderOperations;
         }
 
-        public Demands GetDemandsOfProvider(Provider provider)
-        {
-            List<Demand> demands = new List<Demand>();
-            foreach (var demandToProvider in _dbTransactionData.DemandToProviderGetAll().GetAll())
-            {
-                if (demandToProvider.GetProviderId().Equals(provider.GetId()))
-                {
-                    demands.Add(_dbTransactionData.DemandsGetById(demandToProvider.GetDemandId()));
-                }
-            }
-
-            return new Demands(demands);
-        }
-
         public ProductionOrderBom GetAnyProductionOrderBomByProductionOrderOperation(
             ProductionOrderOperation productionOrderOperation)
         {
@@ -105,10 +91,24 @@ namespace Zpp.DbCache
             return new ProductionOrderBoms(productionOrderBoms, _dbMasterDataCache);
         }
 
-        public Providers GetAllProvidersOf(Demand demand)
+        public Providers GetAllChildProvidersOf(Demand demand)
         {
             Providers providers = new Providers();
             foreach (var demandToProvider in _dbTransactionData.DemandToProviderGetAll())
+            {
+                if (demandToProvider.GetDemandId().Equals(demand.GetId()))
+                {
+                    providers.Add(_dbTransactionData.ProvidersGetById(demandToProvider.GetProviderId()));
+                }
+                
+            }
+            return providers;
+        }
+
+        public Providers GetAllParentProvidersOf(Demand demand)
+        {
+            Providers providers = new Providers();
+            foreach (var demandToProvider in _dbTransactionData.ProviderToDemandGetAll())
             {
                 if (demandToProvider.GetDemandId().Equals(demand.GetId()))
                 {
@@ -127,7 +127,7 @@ namespace Zpp.DbCache
             return currentProviders;
         }
         
-        public Demands GetAllDemandsOf(Provider provider)
+        public Demands GetAllParentDemandsOf(Provider provider)
         {
             Demands demands = new Demands();
             foreach (var demandToProvider in _dbTransactionData.DemandToProviderGetAll())
@@ -135,6 +135,20 @@ namespace Zpp.DbCache
                 if (demandToProvider.GetProviderId().Equals(provider.GetId()))
                 {
                     demands.Add(_dbTransactionData.DemandsGetById(demandToProvider.GetDemandId()));
+                }
+                
+            }
+            return demands;
+        }
+
+        public Demands GetAllChildDemandsOf(Provider provider)
+        {
+            Demands demands = new Demands();
+            foreach (var providerToDemand in _dbTransactionData.ProviderToDemandGetAll())
+            {
+                if (providerToDemand.GetProviderId().Equals(provider.GetId()))
+                {
+                    demands.Add(_dbTransactionData.DemandsGetById(providerToDemand.GetDemandId()));
                 }
                 
             }

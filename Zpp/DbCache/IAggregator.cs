@@ -28,17 +28,20 @@ namespace Zpp.DbCache
         
         List<ProductionOrderOperation> GetProductionOrderOperationsOfProductionOrder(Id productionOrderId);
 
-        Demands GetDemandsOfProvider(Provider provider);
-
         ProductionOrderBom GetAnyProductionOrderBomByProductionOrderOperation(ProductionOrderOperation productionOrderOperation);
 
         ProductionOrderBoms GetAllProductionOrderBomsBy(
             ProductionOrderOperation productionOrderOperation);
 
-        Providers GetAllProvidersOf(Demand demand);
-
-        Demands GetAllDemandsOf(Provider provider);
+        Providers GetAllChildProvidersOf(Demand demand);
         
+        Providers GetAllParentProvidersOf(Demand demand);
+
+        Demands GetAllParentDemandsOf(Provider provider);
+        
+        Demands GetAllChildDemandsOf(Provider provider);
+        
+       
         List<Provider> GetProvidersForInterval(DueTime from, DueTime to);
         
     }

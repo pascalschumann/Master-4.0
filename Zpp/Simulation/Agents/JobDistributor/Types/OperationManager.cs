@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using Master40.DB.Enums;
+using Master40.DB.DataModel;
 using Zpp.Common.ProviderDomain.Wrappers;
+using Zpp.Common.ProviderDomain.WrappersForCollections;
 using Zpp.DbCache;
 using Zpp.Mrp.MachineManagement;
 using Zpp.Mrp.ProductionManagement.ProductionTypes;
@@ -10,7 +12,8 @@ namespace Zpp.Simulation.Agents.JobDistributor.Types
     public class OperationManager
     {
         private readonly IDbMasterDataCache _dbMasterDataCache;
-        public readonly IDbTransactionData _dbTransactionData;
+        private readonly IAggregator _aggregator;
+        private readonly IDbTransactionData _dbTransactionData;
         private readonly IDirectedGraph<INode> _productionOrderGraph;
         private readonly ProductionOrderOperationGraphs _productionOrderOperationGraphs;
         
@@ -21,6 +24,7 @@ namespace Zpp.Simulation.Agents.JobDistributor.Types
         {
             _dbTransactionData = dbTransactionData;
             _dbMasterDataCache = dbMasterDataCache;
+            _aggregator = dbTransactionData.GetAggregator();
             _productionOrderGraph = new ProductionOrderDirectedGraph(_dbTransactionData, false);
             _productionOrderOperationGraphs = new ProductionOrderOperationGraphs();
             Init();
@@ -64,6 +68,32 @@ namespace Zpp.Simulation.Agents.JobDistributor.Types
             return productionOrderOperations;
         }
 
+        public void WithdrawMaterialsFromStock(ProductionOrderOperation operation, long time)
+        {
+            var productionOrderBoms = _dbTransactionData.GetAggregator().GetAllProductionOrderBomsBy(operation);
+            foreach (var productionOrderBom in productionOrderBoms)
+            {
+                var providers = _dbTransactionData.GetAggregator().GetAllProvidersOf(productionOrderBom);
+                InsertMaterials(providers, time);
+            }
+        }
 
+        public void InsertMaterialsIntoStock(ProductionOrderOperation operation, long time)
+        {
+            var productionOrderBom = _dbTransactionData.GetAggregator().GetAnyProductionOrderBomByProductionOrderOperation(operation);
+            var providers = _aggregator.GetAllDemandsOf(productionOrderBom);
+            InsertMaterials(providers, time);
+        }
+
+        private void InsertMaterials(Providers providers, long time)
+        {
+            foreach (var provider in providers)
+            {
+                var stockExchangeProvider = (StockExchangeProvider)provider;
+                var stockExchange = (T_StockExchange)stockExchangeProvider.ToIProvider();
+                stockExchange.State = State.Finished;
+                stockExchange.Time = (int)time;
+            }
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Master40.DB.Data.WrappersForPrimitives;
 using System;
 using System.Collections.Generic;
+using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.DbCache;
 using Zpp.Mrp.MachineManagement;
 

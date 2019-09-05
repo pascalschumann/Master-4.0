@@ -2,9 +2,9 @@
 using System.Diagnostics;
 using Akka.Actor;
 using AkkaSim;
-using Master40.DB.DataModel;
 using Master40.DB.Enums;
 using Zpp.Common.ProviderDomain.Wrappers;
+using static Zpp.Simulation.Agents.JobDistributor.JobDistributor;
 
 namespace Zpp.Simulation.Agents.Resource
 {
@@ -34,13 +34,15 @@ namespace Zpp.Simulation.Agents.Resource
 
         private void DoWork(ProductionOrderOperation operation)
         {
+            // TODO Use distribution from AkkaSIm
             var dur = operation.GetDuration().GetValue() + r.Next(-1, 2);
             var rawOperation = operation.GetValue();
             rawOperation.Start = (int)TimePeriod;
             rawOperation.End = rawOperation.Start + dur;
             rawOperation.ProducingState = ProducingState.Producing;
 
-            // TODO Handle TimeInterval Endings.
+            _SimulationContext.Tell(message: WithDrawMaterialsFor.Create(operation, Context.Parent)
+                                    ,sender: Self);
 
             Schedule(dur, FinishWork.Create(operation, Self));
             //_SimulationContext.Tell(s, null);
@@ -48,9 +50,8 @@ namespace Zpp.Simulation.Agents.Resource
         }
 
         private void WorkDone(ProductionOrderOperation operation)
-        {
-
-            _SimulationContext.Tell(JobDistributor.JobDistributor.ProductionOrderFinished.Create(operation, Context.Parent), Self);
+        { 
+            _SimulationContext.Tell(ProductionOrderFinished.Create(operation, Context.Parent), Self);
             Debug.WriteLine("Time: " + TimePeriod + " - " + Self.Path + " Finished: " + operation.GetValue().Name);
         }
 

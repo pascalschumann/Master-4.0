@@ -9,6 +9,7 @@ using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.Mrp.MachineManagement;
 using Zpp.Simulation.Agents.JobDistributor.Types;
 using System.Diagnostics;
+using Master40.DB.DataModel;
 
 namespace Zpp.Simulation.Agents.JobDistributor
 {
@@ -34,6 +35,7 @@ namespace Zpp.Simulation.Agents.JobDistributor
                 case AddResources m: CreateMachines(m.GetMachines, TimePeriod); break;
                 case OperationsToDistibute m  : InitializeDistribution(m.GetOperations); break;
                 case ProductionOrderFinished m: ProvideMaterial(m.GetOperation); break;
+                case WithDrawMaterialsFor m: WithDrawMaterials(m.GetOperation); break;
                 default: new Exception("Message type could not be handled by SimulationElement"); break;
             }
         }
@@ -77,6 +79,11 @@ namespace Zpp.Simulation.Agents.JobDistributor
             }
         }
 
+        private void WithDrawMaterials(ProductionOrderOperation productionOrderOperation)
+        {
+            OperationManager.WithdrawMaterialsFromStock(operation: productionOrderOperation, TimePeriod);
+        }
+
         private bool ScheduleOperation(ProductionOrderOperation productionOrderOperation, int machineId)
         {
             var machine = ResourceManager.GetResourceRefById(new Id(machineId));
@@ -94,7 +101,9 @@ namespace Zpp.Simulation.Agents.JobDistributor
                 _SimulationContext.Tell(message: msg, sender: Self);
                 return true;
             } // else operation starts in the future and has to wait.
-            Schedule(productionOrderOperation.GetValue().Start - TimePeriod, msg);
+
+            var delay = productionOrderOperation.GetValue().Start - TimePeriod;
+            Schedule(delay, msg);
             return true;
         }
 
@@ -123,10 +132,11 @@ namespace Zpp.Simulation.Agents.JobDistributor
             if (machineId == null)
                 throw new Exception("Machine not found.");
 
+            OperationManager.InsertMaterialsIntoStock(operation, TimePeriod);
+
             var machine = ResourceManager.GetResourceRefById(new Id(machineId.Value));
             machine.IsWorking = false;
 
-            // TODO Set StockExchange provided.
             PushWork();
         }
 

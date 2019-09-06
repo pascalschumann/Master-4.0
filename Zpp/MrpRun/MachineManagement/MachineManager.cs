@@ -145,7 +145,7 @@ namespace Zpp.MrpRun.MachineManagement
             // t(o) = 0 für alle o aus S
             foreach (var o in S.GetAll())
             {
-                o.GetValue().Start = 0;
+                o.GetValue().Start = o.GetValue().StartBackward.GetValueOrDefault();
             }
 
             // while S not empty do
@@ -271,7 +271,11 @@ namespace Zpp.MrpRun.MachineManagement
                 {
                     ProductionOrderOperation productionOrderOperation =
                         (ProductionOrderOperation) node.GetEntity();
-                    productionOrderOperation.GetValue().Start = o1.GetValue().End;
+                    // adapt only if o1's end is later than currentOperation else scheduled time from backwards-scheduling will be ignored
+                    if (o1.GetValue().End > productionOrderOperation.GetValue().Start)
+                    {
+                        productionOrderOperation.GetValue().Start = o1.GetValue().End;    
+                    }
                 }
                 else
                     // it's a Production Order --> root node

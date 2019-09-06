@@ -50,5 +50,10 @@ namespace Zpp.Common.DemandDomain.Wrappers
         {
             return null;
         }
+
+        public T_CustomerOrderPart GetValue()
+        {
+            return (T_CustomerOrderPart)_demand;
+        }
     }
 }

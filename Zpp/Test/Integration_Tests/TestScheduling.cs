@@ -23,7 +23,8 @@ namespace Zpp.Test.Integration_Tests
         
 
         [Theory]
-        [InlineData(TestConfigurationFileNames.DESK_COP_5_LOTSIZE_2)]
+        [InlineData(TestConfigurationFileNames.DESK_COP_5_CONCURRENT_LOTSIZE_2)]
+        [InlineData(TestConfigurationFileNames.DESK_COP_5_SEQUENTIALLY_LOTSIZE_2)]
         // [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
         public void TestBackwardScheduling(string testConfigurationFileName)
         {
@@ -41,7 +42,8 @@ namespace Zpp.Test.Integration_Tests
         }
 
         [Theory]
-        [InlineData(TestConfigurationFileNames.DESK_COP_5_LOTSIZE_2)]
+        [InlineData(TestConfigurationFileNames.DESK_COP_5_CONCURRENT_LOTSIZE_2)]
+        [InlineData(TestConfigurationFileNames.DESK_COP_5_SEQUENTIALLY_LOTSIZE_2)]
         // [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
         public void TestForwardScheduling(string testConfigurationFileName)
         {
@@ -86,8 +88,9 @@ namespace Zpp.Test.Integration_Tests
         }
 
         [Theory]
-        [InlineData(TestConfigurationFileNames.DESK_COP_5_LOTSIZE_2)]
         [InlineData(TestConfigurationFileNames.DESK_COP_1_LOT_ORDER_QUANTITY)]
+        [InlineData(TestConfigurationFileNames.DESK_COP_5_CONCURRENT_LOTSIZE_2)]
+        [InlineData(TestConfigurationFileNames.DESK_COP_5_SEQUENTIALLY_LOTSIZE_2)]
         // [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
         public void TestJobShopScheduling(string testConfigurationFileName)
         {
@@ -101,6 +104,8 @@ namespace Zpp.Test.Integration_Tests
                     productionOrderOperation.GetValue();
                 Assert.True(tProductionOrderOperation.Start != tProductionOrderOperation.End, $"{productionOrderOperation} was not scheduled.");
                 Assert.True(tProductionOrderOperation.MachineId != null, $"{productionOrderOperation} was not scheduled.");
+                Assert.True(tProductionOrderOperation.Start >= tProductionOrderOperation.StartBackward, "The startTime for producing cannot be earlier than estimated by backwards scheduling.");
+                Assert.True(tProductionOrderOperation.End >= tProductionOrderOperation.EndBackward, "The endTime for producing cannot be earlier than estimated by backwards scheduling.");
             }
         }
     }

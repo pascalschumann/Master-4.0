@@ -302,19 +302,23 @@ namespace Zpp.MrpRun.MachineManagement
             }
         }
 
+        /**
+         * @return: all leafs of all operationGraphs
+         */
         public static IStackSet<ProductionOrderOperation> CreateS(
             IDirectedGraph<INode> productionOrderGraph,
             Dictionary<ProductionOrder, IDirectedGraph<INode>> productionOrderOperationGraphs)
         {
             IStackSet<ProductionOrderOperation> S = new StackSet<ProductionOrderOperation>();
-            if (productionOrderGraph.GetLeafNodes() == null)
+            INodes leafNodes = productionOrderGraph.GetLeafNodes(); 
+            if (leafNodes == null)
             {
                 return null;
             }
 
             INodes leafs = new Nodes();
 
-            foreach (var productionOrder in productionOrderGraph.GetLeafNodes())
+            foreach (var productionOrder in leafNodes)
             {
                 var productionOrderOperationGraph =
                     productionOrderOperationGraphs[(ProductionOrder) productionOrder.GetEntity()];

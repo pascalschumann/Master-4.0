@@ -164,15 +164,6 @@ namespace Zpp.Test.Integration_Tests
                 {
                     Demand currentDemand = (Demand) predecessorNode.GetEntity();
 
-                    DueTime lastStartTime =
-                        ((Provider) lastNode.GetEntity()).GetStartTime(dbTransactionData);
-                    if (currentDemand.GetType() != typeof(CustomerOrderPart))
-                    {
-                        Assert.True(currentDemand.GetStartTime(dbTransactionData)
-                            .IsGreaterThanOrEqualTo(lastStartTime));
-                    }
-                    
-
                     DueTime lastDueTime =
                         ((Provider) lastNode.GetEntity()).GetDueTime(dbTransactionData);
                     if (currentDemand.GetType() != typeof(CustomerOrderPart))
@@ -184,10 +175,7 @@ namespace Zpp.Test.Integration_Tests
                 else if (predecessorNode.GetNodeType().Equals(NodeType.Provider))
                 {
                     Provider currentProvider = (Provider) predecessorNode.GetEntity();
-
-                    DueTime lastStartTime = ((Demand) lastNode.GetEntity()).GetStartTime(dbTransactionData);
-                    Assert.True(currentProvider.GetStartTime(dbTransactionData).IsGreaterThanOrEqualTo(lastStartTime));
-
+                    
                     DueTime lastDueTime = ((Demand) lastNode.GetEntity()).GetDueTime(dbTransactionData);
                     Assert.True(currentProvider.GetDueTime(dbTransactionData)
                         .IsGreaterThanOrEqualTo(lastDueTime));

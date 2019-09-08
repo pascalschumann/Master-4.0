@@ -41,7 +41,8 @@ namespace Zpp.Test.Integration_Tests
             IDbTransactionData dbTransactionData =
                 new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
 
-            foreach (var productionOrderOperation in dbTransactionData.ProductionOrderOperationGetAll())
+            foreach (var productionOrderOperation in dbTransactionData
+                .ProductionOrderOperationGetAll())
             {
                 Assert.True(productionOrderOperation.GetValue().EndBackward != null,
                     $"EndBackward of operation ({productionOrderOperation} is not scheduled.)");
@@ -107,7 +108,8 @@ namespace Zpp.Test.Integration_Tests
             IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
             IDbTransactionData dbTransactionData =
                 new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
-            foreach (var productionOrderOperation in dbTransactionData.ProductionOrderOperationGetAll())
+            foreach (var productionOrderOperation in dbTransactionData
+                .ProductionOrderOperationGetAll())
             {
                 T_ProductionOrderOperation tProductionOrderOperation =
                     productionOrderOperation.GetValue();
@@ -115,7 +117,8 @@ namespace Zpp.Test.Integration_Tests
                     $"{productionOrderOperation} was not scheduled.");
                 Assert.True(tProductionOrderOperation.MachineId != null,
                     $"{productionOrderOperation} was not scheduled.");
-                Assert.True(tProductionOrderOperation.Start >= tProductionOrderOperation.StartBackward,
+                Assert.True(
+                    tProductionOrderOperation.Start >= tProductionOrderOperation.StartBackward,
                     "The startTime for producing cannot be earlier than estimated by backwards scheduling.");
                 Assert.True(tProductionOrderOperation.End >= tProductionOrderOperation.EndBackward,
                     "The endTime for producing cannot be earlier than estimated by backwards scheduling.");
@@ -127,7 +130,8 @@ namespace Zpp.Test.Integration_Tests
         [InlineData(TestConfigurationFileNames.DESK_COP_5_CONCURRENT_LOTSIZE_2)]
         [InlineData(TestConfigurationFileNames.DESK_COP_5_SEQUENTIALLY_LOTSIZE_2)]
         // [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
-        public void TestPredecessorTimeIsGreaterOrEqual(string testConfigurationFileName)
+        public void TestPredecessorNodeTimeIsGreaterOrEqualInDemandToProviderGraph(
+            string testConfigurationFileName)
         {
             // init
             InitThisTest(testConfigurationFileName);
@@ -135,22 +139,24 @@ namespace Zpp.Test.Integration_Tests
             IDbTransactionData dbTransactionData =
                 new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
 
-            IDirectedGraph<INode> demandToProviderGraph = new DemandToProviderDirectedGraph(dbTransactionData);
+            IDirectedGraph<INode> demandToProviderGraph =
+                new DemandToProviderDirectedGraph(dbTransactionData);
 
             // start
 
-            INodes allLeafs =
-                demandToProviderGraph.GetLeafNodes();
+            INodes allLeafs = demandToProviderGraph.GetLeafNodes();
 
             foreach (var leaf in allLeafs)
             {
                 INodes predecessorNodes = demandToProviderGraph.GetPredecessorNodes(leaf);
 
-                ValidatePredecessorTimeIsGreaterOrEqual(predecessorNodes, leaf, dbTransactionData, demandToProviderGraph);
+                ValidatePredecessorNodeTimeIsGreaterOrEqual(predecessorNodes, leaf, dbTransactionData,
+                    demandToProviderGraph);
             }
         }
 
-        private void ValidatePredecessorTimeIsGreaterOrEqual(INodes predecessorNodes, INode lastNode, IDbTransactionData dbTransactionData,
+        private void ValidatePredecessorNodeTimeIsGreaterOrEqual(INodes predecessorNodes,
+            INode lastNode, IDbTransactionData dbTransactionData,
             IDirectedGraph<INode> demandToProviderGraph)
         {
             if (predecessorNodes == null || predecessorNodes.Any() == false)
@@ -169,21 +175,24 @@ namespace Zpp.Test.Integration_Tests
                     if (currentDemand.GetType() != typeof(CustomerOrderPart))
                     {
                         Assert.True(currentDemand.GetDueTime(dbTransactionData)
-                            .IsGreaterThanOrEqualTo(lastDueTime));
+                            .IsGreaterThanOrEqualTo(lastDueTime), "PredecessorNodeTime cannot be smaller than node's time.");
                     }
                 }
                 else if (predecessorNode.GetNodeType().Equals(NodeType.Provider))
                 {
                     Provider currentProvider = (Provider) predecessorNode.GetEntity();
-                    
-                    DueTime lastDueTime = ((Demand) lastNode.GetEntity()).GetDueTime(dbTransactionData);
+
+                    DueTime lastDueTime =
+                        ((Demand) lastNode.GetEntity()).GetDueTime(dbTransactionData);
                     Assert.True(currentProvider.GetDueTime(dbTransactionData)
-                        .IsGreaterThanOrEqualTo(lastDueTime));
+                        .IsGreaterThanOrEqualTo(lastDueTime), "PredecessorNodeTime cannot be smaller than node's time.");
                 }
 
-                INodes newPredecessorNodes = demandToProviderGraph.GetPredecessorNodes(predecessorNode);
+                INodes newPredecessorNodes =
+                    demandToProviderGraph.GetPredecessorNodes(predecessorNode);
 
-                ValidatePredecessorTimeIsGreaterOrEqual(newPredecessorNodes, predecessorNode, dbTransactionData, demandToProviderGraph);
+                ValidatePredecessorNodeTimeIsGreaterOrEqual(newPredecessorNodes, predecessorNode,
+                    dbTransactionData, demandToProviderGraph);
             }
         }
     }

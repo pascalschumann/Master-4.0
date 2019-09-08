@@ -26,6 +26,9 @@ namespace Zpp.Test
 
         protected static TestConfiguration TestConfiguration;
 
+        private static readonly string _defaultTestScenario =
+            TestConfigurationFileNames.DESK_COP_5_SEQUENTIALLY_LOTSIZE_2;
+
         private IDbMasterDataCache _dbMasterDataCache;
 
         public AbstractTest() : this(true)
@@ -43,7 +46,7 @@ namespace Zpp.Test
             ProductionDomainContext = Dbms.getDbContext();
             if (initDefaultTestConfig)
             {
-                InitTestScenario(TestConfigurationFileNames.DESK_COP_5_SEQUENTIALLY_LOTSIZE_2);
+                InitTestScenario(_defaultTestScenario);
             }
         }
 

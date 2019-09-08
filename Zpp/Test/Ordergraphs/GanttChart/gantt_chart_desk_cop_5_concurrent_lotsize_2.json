@@ -1,0 +1,92 @@
+﻿[
+  {
+    "article": null,
+    "articleId": null,
+    "operation": "13348: Tisch verpacken",
+    "operationId": "13348",
+    "resource": "12848: Verpacken 1",
+    "start": "356",
+    "end": "378",
+    "groupId": "13345"
+  },
+  {
+    "article": null,
+    "articleId": null,
+    "operation": "13395: Tisch verpacken",
+    "operationId": "13395",
+    "resource": "12848: Verpacken 1",
+    "start": "378",
+    "end": "400",
+    "groupId": "13392"
+  },
+  {
+    "article": null,
+    "articleId": null,
+    "operation": "13439: Anschraubplatte anschweißen",
+    "operationId": "13439",
+    "resource": "12849: Schweißen 1",
+    "start": "100",
+    "end": "260",
+    "groupId": "13436"
+  },
+  {
+    "article": null,
+    "articleId": null,
+    "operation": "13443: Flizgleiter anstecken",
+    "operationId": "13443",
+    "resource": "12851: Montage 1",
+    "start": "332",
+    "end": "356",
+    "groupId": "13436"
+  },
+  {
+    "article": null,
+    "articleId": null,
+    "operation": "13475: Tisch verpacken",
+    "operationId": "13475",
+    "resource": "12848: Verpacken 1",
+    "start": "444",
+    "end": "466",
+    "groupId": "13472"
+  },
+  {
+    "article": null,
+    "articleId": null,
+    "operation": "13513: Anschraubplatte anschweißen",
+    "operationId": "13513",
+    "resource": "12850: Schweißen 2",
+    "start": "100",
+    "end": "260",
+    "groupId": "13510"
+  },
+  {
+    "article": null,
+    "articleId": null,
+    "operation": "13517: Flizgleiter anstecken",
+    "operationId": "13517",
+    "resource": "12852: Montage 2",
+    "start": "332",
+    "end": "356",
+    "groupId": "13510"
+  },
+  {
+    "article": null,
+    "articleId": null,
+    "operation": "13552: Anschraubplatte anschweißen",
+    "operationId": "13552",
+    "resource": "12849: Schweißen 1",
+    "start": "260",
+    "end": "420",
+    "groupId": "13549"
+  },
+  {
+    "article": null,
+    "articleId": null,
+    "operation": "13556: Flizgleiter anstecken",
+    "operationId": "13556",
+    "resource": "12851: Montage 1",
+    "start": "420",
+    "end": "444",
+    "groupId": "13549"
+  }
+]

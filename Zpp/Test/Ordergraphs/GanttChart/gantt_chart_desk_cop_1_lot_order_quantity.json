@@ -2,31 +2,31 @@
   {
     "article": null,
     "articleId": null,
-    "operation": "10862: Tisch verpacken",
-    "operationId": "10862",
-    "resource": "10608: Verpacken 1",
-    "start": "92",
-    "end": "103",
-    "groupId": "10859"
+    "operation": "10317: Tisch verpacken",
+    "operationId": "10317",
+    "resource": "10010: Verpacken 1",
+    "start": "228",
+    "end": "239",
+    "groupId": "10314"
   },
   {
     "article": null,
     "articleId": null,
-    "operation": "10903: Anschraubplatte anschweißen",
-    "operationId": "10903",
-    "resource": "10609: Schweißen 1",
-    "start": "0",
-    "end": "80",
-    "groupId": "10900"
+    "operation": "10358: Anschraubplatte anschweißen",
+    "operationId": "10358",
+    "resource": "10011: Schweißen 1",
+    "start": "100",
+    "end": "180",
+    "groupId": "10355"
   },
   {
     "article": null,
     "articleId": null,
-    "operation": "10907: Flizgleiter anstecken",
-    "operationId": "10907",
-    "resource": "10611: Montage 1",
-    "start": "80",
-    "end": "92",
-    "groupId": "10900"
+    "operation": "10362: Flizgleiter anstecken",
+    "operationId": "10362",
+    "resource": "10013: Montage 1",
+    "start": "216",
+    "end": "228",
+    "groupId": "10355"
   }
 ]

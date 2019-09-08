@@ -2,91 +2,91 @@
   {
     "article": null,
     "articleId": null,
-    "operation": "13348: Tisch verpacken",
-    "operationId": "13348",
-    "resource": "12848: Verpacken 1",
+    "operation": "12727: Tisch zusammenbauen",
+    "operationId": "12727",
+    "resource": "12308: Endmontage 1",
     "start": "356",
     "end": "378",
-    "groupId": "13345"
+    "groupId": "12724"
   },
   {
     "article": null,
     "articleId": null,
-    "operation": "13395: Tisch verpacken",
-    "operationId": "13395",
-    "resource": "12848: Verpacken 1",
+    "operation": "12755: Anschraubplatte anschweißen",
+    "operationId": "12755",
+    "resource": "12309: Schweißen 1",
+    "start": "100",
+    "end": "260",
+    "groupId": "12752"
+  },
+  {
+    "article": null,
+    "articleId": null,
+    "operation": "12759: Flizgleiter anstecken",
+    "operationId": "12759",
+    "resource": "12311: Montage 1",
+    "start": "332",
+    "end": "356",
+    "groupId": "12752"
+  },
+  {
+    "article": null,
+    "articleId": null,
+    "operation": "12794: Tisch zusammenbauen",
+    "operationId": "12794",
+    "resource": "12308: Endmontage 1",
     "start": "378",
     "end": "400",
-    "groupId": "13392"
+    "groupId": "12791"
   },
   {
     "article": null,
     "articleId": null,
-    "operation": "13439: Anschraubplatte anschweißen",
-    "operationId": "13439",
-    "resource": "12849: Schweißen 1",
+    "operation": "12828: Anschraubplatte anschweißen",
+    "operationId": "12828",
+    "resource": "12310: Schweißen 2",
     "start": "100",
     "end": "260",
-    "groupId": "13436"
+    "groupId": "12825"
   },
   {
     "article": null,
     "articleId": null,
-    "operation": "13443: Flizgleiter anstecken",
-    "operationId": "13443",
-    "resource": "12851: Montage 1",
+    "operation": "12832: Flizgleiter anstecken",
+    "operationId": "12832",
+    "resource": "12312: Montage 2",
     "start": "332",
     "end": "356",
-    "groupId": "13436"
+    "groupId": "12825"
   },
   {
     "article": null,
     "articleId": null,
-    "operation": "13475: Tisch verpacken",
-    "operationId": "13475",
-    "resource": "12848: Verpacken 1",
+    "operation": "12867: Tisch zusammenbauen",
+    "operationId": "12867",
+    "resource": "12308: Endmontage 1",
     "start": "444",
     "end": "466",
-    "groupId": "13472"
+    "groupId": "12864"
   },
   {
     "article": null,
     "articleId": null,
-    "operation": "13513: Anschraubplatte anschweißen",
-    "operationId": "13513",
-    "resource": "12850: Schweißen 2",
-    "start": "100",
-    "end": "260",
-    "groupId": "13510"
-  },
-  {
-    "article": null,
-    "articleId": null,
-    "operation": "13517: Flizgleiter anstecken",
-    "operationId": "13517",
-    "resource": "12852: Montage 2",
-    "start": "332",
-    "end": "356",
-    "groupId": "13510"
-  },
-  {
-    "article": null,
-    "articleId": null,
-    "operation": "13552: Anschraubplatte anschweißen",
-    "operationId": "13552",
-    "resource": "12849: Schweißen 1",
+    "operation": "12891: Anschraubplatte anschweißen",
+    "operationId": "12891",
+    "resource": "12309: Schweißen 1",
     "start": "260",
     "end": "420",
-    "groupId": "13549"
+    "groupId": "12888"
   },
   {
     "article": null,
     "articleId": null,
-    "operation": "13556: Flizgleiter anstecken",
-    "operationId": "13556",
-    "resource": "12851: Montage 1",
+    "operation": "12895: Flizgleiter anstecken",
+    "operationId": "12895",
+    "resource": "12311: Montage 1",
     "start": "420",
     "end": "444",
-    "groupId": "13549"
+    "groupId": "12888"
   }
 ]

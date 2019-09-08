@@ -45,9 +45,9 @@ namespace Zpp.Test.Integration_Tests
             InitThisTest(testConfigurationFileName);
             
             // build orderGraph up
-            
+            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, DbMasterDataCache);
+                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
 
             IDirectedGraph<INode> orderDirectedGraph = new DemandToProviderDirectedGraph(dbTransactionData);
 
@@ -129,13 +129,13 @@ namespace Zpp.Test.Integration_Tests
             };
 
             // build orderGraph up
-            
+            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, DbMasterDataCache);
+                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
             IDirectedGraph<INode> orderDirectedGraph = new DemandToProviderDirectedGraph(dbTransactionData);
 
             // verify edgeTypes
-            foreach (var customerOrderPart in DbMasterDataCache.T_CustomerOrderPartGetAll().GetAll()
+            foreach (var customerOrderPart in dbMasterDataCache.T_CustomerOrderPartGetAll().GetAll()
             )
             {
                 orderDirectedGraph.TraverseDepthFirst((INode parentNode, INodes childNodes, INodes traversed) =>
@@ -175,9 +175,9 @@ namespace Zpp.Test.Integration_Tests
                 $"../../../Test/Ordergraphs/ordergraph_{TestConfiguration.Name}_with_ids.txt";
 
             // build orderGraph up
-            
+            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, DbMasterDataCache);
+                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
             IDirectedGraph<INode> orderDirectedGraph = new DemandToProviderDirectedGraph(dbTransactionData);
 
             // with ids

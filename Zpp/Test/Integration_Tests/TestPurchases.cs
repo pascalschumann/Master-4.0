@@ -19,9 +19,9 @@ namespace Zpp.Test.Integration_Tests
         {
             MrpRun.MrpRun.RunMrp(ProductionDomainContext);
 
-            
+            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
             IDbTransactionData persistedTransactionData =
-                new DbTransactionData(ProductionDomainContext, DbMasterDataCache);
+                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
 
             List<T_PurchaseOrderPart> tPurchaseOrderParts = persistedTransactionData
                 .PurchaseOrderPartGetAll().GetAllAs<T_PurchaseOrderPart>();
@@ -29,7 +29,7 @@ namespace Zpp.Test.Integration_Tests
             foreach (var tPurchaseOrderPart in tPurchaseOrderParts)
             {
                 M_ArticleToBusinessPartner articleToBusinessPartner =
-                    DbMasterDataCache.M_ArticleToBusinessPartnerGetAllByArticleId(
+                    dbMasterDataCache.M_ArticleToBusinessPartnerGetAllByArticleId(
                         new Id(tPurchaseOrderPart.ArticleId))[0];
                 Quantity multiplier = new Quantity(1);
                 while (multiplier.GetValue() * articleToBusinessPartner.PackSize <

@@ -43,9 +43,9 @@ namespace Zpp.Test.Integration_Tests
                 $"../../../Test/Ordergraphs/production_ordergraph_{TestConfiguration.Name}_with_ids.txt";
 
             // build orderGraph up
-            
+            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, DbMasterDataCache);
+                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
             IDirectedGraph<INode> orderDirectedGraph = new ProductionOrderDirectedGraph(dbTransactionData, true);
 
             // with ids

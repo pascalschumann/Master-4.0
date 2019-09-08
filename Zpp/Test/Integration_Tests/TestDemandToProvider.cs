@@ -24,9 +24,9 @@ namespace Zpp.Test.Integration_Tests
         public void TestAllDemandsAreInDemandToProviderTable()
         {
             MrpRun.MrpRun.RunMrp(ProductionDomainContext);
-            
+            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, DbMasterDataCache);
+                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
 
             IDemands allDbDemands = dbTransactionData.DemandsGetAll();
             IDemandToProviderTable demandToProviderTable = dbTransactionData.GetProviderManager().GetDemandToProviderTable();
@@ -48,9 +48,9 @@ namespace Zpp.Test.Integration_Tests
         public void TestAllDemandsAreSatisfiedWithinProviderTable()
         {
             MrpRun.MrpRun.RunMrp(ProductionDomainContext);
-            
+            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, DbMasterDataCache);
+                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
 
             IDemands demands = dbTransactionData.DemandsGetAll();
             IProviders providers = dbTransactionData.ProvidersGetAll();
@@ -66,9 +66,9 @@ namespace Zpp.Test.Integration_Tests
         public void TestAllDemandsAreSatisfiedByProvidersOfDemandToProviderTable()
         {
             MrpRun.MrpRun.RunMrp(ProductionDomainContext);
-            
+            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, DbMasterDataCache);
+                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
             
             IDemands allDbDemands = dbTransactionData.DemandsGetAll();
             foreach (var demand in allDbDemands.GetAll())

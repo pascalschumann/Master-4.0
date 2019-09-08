@@ -46,9 +46,9 @@ namespace Zpp.Test.Integration_Tests
                 $"../../../Test/Ordergraphs/production_order_operation_graph_{TestConfiguration.Name}_with_ids.txt";
 
             // build orderGraph up
-            
+            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, DbMasterDataCache);
+                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
             Dictionary<ProductionOrder, IDirectedGraph<INode>> productionOrderOperationGraphs = new Dictionary<ProductionOrder, IDirectedGraph<INode>>();
             foreach (var productionOrder in dbTransactionData.ProductionOrderGetAll())
             {

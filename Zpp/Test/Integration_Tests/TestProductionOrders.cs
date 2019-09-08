@@ -18,16 +18,16 @@ namespace Zpp.Test.Integration_Tests
             else
             {
                 MrpRun.MrpRun.RunMrp(ProductionDomainContext);
-                
+                IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
                 IDbTransactionData dbTransactionData =
-                    new DbTransactionData(ProductionDomainContext, DbMasterDataCache);
+                    new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
 
                 foreach (var productionOrderBom in dbTransactionData.ProductionOrderBomGetAll())
                 {
                     T_ProductionOrderBom tProductionOrderBom =
                         (T_ProductionOrderBom) productionOrderBom.ToIDemand();
                     M_ArticleBom articleBom =
-                        DbMasterDataCache.M_ArticleBomGetByArticleChildId(
+                        dbMasterDataCache.M_ArticleBomGetByArticleChildId(
                             new Id(tProductionOrderBom.ArticleChildId));
                     Assert.True(tProductionOrderBom.Quantity.Equals(articleBom.Quantity),
                         "Quantity of ProductionOrderBom does not equal the quantity from its articleBom.");
@@ -47,10 +47,10 @@ namespace Zpp.Test.Integration_Tests
             {
 
                 MrpRun.MrpRun.RunMrp(ProductionDomainContext);
-                IDbMasterDataCache DbMasterDataCache =
+                IDbMasterDataCache dbMasterDataCache =
                     new DbMasterDataCache(ProductionDomainContext);
                 IDbTransactionData dbTransactionData =
-                    new DbTransactionData(ProductionDomainContext, DbMasterDataCache);
+                    new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
 
                 foreach (var productionOrderOperation in dbTransactionData
                     .ProductionOrderOperationGetAll())
@@ -62,10 +62,10 @@ namespace Zpp.Test.Integration_Tests
                             .GetAnyProductionOrderBomByProductionOrderOperation(
                                 productionOrderOperation).ToIDemand();
                     M_ArticleBom articleBom =
-                        DbMasterDataCache.M_ArticleBomGetByArticleChildId(
+                        dbMasterDataCache.M_ArticleBomGetByArticleChildId(
                             new Id(aProductionOrderBom.ArticleChildId));
                     M_Operation mOperation =
-                        DbMasterDataCache.M_OperationGetById(
+                        dbMasterDataCache.M_OperationGetById(
                             new Id(articleBom.OperationId.GetValueOrDefault()));
 
                     string errorMessage =

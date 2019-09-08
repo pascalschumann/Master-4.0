@@ -26,11 +26,11 @@ namespace Zpp.Test
 
         protected static TestConfiguration TestConfiguration;
 
-        protected IDbMasterDataCache DbMasterDataCache;
+        private IDbMasterDataCache _dbMasterDataCache;
 
         public AbstractTest() : this(true)
         {
-            DbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+            _dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
         }
 
         /**
@@ -102,9 +102,9 @@ namespace Zpp.Test
         protected void InitTestScenario(string testConfiguration)
         {
             InitDb(testConfiguration);
-            DbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+            _dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
             Type testScenarioType = Type.GetType(TestConfiguration.TestScenario);
-            TestScenario testScenario = (TestScenario) Activator.CreateInstance(testScenarioType, DbMasterDataCache);
+            TestScenario testScenario = (TestScenario) Activator.CreateInstance(testScenarioType, _dbMasterDataCache);
             testScenario.CreateCustomerOrders(
                 new Quantity(TestConfiguration.CustomerOrderPartQuantity), ProductionDomainContext);
         }

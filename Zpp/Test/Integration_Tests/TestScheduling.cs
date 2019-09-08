@@ -36,9 +36,9 @@ namespace Zpp.Test.Integration_Tests
         {
             InitThisTest(testConfigurationFileName);
 
-
+            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, DbMasterDataCache);
+                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
 
             foreach (var productionOrderOperation in dbTransactionData.ProductionOrderOperationGetAll())
             {
@@ -57,9 +57,9 @@ namespace Zpp.Test.Integration_Tests
         {
             InitThisTest(testConfigurationFileName);
 
-
+            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, DbMasterDataCache);
+                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
 
             foreach (var productionOrderOperation in dbTransactionData
                 .ProductionOrderOperationGetAll())
@@ -103,9 +103,9 @@ namespace Zpp.Test.Integration_Tests
         public void TestJobShopScheduling(string testConfigurationFileName)
         {
             InitThisTest(testConfigurationFileName);
-
+            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, DbMasterDataCache);
+                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
             foreach (var productionOrderOperation in dbTransactionData.ProductionOrderOperationGetAll())
             {
                 T_ProductionOrderOperation tProductionOrderOperation =
@@ -130,8 +130,9 @@ namespace Zpp.Test.Integration_Tests
         {
             // init
             InitThisTest(testConfigurationFileName);
+            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, DbMasterDataCache);
+                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
 
             IDirectedGraph<INode> demandToProviderGraph = new DemandToProviderDirectedGraph(dbTransactionData);
 

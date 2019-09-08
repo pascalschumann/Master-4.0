@@ -4,6 +4,7 @@ using System.Linq;
 using Master40.DB.DataModel;
 using Xunit;
 using Zpp.Common.DemandDomain;
+using Zpp.Common.DemandDomain.Wrappers;
 using Zpp.Common.ProviderDomain;
 using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.DbCache;
@@ -159,26 +160,36 @@ namespace Zpp.Test.Integration_Tests
 
             foreach (var predecessorNode in predecessorNodes)
             {
-                predecessorNode.GetEntity().GetNodeType().Equals(NodeType.Demand);
-                
                 if (predecessorNode.GetEntity().GetNodeType().Equals(NodeType.Demand))
                 {
-                    Demand demand = (Demand) predecessorNode.GetEntity();
+                    Demand currentDemand = (Demand) predecessorNode.GetEntity();
 
-                    Assert.True(demand.GetStartTime(dbTransactionData)
-                        .IsGreaterThanOrEqualTo(((Provider) lastNode.GetEntity()).GetStartTime(dbTransactionData)));
-                    Assert.True(demand.GetDueTime(dbTransactionData)
-                        .IsGreaterThanOrEqualTo(((Provider) lastNode.GetEntity()).GetDueTime(dbTransactionData)));
+                    DueTime lastStartTime =
+                        ((Provider) lastNode.GetEntity()).GetStartTime(dbTransactionData);
+                    if (currentDemand.GetType() != typeof(CustomerOrderPart))
+                    {
+                        Assert.True(currentDemand.GetStartTime(dbTransactionData)
+                            .IsGreaterThanOrEqualTo(lastStartTime));
+                    }
+                    
+
+                    DueTime lastDueTime =
+                        ((Provider) lastNode.GetEntity()).GetDueTime(dbTransactionData);
+                    if (currentDemand.GetType() != typeof(CustomerOrderPart))
+                    {
+                        Assert.True(currentDemand.GetDueTime(dbTransactionData)
+                            .IsGreaterThanOrEqualTo(lastDueTime));
+                    }
                 }
                 else if (predecessorNode.GetNodeType().Equals(NodeType.Provider))
                 {
-                    Provider provider = (Provider) predecessorNode.GetEntity();
+                    Provider currentProvider = (Provider) predecessorNode.GetEntity();
 
                     DueTime lastStartTime = ((Demand) lastNode.GetEntity()).GetStartTime(dbTransactionData);
-                    Assert.True(provider.GetStartTime(dbTransactionData).IsGreaterThanOrEqualTo(lastStartTime));
+                    Assert.True(currentProvider.GetStartTime(dbTransactionData).IsGreaterThanOrEqualTo(lastStartTime));
 
                     DueTime lastDueTime = ((Demand) lastNode.GetEntity()).GetDueTime(dbTransactionData);
-                    Assert.True(provider.GetDueTime(dbTransactionData)
+                    Assert.True(currentProvider.GetDueTime(dbTransactionData)
                         .IsGreaterThanOrEqualTo(lastDueTime));
                 }
 

@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
 using System.IO;
+using Zpp.DbCache;
 using Zpp.Test.Configuration;
 using Zpp.Test.Configuration.Scenarios;
 using Zpp.Utils;
@@ -25,8 +26,14 @@ namespace Zpp.Test
 
         protected static TestConfiguration TestConfiguration;
 
+        private static readonly string _defaultTestScenario =
+            TestConfigurationFileNames.DESK_COP_5_SEQUENTIALLY_LOTSIZE_2;
+
+        private IDbMasterDataCache _dbMasterDataCache;
+
         public AbstractTest() : this(true)
         {
+            _dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
         }
 
         /**
@@ -36,11 +43,15 @@ namespace Zpp.Test
          */
         public AbstractTest(bool initDefaultTestConfig, bool useLocalDb = false)
         {
+<<<<<<< HEAD
             ProductionDomainContext = Dbms.getDbContext(useLocalDb);
 
+=======
+            ProductionDomainContext = Dbms.getDbContext();
+>>>>>>> origin/release/0.2
             if (initDefaultTestConfig)
             {
-                InitDefaultDb();
+                InitTestScenario(_defaultTestScenario);
             }
         }
 
@@ -56,15 +67,6 @@ namespace Zpp.Test
             ProductionDomainContext.Database.CloseConnection();
         }
 
-        private void InitDefaultDb()
-        {
-            InitDb(TestConfigurationFileNames.DESK_COP_5_LOTSIZE_2);
-
-            OrderGenerator.GenerateOrdersSyncron(ProductionDomainContext,
-                ContextTest.TestConfiguration(), 1, true,
-                TestConfiguration.CustomerOrderPartQuantity);
-        }
-
         /**
          * Initialize the db:
          * - deletes current
@@ -73,7 +75,6 @@ namespace Zpp.Test
         protected void InitDb(string testConfiguration)
         {
             TestConfiguration = ReadTestConfiguration(testConfiguration);
-
             if (Constants.IsLocalDb)
             {
                 bool isDeleted = ProductionDomainContext.Database.EnsureDeleted();
@@ -82,6 +83,7 @@ namespace Zpp.Test
                     LOGGER.Error("Database could not be deleted.");
                 }
             }
+
             else
             {
                 bool wasDropped = Dbms.DropDatabase(Constants.GetDbName());
@@ -93,11 +95,14 @@ namespace Zpp.Test
 
             Type dbSetInitializer = Type.GetType(TestConfiguration.DbSetInitializer);
             dbSetInitializer.GetMethod("DbInitialize")
-                .Invoke(null, new[] {ProductionDomainContext});
-            
+                .Invoke(null, new[]
+                {
+                    ProductionDomainContext
+                });
+
             LotSize.LotSize.SetDefaultLotSize(new Quantity(TestConfiguration.LotSize));
             LotSize.LotSize.SetLotSizeType(TestConfiguration.LotSizeType);
-            }
+        }
 
         /**
          * init db and customerOrders
@@ -105,9 +110,9 @@ namespace Zpp.Test
         protected void InitTestScenario(string testConfiguration)
         {
             InitDb(testConfiguration);
-
+            _dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
             Type testScenarioType = Type.GetType(TestConfiguration.TestScenario);
-            TestScenario testScenario = (TestScenario) Activator.CreateInstance(testScenarioType);
+            TestScenario testScenario = (TestScenario) Activator.CreateInstance(testScenarioType, _dbMasterDataCache);
             testScenario.CreateCustomerOrders(
                 new Quantity(TestConfiguration.CustomerOrderPartQuantity), ProductionDomainContext);
         }

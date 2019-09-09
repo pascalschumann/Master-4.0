@@ -5,7 +5,12 @@ using Master40.DB.Interfaces;
 using Zpp.Common.ProviderDomain;
 using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.DbCache;
+<<<<<<< HEAD
 using Zpp.Mrp.ProductionManagement;
+=======
+using Zpp.MrpRun.ProductionManagement;
+using Zpp.Utils;
+>>>>>>> origin/release/0.2
 using Zpp.WrappersForPrimitives;
 
 namespace Zpp.Common.DemandDomain.Wrappers
@@ -95,24 +100,28 @@ namespace Zpp.Common.DemandDomain.Wrappers
 
 
             DueTime dueTime;
-            /*if (_productionOrderBom.ProductionOrderOperation != null &&
+            if (_productionOrderBom.ProductionOrderOperation != null &&
                 _productionOrderBom.ProductionOrderOperation.EndBackward != null)
-            // backwards scheduling was already done --> job-shop-scheduling was done --> return End
-            {*/
-
-
-            if (GetArticle().ToBuild)
+                // backwards scheduling was already done --> job-shop-scheduling was done --> return End
             {
-                dueTime = new DueTime(_productionOrderBom.ProductionOrderOperation.End);
-                return dueTime;
+                if (GetArticle().ToBuild)
+                {
+                    dueTime = new DueTime(_productionOrderBom.ProductionOrderOperation.EndBackward
+                        .GetValueOrDefault());
+                    return dueTime;
+                }
+                else
+                {
+                    dueTime = new DueTime(_productionOrderBom.ProductionOrderOperation.StartBackward
+                        .GetValueOrDefault());
+                    return dueTime;
+                }
             }
             else
             {
-                dueTime = new DueTime(_productionOrderBom.ProductionOrderOperation.Start);
-                return dueTime;
+                throw new MrpRunException(
+                    "Requesting dueTime for ProductionOrderBom before it was backwards-scheduled.");
             }
-
-            // }
 
 
             /*
@@ -186,6 +195,7 @@ namespace Zpp.Common.DemandDomain.Wrappers
             if (_productionOrderBom.ProductionOrderOperationId != null)
             {
                 if (_productionOrderBom.ProductionOrderOperation == null)
+                // load it
                 {
                     _productionOrderBom.ProductionOrderOperation =
                         dbTransactionData.ProductionOrderOperationGetById(new Id(_productionOrderBom
@@ -194,7 +204,11 @@ namespace Zpp.Common.DemandDomain.Wrappers
 
                 T_ProductionOrderOperation tProductionOrderOperation =
                     _productionOrderBom.ProductionOrderOperation;
-                return new DueTime(tProductionOrderOperation.Start);
+                if (tProductionOrderOperation.StartBackward == null)
+                {
+                    throw new MrpRunException("Requesting start time of ProductionOrderBom before it was backwards-scheduled.");
+                }
+                return new DueTime(tProductionOrderOperation.StartBackward.GetValueOrDefault());
             }
             else
             {

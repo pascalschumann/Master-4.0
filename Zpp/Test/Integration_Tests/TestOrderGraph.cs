@@ -38,7 +38,8 @@ namespace Zpp.Test.Integration_Tests
         [Theory]
         [InlineData(TestConfigurationFileNames.DESK_COP_1_LOTSIZE_1)]
         [InlineData(TestConfigurationFileNames.DESK_COP_1_LOT_ORDER_QUANTITY)]
-        [InlineData(TestConfigurationFileNames.DESK_COP_5_LOTSIZE_2)]
+        [InlineData(TestConfigurationFileNames.DESK_COP_5_CONCURRENT_LOTSIZE_2)]
+        [InlineData(TestConfigurationFileNames.DESK_COP_5_SEQUENTIALLY_LOTSIZE_2)]
         // [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
         public void TestAllEdgesAreInOrderGraph(string testConfigurationFileName)
         {
@@ -89,7 +90,8 @@ namespace Zpp.Test.Integration_Tests
         [Theory]
         [InlineData(TestConfigurationFileNames.DESK_COP_1_LOTSIZE_1)]
         [InlineData(TestConfigurationFileNames.DESK_COP_1_LOT_ORDER_QUANTITY)]
-        [InlineData(TestConfigurationFileNames.DESK_COP_5_LOTSIZE_2)]
+        [InlineData(TestConfigurationFileNames.DESK_COP_5_CONCURRENT_LOTSIZE_2)]
+        [InlineData(TestConfigurationFileNames.DESK_COP_5_SEQUENTIALLY_LOTSIZE_2)]
         // [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
         public void TestEdgeTypes(string testConfigurationFileName)
         {
@@ -163,7 +165,8 @@ namespace Zpp.Test.Integration_Tests
         [Theory]
         [InlineData(TestConfigurationFileNames.DESK_COP_1_LOTSIZE_1)]
         [InlineData(TestConfigurationFileNames.DESK_COP_1_LOT_ORDER_QUANTITY)]
-        [InlineData(TestConfigurationFileNames.DESK_COP_5_LOTSIZE_2)]
+        [InlineData(TestConfigurationFileNames.DESK_COP_5_CONCURRENT_LOTSIZE_2)]
+        [InlineData(TestConfigurationFileNames.DESK_COP_5_SEQUENTIALLY_LOTSIZE_2)]
         // [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
         // [InlineData(TestConfigurationFileNames.TRUCK_COP_1_LOTSIZE_1)]
         public void TestOrderGraphStaysTheSame(string testConfigurationFileName)
@@ -171,9 +174,9 @@ namespace Zpp.Test.Integration_Tests
             InitThisTest(testConfigurationFileName);
             
             string orderGraphFileName =
-                $"../../../Test/Ordergraphs/ordergraph_{TestConfiguration.Name}.txt";
+                $"../../../Test/Ordergraphs/demandToProvider_graph_{TestConfiguration.Name}.txt";
             string orderGraphFileNameWithIds =
-                $"../../../Test/Ordergraphs/ordergraph_{TestConfiguration.Name}_with_ids.txt";
+                $"../../../Test/Ordergraphs/demandToProvider_graph_{TestConfiguration.Name}_with_ids.txt";
 
             // build orderGraph up
             IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);

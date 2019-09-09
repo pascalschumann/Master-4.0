@@ -34,6 +34,7 @@
       <Folder Include="GraphicalRepresentation\" />
       <Folder Include="LotSize\" />
       <Folder Include="OrderGraph\" />
+      <Folder Include="Properties\" />
       <Folder Include="Test\Configuration\Scenarios\" />
       <Folder Include="Test\Integration_Tests\" />
       <Folder Include="Test\Ordergraphs\GanttChart\" />

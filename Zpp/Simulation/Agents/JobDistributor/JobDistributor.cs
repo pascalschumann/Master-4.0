@@ -4,12 +4,12 @@ using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.Enums;
 using Master40.SimulationCore.Helper;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.Mrp.MachineManagement;
+using Zpp.Simulation.Agents.JobDistributor.Skills;
 using Zpp.Simulation.Agents.JobDistributor.Types;
-using System.Diagnostics;
-using Master40.DB.DataModel;
 
 namespace Zpp.Simulation.Agents.JobDistributor
 {
@@ -33,7 +33,7 @@ namespace Zpp.Simulation.Agents.JobDistributor
             switch (o)
             {
                 case AddResources m: CreateMachines(m.GetMachines, TimePeriod); break;
-                case OperationsToDistibute m  : InitializeDistribution(m.GetOperations); break;
+                case OperationsToDistribute m  : InitializeDistribution(m.GetOperations); break;
                 case ProductionOrderFinished m: ProvideMaterial(m.GetOperation); break;
                 case WithDrawMaterialsFor m: WithDrawMaterials(m.GetOperation); break;
                 default: new Exception("Message type could not be handled by SimulationElement"); break;
@@ -86,7 +86,7 @@ namespace Zpp.Simulation.Agents.JobDistributor
 
         private bool ScheduleOperation(ProductionOrderOperation productionOrderOperation, int machineId)
         {
-            var machine = ResourceManager.GetResourceRefById(new Id(machineId));
+            ResourceDetails machine = ResourceManager.GetResourceRefById(new Id(machineId));
             if (machine.IsWorking)
             {
                 Debug.WriteLine("Machine is still Working.");
@@ -94,7 +94,7 @@ namespace Zpp.Simulation.Agents.JobDistributor
             }
 
             machine.IsWorking = true;
-            var msg = Resource.Resource.Work.Create(productionOrderOperation, machine.ResourceRef);
+            Resource.Skills.Work msg = Resource.Skills.Work.Create(productionOrderOperation, machine.ResourceRef);
 
             if (productionOrderOperation.GetValue().Start <= TimePeriod)
             {
@@ -142,7 +142,7 @@ namespace Zpp.Simulation.Agents.JobDistributor
 
         protected override void Finish()
         {
-            Console.WriteLine(Sender.Path + " has been Killed");
+            Debug.WriteLine(Sender.Path + " has been Killed");
         }
     }
 }

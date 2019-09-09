@@ -4,7 +4,8 @@ using Akka.Actor;
 using AkkaSim;
 using Master40.DB.Enums;
 using Zpp.Common.ProviderDomain.Wrappers;
-using static Zpp.Simulation.Agents.JobDistributor.JobDistributor;
+using Zpp.Simulation.Agents.JobDistributor.Skills;
+using Zpp.Simulation.Agents.Resource.Skills;
 
 namespace Zpp.Simulation.Agents.Resource
 {
@@ -59,7 +60,5 @@ namespace Zpp.Simulation.Agents.Resource
         {
             base.Finish();
         }
-
-
     }
 }

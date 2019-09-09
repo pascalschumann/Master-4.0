@@ -1,8 +1,10 @@
 ﻿using Akka.Actor;
 using AkkaSim.Definitions;
 using System.Diagnostics;
+using NLog.Targets;
 using Zpp.DbCache;
 using Zpp.Simulation.Agents.JobDistributor;
+using Zpp.Simulation.Agents.JobDistributor.Skills;
 using Zpp.Simulation.Agents.JobDistributor.Types;
 using Zpp.Simulation.Monitors;
 using Zpp.Simulation.Types;
@@ -47,7 +49,7 @@ namespace Zpp.Simulation
             ProvideRequiredPurchaseForThisInterval(simulationInterval);
             
             // Distribute Ready Jobs
-            ProvideJobDistributor(simulationInterval, jobDistributor);
+            ProvideJobDistributor(jobDistributor);
 
             // TODO What to do with finished Jobs? How is PrO connected to the StockExchange. 
             /// a. Provide a Stockexchange Key with every ProductionOrder to complete SE.
@@ -71,13 +73,12 @@ namespace Zpp.Simulation
             return true;
         }
 
-        private void ProvideJobDistributor(SimulationInterval simulationInterval, IActorRef jobDistributor)
+        private void ProvideJobDistributor(IActorRef jobDistributor)
         {
             var operationManager = new OperationManager(_dbMasterDataCache, _dbTransactionData);
             _akkaSimulation.SimulationContext
-                           .Tell(JobDistributor.OperationsToDistibute
-                                                     .Create(operationManager, jobDistributor)
-                                                            , ActorRefs.NoSender);
+                           .Tell(message: OperationsToDistribute.Create(operationManager, jobDistributor)
+                                ,sender: ActorRefs.NoSender);
         }
 
         /// <summary>
@@ -88,24 +89,23 @@ namespace Zpp.Simulation
         {
             var from = new DueTime((int)simulationInterval.StartAt);
             var to = new DueTime((int)simulationInterval.EndAt);
-            var stockExchanges = _dbTransactionData.GetAggregator().GetProvidersForInterval(from, to); 
-                // .GetAll StockExchangeProvidersGetAll().GetAll();
-                foreach (var stockExchange in stockExchanges)
-                {
-                    stockExchange.SetProvided(stockExchange.GetDueTime());
-                }
+            var stockExchanges = _dbTransactionData.GetAggregator().GetProvidersForInterval(from, to);
+            foreach (var stockExchange in stockExchanges)
+            {
+                stockExchange.SetProvided(stockExchange.GetDueTime());
+            }
         }
 
         private void CreateResource(IActorRef jobDistributor)
         {
             var machines = ResourceManager.GetResources(_dbMasterDataCache);
-            var createMachines = JobDistributor.AddResources.Create(machines, jobDistributor);
+            var createMachines = AddResources.Create(machines, jobDistributor);
             _akkaSimulation.SimulationContext.Tell(createMachines, ActorRefs.Nobody);
         }
 
+        // TODO: replace --> with Simulator.Continuation(Inbox inbox, AkkaSim.Simulation sim);
         private static void Continuation(Inbox inbox, AkkaSim.Simulation sim)
         {
-
             var something = inbox.ReceiveAsync().Result;
             switch (something)
             {

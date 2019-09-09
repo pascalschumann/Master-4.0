@@ -247,7 +247,7 @@ namespace Zpp.DbCache
 
             foreach (PropertyInfo prop in plist)
             {
-                //TODO 
+                //TODO: change and TEST to --> if(PropertyType.IsPrimitive || PropertyType == typeof(string)) 
                 if (!prop.PropertyType.Name.Contains("ICollection") && !prop.PropertyType.FullName.Contains("Master40.DB.DataModel"))
                     prop.SetValue(dest, prop.GetValue(source, null), null);
             }

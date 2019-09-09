@@ -11,7 +11,7 @@ namespace Zpp.Test.Simulation
     {
         private readonly IDbMasterDataCache _dbMasterDataCache;
         private readonly IDbTransactionData _dbTransactionData;
-        public TestSimulation() : base(initDefaultTestConfig: true, useLocalDb: true)
+        public TestSimulation() : base(initDefaultTestConfig: true)
         {
             MrpRun.Start(ProductionDomainContext);
             _dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);

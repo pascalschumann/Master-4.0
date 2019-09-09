@@ -182,7 +182,6 @@ namespace Zpp.Common.ProviderDomain.Wrappers
             DueTime dueTime;
             if (_productionOrderOperation.EndBackward != null)
             {
-                // TODO why end BackWard not just END ? 
                 dueTime = new DueTime(_productionOrderOperation.EndBackward.GetValueOrDefault());
             }
             else

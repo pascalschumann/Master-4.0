@@ -26,8 +26,10 @@ namespace Zpp.Mrp.MachineManagement
 
         public override bool Equals(object obj)
         {
-            var other = (Machine) obj;
-            return _machine.Equals(other?._machine);
+            var other = obj as Machine;
+            if (other?._machine == null)
+                return false;
+            return _machine.Equals(other._machine);
         }
 
         public override int GetHashCode()

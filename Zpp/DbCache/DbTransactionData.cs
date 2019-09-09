@@ -247,13 +247,15 @@ namespace Zpp.DbCache
 
             foreach (PropertyInfo prop in plist)
             {
-                //TODO: change and TEST to --> if(PropertyType.IsPrimitive || PropertyType == typeof(string)) 
-                if (!prop.PropertyType.Name.Contains("ICollection") && !prop.PropertyType.FullName.Contains("Master40.DB.DataModel"))
+                // ToDo: are there more primitives?
+                if (prop.PropertyType.IsPrimitive 
+                    || prop.PropertyType == typeof(string) 
+                    || prop.PropertyType == typeof(DateTime) 
+                    || prop.PropertyType == typeof(Guid)
+                    || prop.PropertyType.BaseType == typeof(Enum))
                     prop.SetValue(dest, prop.GetValue(source, null), null);
             }
         }
-
-
 
         public void DemandsAdd(Demand demand)
         {

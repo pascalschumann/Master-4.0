@@ -43,12 +43,7 @@ namespace Zpp.Test
          */
         public AbstractTest(bool initDefaultTestConfig, bool useLocalDb = false)
         {
-<<<<<<< HEAD
             ProductionDomainContext = Dbms.getDbContext(useLocalDb);
-
-=======
-            ProductionDomainContext = Dbms.getDbContext();
->>>>>>> origin/release/0.2
             if (initDefaultTestConfig)
             {
                 InitTestScenario(_defaultTestScenario);

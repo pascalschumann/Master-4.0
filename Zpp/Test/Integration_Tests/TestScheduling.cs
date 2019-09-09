@@ -1,19 +1,13 @@
-using System;
+using Master40.DB.DataModel;
 using System.Collections.Generic;
 using System.Linq;
-using Master40.DB.DataModel;
 using Xunit;
 using Zpp.Common.DemandDomain;
 using Zpp.Common.DemandDomain.Wrappers;
 using Zpp.Common.ProviderDomain;
-using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.DbCache;
-<<<<<<< HEAD
 using Zpp.Mrp;
-=======
-using Zpp.MrpRun.MachineManagement;
 using Zpp.OrderGraph;
->>>>>>> origin/release/0.2
 using Zpp.Test.Configuration;
 using Zpp.WrappersForPrimitives;
 

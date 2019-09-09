@@ -86,8 +86,8 @@ namespace Zpp.Simulation
         /// <param name="simulationInterval"></param>
         private void ProvideRequiredPurchaseForThisInterval(SimulationInterval simulationInterval)
         {
-            var from = new DueTime(0);
-            var to = new DueTime(1440);
+            var from = new DueTime((int)simulationInterval.StartAt);
+            var to = new DueTime((int)simulationInterval.EndAt);
             var stockExchanges = _dbTransactionData.GetAggregator().GetProvidersForInterval(from, to); 
                 // .GetAll StockExchangeProvidersGetAll().GetAll();
                 foreach (var stockExchange in stockExchanges)

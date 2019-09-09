@@ -5,16 +5,10 @@ using Xunit;
 using Zpp.Common.DemandDomain.Wrappers;
 using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.DbCache;
-<<<<<<< HEAD
 using Zpp.Mrp;
 using Zpp.Mrp.NodeManagement;
 using Zpp.Mrp.StockManagement;
-=======
-using Zpp.MrpRun;
-using Zpp.MrpRun.NodeManagement;
-using Zpp.MrpRun.StockManagement;
 using Zpp.WrappersForPrimitives;
->>>>>>> origin/release/0.2
 
 namespace Zpp.Test.Unit_Tests
 {

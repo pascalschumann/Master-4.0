@@ -2,12 +2,9 @@ using System;
 using Master40.DB.DataModel;
 using Xunit;
 using Zpp.DbCache;
-<<<<<<< HEAD
 using Zpp.Mrp.StockManagement;
-=======
-using Zpp.MrpRun.StockManagement;
 using Zpp.WrappersForPrimitives;
->>>>>>> origin/release/0.2
+
 
 namespace Zpp.Test.Unit_Tests.Provider
 {

@@ -5,12 +5,8 @@ using Master40.DB.Interfaces;
 using Zpp.Common.ProviderDomain;
 using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.DbCache;
-<<<<<<< HEAD
 using Zpp.Mrp.ProductionManagement;
-=======
-using Zpp.MrpRun.ProductionManagement;
 using Zpp.Utils;
->>>>>>> origin/release/0.2
 using Zpp.WrappersForPrimitives;
 
 namespace Zpp.Common.DemandDomain.Wrappers

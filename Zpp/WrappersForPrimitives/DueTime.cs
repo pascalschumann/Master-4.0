@@ -2,7 +2,7 @@ using System;
 
 namespace Zpp.WrappersForPrimitives
 {
-    public class DueTime : IComparable<DueTime>,IComparable 
+    public class DueTime : IComparable<DueTime>, IComparable
     {
         private int _dueTime;
 
@@ -10,20 +10,25 @@ namespace Zpp.WrappersForPrimitives
         {
             _dueTime = dueTime;
         }
+        
+        public DueTime(DueTime dueTime)
+        {
+            _dueTime = dueTime._dueTime;
+        }
 
         public int GetValue()
         {
             return _dueTime;
         }
-        
+
         public int CompareTo(DueTime that)
         {
-                return _dueTime.CompareTo(that.GetValue());
+            return _dueTime.CompareTo(that.GetValue());
         }
 
         public int CompareTo(object obj)
         {
-            DueTime otherDueTime = (DueTime)obj;
+            DueTime otherDueTime = (DueTime) obj;
             return _dueTime.CompareTo(otherDueTime.GetValue());
         }
 
@@ -50,14 +55,19 @@ namespace Zpp.WrappersForPrimitives
 
         public DueTime Minus(DueTime dueTime)
         {
-            return new DueTime(_dueTime-dueTime.GetValue());
+            return new DueTime(_dueTime - dueTime.GetValue());
         }
-        
+
+        public DueTime Plus(DueTime dueTime)
+        {
+            return new DueTime(_dueTime + dueTime.GetValue());
+        }
+
         public DueTime Minus(int dueTime)
         {
-            return new DueTime(_dueTime-dueTime);
+            return new DueTime(_dueTime - dueTime);
         }
-        
+
         public static DueTime Null()
         {
             return new DueTime(0);
@@ -67,7 +77,7 @@ namespace Zpp.WrappersForPrimitives
         {
             return _dueTime > other._dueTime;
         }
-        
+
         public bool IsGreaterThanOrEqualTo(DueTime other)
         {
             return _dueTime >= other._dueTime;

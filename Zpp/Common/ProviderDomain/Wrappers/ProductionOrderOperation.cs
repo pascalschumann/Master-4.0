@@ -44,7 +44,7 @@ namespace Zpp.Common.ProviderDomain.Wrappers
                      .GetHierarchyNumber().GetValue())))
             {
                 newOperationBackwardsSchedule = new OperationBackwardsSchedule(
-                    lastOperationBackwardsSchedule.GetEndBackwards(),
+                    lastOperationBackwardsSchedule.GetEndOfOperation(),
                     _productionOrderOperation.GetDuration(),
                     new HierarchyNumber(_productionOrderOperation.HierarchyNumber));
             }
@@ -60,7 +60,7 @@ namespace Zpp.Common.ProviderDomain.Wrappers
                 }
 
                 newOperationBackwardsSchedule = new OperationBackwardsSchedule(
-                    lastOperationBackwardsSchedule.GetStartOfOperation(),
+                    lastOperationBackwardsSchedule.GetStartBackwards(),
                     _productionOrderOperation.GetDuration(),
                     new HierarchyNumber(_productionOrderOperation.HierarchyNumber));
             }

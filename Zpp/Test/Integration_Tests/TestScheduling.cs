@@ -5,9 +5,13 @@ using Xunit;
 using Zpp.Common.DemandDomain;
 using Zpp.Common.DemandDomain.Wrappers;
 using Zpp.Common.ProviderDomain;
+using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.DbCache;
 using Zpp.Mrp;
+using Zpp.Mrp.MachineManagement;
+using Zpp.Mrp.Scheduling;
 using Zpp.OrderGraph;
+using Zpp.Simulation.Agents.JobDistributor.Types;
 using Zpp.Test.Configuration;
 using Zpp.WrappersForPrimitives;
 
@@ -148,8 +152,8 @@ namespace Zpp.Test.Integration_Tests
             {
                 INodes predecessorNodes = demandToProviderGraph.GetPredecessorNodes(leaf);
 
-                ValidatePredecessorNodeTimeIsGreaterOrEqual(predecessorNodes, leaf, dbTransactionData,
-                    demandToProviderGraph);
+                ValidatePredecessorNodeTimeIsGreaterOrEqual(predecessorNodes, leaf,
+                    dbTransactionData, demandToProviderGraph);
             }
         }
 
@@ -172,8 +176,10 @@ namespace Zpp.Test.Integration_Tests
                         ((Provider) lastNode.GetEntity()).GetDueTime(dbTransactionData);
                     if (currentDemand.GetType() != typeof(CustomerOrderPart))
                     {
-                        Assert.True(currentDemand.GetDueTime(dbTransactionData)
-                            .IsGreaterThanOrEqualTo(lastDueTime), "PredecessorNodeTime cannot be smaller than node's time.");
+                        Assert.True(
+                            currentDemand.GetDueTime(dbTransactionData)
+                                .IsGreaterThanOrEqualTo(lastDueTime),
+                            "PredecessorNodeTime cannot be smaller than node's time.");
                     }
                 }
                 else if (predecessorNode.GetNodeType().Equals(NodeType.Provider))
@@ -182,8 +188,10 @@ namespace Zpp.Test.Integration_Tests
 
                     DueTime lastDueTime =
                         ((Demand) lastNode.GetEntity()).GetDueTime(dbTransactionData);
-                    Assert.True(currentProvider.GetDueTime(dbTransactionData)
-                        .IsGreaterThanOrEqualTo(lastDueTime), "PredecessorNodeTime cannot be smaller than node's time.");
+                    Assert.True(
+                        currentProvider.GetDueTime(dbTransactionData)
+                            .IsGreaterThanOrEqualTo(lastDueTime),
+                        "PredecessorNodeTime cannot be smaller than node's time.");
                 }
 
                 INodes newPredecessorNodes =
@@ -191,6 +199,51 @@ namespace Zpp.Test.Integration_Tests
 
                 ValidatePredecessorNodeTimeIsGreaterOrEqual(newPredecessorNodes, predecessorNode,
                     dbTransactionData, demandToProviderGraph);
+            }
+        }
+
+        [Theory]
+        [InlineData(TestConfigurationFileNames.DESK_COP_1_LOT_ORDER_QUANTITY)]
+        [InlineData(TestConfigurationFileNames.DESK_COP_5_CONCURRENT_LOTSIZE_2)]
+        [InlineData(TestConfigurationFileNames.DESK_COP_5_SEQUENTIALLY_LOTSIZE_2)]
+        // [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
+        public void TestBackwardSchedulingTransitionTimeIsCorrect(string testConfigurationFileName)
+        {
+            InitThisTest(testConfigurationFileName);
+            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+            IDbTransactionData dbTransactionData =
+                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+
+            ProductionOrderToOperationGraph productionOrderToOperationGraph =
+                new ProductionOrderToOperationGraph(dbMasterDataCache, dbTransactionData);
+
+            IStackSet<INode> leafs = productionOrderToOperationGraph.GetLeafs();
+            foreach (var leaf in leafs)
+            {
+                INodes predecessorNodes = productionOrderToOperationGraph.GetPredecessors(leaf);
+                ValidatePredecessorOperationsTransitionTimeIsCorrect(predecessorNodes,
+                    (ProductionOrderOperation) leaf.GetEntity(), dbTransactionData,
+                    productionOrderToOperationGraph);
+            }
+        }
+
+        private void ValidatePredecessorOperationsTransitionTimeIsCorrect(INodes predecessorNodes,
+            ProductionOrderOperation lastOperation, IDbTransactionData dbTransactionData,
+            ProductionOrderToOperationGraph productionOrderToOperationGraph)
+        {
+            foreach (var predecessor in predecessorNodes)
+            {
+                ProductionOrderOperation predecessorOperation =
+                    (ProductionOrderOperation) predecessor;
+                int expectedStartBackward =
+                    lastOperation.GetValue().EndBackward.GetValueOrDefault() +
+                    OperationBackwardsSchedule.GetTransitionTimeFactor() *
+                    lastOperation.GetValue().Duration;
+                int actualStartBackward =
+                    predecessorOperation.GetValue().StartBackward.GetValueOrDefault();
+                Assert.True(expectedStartBackward.Equals(actualStartBackward),
+                    $"The transition time between the operations is not correct: " +
+                    $"expectedStartBackward: {expectedStartBackward}, actualStartBackward {actualStartBackward}");
             }
         }
     }

@@ -29,8 +29,16 @@ namespace Zpp.Common.ProviderDomain.Wrappers
         {
             OperationBackwardsSchedule newOperationBackwardsSchedule;
 
+            // case: first run
+            if (lastOperationBackwardsSchedule == null)
+            {
+                newOperationBackwardsSchedule = new OperationBackwardsSchedule(
+                    dueTimeOfProductionOrder,
+                    _productionOrderOperation.GetDuration(),
+                    new HierarchyNumber(_productionOrderOperation.HierarchyNumber));
+            }
             // case: equal hierarchyNumber --> PrOO runs in parallel
-            if (lastOperationBackwardsSchedule.GetHierarchyNumber() == null ||
+            else if (lastOperationBackwardsSchedule.GetHierarchyNumber() == null ||
                 (lastOperationBackwardsSchedule.GetHierarchyNumber() != null &&
                  _productionOrderOperation.HierarchyNumber.Equals(lastOperationBackwardsSchedule
                      .GetHierarchyNumber().GetValue())))

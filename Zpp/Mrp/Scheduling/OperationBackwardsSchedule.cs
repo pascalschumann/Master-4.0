@@ -1,4 +1,5 @@
 using Master40.DB.Data.WrappersForPrimitives;
+using Zpp.Utils;
 using Zpp.WrappersForPrimitives;
 
 namespace Zpp.Mrp.Scheduling
@@ -16,6 +17,12 @@ namespace Zpp.Mrp.Scheduling
 
         public OperationBackwardsSchedule(DueTime endBackwards, Duration duration,  HierarchyNumber hierarchyNumber)
         {
+            if (endBackwards == null || duration == null || hierarchyNumber == null)
+            {
+                throw  new MrpRunException("Every parameter must NOT be null.");
+            }
+
+            _endBackwards = endBackwards;
             _duration = duration;
             _hierarchyNumber = hierarchyNumber;
 
@@ -39,11 +46,6 @@ namespace Zpp.Mrp.Scheduling
         public DueTime GetEndBackwards()
         {
             return _endBackwards;
-        }
-
-        public Duration GetDuration()
-        {
-            return _duration;
         }
 
         public HierarchyNumber GetHierarchyNumber()

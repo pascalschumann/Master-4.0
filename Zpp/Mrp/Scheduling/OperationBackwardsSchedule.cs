@@ -32,10 +32,11 @@ namespace Zpp.Mrp.Scheduling
             // add transition time aka timeBetweenOperations
             _timeBetweenOperations =
                 new DueTime(_duration.GetValue() * TRANSITION_TIME_FACTOR);
-            _endBackwards = dueTime.Minus(_timeBetweenOperations);
+            _endBackwards = dueTime;
             _startBackwards = _endBackwards.Minus(duration.GetValue());
-            _startOfOperation = _startBackwards;
-            _endOfOperation = dueTime;
+            
+            _startOfOperation = _startBackwards.Minus(_timeBetweenOperations);
+            _endOfOperation = _endBackwards;
         }
 
         public DueTime GetStartBackwards()

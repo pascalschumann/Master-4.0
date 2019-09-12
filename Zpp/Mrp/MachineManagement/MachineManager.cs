@@ -204,10 +204,16 @@ namespace Zpp.Mrp.MachineManagement
                         K.Remove(o1);
 
                         o1.SetMachine(machine);
-                        // correct op start time if machine's idleTime is later
+                        // correct op's start time if machine's idleTime is later
                         if (machine.GetIdleStartTime().GetValue() > o1.GetValue().Start)
                         {
                             o1.GetValue().Start = machine.GetIdleStartTime().GetValue();
+                            o1.GetValue().End = o1.GetValue().Start + o1.GetValue().Duration;
+                        }
+                        // correct op's start time if op's startBackwards is later
+                        if (o1.GetValue().StartBackward > o1.GetValue().Start)
+                        {
+                            o1.GetValue().Start = o1.GetValue().StartBackward.GetValueOrDefault();
                             o1.GetValue().End = o1.GetValue().Start + o1.GetValue().Duration;
                         }
 

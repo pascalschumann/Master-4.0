@@ -60,7 +60,7 @@ namespace Zpp.Common.ProviderDomain.Wrappers
                 }
 
                 newOperationBackwardsSchedule = new OperationBackwardsSchedule(
-                    lastOperationBackwardsSchedule.GetStartBackwards(),
+                    lastOperationBackwardsSchedule.GetStartOfOperation(),
                     _productionOrderOperation.GetDuration(),
                     new HierarchyNumber(_productionOrderOperation.HierarchyNumber));
             }

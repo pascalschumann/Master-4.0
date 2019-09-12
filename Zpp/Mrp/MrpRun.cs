@@ -1,5 +1,6 @@
 using System;
 using Master40.DB.Data.Context;
+using Master40.DB.Data.Helper;
 using Master40.DB.DataModel;
 using Priority_Queue;
 using Zpp.Common.DemandDomain;
@@ -224,6 +225,8 @@ namespace Zpp.Mrp
                     dbMasterDataCache, new PriorityRule());
 
                 dbTransactionData.PersistDbCache();
+                
+                IdGenerator.WriteToFile();
 
                 LOGGER.Info("MrpRun done.");
             }

@@ -235,6 +235,7 @@ namespace Zpp.Test.Integration_Tests
             {
                 ProductionOrderOperation predecessorOperation =
                     (ProductionOrderOperation) predecessor;
+                // transition time MUST be before the start of Operation
                 int expectedStartBackward =
                     lastOperation.GetValue().EndBackward.GetValueOrDefault() +
                     OperationBackwardsSchedule.GetTransitionTimeFactor() *

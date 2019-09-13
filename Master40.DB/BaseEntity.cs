@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using System.Reflection;
@@ -24,10 +25,10 @@ namespace Master40.DB
             MethodBase methodFromRequester = stackFrameFromRequester.GetMethod();
 
             // return the type of the inherited class
-            string caller = "";
+            Type caller = null;
             if (methodFromCaller != null && methodFromCaller.ReflectedType != null)
             {
-                caller = methodFromCaller.ReflectedType.Name;
+                caller = methodFromCaller.ReflectedType;
             }
 
             string requester = "";

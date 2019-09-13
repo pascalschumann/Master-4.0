@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Master40.DB.Data.WrappersForPrimitives;
 
@@ -10,9 +11,9 @@ namespace Master40.DB.Data.Helper
     {
         private const int _start = 10000;
         private int _currentId = _start;
-        private static  readonly Dictionary<String, List<string>> objectTypeToIds = new Dictionary<string, List<string>>();
+        private static  readonly Dictionary<Type, List<string>> objectTypeToIds = new Dictionary<Type, List<string>>();
 
-        public int GetNewId(string objectType, string requester)
+        public int GetNewId(Type objectType, string requester)
         {
             lock (this)
             {
@@ -21,8 +22,12 @@ namespace Master40.DB.Data.Helper
                 {
                     objectTypeToIds.Add(objectType, new List<string>());
                 }
-                objectTypeToIds[objectType].Add($"{_currentId} ({requester})");
-                
+
+                if (requester.Contains("lambda") == false)
+                {
+                    objectTypeToIds[objectType].Add($"{_currentId} ({requester})");   
+                }
+
                 return _currentId;
             }
         }
@@ -37,7 +42,7 @@ namespace Master40.DB.Data.Helper
             string s = "";
             foreach (var key in objectTypeToIds.Keys)
             {
-                s += $"{key}:\n";
+                s += $"{key.Name}:\n";
                 foreach (var id in objectTypeToIds[key])
                 {
                     s += $"{id}\n";
@@ -57,6 +62,11 @@ namespace Master40.DB.Data.Helper
                 $"../../../Test/used_ids.txt";
             File.WriteAllText(orderGraphFileName, GetObjectTypeToIdsAsString(),
                 Encoding.UTF8);
+        }
+
+        public static int CountIdsOf(Type type)
+        {
+            return objectTypeToIds[type].Count();
         }
     }
 }

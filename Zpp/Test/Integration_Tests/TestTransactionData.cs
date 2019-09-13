@@ -21,9 +21,12 @@ namespace Zpp.Test.Integration_Tests
 
             ValidateNumberOfEntities(ProductionDomainContext.ProductionOrders);
             ValidateNumberOfEntities(ProductionDomainContext.ProductionOrderBoms);
+            
             ValidateNumberOfEntities(ProductionDomainContext.PurchaseOrderParts);
             ValidateNumberOfEntities(ProductionDomainContext.PurchaseOrders);
             ValidateNumberOfEntities(ProductionDomainContext.StockExchanges);
+            
+            ValidateNumberOfEntities(ProductionDomainContext.ProviderToDemand);
             ValidateNumberOfEntities(ProductionDomainContext.ProductionOrderOperations);
         }
 

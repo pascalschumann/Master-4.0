@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.Mrp.MachineManagement;
+using Zpp.OrderGraph;
 using Zpp.Simulation.Agents.JobDistributor.Skills;
 using Zpp.Simulation.Agents.JobDistributor.Types;
 
@@ -17,7 +18,7 @@ namespace Zpp.Simulation.Agents.JobDistributor
     {
         private ResourceManager ResourceManager { get; } = new ResourceManager();
 
-        private OperationManager OperationManager { get; set; }
+        private ProductionOrderToOperationGraph ProductionOrderToOperationGraph { get; set; }
 
         public static Props Props(IActorRef simulationContext, long time)
         {
@@ -33,25 +34,25 @@ namespace Zpp.Simulation.Agents.JobDistributor
             switch (o)
             {
                 case AddResources m: CreateMachines(m.GetMachines, TimePeriod); break;
-                case OperationsToDistribute m: InitializeDistribution(m.GetOperations); break;
+                case OperationsToDistribute m: InitializeDistribution(m.GetProductionOrderToOperations); break;
                 case ProductionOrderFinished m: ProvideMaterial(m.GetOperation); break;
                 case WithDrawMaterialsFor m: WithDrawMaterials(m.GetOperation); break;
                 default: new Exception("Message type could not be handled by SimulationElement"); break;
             }
         }
 
-        private void InitializeDistribution(OperationManager operationManager)
+        private void InitializeDistribution(ProductionOrderToOperationGraph productionOrderToOperationGraph)
         {
             // ResourceManager.AddOperationQueue(operations);
             // TODO Check is Item is in Stock ? 
 
-            OperationManager = operationManager;
+            ProductionOrderToOperationGraph = productionOrderToOperationGraph;
             PushWork();
         }
 
         private void PushWork()
         {
-            var operationLeafs = OperationManager.GetLeafs();
+            var operationLeafs = ProductionOrderToOperationGraph.GetLeafs();
             if (operationLeafs == null)
             {
                 Debug.WriteLine("No more leafs in OperationManager");
@@ -59,7 +60,7 @@ namespace Zpp.Simulation.Agents.JobDistributor
             }
 
             // split into machineGroups 
-            var operationGroupedBySkill = operationLeafs.GetAll()
+            var operationGroupedBySkill = operationLeafs.GetAllAs<ProductionOrderOperation>()
                 .GroupBy(x => x.GetValue().ResourceId, (resourceId, operations) => new { resourceId, operations });
 
             // get next item for each resource.
@@ -74,14 +75,14 @@ namespace Zpp.Simulation.Agents.JobDistributor
                 Debug.Assert(machine.resourceId != null, "resource.machineId is null");
                 if (ScheduleOperation(productionOrderOperation: first, machineId: machine.resourceId.Value))
                 {
-                    OperationManager.RemoveOperation(first);
+                    ProductionOrderToOperationGraph.RemoveOperation(first);
                 }
             }
         }
 
         private void WithDrawMaterials(ProductionOrderOperation productionOrderOperation)
         {
-            OperationManager.WithdrawMaterialsFromStock(operation: productionOrderOperation, TimePeriod);
+            ProductionOrderToOperationGraph.WithdrawMaterialsFromStock(operation: productionOrderOperation, TimePeriod);
         }
 
         private bool ScheduleOperation(ProductionOrderOperation productionOrderOperation, int machineId)
@@ -132,7 +133,7 @@ namespace Zpp.Simulation.Agents.JobDistributor
             if (resourceId == null)
                 throw new Exception("Resource not found.");
 
-            OperationManager.InsertMaterialsIntoStock(operation, TimePeriod);
+            ProductionOrderToOperationGraph.InsertMaterialsIntoStock(operation, TimePeriod);
 
             var resource = ResourceManager.GetResourceRefById(new Id(resourceId.Value));
             resource.IsWorking = false;

@@ -11,7 +11,7 @@ namespace Zpp.Test
     /**
      * Tests testable rules that ensures a good structure e.g. ObjectCalisthenics
      */
-    public class StructureTest
+    public class TestStructure
     {
         const string
             skipThisTestClass =

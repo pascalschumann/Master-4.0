@@ -170,6 +170,7 @@ namespace Master40.DB.Data.Initializer.Tables
          {
              ArticleId = MasterTableArticle.BASEPLATE_TRUCK_BED.Id,
              Name = "Base plate Truck-Bed: Cut Base plate Truck-Bed",
+             Duration = 10,
              ResourceSkillId = MasterTableResourceSkill.CUTTING.Id,
              ResourceToolId = MasterTableResourceTool.SAW_BLADE_BIG.Id, HierarchyNumber = 10
          };

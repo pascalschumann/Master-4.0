@@ -1,5 +1,6 @@
 using System;
 using Master40.DB.Data.Context;
+using Master40.DB.Data.Helper;
 using Master40.DB.DataModel;
 using Priority_Queue;
 using Zpp.Common.DemandDomain;
@@ -19,12 +20,10 @@ namespace Zpp.Mrp
     {
         private static readonly NLog.Logger LOGGER = NLog.LogManager.GetCurrentClassLogger();
 
-        // articleNode.Entity.ArticleType.Name.Equals(ArticleType.ASSEMBLY)
-
         /**
          * Only at start the demands are customerOrders
          */
-        public static void Start(ProductionDomainContext productionDomainContext)
+        public static void Start(ProductionDomainContext productionDomainContext, bool withForwardScheduling = true)
         {
             // init data structures
             IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(productionDomainContext);
@@ -37,7 +36,7 @@ namespace Zpp.Mrp
             dbTransactionData.DemandToProvidersRemoveAll();
 
             ProcessDbDemands(dbTransactionData, dbMasterDataCache.T_CustomerOrderPartGetAll(),
-                dbMasterDataCache, 0);
+                dbMasterDataCache, 0, withForwardScheduling);
         }
 
         /**
@@ -118,7 +117,7 @@ namespace Zpp.Mrp
 
 
         private static void ProcessDbDemands(IDbTransactionData dbTransactionData,
-            IDemands dbDemands, IDbMasterDataCache dbMasterDataCache, int count)
+            IDemands dbDemands, IDbMasterDataCache dbMasterDataCache, int count, bool withForwardScheduling)
         {
             // init
             IDemands finalAllDemands = new Demands();
@@ -175,36 +174,39 @@ namespace Zpp.Mrp
             }
             */
 
-
+            
             // forward scheduling
             // TODO: remove this once forward scheduling is implemented
             // TODO 2: in forward scheduling, min must be calculuted by demand & provider,
             // not only providers, since operations are on PrOBom (which are demands)
-            int min = 0;
-            foreach (var provider in providerManager.GetProviders())
+            if (withForwardScheduling)
             {
-                int start = provider.GetStartTime(dbTransactionData).GetValue();
-                if (start < min)
+                int min = 0;
+                foreach (var provider in providerManager.GetProviders())
                 {
-                    min = start;
-                }
-            }
-
-
-            if (min < 0)
-            {
-                foreach (var dbDemand in dbDemands)
-                {
-                    if (dbDemand.GetType() == typeof(CustomerOrderPart))
+                    int start = provider.GetStartTime(dbTransactionData).GetValue();
+                    if (start < min)
                     {
-                        T_CustomerOrderPart customerOrderPart =
-                            ((T_CustomerOrderPart) ((CustomerOrderPart) dbDemand).ToIDemand());
-                        customerOrderPart.CustomerOrder.DueTime =
-                            customerOrderPart.CustomerOrder.DueTime + Math.Abs(min);
+                        min = start;
                     }
                 }
 
-                ProcessDbDemands(dbTransactionData, dbDemands, dbMasterDataCache, count++);
+
+                if (min < 0)
+                {
+                    foreach (var dbDemand in dbDemands)
+                    {
+                        if (dbDemand.GetType() == typeof(CustomerOrderPart))
+                        {
+                            T_CustomerOrderPart customerOrderPart =
+                                ((T_CustomerOrderPart) ((CustomerOrderPart) dbDemand).ToIDemand());
+                            customerOrderPart.CustomerOrder.DueTime =
+                                customerOrderPart.CustomerOrder.DueTime + Math.Abs(min);
+                        }
+                    }
+
+                    ProcessDbDemands(dbTransactionData, dbDemands, dbMasterDataCache, count++, withForwardScheduling);
+                }
             }
 
 
@@ -224,6 +226,8 @@ namespace Zpp.Mrp
                     dbMasterDataCache, new PriorityRule());
 
                 dbTransactionData.PersistDbCache();
+                
+                IdGenerator.WriteToFile();
 
                 LOGGER.Info("MrpRun done.");
             }

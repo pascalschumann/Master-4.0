@@ -6,7 +6,7 @@ using Zpp.OrderGraph;
 
 namespace Zpp.Mrp.ProductionManagement.ProductionTypes
 {
-    public class ProductionOrderOperationGraphs : Dictionary<ProductionOrder, IDirectedGraph<INode>>
+    public class ProductionOrderOperationGraphsAsDictionary : Dictionary<ProductionOrder, IDirectedGraph<INode>>
     {
     }
 }

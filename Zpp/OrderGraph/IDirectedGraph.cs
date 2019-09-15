@@ -26,8 +26,6 @@ namespace Zpp.OrderGraph
         void GetPredecessorNodesRecursively(INodes predecessorNodes, INodes newNodes, bool firstRun = true);
 
         INodes GetPredecessorNodes(INode headNode);
-        
-        void GetPredecessorNodesRecursively(INodes predecessorNodes, INode newNode, bool firstRun);
 
         void AddEdges(TNode fromNode, List<IEdge> edges);
         

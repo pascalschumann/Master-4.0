@@ -84,13 +84,6 @@ namespace Zpp.OrderGraph
             return predecessorNodes;
         }
 
-        public void GetPredecessorNodesRecursively(INodes predecessorNodes, INode newNode, bool firstRun)
-        {
-            INodes newNodes = new Nodes();
-            newNodes.Add(newNode);
-            GetPredecessorNodesRecursively(predecessorNodes, newNodes, firstRun);
-        }
-
         public void AddEdges(INode fromNode, List<IEdge> edges)
         {
             if (!_adjacencyList.ContainsKey(fromNode))
@@ -194,13 +187,11 @@ namespace Zpp.OrderGraph
             return new Nodes(toNodes);
         }
 
-        // 
-        // TODO: Switch this to iterative depth search (with dfs limit default set to max depth of given truck examples)
+        /// 
         ///
         /// <summary>
         ///     A depth-first-search (DFS) traversal of given tree
         /// </summary>
-        /// <param name="graph">to traverse</param>
         /// <returns>
         ///    The List of the traversed nodes in exact order
         /// </returns>

@@ -12,8 +12,6 @@ namespace Zpp.Common.ProviderDomain.Wrappers
 {
     public class ProductionOrderOperation : INode
     {
-        // TODO: Anywhere else needed? -> should be configurable
-        private const int TRANSITION_TIME_FACTOR = 3;
         private readonly T_ProductionOrderOperation _productionOrderOperation;
         private readonly IDbMasterDataCache _dbMasterDataCache;
         private Priority _priority = null;
@@ -25,23 +23,30 @@ namespace Zpp.Common.ProviderDomain.Wrappers
             _dbMasterDataCache = dbMasterDataCache;
         }
 
-        public OperationBackwardsSchedule ScheduleBackwards(
-            OperationBackwardsSchedule lastOperationBackwardsSchedule, DueTime dueTimeOfProductionOrder)
+       public OperationBackwardsSchedule ScheduleBackwards(
+            OperationBackwardsSchedule lastOperationBackwardsSchedule,
+            DueTime dueTimeOfProductionOrder)
         {
-            DueTime TIME_BETWEEN_OPERATIONS =
-                new DueTime(_productionOrderOperation.Duration * TRANSITION_TIME_FACTOR);
-            int? startBackwards;
-            int? endBackwards;
+            OperationBackwardsSchedule newOperationBackwardsSchedule;
 
-            // case: equal hierarchyNumber --> PrOO runs in parallel
-            if (lastOperationBackwardsSchedule.GetHierarchyNumber() == null ||
-                (lastOperationBackwardsSchedule.GetHierarchyNumber() != null &&
-                 _productionOrderOperation.HierarchyNumber.Equals(
-                     lastOperationBackwardsSchedule.GetHierarchyNumber().GetValue())))
+            // case: first run
+            if (lastOperationBackwardsSchedule == null)
             {
-                endBackwards = lastOperationBackwardsSchedule.GetEndBackwards().GetValue();
-                startBackwards = endBackwards -
-                                 _productionOrderOperation.Duration;
+                newOperationBackwardsSchedule = new OperationBackwardsSchedule(
+                    dueTimeOfProductionOrder,
+                    _productionOrderOperation.GetDuration(),
+                    new HierarchyNumber(_productionOrderOperation.HierarchyNumber));
+            }
+            // case: equal hierarchyNumber --> PrOO runs in parallel
+            else if (lastOperationBackwardsSchedule.GetHierarchyNumber() == null ||
+                (lastOperationBackwardsSchedule.GetHierarchyNumber() != null &&
+                 _productionOrderOperation.HierarchyNumber.Equals(lastOperationBackwardsSchedule
+                     .GetHierarchyNumber().GetValue())))
+            {
+                newOperationBackwardsSchedule = new OperationBackwardsSchedule(
+                    lastOperationBackwardsSchedule.GetEndOfOperation(),
+                    _productionOrderOperation.GetDuration(),
+                    new HierarchyNumber(_productionOrderOperation.HierarchyNumber));
             }
             // case: greaterHierarchyNumber --> PrOO runs after the last PrOO
             else
@@ -54,29 +59,17 @@ namespace Zpp.Common.ProviderDomain.Wrappers
                         "is smaller than hierarchyNumber of current PrOO.");
                 }
 
-                endBackwards = lastOperationBackwardsSchedule.GetStartBackwards().GetValue();
-                startBackwards = endBackwards -
-                                 _productionOrderOperation.Duration;
+                newOperationBackwardsSchedule = new OperationBackwardsSchedule(
+                    lastOperationBackwardsSchedule.GetStartOfOperation(),
+                    _productionOrderOperation.GetDuration(),
+                    new HierarchyNumber(_productionOrderOperation.HierarchyNumber));
             }
 
-            // create return value
-
-            // skip additional slack time if dueTime is already exceeded
-            if (endBackwards > dueTimeOfProductionOrder.GetValue())
-            {
-                TIME_BETWEEN_OPERATIONS = DueTime.Null();
-            }
-
-            OperationBackwardsSchedule newOperationBackwardsSchedule =
-                new OperationBackwardsSchedule(new DueTime(endBackwards.GetValueOrDefault()),
-                    // slack time aka timeBetweenOperations
-                    new DueTime(startBackwards.GetValueOrDefault() -
-                                TIME_BETWEEN_OPERATIONS.GetValue()),
-                    new HierarchyNumber(
-                        _productionOrderOperation.HierarchyNumber));
-
-            _productionOrderOperation.EndBackward = endBackwards;
-            _productionOrderOperation.StartBackward = startBackwards;
+            // apply schedule on operation
+            _productionOrderOperation.EndBackward =
+                newOperationBackwardsSchedule.GetEndBackwards().GetValue();
+            _productionOrderOperation.StartBackward =
+                newOperationBackwardsSchedule.GetStartBackwards().GetValue();
 
             return newOperationBackwardsSchedule;
         }

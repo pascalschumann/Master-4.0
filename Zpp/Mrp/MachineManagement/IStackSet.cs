@@ -28,6 +28,8 @@ namespace Zpp.Mrp.MachineManagement
          * Should return a new list which contains all elements
          */
         List<T> GetAll();
+        
+        List<T2> GetAllAs<T2>()  where T2: T;
 
         int Count();
     }

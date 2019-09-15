@@ -3,6 +3,7 @@ using AkkaSim.Definitions;
 using System.Diagnostics;
 using NLog.Targets;
 using Zpp.DbCache;
+using Zpp.OrderGraph;
 using Zpp.Simulation.Agents.JobDistributor;
 using Zpp.Simulation.Agents.JobDistributor.Skills;
 using Zpp.Simulation.Agents.JobDistributor.Types;
@@ -75,7 +76,7 @@ namespace Zpp.Simulation
 
         private void ProvideJobDistributor(IActorRef jobDistributor)
         {
-            var operationManager = new OperationManager(_dbMasterDataCache, _dbTransactionData);
+            var operationManager = new ProductionOrderToOperationGraph(_dbMasterDataCache, _dbTransactionData);
             _akkaSimulation.SimulationContext
                            .Tell(message: OperationsToDistribute.Create(operationManager, jobDistributor)
                                 ,sender: ActorRefs.NoSender);

@@ -98,7 +98,16 @@ namespace Zpp.Mrp.MachineManagement
             all.AddRange(_list);
             return all;
         }
-        
-        
+
+        public List<T2> GetAllAs<T2>() where T2: T
+        {
+            List<T2> list = new List<T2>();
+            foreach (var item in GetAll())
+            {
+                list.Add((T2)item);
+            }
+
+            return list;
+        }
     }
 }

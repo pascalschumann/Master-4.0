@@ -93,44 +93,22 @@ namespace Zpp.Common.DemandDomain.Wrappers
                 _productionOrderBom.ProductionOrderOperation = dbTransactionData
                     .ProductionOrderOperationGetById(productionOrderOperationId);
             }
-
-
-            DueTime dueTime;
+            
             if (_productionOrderBom.ProductionOrderOperation != null &&
                 _productionOrderBom.ProductionOrderOperation.EndBackward != null)
                 // backwards scheduling was already done --> job-shop-scheduling was done --> return End
             {
-                if (GetArticle().ToBuild)
-                {
-                    dueTime = new DueTime(_productionOrderBom.ProductionOrderOperation.EndBackward
-                        .GetValueOrDefault());
-                    return dueTime;
-                }
-                else
-                {
-                    dueTime = new DueTime(_productionOrderBom.ProductionOrderOperation.StartBackward
-                        .GetValueOrDefault());
-                    return dueTime;
-                }
+                
+                DueTime dueTime = new DueTime(_productionOrderBom.ProductionOrderOperation.StartBackward
+                    .GetValueOrDefault());
+                return dueTime;
+                
             }
             else
             {
                 throw new MrpRunException(
                     "Requesting dueTime for ProductionOrderBom before it was backwards-scheduled.");
             }
-
-
-            /*
-             // backwards scheduling was not yet done --> return dueTime of ProductionOrderParent
-             if (_productionOrderBom.ProductionOrderParent == null)
-            {
-                Id productionOrderId = new Id(_productionOrderBom.ProductionOrderParentId);
-                _productionOrderBom.ProductionOrderParent = (T_ProductionOrder) dbTransactionData
-                    .ProvidersGetById(productionOrderId).ToIProvider();
-            }
-
-            dueTime = new DueTime(_productionOrderBom.ProductionOrderParent.DueTime);
-            return dueTime;*/
         }
 
         public override string GetGraphizString(IDbTransactionData dbTransactionData)

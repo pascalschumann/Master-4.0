@@ -132,9 +132,7 @@ namespace Zpp.Mrp.ProductionManagement
                 }
 
                 // backwards scheduling
-                OperationBackwardsSchedule lastOperationBackwardsSchedule =
-                    new OperationBackwardsSchedule(
-                        parentProductionOrder.GetDueTime(dbTransactionData), null, null);
+                OperationBackwardsSchedule lastOperationBackwardsSchedule = null;
 
                 IEnumerable<ProductionOrderOperation> sortedProductionOrderOperations = newDemands
                     .Select(x =>

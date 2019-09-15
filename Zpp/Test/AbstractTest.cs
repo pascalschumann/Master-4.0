@@ -25,7 +25,7 @@ namespace Zpp.Test
         protected static TestConfiguration TestConfiguration;
 
         private static readonly string _defaultTestScenario =
-            TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2;
+            TestConfigurationFileNames.DESK_COP_5_SEQUENTIALLY_LOTSIZE_2;
 
         private IDbMasterDataCache _dbMasterDataCache;
 

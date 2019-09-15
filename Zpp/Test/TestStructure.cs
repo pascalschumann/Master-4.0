@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using Zpp.Test.WrappersForPrimitives;
 using Xunit;
@@ -90,6 +91,95 @@ namespace Zpp.Test
             {
                 Assert.False(lines.Count() > maxLines,
                     $"{fileName}: has more than {maxLines} lines.");
+            });
+        }
+
+        /**
+         * Rule no. 7
+         */
+        [Fact]
+        public void TestConstructorsHaveMaximumTwoParameters()
+        {
+            // 3 instead of 2, becaus IDbMasterCache is always passed
+            const int MAX_NUMBER_OF_PARAMETERS = 3;
+
+            string[] exceptions =
+            {
+                "NLog"
+            };
+
+            var regexClassNameLine =
+                new Regex("^ *public class [A-Z][a-zA-Z0-9_]+ *(: *[A-Z][a-zA-Z0-9_]+)? *$");
+            var regexNamespaceNameLine = new Regex("^ *namespace [A-Z][a-zA-Z0-9_.]+ *$");
+
+            string namespaceName = null;
+            int classFoundCounter = 0;
+
+            traverseAllCsharpFilesAndExecute((line, lineNumber, fileName) =>
+            {
+                // skip if line contains a string mention in exceptions
+                foreach (var exception in exceptions)
+                {
+                    if (line.GetValue().Contains(exception))
+                    {
+                        return;
+                    }
+                }
+
+                // namespace first
+                if (regexNamespaceNameLine.IsMatch(line.GetValue()) == true)
+                {
+                    // reset classCounter
+                    classFoundCounter = 0;
+                    
+                    // e.g. " namespace Zpp.Test "
+                    string namespaceNameLine = regexNamespaceNameLine.Match(line.GetValue()).Value;
+                    string[] namespaceNameLineSplitted = namespaceNameLine.Trim().Split(" ");
+                    namespaceName = namespaceNameLineSplitted[1];
+                }
+
+                // then className
+                // e.g. " public class TestStructure "
+                if (regexClassNameLine.IsMatch(line.GetValue()) == true)
+                {
+                    // ignore inner classes
+                    if (classFoundCounter > 0)
+                    {
+                        return;
+                    }
+                    classFoundCounter++;
+                    if (namespaceName == null)
+                    {
+                        Assert.False(true, "Class cannot be defined before a namespace.");
+                    }
+
+                    string classNameLine = regexClassNameLine.Match(line.GetValue()).Value;
+                    string[] classNameLineSplitted = classNameLine.Trim().Split(" ");
+                    string className;
+                    if (classNameLineSplitted[2].Contains(":"))
+                    {
+                        className = classNameLineSplitted[2].Split(":")[0];
+                    }
+                    else
+                    {
+                        className = classNameLineSplitted[2];
+                    }
+
+
+                    Type classTypeOfFile = Type.GetType($"{namespaceName}.{className}");
+
+                    Assert.False(classTypeOfFile == null,
+                        $"Cannot get Type of class '{namespaceName}.{className}' found in file {fileName}.");
+
+                    ConstructorInfo[] constructorInfos = classTypeOfFile.GetConstructors();
+                    foreach (var constructorInfo in constructorInfos)
+                    {
+                        ParameterInfo[] parameterInfos = constructorInfo.GetParameters();
+                        Assert.True(parameterInfos.Length <= MAX_NUMBER_OF_PARAMETERS,
+                            $"A constructor of type {classTypeOfFile.Name} " +
+                            $"has more than {MAX_NUMBER_OF_PARAMETERS} parameters.");
+                    }
+                }
             });
         }
 

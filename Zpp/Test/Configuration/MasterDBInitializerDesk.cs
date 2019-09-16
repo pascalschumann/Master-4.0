@@ -14,7 +14,9 @@ namespace Zpp.Test.Configuration
         private const string RESOURCE_TOOL_WELDER = "Schweißgerät";
         private const string RESOURCE_WRAPPER = "Verpackungseinhheit 1";
         private const string RESOURCE_ASSEMBLY_1 = "Montage 1";
+        private const string RESOURCE_ASSEMBLY_2 = "Montage 2";
         private const string RESOURCE_WELDING_1 = "Schweißen 1";
+        private const string RESOURCE_WELDING_2 = "Schweißen 2";
 
         private const string OPERATION_DESK = "Tisch zusammenbauen";
         private const string OPERATION_DESK_LEG_1 = "Anschraubplatte anschweißen";
@@ -45,10 +47,6 @@ namespace Zpp.Test.Configuration
             productionDomainContext.Units.AddRange(units);
             productionDomainContext.SaveChanges();
 
-            // resource skills
-            var resourceSkills = CreateResourceSkills();
-            productionDomainContext.ResourceSkills.AddRange(resourceSkills);
-            productionDomainContext.SaveChanges();
 
             // resource Tools
             var resourceTools = CreateResourceTools();
@@ -56,9 +54,14 @@ namespace Zpp.Test.Configuration
             productionDomainContext.SaveChanges();
 
             // resources
-            var resources = CreateResources(resourceSkills);
+            var resources = CreateResources();
             productionDomainContext.Resources.AddRange(resources);
             productionDomainContext.SaveChanges();
+
+            var resourceSkills = CreateResourceSkills();
+            productionDomainContext.ResourceSkills.AddRange(resourceSkills);
+            productionDomainContext.SaveChanges();
+
 
             // resource Setups 
             var resourceSetups = CreateResourceSetups(resourceTools, resources, resourceSkills);
@@ -144,20 +147,45 @@ namespace Zpp.Test.Configuration
             , M_Resource[] resources
             , M_ResourceSkill[] resourceSkills)
         {
-            var resourceSetups = new List<M_ResourceSetup>();
-            foreach (var resource in resources)
+
+            var resource1 = new M_ResourceSetup
             {
-                resourceSetups.Add(new M_ResourceSetup()
-                {
-                    Name = resource.Name,
-                    ResourceId = resource.Id,
-                    ResourceToolId = resourceTools.First().Id,
-                    ResourceSkillId = resourceSkills.Single(x => x.Name == resource.ResourceSkills.First().Name).Id,
+                Name = resourceSkills.Single(x => x.Name == RESOURCE_SKILL_PACKING).Name + " Setup",
+                ResourceId = resources.Single(x => x.Name == RESOURCE_WRAPPER).Id,
+                ResourceToolId = resourceTools.Single(x => x.Name == RESOURCE_TOOL_WELDER).Id,
+                ResourceSkillId = resourceSkills.Single(x => x.Name == RESOURCE_SKILL_PACKING).Id
+            };
+            var resource2 = new M_ResourceSetup
+            {
+                Name = resourceSkills.Single(x => x.Name == RESOURCE_SKILL_ASSEMBLING).Name + " Setup",
+                ResourceId = resources.Single(x => x.Name == RESOURCE_ASSEMBLY_1).Id,
+                ResourceToolId = resourceTools.Single(x => x.Name == RESOURCE_TOOL_WELDER).Id,
+                ResourceSkillId = resourceSkills.Single(x => x.Name == RESOURCE_SKILL_ASSEMBLING).Id
+            };
+            var resource3 = new M_ResourceSetup
+            {
+                Name = resourceSkills.Single(x => x.Name == RESOURCE_SKILL_ASSEMBLING).Name + " Setup",
+                ResourceId = resources.Single(x => x.Name == RESOURCE_ASSEMBLY_2).Id,
+                ResourceToolId = resourceTools.Single(x => x.Name == RESOURCE_TOOL_WELDER).Id,
+                ResourceSkillId = resourceSkills.Single(x => x.Name == RESOURCE_SKILL_ASSEMBLING).Id
+            };
+            var resource4 = new M_ResourceSetup
+            {
+                Name = resourceSkills.Single(x => x.Name == RESOURCE_SKILL_WELDING).Name + " Setup",
+                ResourceId = resources.Single(x => x.Name == RESOURCE_WELDING_1).Id,
+                ResourceToolId = resourceTools.Single(x => x.Name == RESOURCE_TOOL_WELDER).Id,
+                ResourceSkillId = resourceSkills.Single(x => x.Name == RESOURCE_SKILL_WELDING).Id
+            };
+            var resource5 = new M_ResourceSetup
+            {
+                Name = resourceSkills.Single(x => x.Name == RESOURCE_SKILL_WELDING).Name + " Setup",
+                ResourceId = resources.Single(x => x.Name == RESOURCE_WELDING_2).Id,
+                ResourceToolId = resourceTools.Single(x => x.Name == RESOURCE_TOOL_WELDER).Id,
+                ResourceSkillId = resourceSkills.Single(x => x.Name == RESOURCE_SKILL_WELDING).Id
+            };
 
-                });
-            }
-
-            return resourceSetups.ToArray();
+            var resourceSetups = new M_ResourceSetup[] {resource1, resource2, resource3, resource4, resource5};
+            return resourceSetups;
         }
 
         private static M_Unit[] CreateUnits()
@@ -210,14 +238,14 @@ namespace Zpp.Test.Configuration
                     ArticleId = articles.Single(a => a.Name == ARTICLE_DESK_LEG).Id,
                     Name = OPERATION_DESK_LEG_2, Duration = 3,
                     ResourceSkillId = resourceSkills
-                        .Single(x => x.Name.Equals(RESOURCE_SKILL_WELDING)).Id,
+                        .Single(x => x.Name.Equals(RESOURCE_SKILL_ASSEMBLING)).Id,
                     HierarchyNumber = 20,
                     ResourceToolId = resourceTool.Id
                 }
             };
         }
 
-        private static M_Resource[] CreateResources(M_ResourceSkill[] resourceSkills)
+        private static M_Resource[] CreateResources()
         {
             return new M_Resource[]
             {
@@ -225,21 +253,26 @@ namespace Zpp.Test.Configuration
                 new M_Resource
                 {
                     Capacity = 1, Name = RESOURCE_WRAPPER, Count = 1,
-                    ResourceSkills = resourceSkills.Where(x => x.Name.Equals(RESOURCE_SKILL_PACKING)).ToList()
                 },
                 // Schweißen
                 new M_Resource
                 {
                     Capacity = 1, Name = RESOURCE_WELDING_1, Count = 1,
-                    ResourceSkills = resourceSkills.Where(x => x.Name.Equals(RESOURCE_SKILL_WELDING)).ToList()
+                },
+                new M_Resource
+                {
+                    Capacity = 1, Name = RESOURCE_WELDING_2, Count = 1,
                 },
                 // Montage der Beine an Tisch
                 new M_Resource
                 {
                     Capacity = 1, Name = RESOURCE_ASSEMBLY_1, Count = 1,
-                    ResourceSkills =
-                        resourceSkills.Where(x => x.Name.Equals(RESOURCE_SKILL_ASSEMBLING)).ToList()
+                },
+                new M_Resource
+                {
+                    Capacity = 1, Name = RESOURCE_ASSEMBLY_2, Count = 1,
                 }
+
             };
         }
 

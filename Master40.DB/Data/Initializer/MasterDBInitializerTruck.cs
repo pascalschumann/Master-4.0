@@ -23,6 +23,11 @@ namespace Master40.DB.Data.Initializer
             // Resource Definitions
             var resourceTools = MasterTableResourceTool.Init(context);
             // requires Tools
+            if (context.Resources.Any())
+            {
+                throw new Exception("DB HAS RESOURCES !");
+            }
+
             var resource = MasterTableResource.Init(context);
             // requires Tools and Resources
             var resourceSkills = MasterTableResourceSkill.Init(context);

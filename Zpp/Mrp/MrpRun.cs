@@ -152,6 +152,7 @@ namespace Zpp.Mrp
                 if (nextDemands != null)
                 {
                     finalAllDemands.AddAll(nextDemands);
+                    // TODO: EnqueueAll()
                     foreach (var demand in nextDemands.GetAll())
                     {
                         demandQueue.Enqueue(new DemandQueueNode(demand),

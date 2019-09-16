@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Master40.DB;
 using Master40.DB.Data.Context;
+using Master40.DB.Data.Helper;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Microsoft.EntityFrameworkCore;
@@ -225,18 +226,7 @@ namespace Zpp.DbCache
         }
         public static void CopyDbPropertiesTo<T>(T source, T dest)
         {
-            var plist = from prop in typeof(T).GetProperties() where prop.CanRead && prop.CanWrite select prop;
-
-            foreach (PropertyInfo prop in plist)
-            {
-                // ToDo: are there more primitives?
-                if (prop.PropertyType.IsPrimitive
-                    || prop.PropertyType == typeof(string)
-                    || prop.PropertyType == typeof(DateTime)
-                    || prop.PropertyType == typeof(Guid)
-                    || prop.PropertyType.BaseType == typeof(Enum))
-                    prop.SetValue(dest, prop.GetValue(source, null), null);
-            }
+            DbUtils.CopyDbPropertiesTo(source, dest);
         }
 
         public void DemandsAdd(Demand demand)

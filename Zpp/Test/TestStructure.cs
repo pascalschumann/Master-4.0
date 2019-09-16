@@ -22,7 +22,7 @@ namespace Zpp.Test
         /**
          * Rule no. 2: Don't use else-keyword
          */
-        public void testNoElse()
+        public void TestNoElse()
         {
             traverseAllCsharpFilesAndExecute((line, lineNumber, fileName) =>
             {
@@ -35,7 +35,7 @@ namespace Zpp.Test
         /**
          * Rule no. 4: A line should not have more than two "." (access operator)
          */
-        public void testNoMoreThanTwoPoints()
+        public void TestNoMoreThanTwoPoints()
         {
             string[] exceptions =
             {

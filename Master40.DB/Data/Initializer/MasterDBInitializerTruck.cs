@@ -21,34 +21,41 @@ namespace Master40.DB.Data.Initializer
                 return;   // DB has been seeded
             
             // Resource Definitions
-            var resourceTools = MasterTableResourceTool.Init(context);
+            var resourceTools = new MasterTableResourceTool();
+                resourceTools.Init(context);
             // requires Tools
-            if (context.Resources.Any())
-            {
-                throw new Exception("DB HAS RESOURCES !");
-            }
-
-            var resource = MasterTableResource.Init(context);
+            var resource = new MasterTableResource();
+                resource.Init(context);
             // requires Tools and Resources
-            var resourceSkills = MasterTableResourceSkill.Init(context);
+            var resourceSkills = new MasterTableResourceSkill();
+                resourceSkills.Init(context);
             // requires Tools, Resources, and Skills
-            var resourceSetups = MasterTableResourceSetup.Init(context);
+            var resourceSetups = new MasterTableResourceSetup(resource, resourceTools, resourceSkills);
+                resourceSetups.Init(context);
 
             // Article Definitions
-            var units = MasterTableUnit.Init(context);
-            var articleTypes = MasterTableArticleType.Init(context);
+            var units = new MasterTableUnit();
+                units.Init(context);
+            var articleTypes = new MasterTableArticleType();
+                articleTypes.Init(context);
+
             // requires Units and Article Types 
-            var articles = MasterTableArticle.Init(context);
+            var articleTable = new MasterTableArticle(articleTypes, units);
+            var articles = articleTable.Init(context);
 
             MasterTableStock.Init(context, articles);
 
-            var operations = MasterTableOperation.Init(context);
+            var operations = new MasterTableOperation(articleTable, resourceSkills, resourceTools);
+                operations.Init(context);
 
-            var boms = MasterTableBom.Init(context);
+            var boms = new MasterTableBom();
+                boms.Init(context, articleTable, operations);
 
-            var businessPartner = MasterTableBusinessPartner.Init(context);
+            var businessPartner = new MasterTableBusinessPartner();
+                businessPartner.Init(context);
 
-            MasterTableArticleToBusinessPartner.Init(context);
+            var articleToBusinessPartner = new MasterTableArticleToBusinessPartner();
+                articleToBusinessPartner.Init(context, businessPartner, articleTable);
 
             var updateArticleLotSize = context.Articles
                 .Include(x => x.ArticleType)

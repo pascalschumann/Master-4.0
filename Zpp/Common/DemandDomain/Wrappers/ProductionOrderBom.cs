@@ -6,6 +6,7 @@ using Zpp.Common.ProviderDomain;
 using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.DbCache;
 using Zpp.Mrp.ProductionManagement;
+using Zpp.Mrp.Scheduling;
 using Zpp.Utils;
 using Zpp.WrappersForPrimitives;
 
@@ -93,16 +94,18 @@ namespace Zpp.Common.DemandDomain.Wrappers
                 _productionOrderBom.ProductionOrderOperation = dbTransactionData
                     .ProductionOrderOperationGetById(productionOrderOperationId);
             }
-            
+
             if (_productionOrderBom.ProductionOrderOperation != null &&
                 _productionOrderBom.ProductionOrderOperation.EndBackward != null)
                 // backwards scheduling was already done --> job-shop-scheduling was done --> return End
             {
-                
-                DueTime dueTime = new DueTime(_productionOrderBom.ProductionOrderOperation.StartBackward
-                    .GetValueOrDefault());
+                T_ProductionOrderOperation productionOrderOperation =
+                    _productionOrderBom.ProductionOrderOperation;
+                DueTime dueTime =
+                    new DueTime(productionOrderOperation.StartBackward.GetValueOrDefault() -
+                                OperationBackwardsSchedule.CalculateTransitionTime(
+                                    productionOrderOperation.GetDuration()));
                 return dueTime;
-                
             }
             else
             {
@@ -169,7 +172,7 @@ namespace Zpp.Common.DemandDomain.Wrappers
             if (_productionOrderBom.ProductionOrderOperationId != null)
             {
                 if (_productionOrderBom.ProductionOrderOperation == null)
-                // load it
+                    // load it
                 {
                     _productionOrderBom.ProductionOrderOperation =
                         dbTransactionData.ProductionOrderOperationGetById(new Id(_productionOrderBom
@@ -180,8 +183,10 @@ namespace Zpp.Common.DemandDomain.Wrappers
                     _productionOrderBom.ProductionOrderOperation;
                 if (tProductionOrderOperation.StartBackward == null)
                 {
-                    throw new MrpRunException("Requesting start time of ProductionOrderBom before it was backwards-scheduled.");
+                    throw new MrpRunException(
+                        "Requesting start time of ProductionOrderBom before it was backwards-scheduled.");
                 }
+
                 return new DueTime(tProductionOrderOperation.StartBackward.GetValueOrDefault());
             }
             else
@@ -194,8 +199,10 @@ namespace Zpp.Common.DemandDomain.Wrappers
         {
             if (_productionOrderBom.ProductionOrderParent == null)
             {
-                var productionOrder = dbTransactionData.ProductionOrderGetById(new Id(_productionOrderBom.ProductionOrderParentId))
-                                                       .ToIProvider() as T_ProductionOrder;
+                var productionOrder =
+                    dbTransactionData
+                        .ProductionOrderGetById(new Id(_productionOrderBom.ProductionOrderParentId))
+                        .ToIProvider() as T_ProductionOrder;
                 if (productionOrder == null)
                 {
                     throw new Exception("ProductionOrderBom must have one ProductionOrderParent");

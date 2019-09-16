@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
+using Zpp.Common.ProviderDomain.WrappersForCollections;
 using Zpp.DbCache;
 using Zpp.Mrp.MachineManagement;
 using Zpp.Mrp.Scheduling;
@@ -23,7 +25,7 @@ namespace Zpp.Common.ProviderDomain.Wrappers
             _dbMasterDataCache = dbMasterDataCache;
         }
 
-       public OperationBackwardsSchedule ScheduleBackwards(
+        public OperationBackwardsSchedule ScheduleBackwards(
             OperationBackwardsSchedule lastOperationBackwardsSchedule,
             DueTime dueTimeOfProductionOrder)
         {
@@ -33,15 +35,14 @@ namespace Zpp.Common.ProviderDomain.Wrappers
             if (lastOperationBackwardsSchedule == null)
             {
                 newOperationBackwardsSchedule = new OperationBackwardsSchedule(
-                    dueTimeOfProductionOrder,
-                    _productionOrderOperation.GetDuration(),
+                    dueTimeOfProductionOrder, _productionOrderOperation.GetDuration(),
                     new HierarchyNumber(_productionOrderOperation.HierarchyNumber));
             }
             // case: equal hierarchyNumber --> PrOO runs in parallel
             else if (lastOperationBackwardsSchedule.GetHierarchyNumber() == null ||
-                (lastOperationBackwardsSchedule.GetHierarchyNumber() != null &&
-                 _productionOrderOperation.HierarchyNumber.Equals(lastOperationBackwardsSchedule
-                     .GetHierarchyNumber().GetValue())))
+                     (lastOperationBackwardsSchedule.GetHierarchyNumber() != null &&
+                      _productionOrderOperation.HierarchyNumber.Equals(
+                          lastOperationBackwardsSchedule.GetHierarchyNumber().GetValue())))
             {
                 newOperationBackwardsSchedule = new OperationBackwardsSchedule(
                     lastOperationBackwardsSchedule.GetEndOfOperation(),
@@ -96,7 +97,8 @@ namespace Zpp.Common.ProviderDomain.Wrappers
         /// <returns></returns>
         public List<Resource> GetMachines(IDbTransactionData dbTransactionData)
         {
-            return dbTransactionData.GetAggregator().GetResourcesByResourceSkillId(this.GetResourceSkillId());
+            return dbTransactionData.GetAggregator()
+                .GetResourcesByResourceSkillId(this.GetResourceSkillId());
         }
 
         public override bool Equals(object obj)
@@ -105,8 +107,10 @@ namespace Zpp.Common.ProviderDomain.Wrappers
             {
                 return false;
             }
-            ProductionOrderOperation productionOrderOperation = (ProductionOrderOperation)obj;
-            return _productionOrderOperation.GetId().Equals(productionOrderOperation._productionOrderOperation.GetId());
+
+            ProductionOrderOperation productionOrderOperation = (ProductionOrderOperation) obj;
+            return _productionOrderOperation.GetId()
+                .Equals(productionOrderOperation._productionOrderOperation.GetId());
         }
 
         public override int GetHashCode()
@@ -178,12 +182,49 @@ namespace Zpp.Common.ProviderDomain.Wrappers
                     .GetAnyProductionOrderBomByProductionOrderOperation(this)
                     .GetDueTime(dbTransactionData);
             }
+
             return dueTime;
         }
 
         public ProductionOrder GetProductionOrder(IDbTransactionData dbTransactionData)
         {
             return dbTransactionData.ProductionOrderGetById(GetProductionOrderId());
+        }
+
+        /**
+         * Every operation needs material to start.
+         * @returns the time when its material is available
+         */
+        public DueTime GetDueTimeOfItsMaterial(IDbTransactionData dbTransactionData)
+        {
+            DueTime maxDueTime = null;
+            foreach (var productionOrderBom in dbTransactionData.GetAggregator()
+                .GetAllProductionOrderBomsBy(this))
+            {
+                Providers providers = dbTransactionData.GetAggregator()
+                    .GetAllChildProvidersOf(productionOrderBom);
+                if (providers.Count() > 1)
+                {
+                    throw new MrpRunException("A productionOrderBom can only have one provider !");
+                }
+
+                DueTime providersDueTime = providers.GetAll()[0].GetDueTime(dbTransactionData);
+
+                if (maxDueTime == null)
+                {
+                    maxDueTime = providersDueTime;
+                }
+                // else to avoid one additional check
+                else
+                {
+                    if (providersDueTime.IsGreaterThan(maxDueTime))
+                    {
+                        maxDueTime = providersDueTime;
+                    }
+                }
+            }
+
+            return maxDueTime;
         }
     }
 }

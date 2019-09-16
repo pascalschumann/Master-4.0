@@ -127,10 +127,11 @@ namespace Zpp.Mrp.MachineManagement
                             o1.GetValue().Start = machine.GetIdleStartTime().GetValue();
                             o1.GetValue().End = o1.GetValue().Start + o1.GetValue().Duration;
                         }
-                        // correct op's start time if op's startBackwards is later
-                        if (o1.GetValue().StartBackward > o1.GetValue().Start)
+                        // correct op's start time if op's material is later available
+                        DueTime dueTimeOfOperationMaterial = o1.GetDueTimeOfItsMaterial(dbTransactionData);
+                        if (dueTimeOfOperationMaterial.GetValue() > o1.GetValue().Start)
                         {
-                            o1.GetValue().Start = o1.GetValue().StartBackward.GetValueOrDefault();
+                            o1.GetValue().Start = dueTimeOfOperationMaterial.GetValue();
                             o1.GetValue().End = o1.GetValue().Start + o1.GetValue().Duration;
                         }
 

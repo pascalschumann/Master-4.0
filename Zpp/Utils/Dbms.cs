@@ -94,14 +94,12 @@ namespace Zpp.Utils
         /**
          * @return: true, if db was succesfully dropped
          */
-        public static bool DropDatabase(string dbName)
+        public static bool DropDatabase(string dbName, string connectionString)
         {
             if (CanConnect(Constants.DbConnectionZppSqlServer()) == false)
             {
                 return false;
             }
-
-            String connectionString = Constants.DbConnectionZppSqlServerMaster();
             int result = 0;
 
             using (SqlConnection con = new SqlConnection(connectionString))

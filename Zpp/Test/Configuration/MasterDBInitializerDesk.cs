@@ -351,8 +351,6 @@ namespace Zpp.Test.Configuration
             {
                 // Tisch
                 new M_ArticleBom
-                    {ArticleChildId = articles.Single(a => a.Name == ARTICLE_DESK).Id, Name = ARTICLE_DESK},
-                new M_ArticleBom
                 {
                     ArticleChildId = articles.Single(a => a.Name == ARTICLE_DESK_SURFACE).Id,
                     Name = ARTICLE_DESK_SURFACE,

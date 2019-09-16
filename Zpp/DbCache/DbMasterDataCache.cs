@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Akka.Util.Internal;
 using Master40.DB.Data.Context;
+using Master40.DB.Data.Initializer.Tables;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Zpp.Common.DemandDomain;
@@ -223,13 +224,9 @@ namespace Zpp.DbCache
         public List<M_Article> M_ArticleGetArticlesToBuy()
         {
             List<M_Article> articlesToBuy = new List<M_Article>();
-            List<M_ArticleBom> articleBomsToBuy = _articleBoms.GetAll()
-                .Where(x => x.ArticleParentId == null).ToList();
-            foreach (var articleBom in articleBomsToBuy)
-            {
-                articlesToBuy.Add(M_ArticleGetById(new Id(articleBom.ArticleChildId)));
-            }
+            M_ArticleType articleType = _articleTypes.GetAll().Single(x => x.Name == MasterTableArticle.ARTICLE_PRODUCTS);
 
+            articlesToBuy = _articles.GetAll().Where(x => x.ArticleTypeId == articleType.Id).ToList();
             return articlesToBuy;
         }
 

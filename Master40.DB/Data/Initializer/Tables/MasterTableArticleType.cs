@@ -18,7 +18,7 @@ namespace Master40.DB.Data.Initializer.Tables
             PRODUCT = new M_ArticleType {Name = "Product"};
         }
 
-    internal M_ArticleType[] Init(MasterDBContext context)
+        internal M_ArticleType[] Init(MasterDBContext context)
         {
             var articleTypes = new M_ArticleType[]
             {

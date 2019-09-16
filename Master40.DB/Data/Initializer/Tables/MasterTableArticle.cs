@@ -1,11 +1,14 @@
 ﻿using Master40.DB.Data.Context;
 using Master40.DB.DataModel;
 using System;
+using Master40.DB.Interfaces;
 
 namespace Master40.DB.Data.Initializer.Tables
 {
     public class MasterTableArticle
     {
+        public const string ARTICLE_PRODUCTS = "Product";
+
         public M_Article DUMP_TRUCK;
 
         public M_Article RACE_TRUCK;

@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.Context;
+using Master40.DB.Data.Initializer.Tables;
 using Master40.DB.DataModel;
+using Zpp.DbCache;
 
 namespace Zpp.Test.Configuration
 {
@@ -284,7 +286,7 @@ namespace Zpp.Test.Configuration
                 new M_Article
                 {
                     Name = ARTICLE_DESK,
-                    ArticleTypeId = articleTypes.Single(s => s.Name == "Assembly").Id,
+                    ArticleTypeId = articleTypes.Single(s => s.Name == MasterTableArticle.ARTICLE_PRODUCTS).Id,
                     CreationDate = DateTime.Parse("2016-09-01"), DeliveryPeriod = 20,
                     UnitId = units.Single(s => s.Name == "Pieces").Id, Price = 100.00,
                     ToBuild = true, ToPurchase = false

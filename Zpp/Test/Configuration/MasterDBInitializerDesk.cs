@@ -204,6 +204,7 @@ namespace Zpp.Test.Configuration
         {
             return new M_ArticleType[]
             {
+                new M_ArticleType {Name = "Product"},
                 new M_ArticleType {Name = "Assembly"},
                 new M_ArticleType {Name = "Material"},
                 new M_ArticleType {Name = "Consumable"}

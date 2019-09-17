@@ -151,9 +151,9 @@ namespace Zpp.OrderGraph
                 // {
                     // <Type>, <Menge>, <ItemName> and on edges: <Menge>
                     Quantity quantity = null;
-                    if (edge.GetDemandToProvider() != null)
+                    if (edge.GetLinkDemandAndProvider() != null)
                     {
-                        quantity = edge.GetDemandToProvider().GetQuantity();
+                        quantity = edge.GetLinkDemandAndProvider().GetQuantity();
                     }
 
                     mystring +=

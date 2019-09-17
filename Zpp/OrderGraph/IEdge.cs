@@ -1,4 +1,5 @@
 using Master40.DB.DataModel;
+using Master40.DB.Interfaces;
 
 namespace Zpp.OrderGraph
 {
@@ -8,6 +9,6 @@ namespace Zpp.OrderGraph
 
         INode GetHeadNode();
 
-        T_DemandToProvider GetDemandToProvider();
+        ILinkDemandAndProvider GetLinkDemandAndProvider();
     }
 }

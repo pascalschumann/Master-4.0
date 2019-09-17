@@ -1,14 +1,15 @@
 using Master40.DB.DataModel;
+using Master40.DB.Interfaces;
 
 namespace Zpp.OrderGraph
 {
     public class Edge : IEdge
     {
-        private readonly T_DemandToProvider _demandToProvider;
+        private readonly ILinkDemandAndProvider _demandToProvider;
         private readonly INode _tailNode;
         private readonly INode _headNode;
 
-        public Edge(T_DemandToProvider demandToProvider, INode tailNode, INode toNode)
+        public Edge(ILinkDemandAndProvider demandToProvider, INode tailNode, INode toNode)
         {
             _demandToProvider = demandToProvider;
             _tailNode = tailNode;
@@ -31,7 +32,7 @@ namespace Zpp.OrderGraph
             return _headNode;
         }
 
-        public T_DemandToProvider GetDemandToProvider()
+        public ILinkDemandAndProvider GetLinkDemandAndProvider()
         {
             return _demandToProvider;
         }

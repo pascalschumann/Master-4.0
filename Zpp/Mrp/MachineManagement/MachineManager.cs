@@ -255,64 +255,6 @@ namespace Zpp.Mrp.MachineManagement
 
             return S;
         }
-
-        private static Paths<ProductionOrderOperation> TraverseDepthFirst(
-            CustomerOrderPart startNode, IDirectedGraph<INode> orderDirectedGraph,
-            IDbTransactionData dbTransactionData)
-        {
-            var stack = new Stack<INode>();
-            Paths<ProductionOrderOperation> productionOrderOperationPaths =
-                new Paths<ProductionOrderOperation>();
-
-            Dictionary<INode, bool> discovered = new Dictionary<INode, bool>();
-            Stack<ProductionOrderOperation> traversedOperations =
-                new Stack<ProductionOrderOperation>();
-
-            stack.Push(startNode);
-            INode parentNode;
-
-            while (EnumerableExtensions.Any(stack))
-            {
-                INode poppedNode = stack.Pop();
-
-                // init dict if node not yet exists
-                if (!discovered.ContainsKey(poppedNode))
-                {
-                    discovered[poppedNode] = false;
-                }
-
-                // if node is not discovered
-                if (!discovered[poppedNode])
-                {
-                    if (poppedNode.GetType() == typeof(ProductionOrderBom))
-                    {
-                        ProductionOrderOperation productionOrderOperation =
-                            ((ProductionOrderBom)poppedNode).GetProductionOrderOperation(
-                                dbTransactionData);
-                        traversedOperations.Push(productionOrderOperation);
-                    }
-
-                    discovered[poppedNode] = true;
-                    INodes childNodes = orderDirectedGraph.GetSuccessorNodes(poppedNode);
-
-                    // action
-                    if (childNodes == null)
-                    {
-                        productionOrderOperationPaths.AddPath(traversedOperations);
-                        traversedOperations = new Stack<ProductionOrderOperation>();
-                    }
-
-                    if (childNodes != null)
-                    {
-                        foreach (INode node in childNodes)
-                        {
-                            stack.Push(node);
-                        }
-                    }
-                }
-            }
-
-            return productionOrderOperationPaths;
-        }
+        
     }
 }

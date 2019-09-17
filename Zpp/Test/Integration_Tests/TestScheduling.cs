@@ -119,8 +119,8 @@ namespace Zpp.Test.Integration_Tests
                 Assert.True(tProductionOrderOperation.ResourceId != null,
                     $"{productionOrderOperation} was not scheduled.");
                 Assert.True(
-                    tProductionOrderOperation.Start >= productionOrderOperation.
-                        GetDueTimeOfItsMaterial(dbTransactionData).GetValue(),
+                    tProductionOrderOperation.Start >= productionOrderOperation
+                        .GetDueTimeOfItsMaterial(dbTransactionData).GetValue(),
                     "A productionOrderOperation cannot start before its material is available.");
             }
         }
@@ -130,7 +130,7 @@ namespace Zpp.Test.Integration_Tests
         [InlineData(TestConfigurationFileNames.DESK_COP_5_CONCURRENT_LOTSIZE_2)]
         [InlineData(TestConfigurationFileNames.DESK_COP_5_SEQUENTIALLY_LOTSIZE_2)]
         [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
-        public void TestPredecessorNodeTimeIsGreaterOrEqualInDemandToProviderGraph(
+        public void TestParentsDueTimeIsGreaterThanOrEqualToChildsDueTime(
             string testConfigurationFileName)
         {
             // init
@@ -139,63 +139,40 @@ namespace Zpp.Test.Integration_Tests
             IDbTransactionData dbTransactionData =
                 new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
 
-            IDirectedGraph<INode> demandToProviderGraph =
-                new DemandToProviderDirectedGraph(dbTransactionData);
-
-            // start
-
-            INodes allLeafs = demandToProviderGraph.GetLeafNodes();
-
-            foreach (var leaf in allLeafs)
+            foreach (var demandToProvider in dbTransactionData.DemandToProviderGetAll())
             {
-                INodes predecessorNodes = demandToProviderGraph.GetPredecessorNodes(leaf);
+                Demand parentDemand =
+                    dbTransactionData.DemandsGetById(demandToProvider.GetDemandId());
+                if (parentDemand.GetType()== typeof(CustomerOrderPart))
+                {
+                    continue;
+                }
+                Provider childProvider =
+                    dbTransactionData.ProvidersGetById(demandToProvider.GetProviderId());
+                
+                
+                DueTime parentDueTime = parentDemand.GetDueTime(dbTransactionData);
+                DueTime childDueTime = childProvider.GetDueTime(dbTransactionData);
 
-                ValidatePredecessorNodeTimeIsGreaterOrEqual(predecessorNodes, leaf, dbTransactionData,
-                    demandToProviderGraph);
+                Assert.True(parentDueTime.IsGreaterThanOrEqualTo(childDueTime),
+                    "ParentDemand's dueTime cannot be smaller than childProvider's dueTime.");
+            }
+
+            foreach (var providerToDemand in dbTransactionData.ProviderToDemandGetAll())
+            {
+                Provider parentProvider =
+                    dbTransactionData.ProvidersGetById(providerToDemand.GetProviderId());
+                Demand childDemand =
+                    dbTransactionData.DemandsGetById(providerToDemand.GetDemandId());
+
+                DueTime parentDueTime = parentProvider.GetDueTime(dbTransactionData);
+                DueTime childDueTime = childDemand.GetDueTime(dbTransactionData);
+
+                Assert.True(parentDueTime.IsGreaterThanOrEqualTo(childDueTime),
+                    "ParentProvider's dueTime cannot be smaller than childDemand's dueTime.");
             }
         }
 
-        private void ValidatePredecessorNodeTimeIsGreaterOrEqual(INodes predecessorNodes,
-            INode lastNode, IDbTransactionData dbTransactionData,
-            IDirectedGraph<INode> demandToProviderGraph)
-        {
-            if (predecessorNodes == null || predecessorNodes.Any() == false)
-            {
-                return;
-            }
-
-            foreach (var predecessorNode in predecessorNodes)
-            {
-                if (predecessorNode.GetEntity().GetNodeType().Equals(NodeType.Demand))
-                {
-                    Demand currentDemand = (Demand)predecessorNode.GetEntity();
-
-                    DueTime lastDueTime =
-                        ((Provider)lastNode.GetEntity()).GetDueTime(dbTransactionData);
-                    if (currentDemand.GetType() != typeof(CustomerOrderPart))
-                    {
-                        Assert.True(currentDemand.GetDueTime(dbTransactionData)
-                            .IsGreaterThanOrEqualTo(lastDueTime), "PredecessorNodeTime cannot be smaller than node's time.");
-                    }
-                }
-                else if (predecessorNode.GetNodeType().Equals(NodeType.Provider))
-                {
-                    Provider currentProvider = (Provider)predecessorNode.GetEntity();
-
-                    DueTime lastDueTime =
-                        ((Demand)lastNode.GetEntity()).GetDueTime(dbTransactionData);
-                    Assert.True(currentProvider.GetDueTime(dbTransactionData)
-                        .IsGreaterThanOrEqualTo(lastDueTime), "PredecessorNodeTime cannot be smaller than node's time.");
-                }
-
-                INodes newPredecessorNodes =
-                    demandToProviderGraph.GetPredecessorNodes(predecessorNode);
-
-                ValidatePredecessorNodeTimeIsGreaterOrEqual(newPredecessorNodes, predecessorNode,
-                    dbTransactionData, demandToProviderGraph);
-            }
-        }
-        
         [Theory]
         [InlineData(TestConfigurationFileNames.DESK_COP_1_LOT_ORDER_QUANTITY)]
         [InlineData(TestConfigurationFileNames.DESK_COP_5_CONCURRENT_LOTSIZE_2)]

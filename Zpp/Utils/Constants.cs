@@ -14,16 +14,23 @@ namespace Zpp.Utils
 
         public static string GetDbName()
         {
+            /*
+            // TODO: This is broken locally: every second test run, it breaks with:
+            System.Data.SqlClient.SqlException : Cannot open database "zpp2" requested by the login. 
+            The login failed. Login failed for user 'sa'.
+            
             if (IsWindows)
             {
                 // use always the same databaseName and drop db before the next test
                 return "zpp2";
             }
             else
-            {
-                // never got this feature (reuse same dbName) working
+            {*/
+                // never got this feature (reuse same database by dropping an recreating)
+                // working on linux/unix,
+                // so use a new database for every test
                 return $"zpp{GetDateString()}";
-            }
+            //}
         }
 
         private static string GetDateString()

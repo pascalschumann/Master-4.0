@@ -6,10 +6,10 @@ using Zpp.Mrp;
 
 namespace Zpp.Test.Integration_Tests
 {
-    public class TestTrackObjects : AbstractTest
+    public class TestObjectTracking : AbstractTest
     {
         
-        public TestTrackObjects() : base(initDefaultTestConfig: false)
+        public TestObjectTracking() : base(initDefaultTestConfig: false)
         {
             Master40.DB.Configuration.TrackObjects = true;
             InitTestScenario(DefaultTestScenario);

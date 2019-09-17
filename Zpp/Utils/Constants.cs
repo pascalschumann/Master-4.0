@@ -11,7 +11,6 @@ namespace Zpp.Utils
 
         public static bool IsLocalDb = false;
         // TODO: the random/dateTime is a workaround, remove this if drop database query in Dispose() in TestClasses is added
-        private static readonly string DateString = GetDateString();
 
         public static string GetDbName()
         {
@@ -23,7 +22,7 @@ namespace Zpp.Utils
             else
             {
                 // never got this feature (reuse same dbName) working
-                return $"zpp{DateString}";
+                return $"zpp{GetDateString()}";
             }
         }
 

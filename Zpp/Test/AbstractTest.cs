@@ -77,10 +77,11 @@ namespace Zpp.Test
                 }
             }
 
-            else
+            else if(Constants.IsLocalDb == false && Constants.IsWindows)
             {
-                bool wasDropped = Dbms.DropDatabase(ProductionDomainContext.Database.GetDbConnection().Database
-                                                  , ProductionDomainContext.Database.GetDbConnection().ConnectionString);
+                bool wasDropped = Dbms.DropDatabase(
+                    Constants.GetDbName(),
+                    Constants.GetConnectionString());
                 if (wasDropped == false)
                 {
                     LOGGER.Warn($"Database {Constants.GetDbName()} could not be dropped.");
@@ -88,11 +89,10 @@ namespace Zpp.Test
             }
 
             Type dbSetInitializer = Type.GetType(TestConfiguration.DbSetInitializer);
-            dbSetInitializer.GetMethod("DbInitialize")
-                .Invoke(null, new[]
-                {
-                    ProductionDomainContext
-                });
+            dbSetInitializer.GetMethod("DbInitialize").Invoke(null, new[]
+            {
+                ProductionDomainContext
+            });
 
             LotSize.LotSize.SetDefaultLotSize(new Quantity(TestConfiguration.LotSize));
             LotSize.LotSize.SetLotSizeType(TestConfiguration.LotSizeType);
@@ -106,7 +106,8 @@ namespace Zpp.Test
             InitDb(testConfiguration);
             _dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
             Type testScenarioType = Type.GetType(TestConfiguration.TestScenario);
-            TestScenario testScenario = (TestScenario) Activator.CreateInstance(testScenarioType, _dbMasterDataCache);
+            TestScenario testScenario =
+                (TestScenario) Activator.CreateInstance(testScenarioType, _dbMasterDataCache);
             testScenario.CreateCustomerOrders(
                 new Quantity(TestConfiguration.CustomerOrderPartQuantity), ProductionDomainContext);
         }

@@ -11,7 +11,7 @@ namespace Zpp.Utils
 
         public static bool IsLocalDb = false;
         // TODO: the random/dateTime is a workaround, remove this if drop database query in Dispose() in TestClasses is added
-        private static readonly string random = $"{new Random().Next(1, 1000000)}";
+        private static readonly string DateString = GetDateString();
 
         public static string GetDbName()
         {
@@ -22,8 +22,8 @@ namespace Zpp.Utils
             }
             else
             {
-                // never got this feature working: use always the same databaseName and drop db before the next test
-                return $"zpp{GetDateString()}";
+                // never got this feature (reuse same dbName) working
+                return $"zpp{DateString}";
             }
         }
 
@@ -34,24 +34,43 @@ namespace Zpp.Utils
             return DateTime.Now.ToString("MM-dd_HH:mm") + $"__{ticks.Substring(10, ticks.Length-10)}";
         }
         
-        public static String DbConnectionZppLocalDb { get; } =
+        private static String DbConnectionZppLocalDb { get; } =
             $"Server=(localdb)\\mssqllocaldb;Database=UnitTestDB;Trusted_Connection=True;MultipleActiveResultSets=true";
 
-        public static String DbConnectionZppSqlServer()
+        private static String DbConnectionZppSqlServer()
         {
             return $"Server=localhost,1433;Database={GetDbName()};" +
                    $"MultipleActiveResultSets=true;User ID=SA;Password=123*Start#";
         }
-        
-        public static String DbConnectionZppSqlServerMaster()
+
+        public static string GetConnectionString()
         {
-            return $"Server=localhost,1433;Database=master;" +
-                   $"MultipleActiveResultSets=true;User ID=SA;Password=123*Start#";
+            if (UseLocalDb() && Constants.IsWindows)
+            {
+                return Constants.DbConnectionZppLocalDb;
+            }
+            else
+            {
+                return DbConnectionZppSqlServer();
+            }
         }
 
         public static string EnumToString<T>(T enumValue, Type enumType)
         {
             return Enum.GetName(enumType, enumValue);
         }
+        
+        /// <summary>
+        /// If localDb shall be used - set it via command line with :
+        /// setx UseLocalDb true
+        /// </summary>
+        /// <returns></returns>
+        public static bool UseLocalDb()
+        {
+            var environmentUseLocalDb = Environment.GetEnvironmentVariable("UseLocalDb", EnvironmentVariableTarget.User);
+            if (environmentUseLocalDb != null)
+                return environmentUseLocalDb.Equals("true");
+            return false;
+        }        
     }
 }

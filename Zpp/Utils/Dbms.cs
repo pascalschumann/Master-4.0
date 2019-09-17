@@ -14,19 +14,6 @@ namespace Zpp.Utils
 
         public static readonly LoggerFactory MyLoggerFactory = new LoggerFactory();
 
-        /// <summary>
-        /// If localDb shall be used - set it via command line with :
-        /// setx UseLocalDb true
-        /// </summary>
-        /// <returns></returns>
-        public static bool UseLocalDb()
-        {
-            var environmentUseLocalDb = Environment.GetEnvironmentVariable("UseLocalDb", EnvironmentVariableTarget.User);
-            if (environmentUseLocalDb != null)
-                return environmentUseLocalDb.Equals("true");
-            return false;
-        }
-
 
     public static ProductionDomainContext GetDbContext()
         {
@@ -38,13 +25,13 @@ namespace Zpp.Utils
                 .UseInMemoryDatabase(databaseName: "InMemoryDB")
                 .Options);*/
 
-            if (UseLocalDb() && Constants.IsWindows)
+            if (Constants.UseLocalDb() && Constants.IsWindows)
             {
                 productionDomainContext = new ProductionDomainContext(
                     new DbContextOptionsBuilder<MasterDBContext>().UseLoggerFactory(MyLoggerFactory)
                         .UseSqlServer(
                             // Constants.DbConnectionZppLocalDb)
-                            Constants.DbConnectionZppLocalDb).Options);
+                            Constants.GetConnectionString()).Options);
                     Constants.IsLocalDb = true;
             } else if (Constants.IsWindows)
             {
@@ -53,7 +40,7 @@ namespace Zpp.Utils
                     new DbContextOptionsBuilder<MasterDBContext>().UseLoggerFactory(MyLoggerFactory)
                         .UseSqlServer(
                             // Constants.DbConnectionZppLocalDb)
-                            Constants.DbConnectionZppSqlServer()).Options);
+                            Constants.GetConnectionString()).Options);
                 Constants.IsLocalDb = false;
             }
             else
@@ -61,7 +48,7 @@ namespace Zpp.Utils
                 // With Sql Server for Mac/Linux
                 productionDomainContext = new ProductionDomainContext(
                     new DbContextOptionsBuilder<MasterDBContext>().UseLoggerFactory(MyLoggerFactory)
-                        .UseSqlServer(Constants.DbConnectionZppSqlServer()).Options);
+                        .UseSqlServer(Constants.GetConnectionString()).Options);
             }
 
             MyLoggerFactory.AddNLog();
@@ -96,7 +83,7 @@ namespace Zpp.Utils
          */
         public static bool DropDatabase(string dbName, string connectionString)
         {
-            if (CanConnect(Constants.DbConnectionZppSqlServer()) == false)
+            if (CanConnect(Constants.GetConnectionString()) == false)
             {
                 return false;
             }

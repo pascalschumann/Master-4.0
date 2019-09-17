@@ -12,8 +12,9 @@ install:
   
 
 script:
-  - dotnet build
-  - dotnet test Master40.XUnitTest/Master40.XUnitTest.csproj
+  - dotnet test --filter Master40.XUnitTest.SimulationImmutables.JobPriorityRules
+  - dotnet test --filter Master40.XUnitTest.SimulationEnvironment.Configuration
+  - dotnet test --filter Master40.XUnitTest.Agents
   - dotnet test Zpp/Zpp.csproj
   
 notifications:

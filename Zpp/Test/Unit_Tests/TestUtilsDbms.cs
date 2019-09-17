@@ -19,15 +19,18 @@ namespace Zpp.Test.Unit_Tests
 
             productionDomainContext.Database.CloseConnection();
 
-            bool wasDropped = Dbms.DropDatabase(Constants.GetDbName());
+            bool wasDropped = Dbms.DropDatabase(productionDomainContext.Database.GetDbConnection().Database,
+                productionDomainContext.Database.GetDbConnection().ConnectionString);
             Assert.True(wasDropped, "Db could not be dropped.");
             Assert.False(productionDomainContext.Database.CanConnect(),
                 "Can still connect to database.");
         }
         
+        [Fact]
         public void TestDropNonExistingDatabase()
         {
-            bool wasDropped = Dbms.DropDatabase("bla");
+            ProductionDomainContext productionDomainContext = Dbms.GetDbContext();
+            bool wasDropped = Dbms.DropDatabase("bla", productionDomainContext.Database.GetDbConnection().ConnectionString);
             Assert.False(wasDropped, "Db could be dropped, although it doesn't exist.");
         }
     }

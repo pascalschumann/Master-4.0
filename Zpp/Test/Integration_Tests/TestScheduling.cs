@@ -119,10 +119,9 @@ namespace Zpp.Test.Integration_Tests
                 Assert.True(tProductionOrderOperation.ResourceId != null,
                     $"{productionOrderOperation} was not scheduled.");
                 Assert.True(
-                    tProductionOrderOperation.Start >= tProductionOrderOperation.StartBackward,
-                    "The startTime for producing cannot be earlier than estimated by backwards scheduling.");
-                Assert.True(tProductionOrderOperation.End >= tProductionOrderOperation.EndBackward,
-                    "The endTime for producing cannot be earlier than estimated by backwards scheduling.");
+                    tProductionOrderOperation.Start >= productionOrderOperation.
+                        GetDueTimeOfItsMaterial(dbTransactionData).GetValue(),
+                    "A productionOrderOperation cannot start before its material is available.");
             }
         }
 

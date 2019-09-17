@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Master40.DB.Data.Initializer.Tables;
 
 namespace Master40.DB.Data.Context
 {
@@ -60,7 +61,7 @@ namespace Master40.DB.Data.Context
         public List<M_Article> GetProducts()
         {
             return this.Articles.Include(x => x.ArticleType)
-                        .Where(predicate: b => b.ArticleType.Name == "Product")
+                        .Where(predicate: b => b.ArticleType.Name == MasterTableArticle.ARTICLE_PRODUCTS)
                         .ToList();
         }
 

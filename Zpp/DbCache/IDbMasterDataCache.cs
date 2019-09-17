@@ -75,7 +75,5 @@ namespace Zpp.DbCache
 
         Demands T_CustomerOrderPartGetAll();
 
-        List<M_ArticleBom> M_ArticleBomGetRootArticles();
-
     }
 }

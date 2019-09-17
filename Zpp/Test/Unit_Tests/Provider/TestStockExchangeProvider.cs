@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Master40.DB.DataModel;
 using Xunit;
 using Zpp.DbCache;
@@ -40,7 +41,7 @@ namespace Zpp.Test.Unit_Tests.Provider
             {
                 randomCustomerOrderPart,
                 EntityFactory.CreateCustomerOrderPartWithGivenArticle(dbMasterDataCache,
-                    new Random().Next(1001, 1999), dbMasterDataCache.M_ArticleGetByName("Stahlrohr"), new DueTime(100)),
+                    new Random().Next(1001, 1999), dbMasterDataCache.M_ArticleGetAll().First(x => x.ToPurchase), new DueTime(100)),
             };
             foreach (var demand in demands)
             {

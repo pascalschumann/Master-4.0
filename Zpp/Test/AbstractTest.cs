@@ -24,7 +24,7 @@ namespace Zpp.Test
 
         protected static TestConfiguration TestConfiguration;
 
-        private static readonly string _defaultTestScenario =
+        protected static readonly string DefaultTestScenario =
             TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2;
 
         private IDbMasterDataCache _dbMasterDataCache;
@@ -44,7 +44,7 @@ namespace Zpp.Test
             ProductionDomainContext = Dbms.GetDbContext();
             if (initDefaultTestConfig)
             {
-                InitTestScenario(_defaultTestScenario);
+                InitTestScenario(DefaultTestScenario);
             }
         }
 

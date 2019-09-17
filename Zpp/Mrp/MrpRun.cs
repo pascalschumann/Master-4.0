@@ -227,8 +227,6 @@ namespace Zpp.Mrp
                     dbMasterDataCache, new PriorityRule());
 
                 dbTransactionData.PersistDbCache();
-                
-                IdGenerator.WriteToFile();
 
                 LOGGER.Info("MrpRun done.");
             }

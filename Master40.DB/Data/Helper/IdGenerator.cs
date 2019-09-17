@@ -13,6 +13,16 @@ namespace Master40.DB.Data.Helper
         private int _currentId = _start;
         private static  readonly Dictionary<Type, List<string>> objectTypeToIds = new Dictionary<Type, List<string>>();
 
+        public int GetNewId()
+        {
+            lock (this)
+            {
+                _currentId++;
+
+                return _currentId;
+            }
+        }
+
         public int GetNewId(Type objectType, string requester)
         {
             lock (this)
@@ -55,18 +65,20 @@ namespace Master40.DB.Data.Helper
             return s;
         }
 
-        public static void WriteToFile()
+        public static string WriteToFile()
         {
             
-            string orderGraphFileName =
+            string usedIdsFileName =
                 $"../../../Test/used_ids.txt";
-            File.WriteAllText(orderGraphFileName, GetObjectTypeToIdsAsString(),
+            File.WriteAllText(usedIdsFileName, GetObjectTypeToIdsAsString(),
                 Encoding.UTF8);
+            return usedIdsFileName;
         }
 
         public static int CountIdsOf(Type type)
         {
             return objectTypeToIds[type].Count();
         }
+        
     }
 }

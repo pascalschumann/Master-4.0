@@ -16,32 +16,41 @@ namespace Master40.DB
 
         protected BaseEntity()
         {
-            // create id && track callers of this constructor
+            if (Configuration.TrackObjects)
+            {
+                // create id && track callers of this constructor
             
-            // 1st frame should be the constructor calling
-            // 2nd frame should be the constructor of the inherited class
-            MethodBase methodFromCaller = new StackFrame(1).GetMethod();
-            StackFrame stackFrameFromRequester = new StackFrame(2);
-            MethodBase methodFromRequester = stackFrameFromRequester.GetMethod();
+                // 1st frame should be the constructor calling
+                // 2nd frame should be the constructor of the inherited class
+                MethodBase methodFromCaller = new StackFrame(1).GetMethod();
+                StackFrame stackFrameFromRequester = new StackFrame(2);
+                MethodBase methodFromRequester = stackFrameFromRequester.GetMethod();
 
-            // return the type of the inherited class
-            Type caller = null;
-            if (methodFromCaller != null && methodFromCaller.ReflectedType != null)
+                // return the type of the inherited class
+                Type caller = null;
+                if (methodFromCaller != null && methodFromCaller.ReflectedType != null)
+                {
+                    caller = methodFromCaller.ReflectedType;
+                }
+
+                string requester = "";
+                if (methodFromRequester != null && methodFromRequester.ReflectedType != null)
+                {
+                    requester = $"{methodFromRequester.ReflectedType.Name}: ";
+                }
+                if (methodFromRequester != null)
+                {
+                    requester += methodFromRequester.Name;   
+                }
+                
+                Id = IdGeneratorHolder.GetIdGenerator().GetNewId(caller,requester);
+            }
+            else
             {
-                caller = methodFromCaller.ReflectedType;
+                Id = IdGeneratorHolder.GetIdGenerator().GetNewId();
             }
 
-            string requester = "";
-            if (methodFromRequester != null && methodFromRequester.ReflectedType != null)
-            {
-                requester = $"{methodFromRequester.ReflectedType.Name}: ";
-            }
-            if (methodFromRequester != null)
-            {
-                requester += methodFromRequester.Name;   
-            }
-
-            Id = IdGeneratorHolder.GetIdGenerator().GetNewId(caller,requester);
+            
         }
         
         public Id GetId()

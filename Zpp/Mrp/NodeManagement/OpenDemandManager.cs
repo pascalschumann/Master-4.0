@@ -45,7 +45,7 @@ namespace Zpp.Mrp.NodeManagement
             providerToDemand.DemandId = oneDemand.GetId().GetValue();
             providerToDemand.ProviderId = providerId.GetValue();
             providerToDemand.Quantity = reservedQuantity.GetValue();
-            
+
             _providerToDemandTable.Add(providerToDemand);
         }
 
@@ -57,33 +57,41 @@ namespace Zpp.Mrp.NodeManagement
         {
             if (_openDemands.AnyOpenProvider(provider.GetArticle()))
             {
-                OpenNode<Demand> openNode = _openDemands.GetOpenProvider(provider.GetArticle());
-                Quantity remainingQuantity = demandedQuantity.Minus(openNode.GetOpenQuantity());
-                openNode.GetOpenQuantity().DecrementBy(demandedQuantity);
 
-                if (openNode.GetOpenQuantity().IsNegative() || openNode.GetOpenQuantity().IsNull())
+                foreach (var openDemand in _openDemands.GetOpenProvider(provider.GetArticle()))
                 {
-                    _openDemands.Remove(openNode);
+                    if (openDemand != null && provider.GetDueTime()
+                            .IsGreaterThanOrEqualTo(openDemand.GetOpenNode().GetDueTime()))
+                    {
+                        Quantity remainingQuantity =
+                            demandedQuantity.Minus(openDemand.GetOpenQuantity());
+                        openDemand.GetOpenQuantity().DecrementBy(demandedQuantity);
+
+                        if (openDemand.GetOpenQuantity().IsNegative() ||
+                            openDemand.GetOpenQuantity().IsNull())
+                        {
+                            _openDemands.Remove(openDemand);
+                        }
+
+                        if (remainingQuantity.IsNegative())
+                        {
+                            remainingQuantity = Quantity.Null();
+                        }
+
+                        T_ProviderToDemand providerToDemand = new T_ProviderToDemand()
+                        {
+                            ProviderId = provider.GetId().GetValue(),
+                            DemandId = openDemand.GetOpenNode().GetId().GetValue(),
+                            Quantity = demandedQuantity.Minus(remainingQuantity).GetValue()
+                        };
+
+                        return new ResponseWithDemands(null, providerToDemand, demandedQuantity);
+                    }
                 }
-
-                if (remainingQuantity.IsNegative())
-                {
-                    remainingQuantity = Quantity.Null();
-                }
-
-                T_ProviderToDemand providerToDemand = new T_ProviderToDemand()
-                {
-                    ProviderId = provider.GetId().GetValue(),
-                    DemandId = openNode.GetOpenNode().GetId().GetValue(),
-                    Quantity = demandedQuantity.Minus(remainingQuantity).GetValue()
-                };
-
-                return new ResponseWithDemands(null, providerToDemand, demandedQuantity);
             }
-            else
-            {
-                return new ResponseWithDemands((Demand) null, null, demandedQuantity);
-            }
+
+            return new ResponseWithDemands((Demand) null, null, demandedQuantity);
+            
         }
     }
 }

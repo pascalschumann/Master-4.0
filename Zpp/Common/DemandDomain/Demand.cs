@@ -65,7 +65,7 @@ namespace Zpp.Common.DemandDomain
 
         public abstract M_Article GetArticle();
 
-        public abstract DueTime GetDueTime(IDbTransactionData dbTransactionData);
+        public abstract DueTime GetDueTime(IDbTransactionData dbTransactionData=null);
 
         public Id GetId()
         {

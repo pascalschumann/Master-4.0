@@ -13,7 +13,6 @@ using Zpp.WrappersForCollections;
 
 namespace Zpp.Mrp.NodeManagement
 {
-    
     public class ProviderManager : IProviderManager
     {
         private readonly IDemandToProviderTable _demandToProviderTable;
@@ -21,7 +20,7 @@ namespace Zpp.Mrp.NodeManagement
         private readonly IProviders _providers;
         private readonly List<Demand> _nextDemands = new List<Demand>();
         private readonly IDbTransactionData _dbTransactionData;
-        
+
         private readonly OpenNodes<Provider> _openProviders = new OpenNodes<Provider>();
 
         public ProviderManager(IDbTransactionData dbTransactionData)
@@ -32,7 +31,8 @@ namespace Zpp.Mrp.NodeManagement
             _dbTransactionData = dbTransactionData;
         }
 
-        public ProviderManager(IDemandToProviderTable demandToProviderTable, IProviderToDemandTable providerToDemandTable, IProviders providers)
+        public ProviderManager(IDemandToProviderTable demandToProviderTable,
+            IProviderToDemandTable providerToDemandTable, IProviders providers)
         {
             _demandToProviderTable = demandToProviderTable;
             _providerToDemandTable = providerToDemandTable;
@@ -42,36 +42,43 @@ namespace Zpp.Mrp.NodeManagement
         /**
          * aka ReserveQuantityOfExistingProvider or satisfyByAlreadyExistingProvider
          */
-        public ResponseWithProviders SatisfyDemand(Demand demand, Quantity demandedQuantity, IDbTransactionData dbTransactionData)
+        public ResponseWithProviders SatisfyDemand(Demand demand, Quantity demandedQuantity,
+            IDbTransactionData dbTransactionData)
         {
             if (_openProviders.AnyOpenProvider(demand.GetArticle()))
             {
-                OpenNode<Provider> openNode = _openProviders.GetOpenProvider(demand.GetArticle());
-                Quantity remainingQuantity = demandedQuantity.Minus(openNode.GetOpenQuantity());
-                openNode.GetOpenQuantity().DecrementBy(demandedQuantity);
-                
-                if (openNode.GetOpenQuantity().IsNegative() || openNode.GetOpenQuantity().IsNull())
+                foreach (var openProvider in _openProviders.GetOpenProvider(demand.GetArticle()))
                 {
-                    _openProviders.Remove(openNode);
-                }
-                if (remainingQuantity.IsNegative())
-                {
-                    remainingQuantity = Quantity.Null();
-                }
+                    if (_openProviders.AnyOpenProvider(demand.GetArticle()))
+                    {
+                        Quantity remainingQuantity =
+                            demandedQuantity.Minus(openProvider.GetOpenQuantity());
+                        openProvider.GetOpenQuantity().DecrementBy(demandedQuantity);
 
-                T_DemandToProvider demandToProvider = new T_DemandToProvider()
-                {
-                    DemandId = demand.GetId().GetValue(),
-                    ProviderId = openNode.GetOpenNode().GetId().GetValue(),
-                    Quantity = demandedQuantity.Minus(remainingQuantity).GetValue()
-                };
+                        if (openProvider.GetOpenQuantity().IsNegative() ||
+                            openProvider.GetOpenQuantity().IsNull())
+                        {
+                            _openProviders.Remove(openProvider);
+                        }
 
-                return new ResponseWithProviders(null, demandToProvider, demandedQuantity);
+                        if (remainingQuantity.IsNegative())
+                        {
+                            remainingQuantity = Quantity.Null();
+                        }
+
+                        T_DemandToProvider demandToProvider = new T_DemandToProvider()
+                        {
+                            DemandId = demand.GetId().GetValue(),
+                            ProviderId = openProvider.GetOpenNode().GetId().GetValue(),
+                            Quantity = demandedQuantity.Minus(remainingQuantity).GetValue()
+                        };
+
+                        return new ResponseWithProviders(null, demandToProvider, demandedQuantity);
+                    }
+                }
             }
-            else
-            {
-                return new ResponseWithProviders((Provider)null, null, demandedQuantity);
-            }
+
+            return new ResponseWithProviders((Provider) null, null, demandedQuantity);
         }
 
         public void AddDemandToProvider(T_DemandToProvider demandToProvider)
@@ -85,12 +92,16 @@ namespace Zpp.Mrp.NodeManagement
             {
                 throw new MrpRunException("You cannot add an already added provider.");
             }
-            
-            
+
+
             // if it has quantity that is not reserved, remember it for later reserving
-            if (oneProvider.GetType() == typeof(StockExchangeProvider) && reservedQuantity.IsSmallerThan(oneProvider.GetQuantity()))
+            if (oneProvider.GetType() == typeof(StockExchangeProvider) &&
+                reservedQuantity.IsSmallerThan(oneProvider.GetQuantity()))
             {
-                _openProviders.Add(oneProvider.GetArticle(), new OpenNode<Provider>(oneProvider, oneProvider.GetQuantity().Minus(reservedQuantity), oneProvider.GetArticle()));
+                _openProviders.Add(oneProvider.GetArticle(),
+                    new OpenNode<Provider>(oneProvider,
+                        oneProvider.GetQuantity().Minus(reservedQuantity),
+                        oneProvider.GetArticle()));
             }
 
             // save provider
@@ -104,16 +115,16 @@ namespace Zpp.Mrp.NodeManagement
                 _nextDemands.AddRange(dependingDemands);
                 if (oneProvider.GetType() == typeof(StockExchangeProvider))
                 {
-                    _providerToDemandTable.AddAll(oneProvider.GetProviderToDemandTable());    
+                    _providerToDemandTable.AddAll(oneProvider.GetProviderToDemandTable());
                 }
                 else
                 {
                     foreach (var dependingDemand in dependingDemands)
                     {
-                        _providerToDemandTable.Add(oneProvider, dependingDemand.GetId(), dependingDemand.GetQuantity());        
+                        _providerToDemandTable.Add(oneProvider, dependingDemand.GetId(),
+                            dependingDemand.GetQuantity());
                     }
                 }
-                
             }
         }
 
@@ -151,6 +162,7 @@ namespace Zpp.Mrp.NodeManagement
             {
                 return null;
             }
+
             Demands nextDemands = new Demands(_nextDemands);
             _nextDemands.Clear();
             return nextDemands;
@@ -168,7 +180,8 @@ namespace Zpp.Mrp.NodeManagement
 
         public bool IsSatisfied(Demand demand)
         {
-            return GetSatisfiedQuantityOfDemand(demand.GetId()).IsGreaterThanOrEqualTo(demand.GetQuantity());
+            return GetSatisfiedQuantityOfDemand(demand.GetId())
+                .IsGreaterThanOrEqualTo(demand.GetQuantity());
         }
 
         public IProviders GetProviders()

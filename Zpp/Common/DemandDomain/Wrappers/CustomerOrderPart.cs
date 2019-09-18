@@ -24,7 +24,7 @@ namespace Zpp.Common.DemandDomain.Wrappers
             return _dbMasterDataCache.M_ArticleGetById(articleId);
         }
 
-        public override DueTime GetDueTime(IDbTransactionData dbTransactionData)
+        public override DueTime GetDueTime(IDbTransactionData dbTransactionData = null)
         {
             T_CustomerOrderPart customerOrderPart = ((T_CustomerOrderPart) _demand);
             if (customerOrderPart.CustomerOrder != null)

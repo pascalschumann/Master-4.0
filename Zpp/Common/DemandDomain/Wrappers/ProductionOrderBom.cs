@@ -84,7 +84,7 @@ namespace Zpp.Common.DemandDomain.Wrappers
          *   if ProductionOrderOperation is backwardsScheduled --> EndBackward
          *   else ProductionOrderParent.dueTime
          */
-        public override DueTime GetDueTime(IDbTransactionData dbTransactionData)
+        public override DueTime GetDueTime(IDbTransactionData dbTransactionData = null)
         {
             // load ProductionOrderOperation if not done yet
             if (_productionOrderBom.ProductionOrderOperation == null)

@@ -17,10 +17,6 @@ namespace Zpp.Mrp.NodeManagement
                 throw new MrpRunException("An open provider can only be a StockExchangeDemand.");
             }
             InitOpenProvidersDictionary(article);
-            if (AnyOpenProvider(article))
-            {
-                throw new MrpRunException($"Only one open provider is allowed: already open: \"{GetOpenProvider(article)}\" , cannot add: \"{openNode}\"");
-            }
             _openNodes[article].Add(openNode);
         }
 
@@ -30,14 +26,14 @@ namespace Zpp.Mrp.NodeManagement
             return _openNodes[article].Any();
         }
 
-        public OpenNode<T> GetOpenProvider(M_Article article)
+        public List<OpenNode<T>> GetOpenProvider(M_Article article)
         {
             if (AnyOpenProvider(article) == false)
             {
                 return null;
             }
 
-            return _openNodes[article][0];
+            return _openNodes[article];
         }
 
         public void Remove(OpenNode<T> node)

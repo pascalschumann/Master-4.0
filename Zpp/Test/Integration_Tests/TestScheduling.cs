@@ -13,6 +13,7 @@ using Zpp.Mrp.MachineManagement;
 using Zpp.Mrp.Scheduling;
 using Zpp.OrderGraph;
 using Zpp.Test.Configuration;
+using Zpp.Utils;
 using Zpp.WrappersForPrimitives;
 
 namespace Zpp.Test.Integration_Tests
@@ -193,7 +194,8 @@ namespace Zpp.Test.Integration_Tests
                 new ProductionOrderToOperationGraph(dbMasterDataCache, dbTransactionData);
 
             IStackSet<INode> leafs = productionOrderToOperationGraph.GetLeafs();
-            IStackSet<ProductionOrderOperation> traversedOperations = new StackSet<ProductionOrderOperation>();
+            IStackSet<ProductionOrderOperation> traversedOperations =
+                new StackSet<ProductionOrderOperation>();
             foreach (var leaf in leafs)
             {
                 INodes predecessorNodes = productionOrderToOperationGraph.GetPredecessors(leaf);
@@ -217,7 +219,7 @@ namespace Zpp.Test.Integration_Tests
 
             foreach (var currentPredecessor in predecessorNodes)
             {
-                if (currentPredecessor.GetType() == typeof(ProductionOrder))
+                if (currentPredecessor.GetEntity().GetType() == typeof(ProductionOrder))
                 {
                     predecessorNodes =
                         productionOrderToOperationGraph.GetPredecessors(currentPredecessor);
@@ -225,7 +227,8 @@ namespace Zpp.Test.Integration_Tests
                         lastOperation, dbTransactionData, productionOrderToOperationGraph,
                         traversed);
                 }
-                else
+                else if (currentPredecessor.GetEntity().GetType() ==
+                         typeof(ProductionOrderOperation))
                 {
                     ProductionOrderOperation currentOperation =
                         (ProductionOrderOperation) currentPredecessor;
@@ -246,6 +249,11 @@ namespace Zpp.Test.Integration_Tests
                     ValidatePredecessorOperationsTransitionTimeIsCorrect(predecessorNodes,
                         currentOperation, dbTransactionData, productionOrderToOperationGraph,
                         traversed);
+                }
+                else
+                {
+                    throw new MrpRunException(
+                        "ProductionOrderToOperationGraph should only contain productionOrders/operations.");
                 }
             }
         }

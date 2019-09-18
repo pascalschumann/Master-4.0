@@ -250,7 +250,7 @@ namespace Zpp.OrderGraph
             uniqueNodes.PushAll(fromNodes);
             uniqueNodes.PushAll(toNodes);
 
-            return new Nodes(uniqueNodes.GetAll());
+            return new Nodes(uniqueNodes);
         }
 
         public void RemoveNode(INode node)

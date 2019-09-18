@@ -136,7 +136,7 @@ namespace Zpp.Mrp
 
             IOpenDemandManager openDemandManager = new OpenDemandManager();
 
-            foreach (var demand in dbDemands.GetAll())
+            foreach (var demand in dbDemands)
             {
                 demandQueue.Enqueue(new DemandQueueNode(demand),
                     demand.GetDueTime(dbTransactionData).GetValue());
@@ -153,7 +153,7 @@ namespace Zpp.Mrp
                 {
                     finalAllDemands.AddAll(nextDemands);
                     // TODO: EnqueueAll()
-                    foreach (var demand in nextDemands.GetAll())
+                    foreach (var demand in nextDemands)
                     {
                         demandQueue.Enqueue(new DemandQueueNode(demand),
                             demand.GetDueTime(dbTransactionData).GetValue());

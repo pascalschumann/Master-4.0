@@ -5,7 +5,7 @@ namespace Zpp.OrderGraph
 {
     public class Nodes : CollectionWrapperWithList<INode>, INodes
     {
-        public Nodes(List<INode> list) : base(list)
+        public Nodes(IEnumerable<INode> list) : base(list)
         {
         }
 

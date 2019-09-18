@@ -120,7 +120,7 @@ namespace Zpp.Mrp.NodeManagement
         public Quantity GetSatisfiedQuantityOfDemand(Id demandId)
         {
             Quantity sum = Quantity.Null();
-            foreach (var demandToProvider in _demandToProviderTable.GetAll())
+            foreach (var demandToProvider in _demandToProviderTable)
             {
                 if (demandToProvider.DemandId.Equals(demandId.GetValue()))
                 {
@@ -134,7 +134,7 @@ namespace Zpp.Mrp.NodeManagement
         public Quantity GetReservedQuantityOfProvider(Id providerId)
         {
             Quantity sum = Quantity.Null();
-            foreach (var demandToProvider in _demandToProviderTable.GetAll())
+            foreach (var demandToProvider in _demandToProviderTable)
             {
                 if (demandToProvider.ProviderId.Equals(providerId.GetValue()))
                 {

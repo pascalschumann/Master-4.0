@@ -20,7 +20,7 @@ namespace Zpp.Mrp.MachineManagement
 
         public List<ProductionOrderOperation> GetOperationsOfMachine(Resource resource)
         {
-            return _machineToOperations[resource].GetAll();
+            return _machineToOperations[resource];
         }
 
         private void Init()

@@ -51,5 +51,10 @@ namespace Zpp.WrappersForCollections
         {
             List.AddRange(items);
         }
+
+        public T GetFirst()
+        {
+            return List[0];
+        }
     }
 }

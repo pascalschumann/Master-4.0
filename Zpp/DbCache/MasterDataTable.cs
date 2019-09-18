@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Master40.DB;
@@ -46,6 +47,16 @@ namespace Zpp.DbCache
         public void SetAll(List<T> entityList)
         {
             _entities = entityList;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _entities.GetEnumerator();
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return _entities.GetEnumerator();
         }
     }
 }

@@ -139,8 +139,7 @@ namespace Zpp.Test.Integration_Tests
             IDirectedGraph<INode> orderDirectedGraph = new DemandToProviderDirectedGraph(dbTransactionData);
 
             // verify edgeTypes
-            foreach (var customerOrderPart in dbMasterDataCache.T_CustomerOrderPartGetAll().GetAll()
-            )
+            foreach (var customerOrderPart in dbMasterDataCache.T_CustomerOrderPartGetAll())
             {
                 orderDirectedGraph.TraverseDepthFirst((INode parentNode, INodes childNodes, INodes traversed) =>
                 {

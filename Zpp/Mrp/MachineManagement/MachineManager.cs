@@ -60,7 +60,7 @@ namespace Zpp.Mrp.MachineManagement
             S = CreateS(productionOrderGraph, productionOrderOperationGraphs);
 
             // t(o) = 0 für alle o aus S
-            foreach (var o in S.GetAll())
+            foreach (var o in S)
             {
                 o.GetValue().Start = o.GetValue().StartBackward.GetValueOrDefault();
             }
@@ -70,7 +70,7 @@ namespace Zpp.Mrp.MachineManagement
             {
                 int d_min = Int32.MaxValue;
                 ProductionOrderOperation o_min = null;
-                foreach (var o in S.GetAll())
+                foreach (var o in S)
                 {
                     // Berechne d(o) = t(o) + p(o) für alle o aus S
                     o.GetValue().End = o.GetValue().Start + o.GetValue().Duration;
@@ -84,7 +84,7 @@ namespace Zpp.Mrp.MachineManagement
 
                 // Bilde Konfliktmenge K = { o | o aus S UND M(o) == M(o_min) UND t(o) < d_min }
                 IStackSet<ProductionOrderOperation> K = new StackSet<ProductionOrderOperation>();
-                foreach (var o in S.GetAll())
+                foreach (var o in S)
                 {
                     if (o.GetValue().ResourceSkillId.Equals(o_min.GetValue().ResourceSkillId) &&
                         o.GetValue().Start < d_min)
@@ -110,7 +110,7 @@ namespace Zpp.Mrp.MachineManagement
 
                         ProductionOrderOperation o1 = null;
                         o1 = priorityRule.GetHighestPriorityOperation(machine.GetIdleStartTime(),
-                            K.GetAll(), dbTransactionData);
+                            K, dbTransactionData);
                         if (o1 == null)
                         {
                             throw new MrpRunException("This is not possible if K.Any() is true.");
@@ -140,7 +140,7 @@ namespace Zpp.Mrp.MachineManagement
 
 
                     // t(o) = d(o1) für alle o aus K ohne alle o1 
-                    foreach (var o in K.GetAll())
+                    foreach (var o in K)
                     {
                         o.GetValue().Start = allO1[0].GetValue().End;
                     }

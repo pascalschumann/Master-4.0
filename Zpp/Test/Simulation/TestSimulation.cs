@@ -34,7 +34,7 @@ namespace Zpp.Test.Simulation
             var from = new DueTime(0);
             var to = new DueTime(1440);
             var stockExchanges = _dbTransactionData.GetAggregator().GetProvidersForInterval(from, to);
-            // .GetAll StockExchangeProvidersGetAll().GetAll();
+            // .GetAll StockExchangeProvidersGetAll();
             foreach (var stockExchange in stockExchanges)
             {
                 stockExchange.SetProvided(stockExchange.GetDueTime());

@@ -32,7 +32,7 @@ namespace Zpp.Test.Integration_Tests
             IDemands allDbDemands = dbTransactionData.DemandsGetAll();
             IDemandToProviderTable demandToProviderTable = dbTransactionData.GetProviderManager().GetDemandToProviderTable();
 
-            foreach (var demand in allDbDemands.GetAll())
+            foreach (var demand in allDbDemands)
             {
                 bool isInDemandToProviderTable =
                     demandToProviderTable.Contains(demand);
@@ -56,7 +56,7 @@ namespace Zpp.Test.Integration_Tests
             IDemands demands = dbTransactionData.DemandsGetAll();
             IProviders providers = dbTransactionData.ProvidersGetAll();
             IDemands unsatisfiedDemands = providers.CalculateUnsatisfiedDemands(demands);
-            foreach (var unsatisfiedDemand in unsatisfiedDemands.GetAll())
+            foreach (var unsatisfiedDemand in unsatisfiedDemands)
             {
                 Assert.True(false,
                     $"The demand {unsatisfiedDemand} should be satisfied, but it is NOT.");
@@ -72,7 +72,7 @@ namespace Zpp.Test.Integration_Tests
                 new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
             
             IDemands allDbDemands = dbTransactionData.DemandsGetAll();
-            foreach (var demand in allDbDemands.GetAll())
+            foreach (var demand in allDbDemands)
             {
                 bool isSatisfied = dbTransactionData.GetProviderManager().IsSatisfied(demand);
                 Assert.True(isSatisfied, $"Demand {demand} is not satisfied.");

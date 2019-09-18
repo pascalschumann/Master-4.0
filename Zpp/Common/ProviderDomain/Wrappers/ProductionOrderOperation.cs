@@ -211,7 +211,7 @@ namespace Zpp.Common.ProviderDomain.Wrappers
 
                 
 
-                Provider stockExchangeProvider = providers.GetAll()[0];
+                Provider stockExchangeProvider = providers.GetFirst();
                 Demands stockExchangeDemands = dbTransactionData.GetAggregator().GetAllChildDemandsOf(stockExchangeProvider);
                 if (maxDueTime == null)
                 {

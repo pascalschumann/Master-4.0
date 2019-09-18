@@ -150,7 +150,7 @@ namespace Zpp.DbCache
         public Demands T_CustomerOrderPartGetAll()
         {
             List<Demand> demands = new List<Demand>();
-            foreach (var demand in _customerOrderParts.GetAll())
+            foreach (var demand in _customerOrderParts)
             {
                 demands.Add(new CustomerOrderPart(demand, this));
             }
@@ -161,7 +161,7 @@ namespace Zpp.DbCache
         public BusinessPartners M_ArticleToBusinessPartnerGetAllBusinessPartnersByArticleId(Id articleId)
         {
             List<M_BusinessPartner> businessPartners = new List<M_BusinessPartner>();
-            foreach (var articleToBusinessPartner in _articleToBusinessPartners.GetAll())
+            foreach (var articleToBusinessPartner in _articleToBusinessPartners)
             {
                 if (articleToBusinessPartner.ArticleId.Equals(articleId))
                 {
@@ -182,7 +182,7 @@ namespace Zpp.DbCache
         public List<M_ArticleToBusinessPartner> M_ArticleToBusinessPartnerGetAllByArticleId(Id articleId)
         {
             List<M_ArticleToBusinessPartner> articleToBusinessPartners = new List<M_ArticleToBusinessPartner>();
-            foreach (var articleToBusinessPartner in _articleToBusinessPartners.GetAll())
+            foreach (var articleToBusinessPartner in _articleToBusinessPartners)
             {
                 if (articleToBusinessPartner.ArticleId.Equals(articleId.GetValue()))
                 {
@@ -198,7 +198,7 @@ namespace Zpp.DbCache
             M_Article article = M_ArticleGetById(articleId);
             if (article.Stock == null)
             { // init stocks for all articles
-                foreach (var stock in _stocks.GetAll())
+                foreach (var stock in _stocks)
                 {
                     M_ArticleGetById(new Id(stock.ArticleForeignKey)).Stock = stock;
                 }
@@ -244,7 +244,7 @@ namespace Zpp.DbCache
         public List<Resource> ResourceGetAll()
         {
             List<Resource> machines = new List<Resource>();
-            foreach (var machine in _resources.GetAll())
+            foreach (var machine in _resources)
             {
                 machines.Add(new Resource(machine));
             }

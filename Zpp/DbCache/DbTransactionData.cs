@@ -167,11 +167,11 @@ namespace Zpp.DbCache
             InsertOrUpdateRange(_purchaseOrders, _productionDomainContext.PurchaseOrders);
 
             // at the end: T_DemandToProvider & T_ProviderToDemand
-            InsertOrUpdateRange(DemandToProviderGetAll().GetAll(),
+            InsertOrUpdateRange(DemandToProviderGetAll(),
                 _productionDomainContext.DemandToProviders);
             if (ProviderToDemandGetAll().Any())
             {
-                InsertOrUpdateRange(ProviderToDemandGetAll().GetAll(),
+                InsertOrUpdateRange(ProviderToDemandGetAll(),
                     _productionDomainContext.ProviderToDemand);
             }
 
@@ -269,12 +269,12 @@ namespace Zpp.DbCache
         {
             Demands demands = new Demands();
 
-            if (_productionOrderBoms.GetAll().Any())
+            if (_productionOrderBoms.Any())
             {
                 demands.AddAll(_productionOrderBoms);
             }
 
-            if (_stockExchangeDemands.GetAll().Any())
+            if (_stockExchangeDemands.Any())
             {
                 demands.AddAll(_stockExchangeDemands);
             }
@@ -318,7 +318,7 @@ namespace Zpp.DbCache
 
         public void DemandsAddAll(IDemands demands)
         {
-            foreach (var demand in demands.GetAll())
+            foreach (var demand in demands)
             {
                 DemandsAdd(demand);
             }
@@ -339,7 +339,7 @@ namespace Zpp.DbCache
 
         public void ProvidersAddAll(IProviders providers)
         {
-            foreach (var provider in providers.GetAll())
+            foreach (var provider in providers)
             {
                 ProvidersAdd(provider);
             }

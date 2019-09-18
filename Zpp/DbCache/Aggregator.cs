@@ -33,13 +33,13 @@ namespace Zpp.DbCache
             throw new System.NotImplementedException();
         }
 
-        public List<Resource> GetResourcesByResourceSkillId(
-            Id resourceSkillId)
+        public List<Resource> GetResourcesByResourceSkillId(Id resourceSkillId)
         {
             var setupIds = _dbMasterDataCache.M_ResourceSetupGetAll()
-                                             .Where(x => x.ResourceSkillId.Equals(resourceSkillId.GetValue()))
-                                             .Select(i => i.ResourceId);
-            var resources = _dbMasterDataCache.ResourceGetAll().Where(x => setupIds.Contains(x.GetValue().Id)).ToList();
+                .Where(x => x.ResourceSkillId.Equals(resourceSkillId.GetValue()))
+                .Select(i => i.ResourceId);
+            var resources = _dbMasterDataCache.ResourceGetAll()
+                .Where(x => setupIds.Contains(x.GetValue().Id)).ToList();
             return resources;
         }
 
@@ -59,29 +59,37 @@ namespace Zpp.DbCache
             {
                 return null;
             }
+
             return productionOrderOperations;
         }
 
         public ProductionOrderBom GetAnyProductionOrderBomByProductionOrderOperation(
             ProductionOrderOperation productionOrderOperation)
         {
-            T_ProductionOrderBom productionOrderBom = _dbTransactionData.ProductionOrderBomGetAll().GetAllAs<T_ProductionOrderBom>().Find(x =>
-                x.ProductionOrderOperationId.Equals(productionOrderOperation.GetId().GetValue()));
+            T_ProductionOrderBom productionOrderBom = _dbTransactionData.ProductionOrderBomGetAll()
+                .GetAllAs<T_ProductionOrderBom>().Find(x =>
+                    x.ProductionOrderOperationId.Equals(productionOrderOperation.GetId()
+                        .GetValue()));
             if (productionOrderBom == null)
             {
-                throw new MrpRunException("How could an productionOrderOperation without an T_ProductionOrderBom exists?");
+                throw new MrpRunException(
+                    "How could an productionOrderOperation without an T_ProductionOrderBom exists?");
             }
 
             return new ProductionOrderBom(productionOrderBom, _dbMasterDataCache);
         }
 
-        public ProductionOrderBoms GetAllProductionOrderBomsBy(ProductionOrderOperation productionOrderOperation)
+        public ProductionOrderBoms GetAllProductionOrderBomsBy(
+            ProductionOrderOperation productionOrderOperation)
         {
-            List<T_ProductionOrderBom> productionOrderBoms = _dbTransactionData.ProductionOrderBomGetAll().GetAllAs<T_ProductionOrderBom>().FindAll(x =>
-                x.ProductionOrderOperationId.Equals(productionOrderOperation.GetId().GetValue()));
+            List<T_ProductionOrderBom> productionOrderBoms = _dbTransactionData
+                .ProductionOrderBomGetAll().GetAllAs<T_ProductionOrderBom>().FindAll(x =>
+                    x.ProductionOrderOperationId.Equals(productionOrderOperation.GetId()
+                        .GetValue()));
             if (productionOrderBoms == null || productionOrderBoms.Any() == false)
             {
-                throw new MrpRunException("How could an productionOrderOperation without an T_ProductionOrderBom exists?");
+                throw new MrpRunException(
+                    "How could an productionOrderOperation without an T_ProductionOrderBom exists?");
             }
 
             return new ProductionOrderBoms(productionOrderBoms, _dbMasterDataCache);
@@ -94,10 +102,11 @@ namespace Zpp.DbCache
             {
                 if (demandToProvider.GetDemandId().Equals(demand.GetId()))
                 {
-                    providers.Add(_dbTransactionData.ProvidersGetById(demandToProvider.GetProviderId()));
+                    providers.Add(
+                        _dbTransactionData.ProvidersGetById(demandToProvider.GetProviderId()));
                 }
-
             }
+
             return providers;
         }
 
@@ -108,18 +117,20 @@ namespace Zpp.DbCache
             {
                 if (demandToProvider.GetDemandId().Equals(demand.GetId()))
                 {
-                    providers.Add(_dbTransactionData.ProvidersGetById(demandToProvider.GetProviderId()));
+                    providers.Add(
+                        _dbTransactionData.ProvidersGetById(demandToProvider.GetProviderId()));
                 }
-
             }
+
             return providers;
         }
 
         public List<Provider> GetProvidersForInterval(DueTime from, DueTime to)
         {
-            var providers = _dbTransactionData.StockExchangeProvidersGetAll().GetAll();
-            var currentProviders = providers.FindAll(x => x.GetDueTime(_dbTransactionData).GetValue() >= from.GetValue()
-                                                       && x.GetDueTime(_dbTransactionData).GetValue() <= to.GetValue());
+            var providers = _dbTransactionData.StockExchangeProvidersGetAll();
+            var currentProviders = providers.GetAll().FindAll(x =>
+                x.GetDueTime(_dbTransactionData).GetValue() >= from.GetValue() &&
+                x.GetDueTime(_dbTransactionData).GetValue() <= to.GetValue());
             return currentProviders;
         }
 
@@ -132,8 +143,8 @@ namespace Zpp.DbCache
                 {
                     demands.Add(_dbTransactionData.DemandsGetById(demandToProvider.GetDemandId()));
                 }
-
             }
+
             return demands;
         }
 
@@ -146,8 +157,8 @@ namespace Zpp.DbCache
                 {
                     demands.Add(_dbTransactionData.DemandsGetById(providerToDemand.GetDemandId()));
                 }
-
             }
+
             return demands;
         }
     }

@@ -9,5 +9,7 @@ namespace Zpp.WrappersForCollections
         void Add(T item);
         
         void AddAll(IEnumerable<T> items);
+
+        T GetFirst();
     }
 }

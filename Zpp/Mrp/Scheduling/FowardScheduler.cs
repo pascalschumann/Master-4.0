@@ -12,7 +12,7 @@ namespace Zpp.Mrp.Scheduling
             DueTime minDueTime = null;
             
             // find min dueTime
-            foreach (var provider in providers.GetAll())
+            foreach (var provider in providers)
             {
                 DueTime currentDueTime = provider.GetDueTime(dbTransactionData);
                 if (minDueTime == null)

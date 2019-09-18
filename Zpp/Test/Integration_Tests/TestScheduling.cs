@@ -83,14 +83,14 @@ namespace Zpp.Test.Integration_Tests
             }
 
             List<DueTime> dueTimes = new List<DueTime>();
-            foreach (var demand in dbTransactionData.DemandsGetAll().GetAll())
+            foreach (var demand in dbTransactionData.DemandsGetAll())
             {
                 dueTimes.Add(demand.GetDueTime(dbTransactionData));
                 Assert.True(demand.GetDueTime(dbTransactionData).GetValue() >= 0,
                     $"DueTime of demand ({demand}) is negative.");
             }
 
-            foreach (var provider in dbTransactionData.ProvidersGetAll().GetAll())
+            foreach (var provider in dbTransactionData.ProvidersGetAll())
             {
                 dueTimes.Add(provider.GetDueTime(dbTransactionData));
                 Assert.True(provider.GetDueTime(dbTransactionData).GetValue() >= 0,
@@ -130,6 +130,7 @@ namespace Zpp.Test.Integration_Tests
         [InlineData(TestConfigurationFileNames.DESK_COP_5_CONCURRENT_LOTSIZE_2)]
         [InlineData(TestConfigurationFileNames.DESK_COP_5_SEQUENTIALLY_LOTSIZE_2)]
         [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
+        [InlineData(TestConfigurationFileNames.TRUCK_COP_1_LOTSIZE_1)]
         public void TestParentsDueTimeIsGreaterThanOrEqualToChildsDueTime(
             string testConfigurationFileName)
         {

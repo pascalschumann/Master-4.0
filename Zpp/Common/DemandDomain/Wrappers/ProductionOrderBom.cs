@@ -92,7 +92,7 @@ namespace Zpp.Common.DemandDomain.Wrappers
                 Id productionOrderOperationId =
                     new Id(_productionOrderBom.ProductionOrderOperationId.GetValueOrDefault());
                 _productionOrderBom.ProductionOrderOperation = dbTransactionData
-                    .ProductionOrderOperationGetById(productionOrderOperationId);
+                    .ProductionOrderOperationGetById(productionOrderOperationId).GetValue();
             }
 
             if (_productionOrderBom.ProductionOrderOperation != null &&
@@ -125,7 +125,7 @@ namespace Zpp.Common.DemandDomain.Wrappers
                 {
                     _productionOrderBom.ProductionOrderOperation =
                         dbTransactionData.ProductionOrderOperationGetById(new Id(_productionOrderBom
-                            .ProductionOrderOperationId.GetValueOrDefault()));
+                            .ProductionOrderOperationId.GetValueOrDefault())).GetValue();
                 }
 
                 T_ProductionOrderOperation tProductionOrderOperation =
@@ -158,9 +158,9 @@ namespace Zpp.Common.DemandDomain.Wrappers
             if (_productionOrderBom.ProductionOrderOperation == null)
                 // load it
             {
-                _productionOrderBom.ProductionOrderOperation =
-                    dbTransactionData.ProductionOrderOperationGetById(
-                        new Id(_productionOrderBom.ProductionOrderOperationId.GetValueOrDefault()));
+                _productionOrderBom.ProductionOrderOperation = dbTransactionData
+                    .ProductionOrderOperationGetById(new Id(_productionOrderBom
+                        .ProductionOrderOperationId.GetValueOrDefault())).GetValue();
             }
 
             return new ProductionOrderOperation(_productionOrderBom.ProductionOrderOperation,
@@ -176,7 +176,7 @@ namespace Zpp.Common.DemandDomain.Wrappers
                 {
                     _productionOrderBom.ProductionOrderOperation =
                         dbTransactionData.ProductionOrderOperationGetById(new Id(_productionOrderBom
-                            .ProductionOrderOperationId.GetValueOrDefault()));
+                            .ProductionOrderOperationId.GetValueOrDefault())).GetValue();
                 }
 
                 T_ProductionOrderOperation tProductionOrderOperation =

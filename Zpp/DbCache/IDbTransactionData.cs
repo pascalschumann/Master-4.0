@@ -72,9 +72,9 @@ namespace Zpp.DbCache
 
         IProviderManager GetProviderManager();
 
-        T_ProductionOrderOperation ProductionOrderOperationGetById(Id id);
+        ProductionOrderOperation ProductionOrderOperationGetById(Id id);
         
-        List<ProductionOrderOperation> ProductionOrderOperationGetAll();
+        ProductionOrderOperations ProductionOrderOperationGetAll();
 
         IAggregator GetAggregator();
     }

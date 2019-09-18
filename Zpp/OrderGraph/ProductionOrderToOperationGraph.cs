@@ -2,6 +2,7 @@
 using Master40.DB.DataModel;
 using Zpp.Common.DemandDomain.Wrappers;
 using Zpp.Common.ProviderDomain.Wrappers;
+using Zpp.Common.ProviderDomain.WrappersForCollections;
 using Zpp.DbCache;
 using Zpp.Mrp.MachineManagement;
 using Zpp.Mrp.ProductionManagement.ProductionTypes;
@@ -170,6 +171,42 @@ namespace Zpp.OrderGraph
             {
                 throw new MrpRunException("Unknown type.");
             }
+        }
+
+        public ProductionOrderOperations GetAllOperations()
+        {
+            ProductionOrderOperations productionOrderOperations = new ProductionOrderOperations();
+            foreach (var operationGraph in _productionOrderToOperationGraph.Values)
+            {
+                foreach (var uniqueNode in operationGraph.GetAllUniqueNode())
+                {
+                    INode entity = uniqueNode.GetEntity();
+                    if (entity.GetType() == typeof(ProductionOrderOperation))
+                    {
+                        productionOrderOperations.Add((ProductionOrderOperation)entity);    
+                    }
+                }
+            }
+
+            return productionOrderOperations;
+        }
+
+        public ProductionOrders GetAllProductionOrders()
+        {
+            ProductionOrders productionOrders = new ProductionOrders();
+            foreach (var operationGraph in _productionOrderToOperationGraph.Values)
+            {
+                foreach (var uniqueNode in operationGraph.GetAllUniqueNode())
+                {
+                    INode entity = uniqueNode.GetEntity();
+                    if (entity.GetType() == typeof(ProductionOrder))
+                    {
+                        productionOrders.Add(((ProductionOrder)entity));    
+                    }
+                }
+            }
+
+            return productionOrders;
         }
     }
 }

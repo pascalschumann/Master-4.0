@@ -1,6 +1,7 @@
 using System;
 using Zpp.Common.DemandDomain.Wrappers;
 using Zpp.Common.ProviderDomain.Wrappers;
+using Zpp.Common.ProviderDomain.WrappersForCollections;
 using Zpp.Mrp.MachineManagement;
 
 namespace Zpp.OrderGraph
@@ -18,5 +19,9 @@ namespace Zpp.OrderGraph
         INodes GetPredecessors(TNode node);
 
         IDirectedGraph<TNode> GetInnerGraph(ProductionOrder productionOrder);
+
+        ProductionOrderOperations GetAllOperations();
+
+        ProductionOrders GetAllProductionOrders();
     }
 }

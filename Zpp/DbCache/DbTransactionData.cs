@@ -99,8 +99,8 @@ namespace Zpp.DbCache
 
             // others
             _purchaseOrders = _productionDomainContext.PurchaseOrders.ToList();
-            _productionOrderOperations =
-                new ProductionOrderOperations(_productionDomainContext.ProductionOrderOperations.ToList());
+            _productionOrderOperations = new ProductionOrderOperations(
+                _productionDomainContext.ProductionOrderOperations.ToList(), dbMasterDataCache);
 
             // demandToProvider
 
@@ -153,12 +153,15 @@ namespace Zpp.DbCache
                 _stockExchangeProviders.GetAllAs<T_StockExchange>();
             List<T_ProductionOrder> tProductionOrders =
                 _productionOrders.GetAllAs<T_ProductionOrder>();
+            List<T_ProductionOrderOperation> tProductionOrderOperations =
+                _productionOrderOperations.GetAllAsT_ProductionOrderOperation();
             List<T_PurchaseOrderPart> tPurchaseOrderParts =
                 _purchaseOrderParts.GetAllAs<T_PurchaseOrderPart>();
 
             // Insert all T_* entities
             InsertOrUpdateRange(tProductionOrders, _productionDomainContext.ProductionOrders);
-            InsertOrUpdateRange(_productionOrderOperations, _productionDomainContext.ProductionOrderOperations);
+            InsertOrUpdateRange(tProductionOrderOperations,
+                _productionDomainContext.ProductionOrderOperations);
             InsertOrUpdateRange(tProductionOrderBoms, _productionDomainContext.ProductionOrderBoms);
             InsertOrUpdateRange(tStockExchangeDemands, _productionDomainContext.StockExchanges);
             // providers
@@ -211,19 +214,20 @@ namespace Zpp.DbCache
             TEntity foundEntity = dbSet.Find(entity.Id);
             if (foundEntity == null
                 ) // TODO: performance issue: a select before every insert is a no go
-                  // it's not in DB yet
+                // it's not in DB yet
             {
                 _productionDomainContext.Entry(entity).State = EntityState.Added;
                 dbSet.Add(entity);
             }
             else
-            // it's already in DB
+                // it's already in DB
             {
                 CopyDbPropertiesTo(entity, foundEntity);
                 _productionDomainContext.Entry(foundEntity).State = EntityState.Modified;
                 dbSet.Update(foundEntity);
             }
         }
+
         public static void CopyDbPropertiesTo<T>(T source, T dest)
         {
             DbUtils.CopyDbPropertiesTo(source, dest);
@@ -233,11 +237,11 @@ namespace Zpp.DbCache
         {
             if (demand.GetType() == typeof(ProductionOrderBom))
             {
-                _productionOrderBoms.Add((ProductionOrderBom)demand);
+                _productionOrderBoms.Add((ProductionOrderBom) demand);
             }
             else if (demand.GetType() == typeof(StockExchangeDemand))
             {
-                _stockExchangeDemands.Add((StockExchangeDemand)demand);
+                _stockExchangeDemands.Add((StockExchangeDemand) demand);
             }
             else
             {
@@ -249,15 +253,15 @@ namespace Zpp.DbCache
         {
             if (provider.GetType() == typeof(ProductionOrder))
             {
-                _productionOrders.Add((ProductionOrder)provider);
+                _productionOrders.Add((ProductionOrder) provider);
             }
             else if (provider.GetType() == typeof(PurchaseOrderPart))
             {
-                _purchaseOrderParts.Add((PurchaseOrderPart)provider);
+                _purchaseOrderParts.Add((PurchaseOrderPart) provider);
             }
             else if (provider.GetType() == typeof(StockExchangeProvider))
             {
-                _stockExchangeProviders.Add((StockExchangeProvider)provider);
+                _stockExchangeProviders.Add((StockExchangeProvider) provider);
             }
             else
             {
@@ -324,13 +328,16 @@ namespace Zpp.DbCache
             }
 
             // T_ProductionOrderOperation
-            IStackSet<T_ProductionOrderOperation> tProductionOrderOperations =
-                new StackSet<T_ProductionOrderOperation>();
-            foreach (var tProductionOrderBom in _productionOrderBoms.GetAllAsT_ProductionOrderBom())
+            IStackSet<ProductionOrderOperation> tProductionOrderOperations =
+                new StackSet<ProductionOrderOperation>();
+            foreach (var productionOrderBom in _productionOrderBoms)
             {
-                if (tProductionOrderBom.ProductionOrderOperation != null)
+                T_ProductionOrderBom tProductionOrderBom =
+                    (T_ProductionOrderBom) productionOrderBom.ToIDemand();
+                if (tProductionOrderBom != null)
                 {
-                    tProductionOrderOperations.Push(tProductionOrderBom.ProductionOrderOperation);
+                    tProductionOrderOperations.Push(new ProductionOrderOperation(
+                        tProductionOrderBom.ProductionOrderOperation, _dbMasterDataCache));
                 }
             }
 
@@ -386,22 +393,14 @@ namespace Zpp.DbCache
             return _purchaseOrders;
         }
 
-        public T_ProductionOrderOperation ProductionOrderOperationGetById(Id id)
+        public ProductionOrderOperation ProductionOrderOperationGetById(Id id)
         {
-            return _productionOrderOperations.GetAll().SingleOrDefault(x => x.Id.Equals(id.GetValue()));
+            return _productionOrderOperations.GetAll().SingleOrDefault(x => x.GetId().Equals(id));
         }
 
-        public List<ProductionOrderOperation> ProductionOrderOperationGetAll()
+        public ProductionOrderOperations ProductionOrderOperationGetAll()
         {
-            List<ProductionOrderOperation> productionOrderOperations =
-                new List<ProductionOrderOperation>();
-            foreach (var productionOrderOperation in _productionOrderOperations)
-            {
-                productionOrderOperations.Add(
-                    new ProductionOrderOperation(productionOrderOperation, _dbMasterDataCache));
-            }
-
-            return productionOrderOperations;
+            return _productionOrderOperations;
         }
 
         public StockExchangeDemands StockExchangeDemandsGetAll()

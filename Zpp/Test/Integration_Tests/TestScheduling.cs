@@ -202,14 +202,6 @@ namespace Zpp.Test.Integration_Tests
                     lastOperation, dbTransactionData, productionOrderToOperationGraph,
                     traversedOperations);
             }
-
-            int expectedTraversedOperationCount =
-                new Stack<ProductionOrderOperation>(dbTransactionData.ProductionOrderOperationGetAll()).Count();
-            int actualTraversedOperationCount = traversedOperations.Count();
-            
-            Assert.True(actualTraversedOperationCount.Equals(expectedTraversedOperationCount),
-                $"expectedTraversedOperationCount {expectedTraversedOperationCount} " +
-                $"doesn't equal actualTraversedOperationCount {actualTraversedOperationCount}'");
         }
 
         private void ValidatePredecessorOperationsTransitionTimeIsCorrect(INodes predecessorNodes,
@@ -225,7 +217,7 @@ namespace Zpp.Test.Integration_Tests
 
             foreach (var currentPredecessor in predecessorNodes)
             {
-                if (currentPredecessor.GetType() != typeof(ProductionOrderOperation))
+                if (currentPredecessor.GetType() == typeof(ProductionOrder))
                 {
                     predecessorNodes =
                         productionOrderToOperationGraph.GetPredecessors(currentPredecessor);

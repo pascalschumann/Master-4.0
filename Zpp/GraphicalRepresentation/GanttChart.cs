@@ -12,7 +12,7 @@ namespace Zpp.GraphicalRepresentation
     {
         private readonly List<GanttChartBar> _ganttChartBars = new List<GanttChartBar>();
 
-        public GanttChart(List<ProductionOrderOperation> productionOrderOperations, IDbMasterDataCache dbMasterDataCache)
+        public GanttChart(IEnumerable<ProductionOrderOperation> productionOrderOperations, IDbMasterDataCache dbMasterDataCache)
         {
             foreach (var productionOrderOperation in productionOrderOperations)
             {

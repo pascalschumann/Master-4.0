@@ -165,6 +165,10 @@ namespace Zpp.OrderGraph
                 INodes predecessorOperations = new Nodes();
                 INodes predecessorProductionOrders =
                     _productionOrderGraph.GetPredecessorNodes(node);
+                if (predecessorProductionOrders == null)
+                {
+                    return null;
+                }
                 foreach (var predecessorProductionOrder in predecessorProductionOrders)
                 {
                     predecessorOperations.AddAll(

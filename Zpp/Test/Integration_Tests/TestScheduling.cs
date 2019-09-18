@@ -183,7 +183,46 @@ namespace Zpp.Test.Integration_Tests
         [InlineData(TestConfigurationFileNames.DESK_COP_5_SEQUENTIALLY_LOTSIZE_2)]
         [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
         [InlineData(TestConfigurationFileNames.TRUCK_COP_1_LOTSIZE_1)]
-        public void TestBackwardSchedulingTransitionTimeIsCorrect(string testConfigurationFileName)
+        public void TestBackwardSchedulingTransitionTimeForeachOperationIsCorrect(
+            string testConfigurationFileName)
+        {
+            InitThisTest(testConfigurationFileName);
+            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+            IDbTransactionData dbTransactionData =
+                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+
+            foreach (var productionOrderOperation in dbTransactionData.ProductionOrderOperationGetAll())
+            {
+                int expectedStartBackward =
+                    productionOrderOperation.GetDueTime(dbTransactionData).GetValue() +
+                    OperationBackwardsSchedule.GetTransitionTimeFactor() *
+                    productionOrderOperation.GetValue().Duration;
+                int actualStartBackward = productionOrderOperation.GetValue().StartBackward
+                    .GetValueOrDefault();
+                Assert.True(expectedStartBackward.Equals(actualStartBackward),
+                    $"The transition time before operationStart is not correct: " +
+                    $"expectedStartBackward: {expectedStartBackward}, actualStartBackward {actualStartBackward}");
+                
+                int expectedEndBackward =
+                    productionOrderOperation.GetDueTime(dbTransactionData).GetValue() +
+                    OperationBackwardsSchedule.GetTransitionTimeFactor() *
+                    productionOrderOperation.GetValue().Duration;
+                int actualEndBackward = productionOrderOperation.GetValue().StartBackward
+                    .GetValueOrDefault();
+                Assert.True(expectedEndBackward.Equals(actualEndBackward),
+                    $"EndBackward is not correct: " +
+                    $"expectedEndBackward: {expectedEndBackward}, actualEndBackward {actualEndBackward}");
+            }
+
+        }
+
+        [Theory]
+        [InlineData(TestConfigurationFileNames.DESK_COP_1_LOT_ORDER_QUANTITY)]
+        [InlineData(TestConfigurationFileNames.DESK_COP_5_CONCURRENT_LOTSIZE_2)]
+        [InlineData(TestConfigurationFileNames.DESK_COP_5_SEQUENTIALLY_LOTSIZE_2)]
+        [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
+        [InlineData(TestConfigurationFileNames.TRUCK_COP_1_LOTSIZE_1)]
+        public void TestBackwardSchedulingTransitionTimeBetweenOperationsIsCorrect(string testConfigurationFileName)
         {
             InitThisTest(testConfigurationFileName);
             IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
@@ -221,6 +260,10 @@ namespace Zpp.Test.Integration_Tests
             ProductionOrderToOperationGraph productionOrderToOperationGraph,
             IStackSet<INode> traversedOperations)
         {
+            if (predecessorOperations == null)
+            {
+                return;
+            }
             foreach (var currentPredecessor in predecessorOperations)
             {
                 if (currentPredecessor.GetEntity().GetType() == typeof(ProductionOrder))
@@ -236,14 +279,14 @@ namespace Zpp.Test.Integration_Tests
                          typeof(ProductionOrderOperation))
                 {
                     ProductionOrderOperation currentOperation =
-                        (ProductionOrderOperation) currentPredecessor;
+                        (ProductionOrderOperation) currentPredecessor.GetEntity();
                     traversedOperations.Push(currentPredecessor.GetEntity());
 
                     // transition time MUST be before the start of Operation
                     int expectedStartBackward =
                         lastOperation.GetValue().EndBackward.GetValueOrDefault() +
                         OperationBackwardsSchedule.GetTransitionTimeFactor() *
-                        lastOperation.GetValue().Duration;
+                        currentOperation.GetValue().Duration;
                     int actualStartBackward = currentOperation.GetValue().StartBackward
                         .GetValueOrDefault();
                     Assert.True(expectedStartBackward.Equals(actualStartBackward),

@@ -37,34 +37,32 @@ namespace Zpp.Common.ProviderDomain.Wrappers
             {
                 newOperationBackwardsSchedule = new OperationBackwardsSchedule(
                     dueTimeOfProductionOrder, _productionOrderOperation.GetDuration(),
-                    new HierarchyNumber(_productionOrderOperation.HierarchyNumber));
+                    _productionOrderOperation.GetHierarchyNumber());
             }
             // case: equal hierarchyNumber --> PrOO runs in parallel
-            else if (lastOperationBackwardsSchedule.GetHierarchyNumber() == null ||
-                     (lastOperationBackwardsSchedule.GetHierarchyNumber() != null &&
-                      _productionOrderOperation.HierarchyNumber.Equals(
-                          lastOperationBackwardsSchedule.GetHierarchyNumber().GetValue())))
+            else if (_productionOrderOperation.GetHierarchyNumber()
+                .Equals(lastOperationBackwardsSchedule.GetHierarchyNumber()))
             {
                 newOperationBackwardsSchedule = new OperationBackwardsSchedule(
                     lastOperationBackwardsSchedule.GetEndOfOperation(),
                     _productionOrderOperation.GetDuration(),
-                    new HierarchyNumber(_productionOrderOperation.HierarchyNumber));
+                    _productionOrderOperation.GetHierarchyNumber());
             }
             // case: greaterHierarchyNumber --> PrOO runs after the last PrOO
             else
             {
-                if (lastOperationBackwardsSchedule.GetHierarchyNumber().GetValue() <
-                    _productionOrderOperation.HierarchyNumber)
+                if (lastOperationBackwardsSchedule.GetHierarchyNumber()
+                    .IsSmallerThan(_productionOrderOperation.GetHierarchyNumber()))
                 {
                     throw new MrpRunException(
                         "This is not allowed: hierarchyNumber of lastBackwardsSchedule " +
-                        "is smaller than hierarchyNumber of current PrOO.");
+                        "is smaller than hierarchyNumber of current PrOO (wasn't sorted ?').");
                 }
 
                 newOperationBackwardsSchedule = new OperationBackwardsSchedule(
                     lastOperationBackwardsSchedule.GetStartOfOperation(),
                     _productionOrderOperation.GetDuration(),
-                    new HierarchyNumber(_productionOrderOperation.HierarchyNumber));
+                    _productionOrderOperation.GetHierarchyNumber());
             }
 
             // apply schedule on operation
@@ -121,7 +119,7 @@ namespace Zpp.Common.ProviderDomain.Wrappers
 
         public HierarchyNumber GetHierarchyNumber()
         {
-            return new HierarchyNumber(_productionOrderOperation.HierarchyNumber);
+            return _productionOrderOperation.GetHierarchyNumber();
         }
 
         public DueTime GetDuration()
@@ -171,18 +169,10 @@ namespace Zpp.Common.ProviderDomain.Wrappers
 
         public DueTime GetDueTime(IDbTransactionData dbTransactionData)
         {
-            DueTime dueTime;
-            if (_productionOrderOperation.EndBackward != null)
-            {
-                dueTime = new DueTime(_productionOrderOperation.EndBackward.GetValueOrDefault());
-            }
-            else
-            {
-                // every productionOrderBom whith this operation o1 has the same dueTime
-                dueTime = dbTransactionData.GetAggregator()
-                    .GetAnyProductionOrderBomByProductionOrderOperation(this)
-                    .GetDueTime(dbTransactionData);
-            }
+            // every productionOrderBom whith this operation o1 has the same dueTime
+            DueTime dueTime = dbTransactionData.GetAggregator()
+                .GetAnyProductionOrderBomByProductionOrderOperation(this)
+                .GetDueTime(dbTransactionData);
 
             return dueTime;
         }
@@ -209,17 +199,17 @@ namespace Zpp.Common.ProviderDomain.Wrappers
                     throw new MrpRunException("A productionOrderBom can only have one provider !");
                 }
 
-                
 
                 Provider stockExchangeProvider = providers.GetFirst();
-                Demands stockExchangeDemands = dbTransactionData.GetAggregator().GetAllChildDemandsOf(stockExchangeProvider);
+                Demands stockExchangeDemands = dbTransactionData.GetAggregator()
+                    .GetAllChildDemandsOf(stockExchangeProvider);
                 if (maxDueTime == null)
                 {
                     maxDueTime = stockExchangeProvider.GetDueTime(dbTransactionData);
                 }
-                
+
                 if (stockExchangeDemands.Any() == false)
-                // StockExchangeProvider has no childs (stockExchangeDemands) take that from stockExchangeProvider
+                    // StockExchangeProvider has no childs (stockExchangeDemands) take that from stockExchangeProvider
                 {
                     DueTime childDueTime = stockExchangeProvider.GetDueTime(dbTransactionData);
                     if (childDueTime.IsGreaterThan(maxDueTime))
@@ -227,12 +217,13 @@ namespace Zpp.Common.ProviderDomain.Wrappers
                         maxDueTime = childDueTime;
                     }
                 }
-                else 
-                 // StockExchangeProvider has childs (stockExchangeDemands)
+                else
+                    // StockExchangeProvider has childs (stockExchangeDemands)
                 {
                     foreach (var stockExchangeDemand in stockExchangeDemands)
                     {
-                        DueTime stockExchangeDemandDueTime = stockExchangeDemand.GetDueTime(dbTransactionData);
+                        DueTime stockExchangeDemandDueTime =
+                            stockExchangeDemand.GetDueTime(dbTransactionData);
                         if (stockExchangeDemandDueTime.IsGreaterThan(maxDueTime))
                         {
                             maxDueTime = stockExchangeDemandDueTime;

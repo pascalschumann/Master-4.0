@@ -1,4 +1,4 @@
-namespace Zpp.WrappersForPrimitives
+namespace Master40.DB.Data.WrappersForPrimitives
 {
     public class HierarchyNumber
     {
@@ -9,7 +9,7 @@ namespace Zpp.WrappersForPrimitives
             _hierarchyNumber = hierarchyNumber;
         }
 
-        public void increment()
+        public void Increment()
         {
             _hierarchyNumber++;
         }

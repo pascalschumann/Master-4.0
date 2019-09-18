@@ -45,5 +45,10 @@ namespace Master40.DB.DataModel
         {
             return new Duration(Duration);
         }
+
+        public HierarchyNumber GetHierarchyNumber()
+        {
+            return new HierarchyNumber(HierarchyNumber);
+        }
     }
 }

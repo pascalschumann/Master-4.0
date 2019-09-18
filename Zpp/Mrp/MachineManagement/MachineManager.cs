@@ -110,7 +110,7 @@ namespace Zpp.Mrp.MachineManagement
 
                         ProductionOrderOperation o1 = null;
                         o1 = priorityRule.GetHighestPriorityOperation(machine.GetIdleStartTime(),
-                            K, dbTransactionData);
+                            K.GetAll(), dbTransactionData);
                         if (o1 == null)
                         {
                             throw new MrpRunException("This is not possible if K.Any() is true.");

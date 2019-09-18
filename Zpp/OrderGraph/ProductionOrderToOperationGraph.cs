@@ -10,13 +10,13 @@ using Zpp.Utils;
 
 namespace Zpp.OrderGraph
 {
-    public class ProductionOrderToOperationGraph: ITwoDimensionalGraph<INode>
+    public class ProductionOrderToOperationGraph: IProductionOrderToOperationGraph<INode>
     {
         private readonly IDbMasterDataCache _dbMasterDataCache;
         private readonly IAggregator _aggregator;
         private readonly IDbTransactionData _dbTransactionData;
         private readonly IDirectedGraph<INode> _productionOrderGraph;
-        private readonly ProductionOrderOperationGraphsAsDictionary _productionOrderOperationGraphsAsDictionary;
+        private readonly ProductionOrderOperationGraphsAsDictionary _productionOrderToOperationGraph;
         
 
 
@@ -27,7 +27,7 @@ namespace Zpp.OrderGraph
             _dbMasterDataCache = dbMasterDataCache;
             _aggregator = dbTransactionData.GetAggregator();
             _productionOrderGraph = new ProductionOrderDirectedGraph(_dbTransactionData, false);
-            _productionOrderOperationGraphsAsDictionary = new ProductionOrderOperationGraphsAsDictionary();
+            _productionOrderToOperationGraph = new ProductionOrderOperationGraphsAsDictionary();
             Init();
         }
 
@@ -38,23 +38,31 @@ namespace Zpp.OrderGraph
                 IDirectedGraph<INode> productionOrderOperationGraph =
                     new ProductionOrderOperationDirectedGraph(_dbTransactionData,
                         (ProductionOrder)productionOrder);
-                _productionOrderOperationGraphsAsDictionary.Add((ProductionOrder)productionOrder,
+                _productionOrderToOperationGraph.Add((ProductionOrder)productionOrder,
                     productionOrderOperationGraph);
             }
         }
 
-        public void RemoveOperation(ProductionOrderOperation operation)
+        public void Remove(ProductionOrderOperation operation)
         {
 
             var productionOrder = operation.GetProductionOrder(_dbTransactionData);
             var productionOrderOperationGraph =
-                (ProductionOrderOperationDirectedGraph)_productionOrderOperationGraphsAsDictionary[productionOrder];
-
-            // prepare for next round
+                (ProductionOrderOperationDirectedGraph)_productionOrderToOperationGraph[productionOrder];
+            
             productionOrderOperationGraph.RemoveNode(operation);
             productionOrderOperationGraph
-                    // TODO Naming ?
-                .RemoveProductionOrdersWithNoProductionOrderOperationsFromProductionOrderGraph(
+                .RemoveProductionOrdersWithNoProductionOrderOperations(
+                    _productionOrderGraph, productionOrder);
+        }
+
+        public void Remove(ProductionOrder productionOrder)
+        {
+            var productionOrderOperationGraph =
+                (ProductionOrderOperationDirectedGraph)_productionOrderToOperationGraph[productionOrder];
+            
+            productionOrderOperationGraph
+                .RemoveProductionOrdersWithNoProductionOrderOperations(
                     _productionOrderGraph, productionOrder);
         }
 
@@ -74,7 +82,7 @@ namespace Zpp.OrderGraph
             foreach (var productionOrder in leafNodes)
             {
                 var productionOrderOperationGraph =
-                    _productionOrderOperationGraphsAsDictionary[(ProductionOrder) productionOrder.GetEntity()];
+                    _productionOrderToOperationGraph[(ProductionOrder) productionOrder.GetEntity()];
                 var productionOrderOperationLeafsOfProductionOrder =
                     productionOrderOperationGraph.GetLeafNodes();
 
@@ -84,6 +92,7 @@ namespace Zpp.OrderGraph
             return allLeafs;
         }
 
+        // TODO: this method should not be in this class
         public void WithdrawMaterialsFromStock(ProductionOrderOperation operation, long time)
         {
             var productionOrderBoms = _dbTransactionData.GetAggregator().GetAllProductionOrderBomsBy(operation);
@@ -100,6 +109,7 @@ namespace Zpp.OrderGraph
             }
         }
 
+        // TODO: this method should not be in this class
         public void InsertMaterialsIntoStock(ProductionOrderOperation operation, long time)
         {
             var productionOrderBom = _dbTransactionData.GetAggregator()
@@ -118,23 +128,47 @@ namespace Zpp.OrderGraph
         
         public INodes GetPredecessors(INode node)
         {
-            if (node.GetType() == typeof(ProductionOrder))
+            INode entity = node.GetEntity();
+            
+            if (entity.GetType() == typeof(ProductionOrder))
             {
                 
-                return _productionOrderGraph.GetPredecessorNodes(node);
+                return _productionOrderGraph.GetPredecessorNodes(entity);
             }
-            else if (node.GetType() == typeof(ProductionOrderOperation))
+            else if (entity.GetType() == typeof(ProductionOrderOperation))
             {
-                ProductionOrderOperation productionOrderOperation = (ProductionOrderOperation)node.GetEntity();
+                ProductionOrderOperation productionOrderOperation = (ProductionOrderOperation)entity.GetEntity();
                 ProductionOrder productionOrder = productionOrderOperation.GetProductionOrder(_dbTransactionData);
                 ProductionOrderOperationDirectedGraph productionOrderOperationGraph =
-                    (ProductionOrderOperationDirectedGraph) _productionOrderOperationGraphsAsDictionary[
+                    (ProductionOrderOperationDirectedGraph) _productionOrderToOperationGraph[
                         productionOrder];
                 return productionOrderOperationGraph.GetPredecessorNodes(productionOrderOperation);
             }
             else
             {
-                throw  new MrpRunException("Another graph should not possible.");
+                throw  new MrpRunException("Another type should not possible.");
+            }
+        }
+
+        public IDirectedGraph<INode> GetInnerGraph(ProductionOrder productionOrder)
+        {
+            return _productionOrderToOperationGraph[productionOrder];
+        }
+
+        public void Remove(INode node)
+        {
+            INode entity = node.GetEntity();
+            if (entity.GetEntity().GetType() == typeof(ProductionOrder))
+            {
+                Remove((ProductionOrder)node.GetEntity());
+            }
+            else if (entity.GetEntity().GetType() == typeof(ProductionOrderOperation))
+            {
+                Remove((ProductionOrderOperation)entity.GetEntity());
+            }
+            else
+            {
+                throw new MrpRunException("Unknown type.");
             }
         }
     }

@@ -173,7 +173,7 @@ namespace Zpp.Mrp.MachineManagement
                         // prepare for next round
                         productionOrderOperationGraph.RemoveNode(o1);
                         productionOrderOperationGraph
-                            .RemoveProductionOrdersWithNoProductionOrderOperationsFromProductionOrderGraph(
+                            .RemoveProductionOrdersWithNoProductionOrderOperations(
                                 productionOrderGraph, productionOrder);
                     }
 

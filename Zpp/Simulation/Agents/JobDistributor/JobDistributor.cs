@@ -75,7 +75,7 @@ namespace Zpp.Simulation.Agents.JobDistributor
                 Debug.Assert(machine.resourceId != null, "resource.machineId is null");
                 if (ScheduleOperation(productionOrderOperation: first, machineId: machine.resourceId.Value))
                 {
-                    ProductionOrderToOperationGraph.RemoveOperation(first);
+                    ProductionOrderToOperationGraph.Remove(first);
                 }
             }
         }

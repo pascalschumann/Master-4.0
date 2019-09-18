@@ -74,7 +74,7 @@ namespace Zpp.OrderGraph
             _adjacencyList = directedGraph.GetAdjacencyList();
         }
 
-        public bool RemoveProductionOrdersWithNoProductionOrderOperationsFromProductionOrderGraph(
+        public bool RemoveProductionOrdersWithNoProductionOrderOperations(
             IDirectedGraph<INode> productionOrderGraph, ProductionOrder productionOrder)
         {
             var productionOrderOperationLeafsOfProductionOrder =

@@ -55,8 +55,8 @@ namespace Zpp.DbCache
         private readonly ProductionOrders _productionOrders;
 
         // others
-        private List<T_PurchaseOrder> _purchaseOrders;
-        private List<T_ProductionOrderOperation> _productionOrderOperations;
+        private readonly List<T_PurchaseOrder> _purchaseOrders;
+        private readonly ProductionOrderOperations _productionOrderOperations;
 
         private readonly IAggregator _aggregator;
 
@@ -100,7 +100,7 @@ namespace Zpp.DbCache
             // others
             _purchaseOrders = _productionDomainContext.PurchaseOrders.ToList();
             _productionOrderOperations =
-                _productionDomainContext.ProductionOrderOperations.ToList();
+                new ProductionOrderOperations(_productionDomainContext.ProductionOrderOperations.ToList());
 
             // demandToProvider
 
@@ -334,7 +334,7 @@ namespace Zpp.DbCache
                 }
             }
 
-            _productionOrderOperations = tProductionOrderOperations.GetAll();
+            _productionOrderOperations.AddAll(tProductionOrderOperations);
         }
 
         public void ProvidersAddAll(IProviders providers)
@@ -388,7 +388,7 @@ namespace Zpp.DbCache
 
         public T_ProductionOrderOperation ProductionOrderOperationGetById(Id id)
         {
-            return _productionOrderOperations.SingleOrDefault(x => x.Id.Equals(id.GetValue()));
+            return _productionOrderOperations.GetAll().SingleOrDefault(x => x.Id.Equals(id.GetValue()));
         }
 
         public List<ProductionOrderOperation> ProductionOrderOperationGetAll()

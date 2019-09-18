@@ -6,6 +6,7 @@ using Zpp.Common.DemandDomain;
 using Zpp.Common.DemandDomain.Wrappers;
 using Zpp.Common.ProviderDomain;
 using Zpp.Common.ProviderDomain.Wrappers;
+using Zpp.Common.ProviderDomain.WrappersForCollections;
 using Zpp.DbCache;
 using Zpp.Mrp;
 using Zpp.Mrp.MachineManagement;
@@ -144,14 +145,15 @@ namespace Zpp.Test.Integration_Tests
             {
                 Demand parentDemand =
                     dbTransactionData.DemandsGetById(demandToProvider.GetDemandId());
-                if (parentDemand.GetType()== typeof(CustomerOrderPart))
+                if (parentDemand.GetType() == typeof(CustomerOrderPart))
                 {
                     continue;
                 }
+
                 Provider childProvider =
                     dbTransactionData.ProvidersGetById(demandToProvider.GetProviderId());
-                
-                
+
+
                 DueTime parentDueTime = parentDemand.GetDueTime(dbTransactionData);
                 DueTime childDueTime = childProvider.GetDueTime(dbTransactionData);
 
@@ -179,6 +181,7 @@ namespace Zpp.Test.Integration_Tests
         [InlineData(TestConfigurationFileNames.DESK_COP_5_CONCURRENT_LOTSIZE_2)]
         [InlineData(TestConfigurationFileNames.DESK_COP_5_SEQUENTIALLY_LOTSIZE_2)]
         [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
+        [InlineData(TestConfigurationFileNames.TRUCK_COP_1_LOTSIZE_1)]
         public void TestBackwardSchedulingTransitionTimeIsCorrect(string testConfigurationFileName)
         {
             InitThisTest(testConfigurationFileName);
@@ -190,33 +193,68 @@ namespace Zpp.Test.Integration_Tests
                 new ProductionOrderToOperationGraph(dbMasterDataCache, dbTransactionData);
 
             IStackSet<INode> leafs = productionOrderToOperationGraph.GetLeafs();
+            IStackSet<ProductionOrderOperation> traversedOperations = new StackSet<ProductionOrderOperation>();
             foreach (var leaf in leafs)
             {
                 INodes predecessorNodes = productionOrderToOperationGraph.GetPredecessors(leaf);
+                ProductionOrderOperation lastOperation = (ProductionOrderOperation) leaf;
                 ValidatePredecessorOperationsTransitionTimeIsCorrect(predecessorNodes,
-                    (ProductionOrderOperation) leaf.GetEntity(), dbTransactionData,
-                    productionOrderToOperationGraph);
+                    lastOperation, dbTransactionData, productionOrderToOperationGraph,
+                    traversedOperations);
             }
+
+            int expectedTraversedOperationCount =
+                new Stack<ProductionOrderOperation>(dbTransactionData.ProductionOrderOperationGetAll()).Count();
+            int actualTraversedOperationCount = traversedOperations.Count();
+            
+            Assert.True(actualTraversedOperationCount.Equals(expectedTraversedOperationCount),
+                $"expectedTraversedOperationCount {expectedTraversedOperationCount} " +
+                $"doesn't equal actualTraversedOperationCount {actualTraversedOperationCount}'");
         }
 
         private void ValidatePredecessorOperationsTransitionTimeIsCorrect(INodes predecessorNodes,
             ProductionOrderOperation lastOperation, IDbTransactionData dbTransactionData,
-            ProductionOrderToOperationGraph productionOrderToOperationGraph)
+            ProductionOrderToOperationGraph productionOrderToOperationGraph,
+            IStackSet<ProductionOrderOperation> traversed)
         {
-            foreach (var predecessor in predecessorNodes)
+            traversed.Push(lastOperation);
+            if (predecessorNodes == null)
             {
-                ProductionOrderOperation predecessorOperation =
-                    (ProductionOrderOperation) predecessor;
-                // transition time MUST be before the start of Operation
-                int expectedStartBackward =
-                    lastOperation.GetValue().EndBackward.GetValueOrDefault() +
-                    OperationBackwardsSchedule.GetTransitionTimeFactor() *
-                    lastOperation.GetValue().Duration;
-                int actualStartBackward =
-                    predecessorOperation.GetValue().StartBackward.GetValueOrDefault();
-                Assert.True(expectedStartBackward.Equals(actualStartBackward),
-                    $"The transition time between the operations is not correct: " +
-                    $"expectedStartBackward: {expectedStartBackward}, actualStartBackward {actualStartBackward}");
+                return;
+            }
+
+            foreach (var currentPredecessor in predecessorNodes)
+            {
+                if (currentPredecessor.GetType() != typeof(ProductionOrderOperation))
+                {
+                    predecessorNodes =
+                        productionOrderToOperationGraph.GetPredecessors(currentPredecessor);
+                    ValidatePredecessorOperationsTransitionTimeIsCorrect(predecessorNodes,
+                        lastOperation, dbTransactionData, productionOrderToOperationGraph,
+                        traversed);
+                }
+                else
+                {
+                    ProductionOrderOperation currentOperation =
+                        (ProductionOrderOperation) currentPredecessor;
+
+                    // transition time MUST be before the start of Operation
+                    int expectedStartBackward =
+                        lastOperation.GetValue().EndBackward.GetValueOrDefault() +
+                        OperationBackwardsSchedule.GetTransitionTimeFactor() *
+                        lastOperation.GetValue().Duration;
+                    int actualStartBackward = currentOperation.GetValue().StartBackward
+                        .GetValueOrDefault();
+                    Assert.True(expectedStartBackward.Equals(actualStartBackward),
+                        $"The transition time between the operations is not correct: " +
+                        $"expectedStartBackward: {expectedStartBackward}, actualStartBackward {actualStartBackward}");
+
+                    predecessorNodes =
+                        productionOrderToOperationGraph.GetPredecessors(currentPredecessor);
+                    ValidatePredecessorOperationsTransitionTimeIsCorrect(predecessorNodes,
+                        currentOperation, dbTransactionData, productionOrderToOperationGraph,
+                        traversed);
+                }
             }
         }
     }

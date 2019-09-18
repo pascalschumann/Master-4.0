@@ -11,18 +11,19 @@ using Zpp.Utils;
 
 namespace Zpp.OrderGraph
 {
-    public class ProductionOrderToOperationGraph: IProductionOrderToOperationGraph<INode>
+    public class ProductionOrderToOperationGraph : IProductionOrderToOperationGraph<INode>
     {
         private readonly IDbMasterDataCache _dbMasterDataCache;
         private readonly IAggregator _aggregator;
         private readonly IDbTransactionData _dbTransactionData;
         private readonly IDirectedGraph<INode> _productionOrderGraph;
-        private readonly ProductionOrderOperationGraphsAsDictionary _productionOrderToOperationGraph;
-        
+
+        private readonly ProductionOrderOperationGraphsAsDictionary
+            _productionOrderToOperationGraph;
 
 
-        public ProductionOrderToOperationGraph(IDbMasterDataCache dbMasterDataCache, 
-                              IDbTransactionData dbTransactionData)
+        public ProductionOrderToOperationGraph(IDbMasterDataCache dbMasterDataCache,
+            IDbTransactionData dbTransactionData)
         {
             _dbTransactionData = dbTransactionData;
             _dbMasterDataCache = dbMasterDataCache;
@@ -38,42 +39,41 @@ namespace Zpp.OrderGraph
             {
                 IDirectedGraph<INode> productionOrderOperationGraph =
                     new ProductionOrderOperationDirectedGraph(_dbTransactionData,
-                        (ProductionOrder)productionOrder);
-                _productionOrderToOperationGraph.Add((ProductionOrder)productionOrder,
+                        (ProductionOrder) productionOrder);
+                _productionOrderToOperationGraph.Add((ProductionOrder) productionOrder,
                     productionOrderOperationGraph);
             }
         }
 
         public void Remove(ProductionOrderOperation operation)
         {
-
             var productionOrder = operation.GetProductionOrder(_dbTransactionData);
             var productionOrderOperationGraph =
-                (ProductionOrderOperationDirectedGraph)_productionOrderToOperationGraph[productionOrder];
-            
+                (ProductionOrderOperationDirectedGraph) _productionOrderToOperationGraph[
+                    productionOrder];
+
             productionOrderOperationGraph.RemoveNode(operation);
-            productionOrderOperationGraph
-                .RemoveProductionOrdersWithNoProductionOrderOperations(
-                    _productionOrderGraph, productionOrder);
+            productionOrderOperationGraph.RemoveProductionOrdersWithNoProductionOrderOperations(
+                _productionOrderGraph, productionOrder);
         }
 
         public void Remove(ProductionOrder productionOrder)
         {
             var productionOrderOperationGraph =
-                (ProductionOrderOperationDirectedGraph)_productionOrderToOperationGraph[productionOrder];
-            
-            productionOrderOperationGraph
-                .RemoveProductionOrdersWithNoProductionOrderOperations(
-                    _productionOrderGraph, productionOrder);
+                (ProductionOrderOperationDirectedGraph) _productionOrderToOperationGraph[
+                    productionOrder];
+
+            productionOrderOperationGraph.RemoveProductionOrdersWithNoProductionOrderOperations(
+                _productionOrderGraph, productionOrder);
         }
 
         /// <summary>
         /// returns the mature cherry's
         /// </summary>
         /// <returns></returns>
-        public StackSet<INode> GetLeafs()
+        public StackSet<INode> GetAllInnerLeafs()
         {
-            INodes leafNodes = _productionOrderGraph.GetLeafNodes(); 
+            INodes leafNodes = _productionOrderGraph.GetLeafNodes();
             if (leafNodes == null)
             {
                 return null;
@@ -96,16 +96,18 @@ namespace Zpp.OrderGraph
         // TODO: this method should not be in this class
         public void WithdrawMaterialsFromStock(ProductionOrderOperation operation, long time)
         {
-            var productionOrderBoms = _dbTransactionData.GetAggregator().GetAllProductionOrderBomsBy(operation);
+            var productionOrderBoms = _dbTransactionData.GetAggregator()
+                .GetAllProductionOrderBomsBy(operation);
             foreach (var productionOrderBom in productionOrderBoms)
             {
-                var providers = _dbTransactionData.GetAggregator().GetAllChildProvidersOf(productionOrderBom);
+                var providers = _dbTransactionData.GetAggregator()
+                    .GetAllChildProvidersOf(productionOrderBom);
                 foreach (var provider in providers)
                 {
-                    var stockExchangeProvider = (StockExchangeProvider)provider;
-                    var stockExchange = (T_StockExchange)stockExchangeProvider.ToIProvider();
+                    var stockExchangeProvider = (StockExchangeProvider) provider;
+                    var stockExchange = (T_StockExchange) stockExchangeProvider.ToIProvider();
                     stockExchange.State = State.Finished;
-                    stockExchange.Time = (int)time;
+                    stockExchange.Time = (int) time;
                 }
             }
         }
@@ -117,7 +119,9 @@ namespace Zpp.OrderGraph
                 .GetAnyProductionOrderBomByProductionOrderOperation(operation);
 
 
-            var demands = _aggregator.GetAllParentDemandsOf(productionOrderBom.GetProductionOrder(_dbTransactionData));
+            var demands =
+                _aggregator.GetAllParentDemandsOf(
+                    productionOrderBom.GetProductionOrder(_dbTransactionData));
             foreach (var demand in demands)
             {
                 var stockExchangeProvider = (StockExchangeDemand) demand;
@@ -126,20 +130,21 @@ namespace Zpp.OrderGraph
                 stockExchange.Time = (int) time;
             }
         }
-        
+
         public INodes GetPredecessors(INode node)
         {
             INode entity = node.GetEntity();
-            
+
             if (entity.GetType() == typeof(ProductionOrder))
             {
-                
                 return _productionOrderGraph.GetPredecessorNodes(entity);
             }
             else if (entity.GetType() == typeof(ProductionOrderOperation))
             {
-                ProductionOrderOperation productionOrderOperation = (ProductionOrderOperation)entity.GetEntity();
-                ProductionOrder productionOrder = productionOrderOperation.GetProductionOrder(_dbTransactionData);
+                ProductionOrderOperation productionOrderOperation =
+                    (ProductionOrderOperation) entity.GetEntity();
+                ProductionOrder productionOrder =
+                    productionOrderOperation.GetProductionOrder(_dbTransactionData);
                 ProductionOrderOperationDirectedGraph productionOrderOperationGraph =
                     (ProductionOrderOperationDirectedGraph) _productionOrderToOperationGraph[
                         productionOrder];
@@ -147,8 +152,46 @@ namespace Zpp.OrderGraph
             }
             else
             {
-                throw  new MrpRunException("Another type should not possible.");
+                throw new MrpRunException("Another type should not possible.");
             }
+        }
+
+        public INodes GetPredecessorOperations(INode node)
+        {
+            INode entity = node.GetEntity();
+
+            if (entity.GetType() == typeof(ProductionOrder))
+            {
+                INodes predecessorOperations = new Nodes();
+                INodes predecessorProductionOrders =
+                    _productionOrderGraph.GetPredecessorNodes(node);
+                foreach (var predecessorProductionOrder in predecessorProductionOrders)
+                {
+                    predecessorOperations.AddAll(
+                        _productionOrderToOperationGraph[
+                                (ProductionOrder) predecessorProductionOrder.GetEntity()]
+                            .GetLeafNodes());
+                }
+
+                return predecessorOperations;
+            }
+            else if (entity.GetType() == typeof(ProductionOrderOperation))
+            {
+                ProductionOrderOperation productionOrderOperation =
+                    (ProductionOrderOperation) entity.GetEntity();
+                ProductionOrder productionOrder =
+                    productionOrderOperation.GetProductionOrder(_dbTransactionData);
+                ProductionOrderOperationDirectedGraph productionOrderOperationGraph =
+                    (ProductionOrderOperationDirectedGraph) _productionOrderToOperationGraph[
+                        productionOrder];
+                return productionOrderOperationGraph.GetPredecessorNodes(productionOrderOperation);
+                
+            }
+            else
+            {
+                throw new MrpRunException("Another type should not possible.");
+            }
+            
         }
 
         public IDirectedGraph<INode> GetInnerGraph(ProductionOrder productionOrder)
@@ -161,11 +204,11 @@ namespace Zpp.OrderGraph
             INode entity = node.GetEntity();
             if (entity.GetEntity().GetType() == typeof(ProductionOrder))
             {
-                Remove((ProductionOrder)node.GetEntity());
+                Remove((ProductionOrder) node.GetEntity());
             }
             else if (entity.GetEntity().GetType() == typeof(ProductionOrderOperation))
             {
-                Remove((ProductionOrderOperation)entity.GetEntity());
+                Remove((ProductionOrderOperation) entity.GetEntity());
             }
             else
             {
@@ -183,7 +226,7 @@ namespace Zpp.OrderGraph
                     INode entity = uniqueNode.GetEntity();
                     if (entity.GetType() == typeof(ProductionOrderOperation))
                     {
-                        productionOrderOperations.Add((ProductionOrderOperation)entity);    
+                        productionOrderOperations.Add((ProductionOrderOperation) entity);
                     }
                 }
             }
@@ -201,7 +244,7 @@ namespace Zpp.OrderGraph
                     INode entity = uniqueNode.GetEntity();
                     if (entity.GetType() == typeof(ProductionOrder))
                     {
-                        productionOrders.Add(((ProductionOrder)entity));    
+                        productionOrders.Add(((ProductionOrder) entity));
                     }
                 }
             }

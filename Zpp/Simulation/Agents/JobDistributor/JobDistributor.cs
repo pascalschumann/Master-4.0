@@ -52,7 +52,7 @@ namespace Zpp.Simulation.Agents.JobDistributor
 
         private void PushWork()
         {
-            var operationLeafs = ProductionOrderToOperationGraph.GetLeafs();
+            var operationLeafs = ProductionOrderToOperationGraph.GetAllInnerLeafs();
             if (operationLeafs == null)
             {
                 Debug.WriteLine("No more leafs in OperationManager");

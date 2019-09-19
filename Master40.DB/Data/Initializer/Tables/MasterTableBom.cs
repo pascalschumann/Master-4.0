@@ -261,35 +261,35 @@ namespace Master40.DB.Data.Initializer.Tables
             CABIN_TO_CHASSIS_DUMP_TRUCK = new M_ArticleBom
             {
                 ArticleChildId = articles.CABIN.Id, Name = "Cabin", Quantity = 1,
-                ArticleParentId = articles.SKELETON.Id,
+                ArticleParentId = articles.CHASSIS_TYPE_DUMP.Id,
                 OperationId = operations.DUMP_TRUCK_ASSEMBLE_LAMPS.Id
             };
 
             PEGS_TO_CHASSIS_DUMP_TRUCK = new M_ArticleBom
             {
                 ArticleChildId = articles.PEGS.Id, Name = "Pegs", Quantity = 4,
-                ArticleParentId = articles.SKELETON.Id,
+                ArticleParentId = articles.CHASSIS_TYPE_DUMP.Id,
                 OperationId = operations.DUMP_TRUCK_ASSEMBLE_LAMPS.Id
             };
 
             BUTTON_TO_CHASSIS_DUMP_TRUCK = new M_ArticleBom
             {
                 ArticleChildId = articles.BUTTON.Id, Name = "Knopf", Quantity = 2,
-                ArticleParentId = articles.SKELETON.Id,
+                ArticleParentId = articles.CHASSIS_TYPE_DUMP.Id,
                 OperationId = operations.DUMP_TRUCK_ASSEMBLE_LAMPS.Id
             };
 
             ENGINE_BLOCK_TO_CHASSIS_DUMP_TRUCK = new M_ArticleBom
             {
                 ArticleChildId = articles.ENGINE_BLOCK.Id, Name = "Engine-Block", Quantity = 1,
-                ArticleParentId = articles.SKELETON.Id,
+                ArticleParentId = articles.CHASSIS_TYPE_DUMP.Id,
                 OperationId = operations.DUMP_TRUCK_MOUNT_ENGINE.Id
             };
 
             GLUE_TO_CHASSIS_DUMP_TRUCK = new M_ArticleBom
             {
                 ArticleChildId = articles.GLUE.Id, Name = "Glue", Quantity = 7,
-                ArticleParentId = articles.SKELETON.Id,
+                ArticleParentId = articles.CHASSIS_TYPE_DUMP.Id,
                 OperationId = operations.DUMP_TRUCK_MOUNT_ENGINE.Id
             };
             

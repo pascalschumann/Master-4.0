@@ -59,8 +59,9 @@ namespace Zpp.Simulation.Agents.JobDistributor
 
         private void PushWork()
         {
-            var operationLeafs = ProductionOrderToOperationGraph.GetLeafNodes().ToStackSet();
-            if (operationLeafs == null)
+            var operationLeafs = new StackSet<INode>();
+            ProductionOrderToOperationGraph.GetLeafOperations(operationLeafs);
+            if (operationLeafs.Any() == false)
             {
                 Debug.WriteLine("No more leafs in OperationManager");
                 return;

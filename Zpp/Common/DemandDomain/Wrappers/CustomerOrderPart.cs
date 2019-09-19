@@ -33,7 +33,7 @@ namespace Zpp.Common.DemandDomain.Wrappers
             }
             Id customerOrderId = new Id(customerOrderPart.CustomerOrderId);
             customerOrderPart.CustomerOrder =
-                _dbMasterDataCache.T_CustomerOrderGetById(customerOrderId);
+                dbTransactionData.T_CustomerOrderGetById(customerOrderId);
             DueTime dueTime = new DueTime(customerOrderPart.CustomerOrder.DueTime);
             return dueTime;
         }

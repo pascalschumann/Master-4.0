@@ -35,7 +35,7 @@ namespace Zpp.Mrp
             // remove all DemandToProvider entries
             dbTransactionData.DemandToProvidersRemoveAll();
 
-            ProcessDbDemands(dbTransactionData, dbMasterDataCache.T_CustomerOrderPartGetAll(),
+            ProcessDbDemands(dbTransactionData, dbTransactionData.T_CustomerOrderPartGetAll(),
                 dbMasterDataCache, 0, withForwardScheduling);
         }
 

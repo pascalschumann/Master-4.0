@@ -12,8 +12,5 @@ namespace Zpp.Test.Configuration
         
         // classname as full AssemblyQualifiedName see MSDoc AssemblyQualifiedName
         public string DbSetInitializer { get; set; }
-        
-        // classname as full AssemblyQualifiedName see MSDoc AssemblyQualifiedName
-        public string TestScenario { get; set; }
     }
 }

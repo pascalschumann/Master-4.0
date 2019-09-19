@@ -94,8 +94,6 @@ namespace Master40.DB.Data.Context
                 Name = Articles.Single(predicate: x => x.Id == articleId).Name,
                 CustomerOrderParts = olist
             };
-
-            this.CustomerOrders.Add(entity: order);
             return order;
         }
 

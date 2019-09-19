@@ -66,14 +66,5 @@ namespace Zpp.DbCache
         M_Stock M_StockGetByArticleId(Id articleId);
 
         M_Unit M_UnitGetById(Id id);
-
-        T_CustomerOrder T_CustomerOrderGetById(Id id);
-
-        T_CustomerOrderPart T_CustomerOrderPartGetById(Id id);
-
-        List<T_CustomerOrder> T_CustomerOrderGetAll();
-
-        Demands T_CustomerOrderPartGetAll();
-
     }
 }

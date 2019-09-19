@@ -1,6 +1,8 @@
 ﻿using Akka.Actor;
 using AkkaSim.Definitions;
 using System.Diagnostics;
+using System.Linq;
+using Master40.DB.Enums;
 using NLog.Targets;
 using Zpp.DbCache;
 using Zpp.OrderGraph;
@@ -10,6 +12,8 @@ using Zpp.Simulation.Agents.JobDistributor.Types;
 using Zpp.Simulation.Monitors;
 using Zpp.Simulation.Types;
 using Zpp.WrappersForPrimitives;
+using Master40.SimulationCore.DistributionProvider;
+using Zpp.Common.DemandDomain.Wrappers;
 
 namespace Zpp.Simulation
 {
@@ -29,8 +33,13 @@ namespace Zpp.Simulation
             _dbMasterDataCache = dbMasterDataCache;
         }
 
+        public void RunSimulationFor(OrderGenerator orderGenerator, SimulationInterval simulationInterval)
+        {
+            ProcessCurrentInterval(simulationInterval, orderGenerator);
+            _dbTransactionData.PersistDbCache();
+        }
 
-        public bool ProcessCurrentInterval(SimulationInterval simulationInterval)
+        public bool ProcessCurrentInterval(SimulationInterval simulationInterval, OrderGenerator orderGenerator)
         {
             Debug.WriteLine("Start simulation system. . . ");
             _simulationInterval = simulationInterval;
@@ -67,11 +76,30 @@ namespace Zpp.Simulation
                 Continuation(_simulationConfig.Inbox, _akkaSimulation);
             }
 
-
+            Debug.WriteLine("Create new Orders");
+            CreateOrders(orderGenerator, simulationInterval);
 
             Debug.WriteLine("System shutdown. . . ");
             Debug.WriteLine("System Runtime " + _akkaSimulation.ActorSystem.Uptime);
             return true;
+        }
+
+        private void CreateOrders(OrderGenerator orderGenerator, SimulationInterval interval)
+        {
+            var creationTime = interval.StartAt;
+            var endOrderCreation = interval.EndAt;
+
+            while (creationTime < endOrderCreation)
+            {
+                var order = orderGenerator.GetNewRandomOrder(time: creationTime);
+                foreach (var orderPart in order.CustomerOrderParts)
+                {
+                    _dbTransactionData.CustomerOrderPartAdd(orderPart);
+                }
+                _dbTransactionData.T_CustomerOrderGetAll().Add(order);
+                // TODO : Handle this another way
+                creationTime += order.CreationTime;
+            }
         }
 
         private void ProvideJobDistributor(IActorRef jobDistributor)

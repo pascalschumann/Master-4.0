@@ -77,5 +77,13 @@ namespace Zpp.DbCache
         ProductionOrderOperations ProductionOrderOperationGetAll();
 
         IAggregator GetAggregator();
+
+        T_CustomerOrder T_CustomerOrderGetById(Id id);
+        
+        List<T_CustomerOrder> T_CustomerOrderGetAll();
+
+        Demands T_CustomerOrderPartGetAll();
+
+        void CustomerOrderPartAdd(T_CustomerOrderPart customerOrderPart);
     }
 }

@@ -132,32 +132,6 @@ namespace Zpp.DbCache
             return _units.GetById(id);
         }
 
-        public T_CustomerOrder T_CustomerOrderGetById(Id id)
-        {
-            return _customerOrders.GetById(id);
-        }
-
-        public T_CustomerOrderPart T_CustomerOrderPartGetById(Id id)
-        {
-            return _customerOrderParts.GetById(id);
-        }
-
-        public List<T_CustomerOrder> T_CustomerOrderGetAll()
-        {
-            return _customerOrders.GetAll();
-        }
-
-        public Demands T_CustomerOrderPartGetAll()
-        {
-            List<Demand> demands = new List<Demand>();
-            foreach (var demand in _customerOrderParts)
-            {
-                demands.Add(new CustomerOrderPart(demand, this));
-            }
-
-            return new Demands(demands);
-        }
-
         public BusinessPartners M_ArticleToBusinessPartnerGetAllBusinessPartnersByArticleId(Id articleId)
         {
             List<M_BusinessPartner> businessPartners = new List<M_BusinessPartner>();

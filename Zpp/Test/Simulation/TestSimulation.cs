@@ -1,8 +1,13 @@
-﻿using Xunit;
+﻿using System.Linq;
+using Master40.DB.Enums;
+using Master40.SimulationCore.DistributionProvider;
+using Master40.SimulationCore.Environment.Options;
+using Xunit;
 using Zpp.DbCache;
 using Zpp.Mrp;
 using Zpp.Simulation;
 using Zpp.Simulation.Types;
+using Zpp.Test.Configuration.Scenarios;
 using Zpp.WrappersForPrimitives;
 
 namespace Zpp.Test.Simulation
@@ -11,11 +16,17 @@ namespace Zpp.Test.Simulation
     {
         private readonly IDbMasterDataCache _dbMasterDataCache;
         private readonly IDbTransactionData _dbTransactionData;
+        private readonly OrderGenerator _orderGenerator;
         public TestSimulation() : base(initDefaultTestConfig: true)
         {
             MrpRun.Start(ProductionDomainContext);
             _dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
             _dbTransactionData = new DbTransactionData(ProductionDomainContext, _dbMasterDataCache);
+            _orderGenerator = TestScenario.GetOrderGenerator(ProductionDomainContext
+                                                            , new MinDeliveryTime(960)
+                                                            , new MaxDeliveryTime(1440)
+                                                            , new OrderArrivalRate(0.025));
+
 
         }
 
@@ -23,9 +34,15 @@ namespace Zpp.Test.Simulation
         public void TestSimulationWithResults()
         {
             var Simulator = new Simulator(_dbMasterDataCache, _dbTransactionData);
-            var simulationInterval = new SimulationInterval(0, 300);
-            Simulator.ProcessCurrentInterval(simulationInterval);
+            var simulationInterval = new SimulationInterval(0, 1440);
+            Simulator.ProcessCurrentInterval(simulationInterval, _orderGenerator);
             _dbTransactionData.PersistDbCache();
+            
+
+            // Test for success
+            var processedItems = _dbTransactionData.ProductionOrderOperationGetAll()
+                .Where(x => x.GetValue().End <= 1800 && x.GetValue().ProducingState != ProducingState.Finished);
+            Assert.True(!processedItems.Any());
         }
 
         [Fact(Skip = "Only for single Execution.")]

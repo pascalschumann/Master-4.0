@@ -12,7 +12,7 @@ namespace Zpp.Simulation.Agents.Resource
     partial class Resource : SimulationElement
     {
         // Temp for test
-        Random r = new Random(1337);
+        Random random = new Random(1337);
 
         public Resource(IActorRef simulationContext, long time) : base(simulationContext, time)
         {
@@ -36,7 +36,7 @@ namespace Zpp.Simulation.Agents.Resource
         private void DoWork(ProductionOrderOperation operation)
         {
             // TODO Use distribution from AkkaSIm
-            var dur = operation.GetDuration().GetValue() + r.Next(-1, 2);
+            var dur = operation.GetDuration().GetValue(); // + random.Next(-1, 2);
             var rawOperation = operation.GetValue();
             rawOperation.Start = (int)TimePeriod;
             rawOperation.End = rawOperation.Start + dur;

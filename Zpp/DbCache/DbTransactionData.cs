@@ -55,8 +55,12 @@ namespace Zpp.DbCache
         private readonly ProductionOrders _productionOrders;
 
         // others
-        private readonly List<T_PurchaseOrder> _purchaseOrders;
+        private List<T_PurchaseOrder> _purchaseOrders;
         private readonly ProductionOrderOperations _productionOrderOperations;
+
+        private readonly CustomerOrderParts _customerOrderParts;
+
+        private readonly CustomerOrders _customerOrders;
 
         private readonly IAggregator _aggregator;
 
@@ -96,6 +100,12 @@ namespace Zpp.DbCache
             _purchaseOrderParts =
                 new PurchaseOrderParts(_productionDomainContext.PurchaseOrderParts.ToList(),
                     _dbMasterDataCache);
+
+            _customerOrderParts =
+                new CustomerOrderParts(_productionDomainContext.CustomerOrderParts.ToList(),
+                    _dbMasterDataCache);
+            _customerOrders =
+                new CustomerOrders(_productionDomainContext.CustomerOrders.ToList());
 
             // others
             _purchaseOrders = _productionDomainContext.PurchaseOrders.ToList();
@@ -157,13 +167,20 @@ namespace Zpp.DbCache
                 _productionOrderOperations.GetAllAsT_ProductionOrderOperation();
             List<T_PurchaseOrderPart> tPurchaseOrderParts =
                 _purchaseOrderParts.GetAllAs<T_PurchaseOrderPart>();
+            List<T_CustomerOrderPart> tCustomerOrderParts = 
+                _customerOrderParts.GetAllAs<T_CustomerOrderPart>();
+            List<T_CustomerOrder> tCustomerOrders = _customerOrders.GetAllAsTCustomerOrders();
 
+            
             // Insert all T_* entities
             InsertOrUpdateRange(tProductionOrders, _productionDomainContext.ProductionOrders);
             InsertOrUpdateRange(tProductionOrderOperations,
                 _productionDomainContext.ProductionOrderOperations);
             InsertOrUpdateRange(tProductionOrderBoms, _productionDomainContext.ProductionOrderBoms);
             InsertOrUpdateRange(tStockExchangeDemands, _productionDomainContext.StockExchanges);
+            InsertOrUpdateRange(tCustomerOrders, _productionDomainContext.CustomerOrders);
+            InsertOrUpdateRange(tCustomerOrderParts, _productionDomainContext.CustomerOrderParts);
+
             // providers
             InsertOrUpdateRange(tStockExchangesProviders, _productionDomainContext.StockExchanges);
             InsertOrUpdateRange(tPurchaseOrderParts, _productionDomainContext.PurchaseOrderParts);
@@ -192,11 +209,6 @@ namespace Zpp.DbCache
         private void InsertOrUpdateRange<TEntity>(IEnumerable<TEntity> entities,
             DbSet<TEntity> dbSet) where TEntity : BaseEntity
         {
-            if (entities.Any() == false)
-            {
-                throw new MrpRunException("Collection to persist is empty.");
-            }
-
             // dbSet.AddRange(entities);
             foreach (var entity in entities)
             {
@@ -283,9 +295,9 @@ namespace Zpp.DbCache
                 demands.AddAll(_stockExchangeDemands);
             }
 
-            if (_dbMasterDataCache.T_CustomerOrderGetAll().Any())
+            if (_customerOrderParts.Any())
             {
-                demands.AddAll(_dbMasterDataCache.T_CustomerOrderPartGetAll());
+                demands.AddAll(_customerOrderParts);
             }
 
             return demands;
@@ -424,5 +436,31 @@ namespace Zpp.DbCache
         {
             _providerManager = providerManager;
         }
+        public T_CustomerOrder T_CustomerOrderGetById(Id id)
+        {
+            return _customerOrders.Single(x => x.Id.Equals(id.GetValue()));
+        }
+
+        public List<T_CustomerOrder> T_CustomerOrderGetAll()
+        {
+            return _customerOrders.GetAll();
+        }
+
+        public Demands T_CustomerOrderPartGetAll()
+        {
+            List<Demand> demands = new List<Demand>();
+            foreach (var demand in _customerOrderParts)
+            {
+                demands.Add(new CustomerOrderPart(demand.ToIDemand(), _dbMasterDataCache));
+            }
+
+            return new Demands(demands);
+        }
+
+        public void CustomerOrderPartAdd(T_CustomerOrderPart customerOrderPart)
+        {
+            _customerOrderParts.Add(new CustomerOrderPart(customerOrderPart, _dbMasterDataCache));
+        }
+
     }
 }

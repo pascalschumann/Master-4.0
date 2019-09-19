@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Master40.DB.DataModel;
-using Zpp.Common.ProviderDomain.Wrappers;
+using Zpp.WrapperForEntities;
 
 namespace Zpp.WrappersForCollections
 {

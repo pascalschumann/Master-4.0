@@ -105,11 +105,6 @@ namespace Zpp.Test
         {
             InitDb(testConfiguration);
             _dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
-            Type testScenarioType = Type.GetType(TestConfiguration.TestScenario);
-            TestScenario testScenario =
-                (TestScenario) Activator.CreateInstance(testScenarioType, _dbMasterDataCache);
-            testScenario.CreateCustomerOrders(
-                new Quantity(TestConfiguration.CustomerOrderPartQuantity), ProductionDomainContext);
         }
 
         private static TestConfiguration ReadTestConfiguration(string testConfigurationFileNames)

@@ -1,0 +1,4 @@
+﻿"17129;Tisch zusammenbauen" -> "17149;P(PrO);4.00;\nTischbein;468";
+"17149;P(PrO);4.00;\nTischbein;468" -> "17152;Flizgleiter anstecken";
+"17152;Flizgleiter anstecken" -> "17155;Anschraubplatte anschweißen";
+"17126;P(PrO);1.00;\nTisch;512" -> "17129;Tisch zusammenbauen";

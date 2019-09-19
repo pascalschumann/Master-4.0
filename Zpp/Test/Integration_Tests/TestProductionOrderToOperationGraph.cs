@@ -1,4 +1,6 @@
+using System.IO;
 using System.Linq;
+using System.Text;
 using Xunit;
 using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.Common.ProviderDomain.WrappersForCollections;
@@ -7,6 +9,7 @@ using Zpp.Mrp;
 using Zpp.Mrp.MachineManagement;
 using Zpp.OrderGraph;
 using Zpp.Test.Configuration;
+using Zpp.Utils;
 
 namespace Zpp.Test.Integration_Tests
 {
@@ -15,7 +18,7 @@ namespace Zpp.Test.Integration_Tests
         public TestProductionOrderToOperationGraph() : base(initDefaultTestConfig: false)
         {
         }
-        
+
         private void InitThisTest(string testConfiguration)
         {
             InitTestScenario(testConfiguration);
@@ -51,6 +54,52 @@ namespace Zpp.Test.Integration_Tests
             {
                 Assert.True(productionOrders.Contains(productionOrder),
                     $"{productionOrder} is missing.");
+            }
+        }
+
+        [Theory]
+        [InlineData(TestConfigurationFileNames.DESK_COP_1_LOT_ORDER_QUANTITY)]
+        [InlineData(TestConfigurationFileNames.DESK_COP_5_CONCURRENT_LOTSIZE_2)]
+        [InlineData(TestConfigurationFileNames.DESK_COP_5_SEQUENTIALLY_LOTSIZE_2)]
+        [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
+        [InlineData(TestConfigurationFileNames.TRUCK_COP_1_LOTSIZE_1)]
+        public void TestAllOperationsGraphStaysTheSame(string testConfigurationFileName)
+        {
+            InitThisTest(testConfigurationFileName);
+
+            string operationGraphFileName =
+                $"../../../Test/Ordergraphs/all_operations_graph_{TestConfiguration.Name}.txt";
+
+            // build operationGraph up
+            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+            IDbTransactionData dbTransactionData =
+                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+            IDirectedGraph<INode> operationDirectedGraph =
+                new ProductionOrderToOperationGraph(dbMasterDataCache, dbTransactionData);
+            
+            string actualOperationGraph = operationDirectedGraph.ToString();
+            if (File.Exists(operationGraphFileName) == false)
+            {
+                File.WriteAllText(operationGraphFileName, actualOperationGraph, Encoding.UTF8);
+            }
+
+            string expectedOperationGraph = File.ReadAllText(operationGraphFileName, Encoding.UTF8);
+
+            bool operationGraphHasNotChanged = expectedOperationGraph.Equals(actualOperationGraph);
+            // for debugging: write the changed graphs to files
+            if (operationGraphHasNotChanged == false)
+            {
+                File.WriteAllText(operationGraphFileName, actualOperationGraph, Encoding.UTF8);
+            }
+
+            if (Constants.IsWindows)
+            {
+                Assert.True(operationGraphHasNotChanged, "The AllOperationGraph has changed.");
+            }
+            else
+            {
+                // On linux the graph is always different so the test would always fail here.
+                Assert.True(true);
             }
         }
     }

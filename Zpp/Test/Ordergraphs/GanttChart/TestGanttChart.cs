@@ -16,7 +16,7 @@ namespace Zpp.Test.Ordergraphs.GanttChart
         }
 
         [Theory]
-        [InlineData(TestConfigurationFileNames.DESK_COP_1_LOTSIZE_1)]
+        
         [InlineData(TestConfigurationFileNames.DESK_COP_1_LOT_ORDER_QUANTITY)]
         [InlineData(TestConfigurationFileNames.DESK_COP_5_CONCURRENT_LOTSIZE_2)]
         [InlineData(TestConfigurationFileNames.DESK_COP_5_SEQUENTIALLY_LOTSIZE_2)]
@@ -54,7 +54,6 @@ namespace Zpp.Test.Ordergraphs.GanttChart
             if (Constants.IsWindows)
             {
                 Assert.True(ganttChartHasNotChanged, "Ganttchart has changed.");
-                // Assert.True(orderGraphWithIdsHasNotChanged,"OrderGraph with ids has changed.");
             }
             else
             {

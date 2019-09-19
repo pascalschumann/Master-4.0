@@ -31,7 +31,7 @@ namespace Zpp.Test.Integration_Tests
          * delete corresponding production_order_operation_graph_cop_*.txt files ind Folder Test/OrderGraphs
          */
         [Theory]
-        [InlineData(TestConfigurationFileNames.DESK_COP_1_LOTSIZE_1)]
+        
         [InlineData(TestConfigurationFileNames.DESK_COP_1_LOT_ORDER_QUANTITY)]
         [InlineData(TestConfigurationFileNames.DESK_COP_5_CONCURRENT_LOTSIZE_2)]
         [InlineData(TestConfigurationFileNames.DESK_COP_5_SEQUENTIALLY_LOTSIZE_2)]
@@ -41,53 +41,31 @@ namespace Zpp.Test.Integration_Tests
         {
             InitThisTest(testConfigurationFileName);
             
-            string orderGraphFileName =
-                $"../../../Test/Ordergraphs/production_order_operation_graph_{TestConfiguration.Name}.txt";
             string orderGraphFileNameWithIds =
-                $"../../../Test/Ordergraphs/production_order_operation_graph_{TestConfiguration.Name}_with_ids.txt";
+                $"../../../Test/Ordergraphs/production_order_operation_graph_{TestConfiguration.Name}.txt";
 
             // build orderGraph up
             IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
             IDbTransactionData dbTransactionData =
                 new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
-            Dictionary<ProductionOrder, IDirectedGraph<INode>> productionOrderOperationGraphs = new Dictionary<ProductionOrder, IDirectedGraph<INode>>();
-            foreach (var productionOrder in dbTransactionData.ProductionOrderGetAll())
-            {
-                IDirectedGraph<INode> orderDirectedGraph = new ProductionOrderOperationDirectedGraph(dbTransactionData, (ProductionOrder)productionOrder);  
-                productionOrderOperationGraphs.Add((ProductionOrder)productionOrder, orderDirectedGraph);
-            }
+           
+            IProductionOrderToOperationGraph<INode> productionOrderToOperationGraph =
+                new ProductionOrderToOperationGraph(dbMasterDataCache, dbTransactionData);
             
-
-            // with ids
-            string actualOrderGraphWithIds = DirectedGraph.MergeDirectedGraphs(productionOrderOperationGraphs.Values.ToList(), dbTransactionData).ToString();
-            if (File.Exists(orderGraphFileName) == false)
+            
+            string actualOrderGraphWithIds = productionOrderToOperationGraph.ToString();
+            if (File.Exists(orderGraphFileNameWithIds) == false)
             {
                 File.WriteAllText(orderGraphFileNameWithIds, actualOrderGraphWithIds,
                     Encoding.UTF8);
             }
 
-            // without ids: for initial creating of the file (remove ids so it's comparable)
-            string actualOrderGraph = TestOrderGraph.removeIdsFromOrderGraph(actualOrderGraphWithIds);
-
-            // create initial file, if it doesn't exists (must be committed then)
-            if (File.Exists(orderGraphFileName) == false)
-            {
-                File.WriteAllText(orderGraphFileName, actualOrderGraph, Encoding.UTF8);
-            }
-
-            string expectedOrderGraph = File.ReadAllText(orderGraphFileName, Encoding.UTF8);
             string expectedOrderGraphWithIds =
                 File.ReadAllText(orderGraphFileNameWithIds, Encoding.UTF8);
 
-            bool orderGraphHasNotChanged = expectedOrderGraph.Equals(actualOrderGraph);
             bool orderGraphWithIdsHasNotChanged =
                 expectedOrderGraphWithIds.Equals(actualOrderGraphWithIds);
             // for debugging: write the changed graphs to files
-            if (orderGraphWithIdsHasNotChanged == false)
-            {
-                File.WriteAllText(orderGraphFileName, actualOrderGraph, Encoding.UTF8);
-            }
-
             if (orderGraphWithIdsHasNotChanged == false)
             {
                 File.WriteAllText(orderGraphFileNameWithIds, actualOrderGraphWithIds,
@@ -96,8 +74,7 @@ namespace Zpp.Test.Integration_Tests
 
             if (Constants.IsWindows)
             {
-                Assert.True(orderGraphHasNotChanged, "OrderGraph has changed.");
-                // Assert.True(orderGraphWithIdsHasNotChanged,"OrderGraph with ids has changed.");
+                Assert.True(orderGraphWithIdsHasNotChanged, "OrderGraph has changed.");
             }
             else
             {

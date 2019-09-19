@@ -1,0 +1,12 @@
+﻿"12526;Tisch zusammenbauen" -> "12546;P(PrO);8.00;\nTischbein;836";
+"12546;P(PrO);8.00;\nTischbein;836" -> "12549;Flizgleiter anstecken";
+"12593;Tisch zusammenbauen" -> "12611;P(PrO);8.00;\nTischbein;836";
+"12611;P(PrO);8.00;\nTischbein;836" -> "12614;Flizgleiter anstecken";
+"12666;Tisch zusammenbauen" -> "12687;P(PrO);8.00;\nTischbein;836";
+"12690;Flizgleiter anstecken" -> "12693;Anschraubplatte anschweißen";
+"12663;P(PrO);2.00;\nTisch;924" -> "12666;Tisch zusammenbauen";
+"12614;Flizgleiter anstecken" -> "12617;Anschraubplatte anschweißen";
+"12687;P(PrO);8.00;\nTischbein;836" -> "12690;Flizgleiter anstecken";
+"12590;P(PrO);2.00;\nTisch;924" -> "12593;Tisch zusammenbauen";
+"12549;Flizgleiter anstecken" -> "12552;Anschraubplatte anschweißen";
+"12523;P(PrO);2.00;\nTisch;924" -> "12526;Tisch zusammenbauen";

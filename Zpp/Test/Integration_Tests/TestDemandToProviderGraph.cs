@@ -14,10 +14,10 @@ using Zpp.Utils;
 
 namespace Zpp.Test.Integration_Tests
 {
-    public class TestOrderGraph : AbstractTest
+    public class TestDemandToProviderGraph : AbstractTest
     {
 
-        public TestOrderGraph(): base(false)
+        public TestDemandToProviderGraph(): base(false)
         {
             
         }
@@ -30,38 +30,38 @@ namespace Zpp.Test.Integration_Tests
         }
 
         /**
-         * Verifies, that the orderGraph
+         * Verifies, that the demandToProviderGraph
          * - can be build up from DemandToProvider+ProviderToDemand table
          * - is a top down graph TODO is not done yet<br>
          * - has all demandToProvider and providerToDemand edges
          */
         [Theory]
-        [InlineData(TestConfigurationFileNames.DESK_COP_1_LOTSIZE_1)]
+        
         [InlineData(TestConfigurationFileNames.DESK_COP_1_LOT_ORDER_QUANTITY)]
         [InlineData(TestConfigurationFileNames.DESK_COP_5_CONCURRENT_LOTSIZE_2)]
         [InlineData(TestConfigurationFileNames.DESK_COP_5_SEQUENTIALLY_LOTSIZE_2)]
         [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
-        public void TestAllEdgesAreInOrderGraph(string testConfigurationFileName)
+        public void TestAllEdgesAreInDemandToProviderGraph(string testConfigurationFileName)
         {
             InitThisTest(testConfigurationFileName);
             
-            // build orderGraph up
+            // build demandToProviderGraph up
             IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
             IDbTransactionData dbTransactionData =
                 new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
 
-            IDirectedGraph<INode> orderDirectedGraph = new DemandToProviderDirectedGraph(dbTransactionData);
+            IDirectedGraph<INode> demandToProviderGraph = new DemandToProviderDirectedGraph(dbTransactionData);
 
-            Assert.True(orderDirectedGraph.GetAllHeadNodes().Any(),
-                "There are no toNodes in the orderGraph.");
+            Assert.True(demandToProviderGraph.GetAllHeadNodes().Any(),
+                "There are no toNodes in the demandToProviderGraph.");
 
             int sumDemandToProviderAndProviderToDemand =
                 dbTransactionData.DemandToProviderGetAll().Count() +
                 dbTransactionData.ProviderToDemandGetAll().Count();
 
-            Assert.True(sumDemandToProviderAndProviderToDemand == orderDirectedGraph.CountEdges(),
+            Assert.True(sumDemandToProviderAndProviderToDemand == demandToProviderGraph.CountEdges(),
                 $"Should be equal size: sumDemandToProviderAndProviderToDemand " +
-                $"{sumDemandToProviderAndProviderToDemand} and  sumValuesOfOrderGraph {orderDirectedGraph.CountEdges()}");
+                $"{sumDemandToProviderAndProviderToDemand} and  sumValuesOfDemandToProviderGraph {demandToProviderGraph.CountEdges()}");
         }
 
         /**
@@ -88,7 +88,7 @@ namespace Zpp.Test.Integration_Tests
          * (e.g. after a PrO MUST come another Demand )
          */
         [Theory]
-        [InlineData(TestConfigurationFileNames.DESK_COP_1_LOTSIZE_1)]
+        
         [InlineData(TestConfigurationFileNames.DESK_COP_1_LOT_ORDER_QUANTITY)]
         [InlineData(TestConfigurationFileNames.DESK_COP_5_CONCURRENT_LOTSIZE_2)]
         [InlineData(TestConfigurationFileNames.DESK_COP_5_SEQUENTIALLY_LOTSIZE_2)]
@@ -132,16 +132,16 @@ namespace Zpp.Test.Integration_Tests
                 }
             };
 
-            // build orderGraph up
+            // build demandToProviderGraph up
             IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
             IDbTransactionData dbTransactionData =
                 new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
-            IDirectedGraph<INode> orderDirectedGraph = new DemandToProviderDirectedGraph(dbTransactionData);
+            IDirectedGraph<INode> demandToProviderGraph = new DemandToProviderDirectedGraph(dbTransactionData);
 
             // verify edgeTypes
             foreach (var customerOrderPart in dbMasterDataCache.T_CustomerOrderPartGetAll())
             {
-                orderDirectedGraph.TraverseDepthFirst((INode parentNode, INodes childNodes, INodes traversed) =>
+                demandToProviderGraph.TraverseDepthFirst((INode parentNode, INodes childNodes, INodes traversed) =>
                 {
                     if (childNodes != null && childNodes.Any())
                     {
@@ -158,71 +158,52 @@ namespace Zpp.Test.Integration_Tests
         }
 
         /**
-         * In case of failing (and the orderGraph change is expected by you):
-         * delete corresponding ordergraph_cop_*.txt files ind Folder Test/OrderGraphs
+         * In case of failing (and the demandToProviderGraph change is expected by you):
+         * delete corresponding ordergraph_cop_*.txt files ind Folder Test/DemandToProviderGraphs
          */
         [Theory]
-        [InlineData(TestConfigurationFileNames.DESK_COP_1_LOTSIZE_1)]
+        
         [InlineData(TestConfigurationFileNames.DESK_COP_1_LOT_ORDER_QUANTITY)]
         [InlineData(TestConfigurationFileNames.DESK_COP_5_CONCURRENT_LOTSIZE_2)]
         [InlineData(TestConfigurationFileNames.DESK_COP_5_SEQUENTIALLY_LOTSIZE_2)]
         [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
         [InlineData(TestConfigurationFileNames.TRUCK_COP_1_LOTSIZE_1)]
-        public void TestOrderGraphStaysTheSame(string testConfigurationFileName)
+        public void TestDemandToProviderGraphStaysTheSame(string testConfigurationFileName)
         {
             InitThisTest(testConfigurationFileName);
             
-            string orderGraphFileName =
+            string demandToProviderGraphFileName =
                 $"../../../Test/Ordergraphs/demandToProvider_graph_{TestConfiguration.Name}.txt";
-            string orderGraphFileNameWithIds =
-                $"../../../Test/Ordergraphs/demandToProvider_graph_{TestConfiguration.Name}_with_ids.txt";
 
-            // build orderGraph up
+            // build demandToProviderGraph up
             IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
             IDbTransactionData dbTransactionData =
                 new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
-            IDirectedGraph<INode> orderDirectedGraph = new DemandToProviderDirectedGraph(dbTransactionData);
+            IDirectedGraph<INode> demandToProviderGraph = new DemandToProviderDirectedGraph(dbTransactionData);
 
-            // with ids
-            string actualOrderGraphWithIds = orderDirectedGraph.ToString();
-            if (File.Exists(orderGraphFileName) == false)
+            
+            string actualDemandToProviderGraph = demandToProviderGraph.ToString();
+            if (File.Exists(demandToProviderGraphFileName) == false)
             {
-                File.WriteAllText(orderGraphFileNameWithIds, actualOrderGraphWithIds,
+                File.WriteAllText(demandToProviderGraphFileName, actualDemandToProviderGraph,
                     Encoding.UTF8);
             }
-
-            // without ids: for initial creating of the file (remove ids so it's comparable)
-            string actualOrderGraph = removeIdsFromOrderGraph(actualOrderGraphWithIds);
-
-            // create initial file, if it doesn't exists (must be committed then)
-            if (File.Exists(orderGraphFileName) == false)
-            {
-                File.WriteAllText(orderGraphFileName, actualOrderGraph, Encoding.UTF8);
-            }
-
-            string expectedOrderGraph = File.ReadAllText(orderGraphFileName, Encoding.UTF8);
-            string expectedOrderGraphWithIds =
-                File.ReadAllText(orderGraphFileNameWithIds, Encoding.UTF8);
-
-            bool orderGraphHasNotChanged = expectedOrderGraph.Equals(actualOrderGraph);
-            bool orderGraphWithIdsHasNotChanged =
-                expectedOrderGraphWithIds.Equals(actualOrderGraphWithIds);
+            
+            string expectedDemandToProviderGraph =
+                File.ReadAllText(demandToProviderGraphFileName, Encoding.UTF8);
+            
+            bool demandToProviderGraphHasNotChanged =
+                expectedDemandToProviderGraph.Equals(actualDemandToProviderGraph);
             // for debugging: write the changed graphs to files
-            if (orderGraphWithIdsHasNotChanged == false)
+            if (demandToProviderGraphHasNotChanged == false)
             {
-                File.WriteAllText(orderGraphFileName, actualOrderGraph, Encoding.UTF8);
-            }
-
-            if (orderGraphWithIdsHasNotChanged == false)
-            {
-                File.WriteAllText(orderGraphFileNameWithIds, actualOrderGraphWithIds,
+                File.WriteAllText(demandToProviderGraphFileName, actualDemandToProviderGraph,
                     Encoding.UTF8);
             }
 
             if (Constants.IsWindows)
             {
-                Assert.True(orderGraphHasNotChanged, "OrderGraph has changed.");
-                // Assert.True(orderGraphWithIdsHasNotChanged,"OrderGraph with ids has changed.");
+                Assert.True(demandToProviderGraphHasNotChanged, "DemandToProviderGraph has changed.");
             }
             else
             {
@@ -231,27 +212,27 @@ namespace Zpp.Test.Integration_Tests
             }
         }
 
-        public static string removeIdsFromOrderGraph(string orderGraph)
+        public static string removeIdsFromDemandToProviderGraph(string demandToProviderGraph)
         {
-            string[] orderGraphLines = orderGraph.Split("\r\n");
+            string[] demandToProviderGraphLines = demandToProviderGraph.Split("\r\n");
             // to have reproducible result
-            Array.Sort(orderGraphLines);
-            List<string> orderGraphWithoutIds = new List<string>();
-            foreach (var orderGraphLine in orderGraphLines)
+            Array.Sort(demandToProviderGraphLines);
+            List<string> demandToProviderGraphWithoutIds = new List<string>();
+            foreach (var demandToProviderGraphLine in demandToProviderGraphLines)
             {
                 string newString = "";
-                string[] splitted = orderGraphLine.Split("->");
+                string[] splitted = demandToProviderGraphLine.Split("->");
                 if (splitted.Length == 2)
                 {
                     newString += "\"" + splitted[0].Substring(7, splitted[0].Length - 7);
                     newString += " -> ";
                     newString += "\"" + splitted[1].Substring(8, splitted[1].Length - 8);
 
-                    orderGraphWithoutIds.Add(newString);
+                    demandToProviderGraphWithoutIds.Add(newString);
                 }
             }
 
-            return String.Join("\r\n", orderGraphWithoutIds);
+            return String.Join("\r\n", demandToProviderGraphWithoutIds);
         }
     }
 }

@@ -61,9 +61,10 @@ namespace Master40.DB.Data.Initializer
                 .Include(x => x.ArticleType)
                 .Include(x => x.ArticleToBusinessPartners)
                 .ToList();
+            // TODO noch gemogelt LotSize != PackSize
             foreach (var article in updateArticleLotSize)
             {
-                if (article.ArticleType.Name != "Product")
+                if (article.ToPurchase)
                 {
                     article.LotSize = article.ArticleToBusinessPartners.First().PackSize;
                     

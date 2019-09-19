@@ -31,6 +31,8 @@ namespace Zpp.Mrp.MachineManagement
         
         List<T2> GetAllAs<T2>()  where T2: T;
 
+        IStackSet<T2> As<T2>() where T2: T;
+
         int Count();
     }
 }

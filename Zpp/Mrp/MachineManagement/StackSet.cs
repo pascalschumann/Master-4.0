@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Zpp.Mrp.MachineManagement
 {
@@ -108,6 +109,11 @@ namespace Zpp.Mrp.MachineManagement
             }
 
             return list;
+        }
+
+        public IStackSet<T2> As<T2>() where T2 : T
+        {
+            return new StackSet<T2>(_list.Select(x=>(T2)x));
         }
     }
 }

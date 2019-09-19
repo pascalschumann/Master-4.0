@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Zpp.Mrp.MachineManagement;
 
 namespace Zpp.WrappersForCollections
 {
@@ -11,5 +12,7 @@ namespace Zpp.WrappersForCollections
         void AddAll(IEnumerable<T> items);
 
         T GetFirst();
+
+        IStackSet<T> ToStackSet();
     }
 }

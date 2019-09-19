@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Zpp.Mrp.MachineManagement;
 
 namespace Zpp.WrappersForCollections
 {
@@ -55,6 +56,11 @@ namespace Zpp.WrappersForCollections
         public T GetFirst()
         {
             return List[0];
+        }
+
+        public IStackSet<T> ToStackSet()
+        {
+            return new StackSet<T>(List);
         }
     }
 }

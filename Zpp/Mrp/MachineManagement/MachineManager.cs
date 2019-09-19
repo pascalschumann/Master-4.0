@@ -14,31 +14,20 @@ namespace Zpp.Mrp.MachineManagement
 {
     public class MachineManager : IMachineManager
     {
-
         public static void JobSchedulingWithGifflerThompsonAsZaepfel(
             IDbTransactionData dbTransactionData, IDbMasterDataCache dbMasterDataCache,
             IPriorityRule priorityRule)
         {
-            IDirectedGraph<INode> productionOrderGraph =
-                new ProductionOrderDirectedGraph(dbTransactionData, false);
-
-            Dictionary<ProductionOrder, IDirectedGraph<INode>> productionOrderOperationGraphs =
-                new Dictionary<ProductionOrder, IDirectedGraph<INode>>();
-            foreach (var productionOrder in dbTransactionData.ProductionOrderGetAll())
-            {
-                IDirectedGraph<INode> productionOrderOperationGraph =
-                    new ProductionOrderOperationDirectedGraph(dbTransactionData,
-                        (ProductionOrder)productionOrder);
-                productionOrderOperationGraphs.Add((ProductionOrder)productionOrder,
-                    productionOrderOperationGraph);
-            }
+            IProductionOrderToOperationGraph<INode> productionOrderToOperationGraph =
+                new ProductionOrderToOperationGraph(dbMasterDataCache, dbTransactionData);
 
             Dictionary<Id, List<Resource>> resourcesByResourceSkillId =
                 new Dictionary<Id, List<Resource>>();
             foreach (var resourceSkill in dbMasterDataCache.M_ResourceSkillGetAll())
             {
                 resourcesByResourceSkillId.Add(resourceSkill.GetId(),
-                    dbTransactionData.GetAggregator().GetResourcesByResourceSkillId(resourceSkill.GetId()));
+                    dbTransactionData.GetAggregator()
+                        .GetResourcesByResourceSkillId(resourceSkill.GetId()));
             }
 
             /*
@@ -57,7 +46,7 @@ namespace Zpp.Mrp.MachineManagement
             IStackSet<ProductionOrderOperation> S = new StackSet<ProductionOrderOperation>();
 
             // Bestimme initiale Menge: S = a
-            S = CreateS(productionOrderGraph, productionOrderOperationGraphs);
+            S = CreateS(productionOrderToOperationGraph);
 
             // t(o) = 0 für alle o aus S
             foreach (var o in S)
@@ -127,8 +116,10 @@ namespace Zpp.Mrp.MachineManagement
                             o1.GetValue().Start = machine.GetIdleStartTime().GetValue();
                             o1.GetValue().End = o1.GetValue().Start + o1.GetValue().Duration;
                         }
+
                         // correct op's start time if op's material is later available
-                        DueTime dueTimeOfOperationMaterial = o1.GetDueTimeOfItsMaterial(dbTransactionData);
+                        DueTime dueTimeOfOperationMaterial =
+                            o1.GetDueTimeOfItsMaterial(dbTransactionData);
                         if (dueTimeOfOperationMaterial.GetValue() > o1.GetValue().Start)
                         {
                             o1.GetValue().Start = dueTimeOfOperationMaterial.GetValue();
@@ -151,77 +142,37 @@ namespace Zpp.Mrp.MachineManagement
                     foreach (var o1 in allO1)
                     {
                         ProductionOrder productionOrder = o1.GetProductionOrder(dbTransactionData);
-                        ProductionOrderOperationDirectedGraph productionOrderOperationGraph =
-                            (ProductionOrderOperationDirectedGraph)productionOrderOperationGraphs[
-                                productionOrder];
 
-                        INodes predecessorNodes =
-                            productionOrderOperationGraph.GetPredecessorNodes(o1);
-                        IStackSet<INode> N = null;
-                        if (predecessorNodes.Any())
-                        {
-                            N = new StackSet<INode>(predecessorNodes);
-                        }
+                        IStackSet<INode> predecessorOperations = new StackSet<INode>();
+                        productionOrderToOperationGraph.GetPredecessorOperations(
+                            predecessorOperations, o1);
+
+                        IStackSet<ProductionOrderOperation> N = predecessorOperations
+                            .As<ProductionOrderOperation>();
 
                         // t(o) = d(o1) für alle o aus N(o1)
                         if (N != null)
                         {
-                            AdaptPredecessorNodes(N, o1, productionOrderGraph,
-                                productionOrderOperationGraphs);
+                            foreach (var n in N)
+                            {
+                                /*AdaptPredecessorNodes(N, o1, productionOrderGraph,
+                                    productionOrderOperationGraphs);*/
+                                // adapt only if o1's end is later than currentOperation else scheduled time from backwards-scheduling will be ignored
+                                /*if (o1.GetValue().End > productionOrderOperation.GetValue().Start)
+                                {*/
+                                n.GetValue().Start = o1.GetValue().End;
+                                //}
+                            }
                         }
 
                         // prepare for next round
-                        productionOrderOperationGraph.RemoveNode(o1);
-                        productionOrderOperationGraph
+                        productionOrderToOperationGraph.RemoveNode(o1);
+                        /*productionOrderOperationGraph
                             .RemoveProductionOrdersWithNoProductionOrderOperations(
-                                productionOrderGraph, productionOrder);
+                                productionOrderGraph, productionOrder);*/
                     }
 
-                    S = CreateS(productionOrderGraph, productionOrderOperationGraphs);
-                }
-            }
-        }
-
-        /**
-         * Does the following: t(o) = d(o1) für alle o aus N(o1)
-         */
-        private static void AdaptPredecessorNodes(IEnumerable<INode> N, ProductionOrderOperation o1,
-            IDirectedGraph<INode> productionOrderGraph,
-            Dictionary<ProductionOrder, IDirectedGraph<INode>> productionOrderOperationGraphs)
-        {
-            foreach (var node in N)
-            {
-                if (node.GetEntity().GetType() == typeof(ProductionOrderOperation))
-                {
-                    ProductionOrderOperation productionOrderOperation =
-                        (ProductionOrderOperation)node.GetEntity();
-                    // adapt only if o1's end is later than currentOperation else scheduled time from backwards-scheduling will be ignored
-                    if (o1.GetValue().End > productionOrderOperation.GetValue().Start)
-                    {
-                        productionOrderOperation.GetValue().Start = o1.GetValue().End;
-                    }
-                }
-                else
-                // it's a Production Order --> root node
-                {
-                    INodes predecessorProductionOrders =
-                        productionOrderGraph.GetPredecessorNodes(node);
-                    if (predecessorProductionOrders == null ||
-                        predecessorProductionOrders.Any() == false)
-                    {
-                        continue;
-                    }
-
-                    foreach (var predecessorProductionOrder in predecessorProductionOrders)
-                    {
-                        ProductionOrder predecessorProductionOrderTyped =
-                            (ProductionOrder)predecessorProductionOrder.GetEntity();
-                        IEnumerable<INode> newN =
-                            productionOrderOperationGraphs[predecessorProductionOrderTyped]
-                                .GetAllUniqueNode();
-                        AdaptPredecessorNodes(newN, o1, productionOrderGraph,
-                            productionOrderOperationGraphs);
-                    }
+                    S = CreateS(productionOrderToOperationGraph);
                 }
             }
         }
@@ -229,32 +180,13 @@ namespace Zpp.Mrp.MachineManagement
         /**
          * @return: all leafs of all operationGraphs
          */
-        public static IStackSet<ProductionOrderOperation> CreateS(
-            IDirectedGraph<INode> productionOrderGraph,
-            Dictionary<ProductionOrder, IDirectedGraph<INode>> productionOrderOperationGraphs)
+        private static IStackSet<ProductionOrderOperation> CreateS(
+            IProductionOrderToOperationGraph<INode> productionOrderToOperationGraph)
         {
-            IStackSet<ProductionOrderOperation> S = new StackSet<ProductionOrderOperation>();
-            INodes leafNodes = productionOrderGraph.GetLeafNodes();
-            if (leafNodes == null)
-            {
-                return null;
-            }
+            IStackSet<INode> S = new StackSet<INode>();
+            productionOrderToOperationGraph.GetLeafOperations(S);
 
-            INodes leafs = new Nodes();
-
-            foreach (var productionOrder in leafNodes)
-            {
-                var productionOrderOperationGraph =
-                    productionOrderOperationGraphs[(ProductionOrder)productionOrder.GetEntity()];
-                var productionOrderOperationLeafsOfProductionOrder =
-                    productionOrderOperationGraph.GetLeafNodes();
-
-                S.PushAll(productionOrderOperationLeafsOfProductionOrder.Select(x =>
-                    (ProductionOrderOperation)x.GetEntity()));
-            }
-
-            return S;
+            return S.As<ProductionOrderOperation>();
         }
-        
     }
 }

@@ -95,6 +95,19 @@ namespace Zpp.OrderGraph
             _adjacencyList[fromNode].AddRange(edges);
         }
 
+        public void AddEdges(INode fromNode, INodes nodes)
+        {
+            if (!_adjacencyList.ContainsKey(fromNode))
+            {
+                _adjacencyList.Add(fromNode, new List<IEdge>());
+            }
+            
+            foreach (var node in nodes)
+            {
+                _adjacencyList[fromNode].Add(new Edge(fromNode, node));
+            }
+        }
+
         public void AddEdge(INode fromNode, IEdge edge)
         {
             if (!_adjacencyList.ContainsKey(fromNode))
@@ -242,7 +255,7 @@ namespace Zpp.OrderGraph
             return new Nodes(_adjacencyList.Keys.ToList());
         }
 
-        public INodes GetAllUniqueNode()
+        public INodes GetAllUniqueNodes()
         {
             INodes fromNodes = GetAllTailNodes();
             INodes toNodes = GetAllHeadNodes();
@@ -305,7 +318,7 @@ namespace Zpp.OrderGraph
         public INodes GetLeafNodes()
         {
             List<INode> leafs = new List<INode>();
-            foreach (var uniqueNode in GetAllUniqueNode())
+            foreach (var uniqueNode in GetAllUniqueNodes())
             {
                 INodes successors = GetSuccessorNodes(uniqueNode);
                 if (successors == null)
@@ -322,9 +335,60 @@ namespace Zpp.OrderGraph
             return new Nodes(leafs);
         }
 
-        public void ReplaceNodeByDirectedGraph(INode node)
+        public INodes GetRootNodes()
         {
-            throw new NotImplementedException();
+            List<INode> roots = new List<INode>();
+            foreach (var uniqueNode in GetAllUniqueNodes())
+            {
+                INodes predecessor = GetPredecessorNodes(uniqueNode);
+                if (predecessor == null)
+                {
+                    roots.Add(uniqueNode);
+                }
+            }
+
+            if (roots.Any() == false)
+            {
+                return null;
+            }
+
+            return new Nodes(roots);
+        }
+
+        public void ReplaceNodeByDirectedGraph(INode node, IDirectedGraph<INode> graphToInsert)
+        {
+            INodes predecessors = GetPredecessorNodes(node);
+            INodes successors = GetSuccessorNodes(node);
+            RemoveNode(node);
+            // predecessors --> roots
+            if (predecessors != null)
+            {
+                foreach (var predecessor in predecessors)
+                {
+                    foreach (var rootNode in graphToInsert.GetRootNodes())
+                    {
+                        AddEdge(predecessor, new Edge(predecessor, rootNode));
+                    }
+                }
+            }
+            
+            // leafs --> successors 
+            if (successors != null)
+            {
+                foreach (var leaf in graphToInsert.GetLeafNodes())
+                {
+                    foreach (var successor in successors)
+                    {
+                        AddEdge(leaf, new Edge(leaf, successor));
+                    }
+                }
+            }
+            
+            // add all edges from graphToInsert
+            foreach (var loopNode in graphToInsert.GetAdjacencyList().Keys)
+            {
+                AddEdges(loopNode, graphToInsert.GetAdjacencyList()[loopNode]);
+            }
         }
 
         public static IDirectedGraph<INode> MergeDirectedGraphs(List<IDirectedGraph<INode>> directedGraphs, IDbTransactionData dbTransactionData)

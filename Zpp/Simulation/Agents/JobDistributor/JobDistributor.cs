@@ -4,9 +4,13 @@ using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.Enums;
 using Master40.SimulationCore.Helper;
 using System;
+using System.Data;
 using System.Diagnostics;
 using System.Linq;
+using Master40.DB.DataModel;
+using Zpp.Common.DemandDomain.Wrappers;
 using Zpp.Common.ProviderDomain.Wrappers;
+using Zpp.DbCache;
 using Zpp.Mrp.MachineManagement;
 using Zpp.OrderGraph;
 using Zpp.Simulation.Agents.JobDistributor.Skills;
@@ -16,17 +20,20 @@ namespace Zpp.Simulation.Agents.JobDistributor
 {
     partial class JobDistributor : SimulationElement
     {
+        private readonly IDbTransactionData _dbTransactionData;
+        
         private ResourceManager ResourceManager { get; } = new ResourceManager();
 
-        private ProductionOrderToOperationGraph ProductionOrderToOperationGraph { get; set; }
+        private IProductionOrderToOperationGraph<INode> ProductionOrderToOperationGraph { get; set; }
 
-        public static Props Props(IActorRef simulationContext, long time)
+        public static Props Props(IActorRef simulationContext, long time, IDbTransactionData dbTransactionData)
         {
-            return Akka.Actor.Props.Create(() => new JobDistributor(simulationContext, time));
+            return Akka.Actor.Props.Create(() => new JobDistributor(simulationContext, time, dbTransactionData));
         }
-        public JobDistributor(IActorRef simulationContext, long time)
+        public JobDistributor(IActorRef simulationContext, long time, IDbTransactionData dbTransactionData)
             : base(simulationContext, time)
         {
+            _dbTransactionData = dbTransactionData;
         }
 
         protected override void Do(object o)
@@ -36,7 +43,7 @@ namespace Zpp.Simulation.Agents.JobDistributor
                 case AddResources m: CreateMachines(m.GetMachines, TimePeriod); break;
                 case OperationsToDistribute m: InitializeDistribution(m.GetProductionOrderToOperations); break;
                 case ProductionOrderFinished m: ProvideMaterial(m.GetOperation); break;
-                case WithDrawMaterialsFor m: WithDrawMaterials(m.GetOperation); break;
+                case WithDrawMaterialsFor m: WithDrawMaterials(m.GetOperation, _dbTransactionData); break;
                 default: new Exception("Message type could not be handled by SimulationElement"); break;
             }
         }
@@ -52,7 +59,7 @@ namespace Zpp.Simulation.Agents.JobDistributor
 
         private void PushWork()
         {
-            var operationLeafs = ProductionOrderToOperationGraph.GetAllInnerLeafs();
+            var operationLeafs = ProductionOrderToOperationGraph.GetLeafNodes().ToStackSet();
             if (operationLeafs == null)
             {
                 Debug.WriteLine("No more leafs in OperationManager");
@@ -75,14 +82,28 @@ namespace Zpp.Simulation.Agents.JobDistributor
                 Debug.Assert(machine.resourceId != null, "resource.machineId is null");
                 if (ScheduleOperation(productionOrderOperation: first, machineId: machine.resourceId.Value))
                 {
-                    ProductionOrderToOperationGraph.Remove(first);
+                    ProductionOrderToOperationGraph.RemoveNode(first);
                 }
             }
         }
 
-        private void WithDrawMaterials(ProductionOrderOperation productionOrderOperation)
+        private void WithDrawMaterials(ProductionOrderOperation productionOrderOperation, IDbTransactionData dbTransactionData)
         {
-            ProductionOrderToOperationGraph.WithdrawMaterialsFromStock(operation: productionOrderOperation, TimePeriod);
+           
+            var productionOrderBom = dbTransactionData.GetAggregator()
+                .GetAnyProductionOrderBomByProductionOrderOperation(productionOrderOperation);
+
+
+            var demands =
+                dbTransactionData.GetAggregator().GetAllParentDemandsOf(
+                    productionOrderBom.GetProductionOrder(dbTransactionData));
+            foreach (var demand in demands)
+            {
+                var stockExchangeProvider = (StockExchangeDemand) demand;
+                var stockExchange = (T_StockExchange) stockExchangeProvider.ToIDemand();
+                stockExchange.State = State.Finished;
+                stockExchange.Time = (int) TimePeriod;
+            }
         }
 
         private bool ScheduleOperation(ProductionOrderOperation productionOrderOperation, int machineId)
@@ -123,6 +144,24 @@ namespace Zpp.Simulation.Agents.JobDistributor
                 }
             }
         }
+        
+        public void InsertMaterialsIntoStock(ProductionOrderOperation operation, long time, IDbTransactionData dbTransactionData)
+        {
+            var productionOrderBom = dbTransactionData.GetAggregator()
+                .GetAnyProductionOrderBomByProductionOrderOperation(operation);
+
+
+            var demands =
+                dbTransactionData.GetAggregator().GetAllParentDemandsOf(
+                    productionOrderBom.GetProductionOrder(dbTransactionData));
+            foreach (var demand in demands)
+            {
+                var stockExchangeProvider = (StockExchangeDemand) demand;
+                var stockExchange = (T_StockExchange) stockExchangeProvider.ToIDemand();
+                stockExchange.State = State.Finished;
+                stockExchange.Time = (int) time;
+            }
+        }
 
         private void ProvideMaterial(ProductionOrderOperation operation)
         {
@@ -133,7 +172,7 @@ namespace Zpp.Simulation.Agents.JobDistributor
             if (resourceId == null)
                 throw new Exception("Resource not found.");
 
-            ProductionOrderToOperationGraph.InsertMaterialsIntoStock(operation, TimePeriod);
+            InsertMaterialsIntoStock(operation, TimePeriod, _dbTransactionData);
 
             var resource = ResourceManager.GetResourceRefById(new Id(resourceId.Value));
             resource.IsWorking = false;

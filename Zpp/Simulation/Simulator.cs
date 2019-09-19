@@ -38,7 +38,7 @@ namespace Zpp.Simulation
             _currentTime = simulationInterval.StartAt;
             _akkaSimulation = new AkkaSim.Simulation(_simulationConfig);
             var jobDistributor = _akkaSimulation.ActorSystem
-                                                .ActorOf(props: JobDistributor.Props(_akkaSimulation.SimulationContext, _currentTime)
+                                                .ActorOf(props: JobDistributor.Props(_akkaSimulation.SimulationContext, _currentTime, _dbTransactionData)
                                                         , name: "JobDistributor");
 
             // ToDo reflect CurrentTimespawn ?

@@ -8,7 +8,7 @@ namespace Zpp.OrderGraph
         public ProductionOrderDirectedGraph(IDbTransactionData dbTransactionData,
             bool includeProductionOrdersWithoutOperations) : base(dbTransactionData)
         {
-            foreach (var uniqueNode in GetAllUniqueNode())
+            foreach (var uniqueNode in GetAllUniqueNodes())
             {
                 if (uniqueNode.GetEntity().GetType() != typeof(ProductionOrder)
                     // && uniqueNode.GetEntity().GetType() != typeof(ProductionOrderBom)

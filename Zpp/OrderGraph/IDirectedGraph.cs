@@ -29,6 +29,8 @@ namespace Zpp.OrderGraph
 
         void AddEdges(TNode fromNode, List<IEdge> edges);
         
+        void AddEdges(TNode fromNode, INodes nodes);
+        
         void AddEdge(TNode fromNode, IEdge edge);
 
         int CountEdges();
@@ -40,7 +42,7 @@ namespace Zpp.OrderGraph
         /**
          * No duplicates should be contained
          */
-        INodes GetAllUniqueNode();
+        INodes GetAllUniqueNodes();
 
         List<IEdge> GetAllEdgesFromTailNode(TNode tailNode);
         
@@ -58,8 +60,10 @@ namespace Zpp.OrderGraph
         void RemoveAllEdgesTowardsHeadNode(TNode headNode);
 
         INodes GetLeafNodes();
+        
+        INodes GetRootNodes();
 
-        void ReplaceNodeByDirectedGraph(TNode node);
+        void ReplaceNodeByDirectedGraph(TNode node, IDirectedGraph<INode> graphToInsert);
 
         List<IEdge> GetAllEdges();
 

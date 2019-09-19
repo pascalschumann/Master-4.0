@@ -28,9 +28,10 @@ namespace Zpp.OrderGraph
                 .GetAggregator().GetProductionOrderOperationsOfProductionOrder(productionOrder);
             if (productionOrderOperations == null)
             {
-                directedGraph.AddEdge(productionOrder,
+                /*directedGraph.AddEdge(productionOrder,
                     new Edge(productionOrder, productionOrder));
-                _adjacencyList = directedGraph.GetAdjacencyList();
+                _adjacencyList = directedGraph.GetAdjacencyList();*/
+                _adjacencyList = null;
                 return;
             }
             foreach (var productionOrderOperation in productionOrderOperations)

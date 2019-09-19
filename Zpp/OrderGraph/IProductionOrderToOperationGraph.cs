@@ -6,22 +6,19 @@ using Zpp.Mrp.MachineManagement;
 
 namespace Zpp.OrderGraph
 {
-    public interface IProductionOrderToOperationGraph<TNode>
+    public interface IProductionOrderToOperationGraph<TNode>: IDirectedGraph<TNode>
     {
-        StackSet<TNode> GetAllInnerLeafs();
-
-        void Remove(ProductionOrderOperation operation);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="predeccessors">empty StackSet, that will contain the result</param>
+        void GetPredecessorOperations(IStackSet<TNode> predecessorOperations, TNode node);
         
-        void Remove(TNode node);
-
-        void Remove(ProductionOrder productionOrder);
-
-        INodes GetPredecessors(TNode node);
-        
-        INodes GetPredecessorOperations(TNode node);
-
-        IDirectedGraph<TNode> GetInnerGraph(ProductionOrder productionOrder);
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="leafOperations">empty StackSet, that will contain the result</param>
+        void GetLeafOperations(IStackSet<TNode> leafOperations);
         ProductionOrderOperations GetAllOperations();
 
         ProductionOrders GetAllProductionOrders();

@@ -25,13 +25,9 @@
       <ProjectReference Include="..\Master40.XUnitTest\Master40.XUnitTest.csproj" />
     </ItemGroup>
     <ItemGroup>
-      <Folder Include="Common\ProviderDomain\WrappersForCollections\" />
-      <Folder Include="Common\ProviderDomain\Wrappers\" />
-      <Folder Include="Configuration\" />
-      <Folder Include="DbCache\" />
+      <Folder Include="DataLayer\" />
       <Folder Include="GraphicalRepresentation\" />
       <Folder Include="LotSize\" />
-      <Folder Include="OrderGraph\" />
       <Folder Include="Properties\" />
       <Folder Include="Test\Configuration\Scenarios\" />
       <Folder Include="Test\Integration_Tests\" />
@@ -39,8 +35,7 @@
       <Folder Include="Test\Unit_Tests\Demand\" />
       <Folder Include="Test\Unit_Tests\Provider\" />
       <Folder Include="Test\WrappersForPrimitives\" />
-      <Folder Include="Utils\Queue\" />
-      <Folder Include="WrappersForPrimitives\" />
+      <Folder Include="Util\Queue\" />
     </ItemGroup>
 
 </Project>

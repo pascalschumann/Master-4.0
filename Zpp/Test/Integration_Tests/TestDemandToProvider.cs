@@ -1,3 +1,5 @@
+using System.Linq;
+using Master40.DB.Data.WrappersForPrimitives;
 using Xunit;
 using Zpp.Common.DemandDomain.WrappersForCollections;
 using Zpp.Common.ProviderDomain.WrappersForCollections;
@@ -32,7 +34,7 @@ namespace Zpp.Test.Integration_Tests
                 ZppConfiguration.CacheManager.ReloadTransactionData();
 
             IDemands allDbDemands = dbTransactionData.DemandsGetAll();
-            IDemandToProviderTable demandToProviderTable = dbTransactionData.GetProviderManager().GetDemandToProviderTable();
+            IDemandToProviderTable demandToProviderTable = dbTransactionData.DemandToProviderGetAll();
 
             foreach (var demand in allDbDemands)
             {
@@ -78,8 +80,13 @@ namespace Zpp.Test.Integration_Tests
             IDemands allDbDemands = dbTransactionData.DemandsGetAll();
             foreach (var demand in allDbDemands)
             {
-                bool isSatisfied = dbTransactionData.GetProviderManager().IsSatisfied(demand);
-                Assert.True(isSatisfied, $"Demand {demand} is not satisfied.");
+                Quantity satisfiedQuantity = Quantity.Null();
+                dbTransactionData.DemandToProviderGetAll().Select(x =>
+                {
+                    satisfiedQuantity.IncrementBy(x.Quantity);
+                    return x;
+                }).Where(x => x.GetDemandId().Equals(demand.GetId()));
+                Assert.True(satisfiedQuantity.Equals(demand.GetQuantity()), $"Demand {demand} is not satisfied.");
             }
         }
 

@@ -22,20 +22,21 @@ namespace Zpp.Mrp.ProductionManagement
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
+        private readonly IDbTransactionData _dbTransactionData =
+            ZppConfiguration.CacheManager.GetDbTransactionData();
 
         public ProductionManager()
         {
         }
 
-        public ResponseWithProviders Satisfy(Demand demand, Quantity demandedQuantity,
-            IDbTransactionData dbTransactionData)
+        public ResponseWithProviders Satisfy(Demand demand, Quantity demandedQuantity)
         {
             if (demand.GetArticle().ToBuild == false)
             {
                 throw new MrpRunException("Must be a build article.");
             }
 
-            IProviders productionOrders = CreateProductionOrder(demand, dbTransactionData,
+            IProviders productionOrders = CreateProductionOrder(demand, _dbTransactionData,
                 demandedQuantity);
 
             Logger.Debug("ProductionOrder(s) created.");

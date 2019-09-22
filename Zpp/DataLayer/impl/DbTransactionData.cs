@@ -38,7 +38,6 @@ namespace Zpp.DbCache
         private readonly List<M_BusinessPartner> _businessPartners;
 
         // T_*
-        private IProviderManager _providerManager;
 
         // demands
         private readonly ProductionOrderBoms _productionOrderBoms;
@@ -64,6 +63,10 @@ namespace Zpp.DbCache
         private readonly CustomerOrders _customerOrders;
 
         private readonly IAggregator _aggregator;
+        
+        private readonly DemandToProviderTable _demandToProviderTable;
+
+        private readonly ProviderToDemandTable _providerToDemandTable;
 
         public DbTransactionData(ProductionDomainContext productionDomainContext
             )
@@ -113,18 +116,10 @@ namespace Zpp.DbCache
 
             // demandToProvider
 
-            IDemandToProviderTable demandToProviderTable =
+            _demandToProviderTable =
                 new DemandToProviderTable(_productionDomainContext.DemandToProviders.ToList());
-            IProviderToDemandTable providerToDemandTable =
+            _providerToDemandTable =
                 new ProviderToDemandTable(_productionDomainContext.ProviderToDemand.ToList());
-
-            // providerManager
-            IProviders providers = new Providers();
-            providers.AddAll(_purchaseOrderParts);
-            providers.AddAll(_productionOrders);
-            providers.AddAll(_stockExchangeProviders);
-            _providerManager =
-                new ProviderManager(demandToProviderTable, providerToDemandTable, providers);
         }
 
         public List<M_BusinessPartner> M_BusinessPartnerGetAll()
@@ -371,7 +366,7 @@ namespace Zpp.DbCache
 
         public IDemandToProviderTable DemandToProviderGetAll()
         {
-            return _providerManager.GetDemandToProviderTable();
+            return _demandToProviderTable;
         }
 
         public Demand DemandsGetById(Id id)
@@ -386,12 +381,7 @@ namespace Zpp.DbCache
 
         public IProviderToDemandTable ProviderToDemandGetAll()
         {
-            return _providerManager.GetProviderToDemandTable();
-        }
-
-        public IProviderManager GetProviderManager()
-        {
-            return _providerManager;
+            return _providerToDemandTable;
         }
 
         public T_PurchaseOrder PurchaseOrderGetById(Id id)
@@ -430,11 +420,7 @@ namespace Zpp.DbCache
                 _productionOrders.GetAllAs<T_ProductionOrder>().Single(x => x.GetId().Equals(id))
                 );
         }
-
-        public void SetProviderManager(IProviderManager providerManager)
-        {
-            _providerManager = providerManager;
-        }
+        
         public T_CustomerOrder T_CustomerOrderGetById(Id id)
         {
             return _customerOrders.Single(x => x.Id.Equals(id.GetValue()));
@@ -461,5 +447,14 @@ namespace Zpp.DbCache
             _customerOrderParts.Add(new CustomerOrderPart(customerOrderPart));
         }
 
+        public void DemandToProviderAdd(T_DemandToProvider demandToProvider)
+        {
+            _demandToProviderTable.Add(demandToProvider);
+        }
+
+        public void ProviderToDemandAdd(T_ProviderToDemand providerToDemand)
+        {
+            _providerToDemandTable.Add(providerToDemand);
+        }
     }
 }

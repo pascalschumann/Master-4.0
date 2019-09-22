@@ -21,17 +21,17 @@ namespace Zpp.Mrp
             _productionManager = new ProductionManager();
         }
 
-        public ResponseWithProviders Satisfy(Demand demand, Quantity demandedQuantity, IDbTransactionData dbTransactionData)
+        public ResponseWithProviders Satisfy(Demand demand, Quantity demandedQuantity)
         {
             if (demand.GetArticle().ToBuild)
             {
                 return _productionManager.Satisfy(demand,
-                    demandedQuantity, dbTransactionData);
+                    demandedQuantity);
             }
             else
             {
                 return _purchaseManager.Satisfy(demand,
-                    demandedQuantity, dbTransactionData);
+                    demandedQuantity);
             }
         }
     }

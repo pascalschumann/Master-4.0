@@ -21,7 +21,6 @@ namespace Zpp.Mrp.StockManagement
         Provider CreateStockExchangeProvider(M_Article article, DueTime dueTime,
             Quantity demandedQuantity);
 
-        void AdaptStock(Provider provider, IDbTransactionData dbTransactionData,
-            IOpenDemandManager openDemandManager);
+        void AdaptStock(Provider provider, IDbTransactionData dbTransactionData);
     }
 }

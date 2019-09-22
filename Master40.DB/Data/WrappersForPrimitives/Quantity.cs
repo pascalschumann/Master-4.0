@@ -26,6 +26,11 @@ namespace Master40.DB.Data.WrappersForPrimitives
         {
             _quantity += quantity._quantity;
         }
+
+        public void IncrementBy(decimal quantity)
+        {
+            _quantity += quantity;
+        }
         
         public void DecrementBy(Quantity quantity)
         {

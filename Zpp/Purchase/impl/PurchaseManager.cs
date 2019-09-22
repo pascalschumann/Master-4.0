@@ -15,15 +15,18 @@ namespace Zpp.Mrp.PurchaseManagement
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
 
+        private readonly IDbTransactionData _dbTransactionData =
+            ZppConfiguration.CacheManager.GetDbTransactionData();
+        
         public PurchaseManager()
         {
             
         }
 
-        public ResponseWithProviders Satisfy(Demand demand, Quantity demandedQuantity, IDbTransactionData dbTransactionData)
+        public ResponseWithProviders Satisfy(Demand demand, Quantity demandedQuantity)
         {
             M_Article article = demand.GetArticle();
-            DueTime dueTime = demand.GetDueTime(dbTransactionData);
+            DueTime dueTime = demand.GetDueTime(_dbTransactionData);
             if (article.ToBuild)
             {
                 throw new MrpRunException(

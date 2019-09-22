@@ -32,8 +32,6 @@ namespace Zpp.DbCache
         /// <param name="demandToProvidersMap">is used to generate T_Demand and T_Provider tables</param>
         void PersistDbCache();
 
-        void SetProviderManager(IProviderManager providerManager);
-
         void DemandsAdd(Demand demand);
         
         void DemandsAddAll(IDemands demands);
@@ -70,8 +68,6 @@ namespace Zpp.DbCache
         
         Provider ProvidersGetById(Id id);
 
-        IProviderManager GetProviderManager();
-
         ProductionOrderOperation ProductionOrderOperationGetById(Id id);
         
         ProductionOrderOperations ProductionOrderOperationGetAll();
@@ -85,5 +81,9 @@ namespace Zpp.DbCache
         Demands T_CustomerOrderPartGetAll();
 
         void CustomerOrderPartAdd(T_CustomerOrderPart customerOrderPart);
+
+        void DemandToProviderAdd(T_DemandToProvider demandToProvider);
+
+        void ProviderToDemandAdd(T_ProviderToDemand providerToDemand);
     }
 }

@@ -21,6 +21,10 @@ namespace Zpp.Mrp.StockManagement
         private readonly Dictionary<Id, Stock> _stocks = new Dictionary<Id, Stock>();
         private HashSet<Provider> _alreadyConsideredProviders = new HashSet<Provider>();
         private readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
+        private readonly IDbTransactionData _dbTransactionData = ZppConfiguration.CacheManager.GetDbTransactionData();
+
+        private readonly IOpenDemandManager _openDemandManager =
+            ZppConfiguration.CacheManager.GetOpenDemandManager();
 
         // for duplicating it
         public StockManager(IStockManager stockManager)
@@ -45,8 +49,7 @@ namespace Zpp.Mrp.StockManagement
             }
         }
 
-        public void AdaptStock(Provider provider, IDbTransactionData dbTransactionData,
-            IOpenDemandManager openDemandManager)
+        public void AdaptStock(Provider provider, IDbTransactionData dbTransactionData)
         {
             // a provider can influence the stock only once
             if (_alreadyConsideredProviders.Contains(provider))
@@ -66,7 +69,7 @@ namespace Zpp.Mrp.StockManagement
                 if (currentQuantity.IsSmallerThan(stock.GetMinStockLevel()))
                 {
                     ((StockExchangeProvider)provider).CreateDependingDemands(provider.GetArticle(), dbTransactionData,
-                        provider, provider.GetQuantity(), openDemandManager);
+                        provider, provider.GetQuantity(), _openDemandManager);
                 }
             }
 
@@ -106,8 +109,7 @@ namespace Zpp.Mrp.StockManagement
             return _stocks[id];
         }
 
-        public ResponseWithProviders Satisfy(Demand demand, Quantity demandedQuantity,
-            IDbTransactionData dbTransactionData)
+        public ResponseWithProviders Satisfy(Demand demand, Quantity demandedQuantity)
         {
             Stock stock = _stocks[demand.GetArticleId()];
 
@@ -115,7 +117,7 @@ namespace Zpp.Mrp.StockManagement
             List<T_DemandToProvider> demandToProviders = new List<T_DemandToProvider>();
 
             Provider stockProvider = CreateStockExchangeProvider(demand.GetArticle(),
-                demand.GetDueTime(dbTransactionData), demandedQuantity);
+                demand.GetDueTime(_dbTransactionData), demandedQuantity);
             providers.Add(stockProvider);
 
             T_DemandToProvider demandToProvider = new T_DemandToProvider()

@@ -5,6 +5,7 @@ using Master40.DB.Data.WrappersForPrimitives;
 using Microsoft.EntityFrameworkCore.Internal;
 using Zpp.Common.DemandDomain.Wrappers;
 using Zpp.Common.ProviderDomain.Wrappers;
+using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.OrderGraph;
 using Zpp.Utils;
@@ -14,16 +15,19 @@ namespace Zpp.Mrp.MachineManagement
 {
     public class MachineManager : IMachineManager
     {
-        public static void JobSchedulingWithGifflerThompsonAsZaepfel(
-            IDbTransactionData dbTransactionData, IDbMasterDataCache dbMasterDataCache,
+        private readonly IDbMasterDataCache _dbMasterDataCache =
+            ZppConfiguration.CacheManager.GetMasterDataCache();
+        
+        public void JobSchedulingWithGifflerThompsonAsZaepfel(
+            IDbTransactionData dbTransactionData,
             IPriorityRule priorityRule)
         {
             IProductionOrderToOperationGraph<INode> productionOrderToOperationGraph =
-                new ProductionOrderToOperationGraph(dbMasterDataCache, dbTransactionData);
+                new ProductionOrderToOperationGraph(dbTransactionData);
 
             Dictionary<Id, List<Resource>> resourcesByResourceSkillId =
                 new Dictionary<Id, List<Resource>>();
-            foreach (var resourceSkill in dbMasterDataCache.M_ResourceSkillGetAll())
+            foreach (var resourceSkill in _dbMasterDataCache.M_ResourceSkillGetAll())
             {
                 resourcesByResourceSkillId.Add(resourceSkill.GetId(),
                     dbTransactionData.GetAggregator()
@@ -180,7 +184,7 @@ namespace Zpp.Mrp.MachineManagement
         /**
          * @return: all leafs of all operationGraphs
          */
-        private static IStackSet<ProductionOrderOperation> CreateS(
+        private IStackSet<ProductionOrderOperation> CreateS(
             IProductionOrderToOperationGraph<INode> productionOrderToOperationGraph)
         {
             IStackSet<INode> S = new StackSet<INode>();

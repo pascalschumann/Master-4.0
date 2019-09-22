@@ -3,6 +3,7 @@ using Master40.DB.DataModel;
 using Master40.DB.Enums;
 using Zpp.Common.DemandDomain;
 using Zpp.Common.ProviderDomain.Wrappers;
+using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Utils;
 using Zpp.WrappersForPrimitives;
@@ -12,11 +13,11 @@ namespace Zpp.Mrp.PurchaseManagement
     public class PurchaseManager : IProvidingManager
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        private readonly IDbMasterDataCache _dbMasterDataCache;
+        private readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
 
-        public PurchaseManager(IDbMasterDataCache dbMasterDataCache)
+        public PurchaseManager()
         {
-            _dbMasterDataCache = dbMasterDataCache;
+            
         }
 
         public ResponseWithProviders Satisfy(Demand demand, Quantity demandedQuantity, IDbTransactionData dbTransactionData)
@@ -71,7 +72,7 @@ namespace Zpp.Mrp.PurchaseManagement
 
             Logger.Debug("PurchaseOrderPart created.");
             PurchaseOrderPart purchaseOrderPart =
-                new PurchaseOrderPart(tPurchaseOrderPart, null, _dbMasterDataCache);
+                new PurchaseOrderPart(tPurchaseOrderPart, null);
             
             T_DemandToProvider demandToProvider = new T_DemandToProvider()
             {

@@ -7,6 +7,7 @@ using Zpp.Common.DemandDomain;
 using Zpp.Common.ProviderDomain;
 using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.Common.ProviderDomain.WrappersForCollections;
+using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Mrp.NodeManagement;
 using Zpp.WrappersForPrimitives;
@@ -19,12 +20,12 @@ namespace Zpp.Mrp.StockManagement
 
         private readonly Dictionary<Id, Stock> _stocks = new Dictionary<Id, Stock>();
         private HashSet<Provider> _alreadyConsideredProviders = new HashSet<Provider>();
-        private readonly IDbMasterDataCache _dbMasterDataCache;
+        private readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
 
         // for duplicating it
-        public StockManager(StockManager stockManager, IDbMasterDataCache dbMasterDataCache)
+        public StockManager(StockManager stockManager)
         {
-            _dbMasterDataCache = dbMasterDataCache;
+            
             foreach (var stock in stockManager.GetStocks())
             {
                 _stocks.Add(stock.GetArticleId(),
@@ -32,10 +33,10 @@ namespace Zpp.Mrp.StockManagement
             }
         }
 
-        public StockManager(List<M_Stock> stocks, IDbMasterDataCache dbMasterDataCache)
+        public StockManager()
         {
-            _dbMasterDataCache = dbMasterDataCache;
-            foreach (var stock in stocks)
+            
+            foreach (var stock in _dbMasterDataCache.M_StockGetAll())
             {
                 Id articleId = new Id(stock.ArticleForeignKey);
                 Stock myStock = new Stock(new Quantity(stock.Current), articleId,
@@ -114,7 +115,7 @@ namespace Zpp.Mrp.StockManagement
             List<T_DemandToProvider> demandToProviders = new List<T_DemandToProvider>();
 
             Provider stockProvider = CreateStockExchangeProvider(demand.GetArticle(),
-                demand.GetDueTime(dbTransactionData), demandedQuantity, _dbMasterDataCache,
+                demand.GetDueTime(dbTransactionData), demandedQuantity,
                 dbTransactionData);
             providers.Add(stockProvider);
 
@@ -147,7 +148,7 @@ namespace Zpp.Mrp.StockManagement
                 }
 
                 Provider stockProvider = CreateStockExchangeProvider(demand.GetArticle(),
-                    demand.GetDueTime(dbTransactionData), reservedQuantity, _dbMasterDataCache,
+                    demand.GetDueTime(dbTransactionData), reservedQuantity, 
                     dbTransactionData);
 
                 T_DemandToProvider demandToProvider = new T_DemandToProvider()
@@ -169,10 +170,10 @@ namespace Zpp.Mrp.StockManagement
          * a productionOrder/purchaseOrderPart
          */
         public Provider CreateStockExchangeProvider(M_Article article, DueTime dueTime,
-            Quantity demandedQuantity, IDbMasterDataCache dbMasterDataCache,
+            Quantity demandedQuantity,
             IDbTransactionData dbTransactionData)
         {
-            M_Stock stock = dbMasterDataCache.M_StockGetByArticleId(article.GetId());
+            M_Stock stock = _dbMasterDataCache.M_StockGetByArticleId(article.GetId());
             T_StockExchange stockExchange = new T_StockExchange();
             stockExchange.StockExchangeType = StockExchangeType.Provider;
             stockExchange.Quantity = demandedQuantity.GetValue();
@@ -183,7 +184,7 @@ namespace Zpp.Mrp.StockManagement
             stockExchange.RequiredOnTime = dueTime.GetValue();
             stockExchange.ExchangeType = ExchangeType.Withdrawal;
             StockExchangeProvider stockExchangeProvider =
-                new StockExchangeProvider(stockExchange, dbMasterDataCache);
+                new StockExchangeProvider(stockExchange);
 
             return stockExchangeProvider;
         }

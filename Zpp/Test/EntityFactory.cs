@@ -7,6 +7,7 @@ using Master40.DB.Enums;
 using Zpp.Common.DemandDomain;
 using Zpp.Common.DemandDomain.Wrappers;
 using Zpp.Common.ProviderDomain.Wrappers;
+using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.WrappersForPrimitives;
 
@@ -16,18 +17,18 @@ namespace Zpp.Test
     {
         private static Random random = new Random();
 
-        /*public static T_ProductionOrderBom CreateT_ProductionOrderBom(IDbMasterDataCache dbMasterDataCache)
+        /*public static T_ProductionOrderBom CreateT_ProductionOrderBom()
         {
             T_ProductionOrderBom tProductionOrderBom = new T_ProductionOrderBom();
             tProductionOrderBom.Quantity = new Random().Next(1, 100);
             M_Article article = dbMasterDataCache.M_ArticleGetById(
-                IdGenerator.GetRandomId(0, dbMasterDataCache.M_ArticleGetAll().Count - 1));
+                IdGenerator.GetRandomId(0.M_ArticleGetAll().Count - 1));
             tProductionOrderBom.ArticleChild = article;
-            tProductionOrderBom.ProductionOrderParent = CreateT_ProductionOrder(dbMasterDataCache, )
+            tProductionOrderBom.ProductionOrderParent = CreateT_ProductionOrder()
         }*/
 
         public static ProductionOrder CreateT_ProductionOrder(
-            IDbMasterDataCache dbMasterDataCache, IDbTransactionData dbTransactionData,
+            IDbTransactionData dbTransactionData,
             Demand demand, Quantity quantity)
         {
             T_ProductionOrder tProductionOrder = new T_ProductionOrder();
@@ -39,11 +40,13 @@ namespace Zpp.Test
             // connects this provider with table T_Provider
             tProductionOrder.Quantity = quantity.GetValue();
 
-            return new ProductionOrder(tProductionOrder, dbMasterDataCache);
+            return new ProductionOrder(tProductionOrder);
         }
 
-        private static T_CustomerOrder CreateCustomerOrder(IDbMasterDataCache dbMasterDataCache, DueTime dueTime)
+        private static T_CustomerOrder CreateCustomerOrder(DueTime dueTime)
         {
+            IDbMasterDataCache dbMasterDataCache =
+                ZppConfiguration.CacheManager.GetMasterDataCache();
             var order = new T_CustomerOrder()
             {
                 BusinessPartnerId = dbMasterDataCache.M_BusinessPartnerGetAll()[0].Id,
@@ -55,22 +58,24 @@ namespace Zpp.Test
         }
 
         public static CustomerOrderPart CreateCustomerOrderPartRandomArticleToBuy(
-            IDbMasterDataCache dbMasterDataCache, int quantity, DueTime dueTime)
+            int quantity, DueTime dueTime)
         {
+            IDbMasterDataCache dbMasterDataCache =
+                ZppConfiguration.CacheManager.GetMasterDataCache();
             List<M_Article> articlesToBuy = dbMasterDataCache.M_ArticleGetArticlesToBuy();
 
             int randomArticleIndex = random.Next(0, articlesToBuy.Count - 1);
             CustomerOrderPart customerOrderPart =
-                CreateCustomerOrderPartWithGivenArticle(dbMasterDataCache, quantity,
+                CreateCustomerOrderPartWithGivenArticle(quantity,
                     articlesToBuy[randomArticleIndex], dueTime);
 
             return customerOrderPart;
         }
 
         public static CustomerOrderPart CreateCustomerOrderPartWithGivenArticle(
-            IDbMasterDataCache dbMasterDataCache, int quantity, M_Article article, DueTime dueTime)
+            int quantity, M_Article article, DueTime dueTime)
         {
-            T_CustomerOrder tCustomerOrder = CreateCustomerOrder(dbMasterDataCache, dueTime);
+            T_CustomerOrder tCustomerOrder = CreateCustomerOrder(dueTime);
             T_CustomerOrderPart tCustomerOrderPart = new T_CustomerOrderPart();
             tCustomerOrderPart.CustomerOrder = tCustomerOrder;
             tCustomerOrderPart.CustomerOrderId = tCustomerOrder.Id;
@@ -79,7 +84,7 @@ namespace Zpp.Test
             tCustomerOrderPart.Quantity = quantity;
             tCustomerOrderPart.State = State.Created;
 
-            return new CustomerOrderPart(tCustomerOrderPart, dbMasterDataCache);
+            return new CustomerOrderPart(tCustomerOrderPart);
         }
     }
 }

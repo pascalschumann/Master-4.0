@@ -1,5 +1,6 @@
 using Master40.DB.Data.WrappersForPrimitives;
 using Xunit;
+using Zpp.Configuration;
 using Zpp.DbCache;
 
 namespace Zpp.Test.Unit_Tests
@@ -9,11 +10,11 @@ namespace Zpp.Test.Unit_Tests
         [Fact]
         public void TestALotSize()
         {
-            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
-            IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+            IDbMasterDataCache dbMasterDataCache =
+            ZppConfiguration.CacheManager.GetMasterDataCache();
+
             LotSize.LotSize lotSize = new LotSize.LotSize(new Quantity(6),
-                dbMasterDataCache.M_ArticleGetAll()[0].GetId(), dbMasterDataCache);
+                dbMasterDataCache.M_ArticleGetAll()[0].GetId());
             foreach (var quantity in lotSize.GetLotSizes())
             {
                 Assert.True(quantity.GetValue() == TestConfiguration.LotSize, $"Quantity ({quantity}) is not correct.");

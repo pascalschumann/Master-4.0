@@ -1,16 +1,23 @@
 using System;
+using System.Linq;
 using Master40.DB.Data.Context;
 using Master40.DB.Data.Helper;
 using Master40.DB.DataModel;
+using Master40.SimulationCore.DistributionProvider;
+using Master40.SimulationCore.Environment.Options;
 using Priority_Queue;
 using Zpp.Common.DemandDomain;
 using Zpp.Common.DemandDomain.Wrappers;
 using Zpp.Common.DemandDomain.WrappersForCollections;
 using Zpp.Common.ProviderDomain;
+using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Mrp.MachineManagement;
 using Zpp.Mrp.NodeManagement;
 using Zpp.Mrp.StockManagement;
+using Zpp.Simulation;
+using Zpp.Simulation.Types;
+using Zpp.Test.Configuration.Scenarios;
 using Zpp.Utils;
 using Zpp.Utils.Queue;
 
@@ -23,20 +30,36 @@ namespace Zpp.Mrp
         /**
          * Only at start the demands are customerOrders
          */
-        public static void Start(ProductionDomainContext productionDomainContext, bool withForwardScheduling = true)
+        public static void Start(ProductionDomainContext productionDomainContext,
+            bool withForwardScheduling = true)
         {
-            // init data structures
-            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(productionDomainContext);
-            IDbTransactionData dbTransactionData =
-                new DbTransactionData(productionDomainContext, dbMasterDataCache);
+            OrderGenerator orderGenerator = TestScenario.GetOrderGenerator(productionDomainContext
+                , new MinDeliveryTime(960)
+                , new MaxDeliveryTime(1440)
+                , new OrderArrivalRate(0.025));
 
             // start
+            for (int i = 0; productionDomainContext.CustomerOrderParts.Count() < 10; i++)
+            {
+                // remove all DemandToProvider entries
+                productionDomainContext.DemandToProviders.RemoveRange(productionDomainContext
+                    .DemandToProviders);
+                productionDomainContext.ProviderToDemand.RemoveRange(productionDomainContext
+                    .ProviderToDemand);
 
-            // remove all DemandToProvider entries
-            dbTransactionData.DemandToProvidersRemoveAll();
+                // init data structures
+                IDbTransactionData dbTransactionData =
+                    ZppConfiguration.CacheManager.ReloadTransactionData();
 
-            ProcessDbDemands(dbTransactionData, dbTransactionData.T_CustomerOrderPartGetAll(),
-                dbMasterDataCache, 0, withForwardScheduling);
+                ProcessDbDemands(dbTransactionData, dbTransactionData.T_CustomerOrderPartGetAll(),
+                    0, withForwardScheduling);
+
+                
+                var simulationInterval = new SimulationInterval(0 * i, 1440 * i);
+                var simulator = new Simulator(dbTransactionData);
+                simulator.ProcessCurrentInterval(simulationInterval, orderGenerator);
+                dbTransactionData.PersistDbCache();
+            }
         }
 
         /**
@@ -81,7 +104,7 @@ namespace Zpp.Mrp
         }
 
         private static IDemands ProcessNextDemand(IDbTransactionData dbTransactionData,
-            Demand demand, IDbMasterDataCache dbMasterDataCache, IProvidingManager orderManager,
+            Demand demand, IProvidingManager orderManager,
             StockManager stockManager, IProviderManager providerManager,
             IOpenDemandManager openDemandManager)
         {
@@ -117,7 +140,8 @@ namespace Zpp.Mrp
 
 
         private static void ProcessDbDemands(IDbTransactionData dbTransactionData,
-            IDemands dbDemands, IDbMasterDataCache dbMasterDataCache, int count, bool withForwardScheduling)
+            IDemands dbDemands, int count,
+            bool withForwardScheduling)
         {
             // init
             IDemands finalAllDemands = new Demands();
@@ -127,12 +151,12 @@ namespace Zpp.Mrp
                 new FastPriorityQueue<DemandQueueNode>(MAX_DEMANDS_IN_QUEUE);
 
             StockManager globalStockManager =
-                new StockManager(dbMasterDataCache.M_StockGetAll(), dbMasterDataCache);
+                new StockManager();
 
-            StockManager stockManager = new StockManager(globalStockManager, dbMasterDataCache);
+            StockManager stockManager = new StockManager(globalStockManager);
             IProviderManager providerManager = new ProviderManager(dbTransactionData);
 
-            IProvidingManager orderManager = new OrderManager(dbMasterDataCache);
+            IProvidingManager orderManager = new OrderManager();
 
             IOpenDemandManager openDemandManager = new OpenDemandManager();
 
@@ -147,7 +171,7 @@ namespace Zpp.Mrp
                 DemandQueueNode firstDemandInQueue = demandQueue.Dequeue();
 
                 IDemands nextDemands = ProcessNextDemand(dbTransactionData,
-                    firstDemandInQueue.GetDemand(), dbMasterDataCache, orderManager, stockManager,
+                    firstDemandInQueue.GetDemand(), orderManager, stockManager,
                     providerManager, openDemandManager);
                 if (nextDemands != null)
                 {
@@ -170,12 +194,12 @@ namespace Zpp.Mrp
                     (T_CustomerOrderPart) oneCustomerOrderPart.GetIDemand();
                 thisCustomerOrderPart.CustomerOrder.DueTime += Math.Abs(minDueTime.GetValue());
                 ProcessNextCustomerOrderPart(dbTransactionData, oneCustomerOrderPart,
-                    dbMasterDataCache, globalStockManager);
+                    globalStockManager);
                 return;
             }
             */
 
-            
+
             // forward scheduling
             // TODO: remove this once forward scheduling is implemented
             // TODO 2: in forward scheduling, min must be calculuted by demand & provider,
@@ -206,7 +230,8 @@ namespace Zpp.Mrp
                         }
                     }
 
-                    ProcessDbDemands(dbTransactionData, dbDemands, dbMasterDataCache, count++, withForwardScheduling);
+                    ProcessDbDemands(dbTransactionData, dbDemands, count++,
+                        withForwardScheduling);
                 }
             }
 
@@ -223,8 +248,9 @@ namespace Zpp.Mrp
                 dbTransactionData.SetProviderManager(providerManager);
 
                 // job shop scheduling
-                MachineManager.JobSchedulingWithGifflerThompsonAsZaepfel(dbTransactionData,
-                    dbMasterDataCache, new PriorityRule());
+                MachineManager machineManager = new MachineManager();
+                machineManager.JobSchedulingWithGifflerThompsonAsZaepfel(dbTransactionData,
+                    new PriorityRule());
 
                 dbTransactionData.PersistDbCache();
 

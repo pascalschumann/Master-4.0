@@ -1,4 +1,5 @@
 using Xunit;
+using Zpp.Configuration;
 using Zpp.DbCache;
 
 namespace Zpp.Test.Unit_Tests.Provider
@@ -19,9 +20,9 @@ namespace Zpp.Test.Unit_Tests.Provider
         [Fact(Skip = "Not implemented yet.")]
         public void TestPurchaseOrderPartCreatePurchaseOrderPart()
         {
-            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+            
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+                ZppConfiguration.CacheManager.ReloadTransactionData();
             
             // TODO
             Assert.True(false);

@@ -12,8 +12,8 @@ namespace Zpp.Common.ProviderDomain.Wrappers
      */
     public class PurchaseOrderPart : Provider, IProviderLogic
     {
-        public PurchaseOrderPart(IProvider provider, Demands demands,
-            IDbMasterDataCache dbMasterDataCache) : base(provider, dbMasterDataCache)
+        public PurchaseOrderPart(IProvider provider, Demands demands
+            ) : base(provider)
         {
         }
 

@@ -1,6 +1,7 @@
 using System.IO;
 using System.Text;
 using Xunit;
+using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Mrp;
 using Zpp.OrderGraph;
@@ -42,9 +43,9 @@ namespace Zpp.Test.Integration_Tests
                 $"../../../Test/Ordergraphs/production_ordergraph_{TestConfiguration.Name}.txt";
 
             // build orderGraph up
-            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+            
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+                ZppConfiguration.CacheManager.ReloadTransactionData();
             IDirectedGraph<INode> orderDirectedGraph = new ProductionOrderDirectedGraph(dbTransactionData, true);
 
             

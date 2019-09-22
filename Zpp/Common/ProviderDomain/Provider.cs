@@ -3,6 +3,7 @@ using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Master40.DB.Interfaces;
 using Zpp.Common.DemandDomain.WrappersForCollections;
+using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.OrderGraph;
 using Zpp.Utils;
@@ -19,17 +20,17 @@ namespace Zpp.Common.ProviderDomain
         protected Demands _dependingDemands;
         protected readonly ProviderToDemandTable ProviderToDemandTable = new ProviderToDemandTable();
         protected readonly IProvider _provider;
-        protected readonly IDbMasterDataCache _dbMasterDataCache;
+        protected readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
         protected static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
-        public Provider(IProvider provider, IDbMasterDataCache dbMasterDataCache)
+        public Provider(IProvider provider)
         {
             if (provider == null)
             {
                 throw new MrpRunException("Given provider should not be null.");
             }
             _provider = provider;
-            _dbMasterDataCache = dbMasterDataCache;
+            
         }
 
         public Demands GetAllDependingDemands()

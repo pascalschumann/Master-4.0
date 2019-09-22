@@ -8,8 +8,8 @@ namespace Zpp.Common.ProviderDomain.WrappersForCollections
 {
     public class ProductionOrderOperations : CollectionWrapperWithList<ProductionOrderOperation>
     {
-        public ProductionOrderOperations(IEnumerable<T_ProductionOrderOperation> list,
-            IDbMasterDataCache dbMasterDataCache) : base(Wrap(list, dbMasterDataCache))
+        public ProductionOrderOperations(IEnumerable<T_ProductionOrderOperation> list
+            ) : base(Wrap(list))
         {
         }
 
@@ -18,13 +18,13 @@ namespace Zpp.Common.ProviderDomain.WrappersForCollections
         }
 
         private static List<ProductionOrderOperation> Wrap(
-            IEnumerable<T_ProductionOrderOperation> list, IDbMasterDataCache dbMasterDataCache)
+            IEnumerable<T_ProductionOrderOperation> list)
         {
             List<ProductionOrderOperation> productionOrderOperations =
                 new List<ProductionOrderOperation>();
             foreach (var item in list)
             {
-                productionOrderOperations.Add(new ProductionOrderOperation(item, dbMasterDataCache));
+                productionOrderOperations.Add(new ProductionOrderOperation(item));
             }
 
             return productionOrderOperations;

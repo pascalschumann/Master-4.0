@@ -1,6 +1,7 @@
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Master40.DB.Interfaces;
+using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.OrderGraph;
 using Zpp.Utils;
@@ -15,9 +16,9 @@ namespace Zpp.Common.DemandDomain
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         protected readonly IDemand _demand;
-        protected readonly IDbMasterDataCache _dbMasterDataCache;
+        protected readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
 
-        public Demand(IDemand demand, IDbMasterDataCache dbMasterDataCache)
+        public Demand(IDemand demand)
         {
             if (demand == null)
             {
@@ -25,7 +26,7 @@ namespace Zpp.Common.DemandDomain
             }
 
             _demand = demand;
-            _dbMasterDataCache = dbMasterDataCache;
+            
         }
         
         // TODO: use this method

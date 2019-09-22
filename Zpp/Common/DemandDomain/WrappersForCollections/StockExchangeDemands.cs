@@ -11,12 +11,12 @@ namespace Zpp.Common.DemandDomain.WrappersForCollections
      */
     public class StockExchangeDemands : Demands
     {
-        public StockExchangeDemands(List<T_StockExchange> iDemands,IDbMasterDataCache dbMasterDataCache
-            ) : base(ToDemands(iDemands, dbMasterDataCache))
+        public StockExchangeDemands(List<T_StockExchange> iDemands
+            ) : base(ToDemands(iDemands))
         {
         }
 
-        private static List<Demand> ToDemands(List<T_StockExchange> iDemands, IDbMasterDataCache dbMasterDataCache)
+        private static List<Demand> ToDemands(List<T_StockExchange> iDemands)
         {
             List<Demand> demands = new List<Demand>();
             foreach (var iDemand in iDemands)
@@ -25,7 +25,7 @@ namespace Zpp.Common.DemandDomain.WrappersForCollections
                 {
                     continue;
                 }
-                demands.Add(new StockExchangeDemand(iDemand, dbMasterDataCache));
+                demands.Add(new StockExchangeDemand(iDemand));
             }
 
             return demands;

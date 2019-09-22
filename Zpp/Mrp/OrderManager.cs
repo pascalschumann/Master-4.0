@@ -14,10 +14,10 @@ namespace Zpp.Mrp
         private readonly IProvidingManager _purchaseManager;
         private readonly IProvidingManager _productionManager;
 
-        public OrderManager(IDbMasterDataCache dbMasterDataCache)
+        public OrderManager()
         {
-            _purchaseManager = new PurchaseManager(dbMasterDataCache);
-            _productionManager = new ProductionManager(dbMasterDataCache);
+            _purchaseManager = new PurchaseManager();
+            _productionManager = new ProductionManager();
         }
 
         public ResponseWithProviders Satisfy(Demand demand, Quantity demandedQuantity, IDbTransactionData dbTransactionData)

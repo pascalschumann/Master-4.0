@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Xunit;
 using Zpp.Common.ProviderDomain.Wrappers;
+using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Mrp;
 using Zpp.OrderGraph;
@@ -45,12 +46,12 @@ namespace Zpp.Test.Integration_Tests
                 $"../../../Test/Ordergraphs/production_order_operation_graph_{TestConfiguration.Name}.txt";
 
             // build orderGraph up
-            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+            
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+                ZppConfiguration.CacheManager.ReloadTransactionData();
            
             IProductionOrderToOperationGraph<INode> productionOrderToOperationGraph =
-                new ProductionOrderToOperationGraph(dbMasterDataCache, dbTransactionData);
+                new ProductionOrderToOperationGraph(dbTransactionData);
             
             
             string actualOrderGraphWithIds = productionOrderToOperationGraph.ToString();

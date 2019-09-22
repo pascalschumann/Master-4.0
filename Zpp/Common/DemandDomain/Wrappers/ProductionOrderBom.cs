@@ -16,8 +16,8 @@ namespace Zpp.Common.DemandDomain.Wrappers
     {
         private readonly T_ProductionOrderBom _productionOrderBom;
 
-        public ProductionOrderBom(IDemand demand, IDbMasterDataCache dbMasterDataCache) : base(
-            demand, dbMasterDataCache)
+        public ProductionOrderBom(IDemand demand) : base(
+            demand)
         {
             _productionOrderBom = (T_ProductionOrderBom) _demand;
         }
@@ -33,7 +33,7 @@ namespace Zpp.Common.DemandDomain.Wrappers
         /// <param name="productionOrderOperation">use already created, null if no one was created before</param>
         /// <returns></returns>
         public static ProductionOrderBom CreateTProductionOrderBom(M_ArticleBom articleBom,
-            Provider parentProductionOrder, IDbMasterDataCache dbMasterDataCache,
+            Provider parentProductionOrder,
             ProductionOrderOperation productionOrderOperation, Quantity quantity)
         {
             T_ProductionOrderBom productionOrderBom = new T_ProductionOrderBom();
@@ -65,7 +65,7 @@ namespace Zpp.Common.DemandDomain.Wrappers
             productionOrderBom.ArticleChild = articleBom.ArticleChild;
             productionOrderBom.ArticleChildId = articleBom.ArticleChildId;
 
-            return new ProductionOrderBom(productionOrderBom, dbMasterDataCache);
+            return new ProductionOrderBom(productionOrderBom);
         }
 
         public override IDemand ToIDemand()
@@ -163,8 +163,7 @@ namespace Zpp.Common.DemandDomain.Wrappers
                         .ProductionOrderOperationId.GetValueOrDefault())).GetValue();
             }
 
-            return new ProductionOrderOperation(_productionOrderBom.ProductionOrderOperation,
-                _dbMasterDataCache);
+            return new ProductionOrderOperation(_productionOrderBom.ProductionOrderOperation);
         }
 
         public override DueTime GetStartTime(IDbTransactionData dbTransactionData)
@@ -212,8 +211,7 @@ namespace Zpp.Common.DemandDomain.Wrappers
             }
 
 
-            return new ProductionOrder(_productionOrderBom.ProductionOrderParent,
-                _dbMasterDataCache);
+            return new ProductionOrder(_productionOrderBom.ProductionOrderParent);
         }
 
         public M_ArticleBom GetArticleBom()

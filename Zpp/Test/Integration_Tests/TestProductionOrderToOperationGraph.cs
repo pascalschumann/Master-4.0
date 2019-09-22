@@ -4,6 +4,7 @@ using System.Text;
 using Xunit;
 using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.Common.ProviderDomain.WrappersForCollections;
+using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Mrp;
 using Zpp.Mrp.MachineManagement;
@@ -32,12 +33,12 @@ namespace Zpp.Test.Integration_Tests
         public void TestGraphIsComplete(string testConfigurationFileName)
         {
             InitThisTest(testConfigurationFileName);
-            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+            
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+                ZppConfiguration.CacheManager.ReloadTransactionData();
 
             ProductionOrderToOperationGraph productionOrderToOperationGraph =
-                new ProductionOrderToOperationGraph(dbMasterDataCache, dbTransactionData);
+                new ProductionOrderToOperationGraph(dbTransactionData);
 
             ProductionOrderOperations productionOrderOperations =
                 productionOrderToOperationGraph.GetAllOperations();
@@ -71,11 +72,11 @@ namespace Zpp.Test.Integration_Tests
                 $"../../../Test/Ordergraphs/all_operations_graph_{TestConfiguration.Name}.txt";
 
             // build operationGraph up
-            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+            
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+                ZppConfiguration.CacheManager.ReloadTransactionData();
             IDirectedGraph<INode> operationDirectedGraph =
-                new ProductionOrderToOperationGraph(dbMasterDataCache, dbTransactionData);
+                new ProductionOrderToOperationGraph(dbTransactionData);
             
             string actualOperationGraph = operationDirectedGraph.ToString();
             if (File.Exists(operationGraphFileName) == false)

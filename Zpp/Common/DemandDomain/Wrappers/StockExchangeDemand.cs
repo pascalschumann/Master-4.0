@@ -2,6 +2,7 @@ using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Master40.DB.Enums;
 using Master40.DB.Interfaces;
+using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Utils;
 using Zpp.WrappersForPrimitives;
@@ -14,7 +15,7 @@ namespace Zpp.Common.DemandDomain.Wrappers
     public class StockExchangeDemand : Demand, IDemandLogic
     {
 
-        public StockExchangeDemand(IDemand demand, IDbMasterDataCache dbMasterDataCache) : base(demand, dbMasterDataCache)
+        public StockExchangeDemand(IDemand demand) : base(demand)
         {
         }
 
@@ -37,8 +38,10 @@ namespace Zpp.Common.DemandDomain.Wrappers
             return dueTime;
         }
 
-        public static Demand CreateStockExchangeProductionOrderDemand(M_ArticleBom articleBom, DueTime dueTime, IDbMasterDataCache dbMasterDataCache)
+        public static Demand CreateStockExchangeProductionOrderDemand(M_ArticleBom articleBom, DueTime dueTime)
         {
+            IDbMasterDataCache dbMasterDataCache =
+                ZppConfiguration.CacheManager.GetMasterDataCache();
             T_StockExchange stockExchange = new T_StockExchange();
             stockExchange.StockExchangeType = StockExchangeType.Demand;
             stockExchange.Quantity = articleBom.Quantity;
@@ -50,13 +53,15 @@ namespace Zpp.Common.DemandDomain.Wrappers
             stockExchange.ExchangeType = ExchangeType.Withdrawal;
             
             StockExchangeDemand stockExchangeDemand =
-                new StockExchangeDemand(stockExchange, dbMasterDataCache);
+                new StockExchangeDemand(stockExchange);
             
             return stockExchangeDemand;
         }
         
-        public static Demand CreateStockExchangeStockDemand(M_Article article, DueTime dueTime, Quantity quantity, IDbMasterDataCache dbMasterDataCache)
+        public static Demand CreateStockExchangeStockDemand(M_Article article, DueTime dueTime, Quantity quantity)
         {
+            IDbMasterDataCache dbMasterDataCache =
+                ZppConfiguration.CacheManager.GetMasterDataCache();
             T_StockExchange stockExchange = new T_StockExchange();
             stockExchange.StockExchangeType = StockExchangeType.Demand;
             stockExchange.Quantity = quantity.GetValue();
@@ -67,7 +72,7 @@ namespace Zpp.Common.DemandDomain.Wrappers
             stockExchange.RequiredOnTime = dueTime.GetValue();
             stockExchange.ExchangeType = ExchangeType.Insert;
             StockExchangeDemand stockExchangeDemand =
-                new StockExchangeDemand(stockExchange, dbMasterDataCache);
+                new StockExchangeDemand(stockExchange);
             
             return stockExchangeDemand;
         }

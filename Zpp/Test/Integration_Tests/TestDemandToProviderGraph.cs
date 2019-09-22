@@ -6,6 +6,7 @@ using System.Text;
 using Xunit;
 using Zpp.Common.DemandDomain.Wrappers;
 using Zpp.Common.ProviderDomain.Wrappers;
+using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Mrp;
 using Zpp.OrderGraph;
@@ -46,9 +47,8 @@ namespace Zpp.Test.Integration_Tests
             InitThisTest(testConfigurationFileName);
             
             // build demandToProviderGraph up
-            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+                ZppConfiguration.CacheManager.ReloadTransactionData();
 
             IDirectedGraph<INode> demandToProviderGraph = new DemandToProviderDirectedGraph(dbTransactionData);
 
@@ -133,9 +133,9 @@ namespace Zpp.Test.Integration_Tests
             };
 
             // build demandToProviderGraph up
-            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+            
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+                ZppConfiguration.CacheManager.ReloadTransactionData();
             IDirectedGraph<INode> demandToProviderGraph = new DemandToProviderDirectedGraph(dbTransactionData);
 
             // verify edgeTypes
@@ -176,9 +176,9 @@ namespace Zpp.Test.Integration_Tests
                 $"../../../Test/Ordergraphs/demandToProvider_graph_{TestConfiguration.Name}.txt";
 
             // build demandToProviderGraph up
-            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+            
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+                ZppConfiguration.CacheManager.ReloadTransactionData();
             IDirectedGraph<INode> demandToProviderGraph = new DemandToProviderDirectedGraph(dbTransactionData);
 
             

@@ -1,6 +1,7 @@
 using System.IO;
 using System.Text;
 using Xunit;
+using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Mrp;
 using Zpp.Test.Configuration;
@@ -29,12 +30,12 @@ namespace Zpp.Test.Ordergraphs.GanttChart
             string orderGraphAsGanttChartFile =
                 $"../../../Test/Ordergraphs/GanttChart/gantt_chart_{TestConfiguration.Name}.json";
             
-            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+            
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+                ZppConfiguration.CacheManager.ReloadTransactionData();
 
             
-            string actualGanttChart = new GraphicalRepresentation.GanttChart(dbTransactionData.ProductionOrderOperationGetAll(), dbMasterDataCache).ToString();
+            string actualGanttChart = new GraphicalRepresentation.GanttChart(dbTransactionData.ProductionOrderOperationGetAll()).ToString();
             // create initial file, if it doesn't exists (must be committed then)
             if (File.Exists(orderGraphAsGanttChartFile) == false)
             {

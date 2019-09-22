@@ -9,6 +9,7 @@ using Zpp.Common.DemandDomain.WrappersForCollections;
 using Zpp.Common.ProviderDomain;
 using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.Common.ProviderDomain.WrappersForCollections;
+using Zpp.Configuration;
 using Zpp.Mrp.MachineManagement;
 using Zpp.Utils;
 using Zpp.WrappersForPrimitives;
@@ -17,14 +18,14 @@ namespace Zpp.DbCache
 {
     public class Aggregator : IAggregator
     {
-        private readonly IDbMasterDataCache _dbMasterDataCache;
+        private readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
         private readonly IDbTransactionData _dbTransactionData;
 
-        public Aggregator(IDbMasterDataCache dbMasterDataCache,
+        public Aggregator(
             IDbTransactionData dbTransactionData)
         {
             _dbTransactionData = dbTransactionData;
-            _dbMasterDataCache = dbMasterDataCache;
+            
         }
 
         public ProductionOrderBoms GetProductionOrderBomsOfProductionOrder(
@@ -76,7 +77,7 @@ namespace Zpp.DbCache
                     "How could an productionOrderOperation without an T_ProductionOrderBom exists?");
             }
 
-            return new ProductionOrderBom(productionOrderBom, _dbMasterDataCache);
+            return new ProductionOrderBom(productionOrderBom);
         }
 
         public ProductionOrderBoms GetAllProductionOrderBomsBy(
@@ -92,7 +93,7 @@ namespace Zpp.DbCache
                     "How could an productionOrderOperation without an T_ProductionOrderBom exists?");
             }
 
-            return new ProductionOrderBoms(productionOrderBoms, _dbMasterDataCache);
+            return new ProductionOrderBoms(productionOrderBoms);
         }
 
         public Providers GetAllChildProvidersOf(Demand demand)

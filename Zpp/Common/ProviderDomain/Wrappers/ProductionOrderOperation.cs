@@ -4,6 +4,7 @@ using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Zpp.Common.DemandDomain.WrappersForCollections;
 using Zpp.Common.ProviderDomain.WrappersForCollections;
+using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Mrp.MachineManagement;
 using Zpp.Mrp.Scheduling;
@@ -16,14 +17,14 @@ namespace Zpp.Common.ProviderDomain.Wrappers
     public class ProductionOrderOperation : INode
     {
         private readonly T_ProductionOrderOperation _productionOrderOperation;
-        private readonly IDbMasterDataCache _dbMasterDataCache;
+        private readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
         private Priority _priority = null;
 
-        public ProductionOrderOperation(T_ProductionOrderOperation productionOrderOperation,
-            IDbMasterDataCache dbMasterDataCache)
+        public ProductionOrderOperation(T_ProductionOrderOperation productionOrderOperation
+            )
         {
             _productionOrderOperation = productionOrderOperation;
-            _dbMasterDataCache = dbMasterDataCache;
+            
         }
 
         public OperationBackwardsSchedule ScheduleBackwards(

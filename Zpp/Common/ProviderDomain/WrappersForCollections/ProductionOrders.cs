@@ -22,16 +22,16 @@ namespace Zpp.Common.ProviderDomain.WrappersForCollections
         {
         }
         
-        public ProductionOrders(List<T_ProductionOrder> iDemands, IDbMasterDataCache dbMasterDataCache) : base(ToProviders(iDemands, dbMasterDataCache))
+        public ProductionOrders(List<T_ProductionOrder> iDemands) : base(ToProviders(iDemands))
         {
         }
 
-        private static List<Provider> ToProviders(List<T_ProductionOrder> iProviders, IDbMasterDataCache dbMasterDataCache)
+        private static List<Provider> ToProviders(List<T_ProductionOrder> iProviders)
         {
             List<Provider> providers = new List<Provider>();
             foreach (var iProvider in iProviders)
             {
-                providers.Add(new ProductionOrder(iProvider, dbMasterDataCache));
+                providers.Add(new ProductionOrder(iProvider));
             }
 
             return providers;

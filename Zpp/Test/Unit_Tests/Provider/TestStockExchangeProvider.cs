@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Master40.DB.DataModel;
 using Xunit;
+using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Mrp.StockManagement;
 using Zpp.WrappersForPrimitives;
@@ -29,28 +30,30 @@ namespace Zpp.Test.Unit_Tests.Provider
         [Fact]
         public void TestCreateStockExchangeProvider()
         {
-            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+            IDbMasterDataCache dbMasterDataCache =
+                ZppConfiguration.CacheManager.GetMasterDataCache();
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+                ZppConfiguration.CacheManager.ReloadTransactionData();
 
             // CustomerOrderPart
             Common.DemandDomain.Demand randomCustomerOrderPart =
-                EntityFactory.CreateCustomerOrderPartRandomArticleToBuy(dbMasterDataCache,
-                    new Random().Next(3, 99), new DueTime(50));
+                EntityFactory.CreateCustomerOrderPartRandomArticleToBuy(new Random().Next(3, 99),
+                    new DueTime(50));
             Common.DemandDomain.Demand[] demands = new[]
             {
                 randomCustomerOrderPart,
-                EntityFactory.CreateCustomerOrderPartWithGivenArticle(dbMasterDataCache,
-                    new Random().Next(1001, 1999), dbMasterDataCache.M_ArticleGetAll().First(x => x.ToPurchase), new DueTime(100)),
+                EntityFactory.CreateCustomerOrderPartWithGivenArticle(new Random().Next(1001, 1999),
+                    dbMasterDataCache.M_ArticleGetAll().First(x => x.ToPurchase), new DueTime(100)),
             };
             foreach (var demand in demands)
             {
                 M_Stock stock = dbMasterDataCache.M_StockGetByArticleId(demand.GetArticleId());
 
-                StockManager stockManager = new StockManager(dbMasterDataCache.M_StockGetAll(), dbMasterDataCache);
-                Common.ProviderDomain.Provider providerStockExchange = stockManager.CreateStockExchangeProvider(
-                    demand.GetArticle(), demand.GetDueTime(dbTransactionData), demand.GetQuantity(),
-                    dbMasterDataCache, dbTransactionData);
+                StockManager stockManager = new StockManager();
+                Common.ProviderDomain.Provider providerStockExchange =
+                    stockManager.CreateStockExchangeProvider(demand.GetArticle(),
+                        demand.GetDueTime(dbTransactionData), demand.GetQuantity(),
+                        dbTransactionData);
                 Assert.True(providerStockExchange.GetQuantity().Equals(demand.GetQuantity()),
                     "Quantity is not correct.");
                 Assert.True(providerStockExchange.GetArticle().Equals(demand.GetArticle()),
@@ -64,25 +67,27 @@ namespace Zpp.Test.Unit_Tests.Provider
         [Fact]
         public void TestNoDependingDemandsIfStockHasEnough()
         {
-            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+        IDbMasterDataCache dbMasterDataCache =
+            ZppConfiguration.CacheManager.GetMasterDataCache();
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+                ZppConfiguration.CacheManager.ReloadTransactionData();
 
             // CustomerOrderPart
             Common.DemandDomain.Demand demand =
-                EntityFactory.CreateCustomerOrderPartRandomArticleToBuy(dbMasterDataCache,
-                    new Random().Next(1, 9), new DueTime(50));
+                EntityFactory.CreateCustomerOrderPartRandomArticleToBuy(new Random().Next(1, 9),
+                    new DueTime(50));
 
             M_Stock stock = dbMasterDataCache.M_StockGetByArticleId(demand.GetArticleId());
             // increase stock
             stock.Current = 10;
-            StockManager stockManager = new StockManager(dbMasterDataCache.M_StockGetAll(), dbMasterDataCache);
-            Common.ProviderDomain.Provider providerStockExchange = stockManager.CreateStockExchangeProvider(
-                demand.GetArticle(), demand.GetDueTime(dbTransactionData), demand.GetQuantity(),
-                dbMasterDataCache, dbTransactionData);
+            StockManager stockManager = new StockManager();
+            Common.ProviderDomain.Provider providerStockExchange =
+                stockManager.CreateStockExchangeProvider(demand.GetArticle(),
+                    demand.GetDueTime(dbTransactionData), demand.GetQuantity(), dbTransactionData);
 
-            
-            Assert.True(providerStockExchange.AnyDependingDemands() == false, "Provider should have no depending demands.");
+
+            Assert.True(providerStockExchange.AnyDependingDemands() == false,
+                "Provider should have no depending demands.");
         }
     }
 }

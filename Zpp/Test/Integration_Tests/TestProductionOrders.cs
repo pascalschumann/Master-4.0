@@ -1,6 +1,7 @@
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Xunit;
+using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Mrp;
 using Zpp.Mrp.ProductionManagement.ProductionTypes;
@@ -12,21 +13,23 @@ namespace Zpp.Test.Integration_Tests
         [Fact]
         public void TestProductionOrderBomIsACopyOfArticleBom()
         {
-            if (Zpp.Configuration.Configuration.ProductionType.Equals(ProductionType.WorkshopProductionClassic))
+            if (Zpp.Configuration.ZppConfiguration.ProductionType.Equals(ProductionType
+                .WorkshopProductionClassic))
             {
                 Assert.True(true);
             }
             else
             {
                 MrpRun.Start(ProductionDomainContext);
-                IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+                IDbMasterDataCache dbMasterDataCache =
+                    ZppConfiguration.CacheManager.GetMasterDataCache();
                 IDbTransactionData dbTransactionData =
-                    new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+                    ZppConfiguration.CacheManager.ReloadTransactionData();
 
                 foreach (var productionOrderBom in dbTransactionData.ProductionOrderBomGetAll())
                 {
                     T_ProductionOrderBom tProductionOrderBom =
-                        (T_ProductionOrderBom)productionOrderBom.ToIDemand();
+                        (T_ProductionOrderBom) productionOrderBom.ToIDemand();
                     M_ArticleBom articleBom =
                         dbMasterDataCache.M_ArticleBomGetByArticleChildId(
                             new Id(tProductionOrderBom.ArticleChildId));
@@ -34,24 +37,23 @@ namespace Zpp.Test.Integration_Tests
                         "Quantity of ProductionOrderBom does not equal the quantity from its articleBom.");
                 }
             }
-
         }
 
         [Fact]
         public void TestProductionOrderOperationIsACopyOfM_Operation()
         {
-            if (Zpp.Configuration.Configuration.ProductionType.Equals(ProductionType.WorkshopProductionClassic))
+            if (Zpp.Configuration.ZppConfiguration.ProductionType.Equals(ProductionType
+                .WorkshopProductionClassic))
             {
                 Assert.True(true);
             }
             else
             {
-
                 MrpRun.Start(ProductionDomainContext);
                 IDbMasterDataCache dbMasterDataCache =
-                    new DbMasterDataCache(ProductionDomainContext);
+                    ZppConfiguration.CacheManager.GetMasterDataCache();
                 IDbTransactionData dbTransactionData =
-                    new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+                    ZppConfiguration.CacheManager.ReloadTransactionData();
 
                 foreach (var productionOrderOperation in dbTransactionData
                     .ProductionOrderOperationGetAll())
@@ -59,7 +61,7 @@ namespace Zpp.Test.Integration_Tests
                     T_ProductionOrderOperation tProductionOrderOperation =
                         productionOrderOperation.GetValue();
                     T_ProductionOrderBom aProductionOrderBom =
-                        (T_ProductionOrderBom)dbTransactionData.GetAggregator()
+                        (T_ProductionOrderBom) dbTransactionData.GetAggregator()
                             .GetAnyProductionOrderBomByProductionOrderOperation(
                                 productionOrderOperation).ToIDemand();
                     M_ArticleBom articleBom =
@@ -80,8 +82,8 @@ namespace Zpp.Test.Integration_Tests
                         tProductionOrderOperation.ResourceToolId.Equals(mOperation.ResourceToolId),
                         errorMessage);
                     Assert.True(
-                        tProductionOrderOperation.ResourceSkillId.Equals(mOperation.ResourceSkillId),
-                        errorMessage);
+                        tProductionOrderOperation.ResourceSkillId.Equals(mOperation
+                            .ResourceSkillId), errorMessage);
                 }
             }
         }

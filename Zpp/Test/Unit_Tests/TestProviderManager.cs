@@ -4,6 +4,7 @@ using Master40.DB.DataModel;
 using Xunit;
 using Zpp.Common.DemandDomain.Wrappers;
 using Zpp.Common.ProviderDomain.Wrappers;
+using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Mrp;
 using Zpp.Mrp.NodeManagement;
@@ -26,23 +27,23 @@ namespace Zpp.Test.Unit_Tests
         // TODO: Must be completely rewritten
         public void TestSatisfyByExistingDemand()
         {
-            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+            
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+                ZppConfiguration.CacheManager.ReloadTransactionData();
 
             StockManager stockManager =
-                new StockManager(dbMasterDataCache.M_StockGetAll(), dbMasterDataCache);
+                new StockManager();
             
             IOpenDemandManager openDemandManager = new OpenDemandManager();
 
             IProviderManager providerManager = new ProviderManager(dbTransactionData);
             IProvidingManager providingManager = (IProvidingManager) providerManager;
             CustomerOrderPart customerOrderPart1 =
-                EntityFactory.CreateCustomerOrderPartRandomArticleToBuy(dbMasterDataCache, 4, new DueTime(50));
+                EntityFactory.CreateCustomerOrderPartRandomArticleToBuy(4, new DueTime(50));
             CustomerOrderPart customerOrderPart2 =
-                EntityFactory.CreateCustomerOrderPartRandomArticleToBuy(dbMasterDataCache, 5, new DueTime(100));
+                EntityFactory.CreateCustomerOrderPartRandomArticleToBuy(5, new DueTime(100));
             ProductionOrder productionOrder = EntityFactory.CreateT_ProductionOrder(
-                dbMasterDataCache, dbTransactionData, customerOrderPart1,
+                dbTransactionData, customerOrderPart1,
                 customerOrderPart1.GetQuantity().Plus(customerOrderPart2.GetQuantity()));
             providerManager.AddProvider(customerOrderPart1.GetId(), productionOrder,
                 customerOrderPart1.GetQuantity());
@@ -75,9 +76,9 @@ namespace Zpp.Test.Unit_Tests
         [Fact(Skip = "Not implemented yet.")]
         public void TestAddProvider()
         {
-            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+            
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+                ZppConfiguration.CacheManager.ReloadTransactionData();
 
             // TODO
             Assert.True(false);

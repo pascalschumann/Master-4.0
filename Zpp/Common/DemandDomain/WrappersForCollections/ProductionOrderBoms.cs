@@ -11,8 +11,7 @@ namespace Zpp.Common.DemandDomain.WrappersForCollections
     public class ProductionOrderBoms : Demands
     {
         
-        public ProductionOrderBoms(List<T_ProductionOrderBom> iDemands, IDbMasterDataCache
-            dbMasterDataCache) : base(ToDemands(iDemands, dbMasterDataCache))
+        public ProductionOrderBoms(List<T_ProductionOrderBom> iDemands) : base(ToDemands(iDemands))
         {
         }
         
@@ -20,13 +19,12 @@ namespace Zpp.Common.DemandDomain.WrappersForCollections
         {
         }
 
-        private static List<Demand> ToDemands(List<T_ProductionOrderBom> iDemands,IDbMasterDataCache
-            dbMasterDataCache )
+        private static List<Demand> ToDemands(List<T_ProductionOrderBom> iDemands)
         {
             List<Demand> demands = new List<Demand>();
             foreach (var iDemand in iDemands)
             {
-                demands.Add(new ProductionOrderBom(iDemand, dbMasterDataCache));
+                demands.Add(new ProductionOrderBom(iDemand));
             }
 
             return demands;

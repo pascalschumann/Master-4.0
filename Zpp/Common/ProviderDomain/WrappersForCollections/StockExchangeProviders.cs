@@ -11,11 +11,11 @@ namespace Zpp.Common.ProviderDomain.WrappersForCollections
      */
     public class StockExchangeProviders : Providers
     {
-        public StockExchangeProviders(List<T_StockExchange> iDemands, IDbMasterDataCache dbMasterDataCache) : base(ToProviders(iDemands, dbMasterDataCache))
+        public StockExchangeProviders(List<T_StockExchange> iDemands) : base(ToProviders(iDemands))
         {
         }
 
-        private static List<Provider> ToProviders(List<T_StockExchange> iProviders, IDbMasterDataCache dbMasterDataCache)
+        private static List<Provider> ToProviders(List<T_StockExchange> iProviders)
         {
             List<Provider> providers = new List<Provider>();
             foreach (var iProvider in iProviders)
@@ -24,7 +24,7 @@ namespace Zpp.Common.ProviderDomain.WrappersForCollections
                 {
                     continue;
                 }
-                providers.Add(new StockExchangeProvider(iProvider, dbMasterDataCache));
+                providers.Add(new StockExchangeProvider(iProvider));
             }
 
             return providers;

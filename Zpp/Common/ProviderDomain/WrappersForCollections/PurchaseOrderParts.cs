@@ -14,16 +14,16 @@ namespace Zpp.Common.ProviderDomain.WrappersForCollections
         {
         }
         
-        public PurchaseOrderParts(List<T_PurchaseOrderPart> iDemands, IDbMasterDataCache dbMasterDataCache) : base(ToProviders(iDemands, dbMasterDataCache))
+        public PurchaseOrderParts(List<T_PurchaseOrderPart> iDemands) : base(ToProviders(iDemands))
         {
         }
 
-        private static List<Provider> ToProviders(List<T_PurchaseOrderPart> iProviders, IDbMasterDataCache dbMasterDataCache)
+        private static List<Provider> ToProviders(List<T_PurchaseOrderPart> iProviders)
         {
             List<Provider> providers = new List<Provider>();
             foreach (var iProvider in iProviders)
             {
-                providers.Add(new PurchaseOrderPart(iProvider, null, dbMasterDataCache));
+                providers.Add(new PurchaseOrderPart(iProvider, null));
             }
 
             return providers;

@@ -15,13 +15,13 @@ namespace Zpp.Mrp.ProductionManagement.ProductionTypes
     {
         public ProductionOrderCreatorAssemblyLine()
         {
-            if (Configuration.Configuration.ProductionType.Equals(ProductionType.AssemblyLine) == false)
+            if (Configuration.ZppConfiguration.ProductionType.Equals(ProductionType.AssemblyLine) == false)
             {
                 throw new MrpRunException("This is class is intended for productionType AssemblyLine.");
             }
         }
 
-        public ProductionOrders CreateProductionOrder(IDbMasterDataCache dbMasterDataCache,
+        public ProductionOrders CreateProductionOrder(
             IDbTransactionData dbTransactionData, Demand demand, Quantity quantity)
         {
             ProductionOrders productionOrders = new ProductionOrders();
@@ -38,7 +38,7 @@ namespace Zpp.Mrp.ProductionManagement.ProductionTypes
                 tProductionOrder.Quantity = 1;
 
                 ProductionOrder productionOrder =
-                    new ProductionOrder(tProductionOrder, dbMasterDataCache);
+                    new ProductionOrder(tProductionOrder);
 
                 productionOrder.CreateDependingDemands(demand.GetArticle(), dbTransactionData,
                     productionOrder, productionOrder.GetQuantity());

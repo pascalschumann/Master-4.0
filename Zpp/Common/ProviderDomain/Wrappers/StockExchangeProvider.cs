@@ -23,8 +23,8 @@ namespace Zpp.Common.ProviderDomain.Wrappers
     public class StockExchangeProvider : Provider, IProviderLogic
     {
         private readonly T_StockExchange _stockExchange;
-        public StockExchangeProvider(IProvider provider, IDbMasterDataCache dbMasterDataCache) :
-            base(provider, dbMasterDataCache)
+        public StockExchangeProvider(IProvider provider) :
+            base(provider)
         {
             _stockExchange = (T_StockExchange) provider;
         }
@@ -72,8 +72,7 @@ namespace Zpp.Common.ProviderDomain.Wrappers
 
             if (responseWithDemands.IsSatisfied() == false)
             {
-                LotSize.LotSize lotSizes = new LotSize.LotSize(remainingQuantity, article.GetId(),
-                    _dbMasterDataCache);
+                LotSize.LotSize lotSizes = new LotSize.LotSize(remainingQuantity, article.GetId());
                 Quantity lotSizeSum = Quantity.Null();
                 foreach (var lotSize in lotSizes.GetLotSizes())
                 {
@@ -82,7 +81,7 @@ namespace Zpp.Common.ProviderDomain.Wrappers
 
                     Demand stockExchangeDemand =
                         StockExchangeDemand.CreateStockExchangeStockDemand(article,
-                            GetDueTime(dbTransactionData), lotSize, _dbMasterDataCache);
+                            GetDueTime(dbTransactionData), lotSize);
                     stockExchangeDemands.Add(stockExchangeDemand);
 
                     // quantityToReserve can be calculated as following

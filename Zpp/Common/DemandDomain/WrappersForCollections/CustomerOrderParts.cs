@@ -10,18 +10,18 @@ namespace Zpp.Common.DemandDomain.WrappersForCollections
      */
     public class CustomerOrderParts : Demands
     {
-        public CustomerOrderParts(List<T_CustomerOrderPart> iDemands,
-            IDbMasterDataCache dbMasterDataCache) : base(ToDemands(iDemands, dbMasterDataCache))
+        public CustomerOrderParts(List<T_CustomerOrderPart> iDemands
+            ) : base(ToDemands(iDemands))
         {
         }
 
-        private static List<Demand> ToDemands(List<T_CustomerOrderPart> iDemands,
-            IDbMasterDataCache dbMasterDataCache)
+        private static List<Demand> ToDemands(List<T_CustomerOrderPart> iDemands
+            )
         {
             List<Demand> demands = new List<Demand>();
             foreach (var iDemand in iDemands)
             {
-                demands.Add(new CustomerOrderPart(iDemand, dbMasterDataCache));
+                demands.Add(new CustomerOrderPart(iDemand));
             }
 
             return demands;

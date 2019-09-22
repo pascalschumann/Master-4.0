@@ -9,6 +9,7 @@ using Zpp.Common.DemandDomain.WrappersForCollections;
 using Zpp.Common.ProviderDomain;
 using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.Common.ProviderDomain.WrappersForCollections;
+using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Mrp.ProductionManagement.ProductionTypes;
 using Zpp.Mrp.Scheduling;
@@ -19,11 +20,10 @@ namespace Zpp.Mrp.ProductionManagement
     public class ProductionManager : IProvidingManager
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        private readonly IDbMasterDataCache _dbMasterDataCache;
+        private readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
 
-        public ProductionManager(IDbMasterDataCache dbMasterDataCache)
+        public ProductionManager()
         {
-            _dbMasterDataCache = dbMasterDataCache;
         }
 
         public ResponseWithProviders Satisfy(Demand demand, Quantity demandedQuantity,
@@ -35,7 +35,7 @@ namespace Zpp.Mrp.ProductionManagement
             }
 
             IProviders productionOrders = CreateProductionOrder(demand, dbTransactionData,
-                _dbMasterDataCache, demandedQuantity);
+                demandedQuantity);
 
             Logger.Debug("ProductionOrder(s) created.");
 
@@ -57,7 +57,7 @@ namespace Zpp.Mrp.ProductionManagement
         }
 
         private ProductionOrders CreateProductionOrder(Demand demand,
-            IDbTransactionData dbTransactionData, IDbMasterDataCache dbMasterDataCache,
+            IDbTransactionData dbTransactionData,
             Quantity lotSize)
         {
             if (!demand.GetArticle().ToBuild)
@@ -67,7 +67,7 @@ namespace Zpp.Mrp.ProductionManagement
             }
 
             IProductionOrderCreator productionOrderCreator;
-            switch (Configuration.Configuration.ProductionType)
+            switch (Configuration.ZppConfiguration.ProductionType)
             {
                 case ProductionType.AssemblyLine:
                     productionOrderCreator = new ProductionOrderCreatorAssemblyLine();
@@ -85,7 +85,7 @@ namespace Zpp.Mrp.ProductionManagement
 
 
 
-            return productionOrderCreator.CreateProductionOrder(dbMasterDataCache, dbTransactionData, demand, lotSize);
+            return productionOrderCreator.CreateProductionOrder(dbTransactionData, demand, lotSize);
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace Zpp.Mrp.ProductionManagement
         /// --> is used for childs as: articleBom.Quantity * quantity</param>
         /// <returns></returns>
         public static Demands CreateProductionOrderBoms(M_Article article,
-            IDbTransactionData dbTransactionData, IDbMasterDataCache dbMasterDataCache,
+            IDbTransactionData dbTransactionData,
             Provider parentProductionOrder, Quantity quantity)
         {
             M_Article readArticle = dbTransactionData.M_ArticleGetById(article.GetId());
@@ -107,7 +107,7 @@ namespace Zpp.Mrp.ProductionManagement
             {
                 List<Demand> newDemands = new List<Demand>();
                 IProductionOrderBomCreator productionOrderBomCreator;
-                switch (Configuration.Configuration.ProductionType)
+                switch (Configuration.ZppConfiguration.ProductionType)
                 {
                     case ProductionType.AssemblyLine:
                         productionOrderBomCreator = new ProductionOrderBomCreatorAssemblyLine();
@@ -127,7 +127,7 @@ namespace Zpp.Mrp.ProductionManagement
                 {
                     newDemands.AddRange(
                         productionOrderBomCreator.CreateProductionOrderBomsForArticleBom(
-                            dbMasterDataCache, dbTransactionData, articleBom, quantity,
+                            dbTransactionData, articleBom, quantity,
                             (ProductionOrder)parentProductionOrder));
                 }
 

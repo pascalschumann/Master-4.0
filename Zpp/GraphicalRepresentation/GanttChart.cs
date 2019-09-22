@@ -4,15 +4,18 @@ using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Newtonsoft.Json;
 using Zpp.Common.ProviderDomain.Wrappers;
+using Zpp.Configuration;
 using Zpp.DbCache;
 
 namespace Zpp.GraphicalRepresentation
 {
     public class GanttChart : IGanttChart
     {
+        private readonly IDbMasterDataCache _dbMasterDataCache =
+            ZppConfiguration.CacheManager.GetMasterDataCache();
         private readonly List<GanttChartBar> _ganttChartBars = new List<GanttChartBar>();
 
-        public GanttChart(IEnumerable<ProductionOrderOperation> productionOrderOperations, IDbMasterDataCache dbMasterDataCache)
+        public GanttChart(IEnumerable<ProductionOrderOperation> productionOrderOperations)
         {
             foreach (var productionOrderOperation in productionOrderOperations)
             {
@@ -23,7 +26,7 @@ namespace Zpp.GraphicalRepresentation
                 ganttChartBar.operationId = tProductionOrderOperation.Id.ToString();
                 if (tProductionOrderOperation.Resource == null)
                 {
-                    tProductionOrderOperation.Resource = dbMasterDataCache
+                    tProductionOrderOperation.Resource = _dbMasterDataCache
                         .M_ResourceGetById(new Id(tProductionOrderOperation.ResourceId
                             .GetValueOrDefault())).GetValue();
                 }

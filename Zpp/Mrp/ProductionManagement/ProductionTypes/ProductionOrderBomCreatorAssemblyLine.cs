@@ -4,6 +4,7 @@ using Master40.DB.DataModel;
 using Zpp.Common.DemandDomain.Wrappers;
 using Zpp.Common.DemandDomain.WrappersForCollections;
 using Zpp.Common.ProviderDomain.Wrappers;
+using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Utils;
 
@@ -18,16 +19,18 @@ namespace Zpp.Mrp.ProductionManagement.ProductionTypes
         private readonly Dictionary<M_Operation, ProductionOrderOperation>
             _alreadyCreatedProductionOrderOperations =
                 new Dictionary<M_Operation, ProductionOrderOperation>();
+        private readonly IDbMasterDataCache _dbMasterDataCache =
+            ZppConfiguration.CacheManager.GetMasterDataCache();
 
         public ProductionOrderBomCreatorAssemblyLine()
         {
-            if (Configuration.Configuration.ProductionType.Equals(ProductionType.AssemblyLine) == false)
+            if (Configuration.ZppConfiguration.ProductionType.Equals(ProductionType.AssemblyLine) == false)
             {
                 throw new MrpRunException("This is class is intended for productionType AssemblyLine.");
             }
         }
 
-        public Demands CreateProductionOrderBomsForArticleBom(IDbMasterDataCache dbMasterDataCache,
+        public Demands CreateProductionOrderBomsForArticleBom(
             IDbTransactionData dbTransactionData, M_ArticleBom articleBom, Quantity quantity,
             ProductionOrder parentProductionOrder)
         {
@@ -44,7 +47,7 @@ namespace Zpp.Mrp.ProductionManagement.ProductionTypes
             if (articleBom.Operation == null)
             {
                 articleBom.Operation =
-                    dbMasterDataCache.M_OperationGetById(
+                    _dbMasterDataCache.M_OperationGetById(
                         new Id(articleBom.OperationId.GetValueOrDefault()));
             }
 
@@ -59,7 +62,7 @@ namespace Zpp.Mrp.ProductionManagement.ProductionTypes
 
             ProductionOrderBom newProductionOrderBom =
                 ProductionOrderBom.CreateTProductionOrderBom(articleBom, parentProductionOrder,
-                    dbMasterDataCache, productionOrderOperation, new Quantity(1));
+                    productionOrderOperation, new Quantity(1));
 
             if (newProductionOrderBom.HasOperation() == false)
             {

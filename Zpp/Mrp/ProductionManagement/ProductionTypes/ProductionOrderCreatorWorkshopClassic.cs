@@ -15,14 +15,14 @@ namespace Zpp.Mrp.ProductionManagement.ProductionTypes
     {
         public ProductionOrderCreatorWorkshopClassic()
         {
-            if (Configuration.Configuration.ProductionType.Equals(ProductionType.WorkshopProductionClassic) == false)
+            if (Configuration.ZppConfiguration.ProductionType.Equals(ProductionType.WorkshopProductionClassic) == false)
             {
                 throw new MrpRunException(
                     "This is class is intended for productionType WorkshopProductionClassic.");
             }
         }
 
-        public ProductionOrders CreateProductionOrder(IDbMasterDataCache dbMasterDataCache,
+        public ProductionOrders CreateProductionOrder(
             IDbTransactionData dbTransactionData, Demand demand, Quantity quantity)
         {
             T_ProductionOrder tProductionOrder = new T_ProductionOrder();
@@ -34,7 +34,7 @@ namespace Zpp.Mrp.ProductionManagement.ProductionTypes
             tProductionOrder.Quantity = quantity.GetValue();
 
             ProductionOrder productionOrder =
-                new ProductionOrder(tProductionOrder, dbMasterDataCache);
+                new ProductionOrder(tProductionOrder);
 
             productionOrder.CreateDependingDemands(demand.GetArticle(), dbTransactionData,
                 productionOrder, productionOrder.GetQuantity());

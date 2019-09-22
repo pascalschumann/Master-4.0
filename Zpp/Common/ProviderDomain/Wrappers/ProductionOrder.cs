@@ -16,8 +16,8 @@ namespace Zpp.Common.ProviderDomain.Wrappers
     public class ProductionOrder : Provider
     {
         private readonly T_ProductionOrder _productionOrder;
-        public ProductionOrder(IProvider provider, IDbMasterDataCache dbMasterDataCache) : base(
-            provider, dbMasterDataCache)
+        public ProductionOrder(IProvider provider) : base(
+            provider)
         {
             _productionOrder = (T_ProductionOrder)provider;
         }
@@ -37,7 +37,7 @@ namespace Zpp.Common.ProviderDomain.Wrappers
             IDbTransactionData dbTransactionData, Provider parentProvider, Quantity demandedQuantity)
         {
             _dependingDemands = ProductionManager.CreateProductionOrderBoms(article, dbTransactionData,
-                _dbMasterDataCache, parentProvider, demandedQuantity);
+                parentProvider, demandedQuantity);
         }
 
         public override string GetGraphizString(IDbTransactionData dbTransactionData)

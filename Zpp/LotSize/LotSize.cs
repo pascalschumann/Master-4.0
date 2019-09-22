@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Master40.DB.Data.WrappersForPrimitives;
+using Zpp.Configuration;
 using Zpp.DbCache;
 
 namespace Zpp.LotSize
@@ -10,13 +11,13 @@ namespace Zpp.LotSize
         private readonly Quantity _neededQuantity;
         private readonly Id _articleId;
         private static LotSizeType _lotSizeType = LotSizeType.FixedLotSize;
-        private readonly IDbMasterDataCache _dbMasterDataCache;
+        private readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
 
-        public LotSize(Quantity neededQuantity, Id articleId, IDbMasterDataCache dbMasterDataCache)
+        public LotSize(Quantity neededQuantity, Id articleId)
         {
             _neededQuantity = neededQuantity;
             _articleId = articleId;
-            _dbMasterDataCache = dbMasterDataCache;
+            
         }
 
         public List<Quantity> GetLotSizes()

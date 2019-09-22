@@ -7,7 +7,7 @@ namespace Zpp.Mrp.ProductionManagement.ProductionTypes
 {
     public interface IProductionOrderCreator
     {
-        ProductionOrders CreateProductionOrder(IDbMasterDataCache dbMasterDataCache,
+        ProductionOrders CreateProductionOrder(
             IDbTransactionData dbTransactionData, Demand demand, Quantity quantity);
     }
 }

@@ -10,11 +10,10 @@ namespace Zpp.Test.Configuration.Scenarios
 {
     public abstract class TestScenario
     {
-        protected readonly IDbMasterDataCache DbMasterDataCache;
-        
-        public TestScenario(IDbMasterDataCache dbMasterDataCache)
+
+        public TestScenario()
         {
-            DbMasterDataCache = dbMasterDataCache;
+
         }
 
         public void CreateCustomerOrders(Quantity quantity, ProductionDomainContext productionDomainContext)

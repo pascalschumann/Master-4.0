@@ -14,23 +14,24 @@ using Zpp.Simulation.Types;
 using Zpp.WrappersForPrimitives;
 using Master40.SimulationCore.DistributionProvider;
 using Zpp.Common.DemandDomain.Wrappers;
+using Zpp.Configuration;
 
 namespace Zpp.Simulation
 {
     public class Simulator
     {
-        private readonly IDbMasterDataCache _dbMasterDataCache;
+        private readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
         private readonly IDbTransactionData _dbTransactionData;
         private long _currentTime { get; set; } = 0;
         private SimulationConfig _simulationConfig { get; }
         private AkkaSim.Simulation _akkaSimulation { get; set; }
         public SimulationInterval _simulationInterval { get; private set; }
 
-        public Simulator(IDbMasterDataCache dbMasterDataCache, IDbTransactionData dbTransactionData)
+        public Simulator(IDbTransactionData dbTransactionData)
         {
             _simulationConfig = new SimulationConfig(false, 300);
             _dbTransactionData = dbTransactionData;
-            _dbMasterDataCache = dbMasterDataCache;
+            
         }
 
         public void RunSimulationFor(OrderGenerator orderGenerator, SimulationInterval simulationInterval)
@@ -104,7 +105,7 @@ namespace Zpp.Simulation
 
         private void ProvideJobDistributor(IActorRef jobDistributor)
         {
-            var operationManager = new ProductionOrderToOperationGraph(_dbMasterDataCache, _dbTransactionData);
+            var operationManager = new ProductionOrderToOperationGraph(_dbTransactionData);
             _akkaSimulation.SimulationContext
                            .Tell(message: OperationsToDistribute.Create(operationManager, jobDistributor)
                                 ,sender: ActorRefs.NoSender);

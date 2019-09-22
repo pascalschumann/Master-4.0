@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Xunit;
+using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Mrp;
 
@@ -20,9 +21,10 @@ namespace Zpp.Test.Integration_Tests
         {
             MrpRun.Start(ProductionDomainContext);
 
-            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+        IDbMasterDataCache dbMasterDataCache =
+            ZppConfiguration.CacheManager.GetMasterDataCache();
             IDbTransactionData persistedTransactionData =
-                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+                ZppConfiguration.CacheManager.ReloadTransactionData();
 
             List<T_PurchaseOrderPart> tPurchaseOrderParts = persistedTransactionData
                 .PurchaseOrderPartGetAll().GetAllAs<T_PurchaseOrderPart>();

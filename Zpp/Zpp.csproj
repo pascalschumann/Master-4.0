@@ -29,7 +29,6 @@
       <Folder Include="Common\ProviderDomain\Wrappers\" />
       <Folder Include="Configuration\" />
       <Folder Include="DbCache\" />
-      <Folder Include="DbCache\interfaces" />
       <Folder Include="GraphicalRepresentation\" />
       <Folder Include="LotSize\" />
       <Folder Include="OrderGraph\" />

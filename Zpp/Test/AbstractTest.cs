@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
 using System.IO;
+using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Test.Configuration;
 using Zpp.Test.Configuration.Scenarios;
@@ -27,11 +28,11 @@ namespace Zpp.Test
         protected static readonly string DefaultTestScenario =
             TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2;
 
-        private IDbMasterDataCache _dbMasterDataCache;
+        private IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
 
         public AbstractTest() : this(true)
         {
-            _dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+            
         }
 
         /**
@@ -104,7 +105,7 @@ namespace Zpp.Test
         protected void InitTestScenario(string testConfiguration)
         {
             InitDb(testConfiguration);
-            _dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+            
         }
 
         private static TestConfiguration ReadTestConfiguration(string testConfigurationFileNames)

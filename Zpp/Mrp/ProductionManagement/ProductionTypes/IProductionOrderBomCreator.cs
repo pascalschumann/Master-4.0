@@ -8,7 +8,7 @@ namespace Zpp.Mrp.ProductionManagement.ProductionTypes
 {
     public interface IProductionOrderBomCreator
     {
-        Demands CreateProductionOrderBomsForArticleBom(IDbMasterDataCache dbMasterDataCache,
+        Demands CreateProductionOrderBomsForArticleBom(
             IDbTransactionData dbTransactionData, M_ArticleBom articleBom, Quantity quantity,
             ProductionOrder parentProductionOrder);
     }

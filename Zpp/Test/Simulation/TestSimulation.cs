@@ -3,6 +3,7 @@ using Master40.DB.Enums;
 using Master40.SimulationCore.DistributionProvider;
 using Master40.SimulationCore.Environment.Options;
 using Xunit;
+using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Mrp;
 using Zpp.Simulation;
@@ -14,14 +15,14 @@ namespace Zpp.Test.Simulation
 {
     public class TestSimulation : AbstractTest
     {
-        private readonly IDbMasterDataCache _dbMasterDataCache;
+        private readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
         private readonly IDbTransactionData _dbTransactionData;
         private readonly OrderGenerator _orderGenerator;
         public TestSimulation() : base(initDefaultTestConfig: true)
         {
             MrpRun.Start(ProductionDomainContext);
-            _dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
-            _dbTransactionData = new DbTransactionData(ProductionDomainContext, _dbMasterDataCache);
+            
+            _dbTransactionData = new DbTransactionData(ProductionDomainContext);
             _orderGenerator = TestScenario.GetOrderGenerator(ProductionDomainContext
                                                             , new MinDeliveryTime(960)
                                                             , new MaxDeliveryTime(1440)
@@ -33,7 +34,7 @@ namespace Zpp.Test.Simulation
         [Fact]
         public void TestSimulationWithResults()
         {
-            var Simulator = new Simulator(_dbMasterDataCache, _dbTransactionData);
+            var Simulator = new Simulator(_dbTransactionData);
             var simulationInterval = new SimulationInterval(0, 1440);
             Simulator.ProcessCurrentInterval(simulationInterval, _orderGenerator);
             _dbTransactionData.PersistDbCache();

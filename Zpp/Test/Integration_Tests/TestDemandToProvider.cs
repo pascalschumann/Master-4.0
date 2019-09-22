@@ -1,6 +1,7 @@
 using Xunit;
 using Zpp.Common.DemandDomain.WrappersForCollections;
 using Zpp.Common.ProviderDomain.WrappersForCollections;
+using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Mrp;
 using Zpp.WrappersForCollections;
@@ -25,9 +26,9 @@ namespace Zpp.Test.Integration_Tests
         public void TestAllDemandsAreInDemandToProviderTable()
         {
             MrpRun.Start(ProductionDomainContext);
-            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+            
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+                ZppConfiguration.CacheManager.ReloadTransactionData();
 
             IDemands allDbDemands = dbTransactionData.DemandsGetAll();
             IDemandToProviderTable demandToProviderTable = dbTransactionData.GetProviderManager().GetDemandToProviderTable();
@@ -49,9 +50,9 @@ namespace Zpp.Test.Integration_Tests
         public void TestAllDemandsAreSatisfiedWithinProviderTable()
         {
             MrpRun.Start(ProductionDomainContext);
-            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+            
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+                ZppConfiguration.CacheManager.ReloadTransactionData();
 
             IDemands demands = dbTransactionData.DemandsGetAll();
             IProviders providers = dbTransactionData.ProvidersGetAll();
@@ -67,9 +68,9 @@ namespace Zpp.Test.Integration_Tests
         public void TestAllDemandsAreSatisfiedByProvidersOfDemandToProviderTable()
         {
             MrpRun.Start(ProductionDomainContext);
-            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+            
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+                ZppConfiguration.CacheManager.ReloadTransactionData();
             
             IDemands allDbDemands = dbTransactionData.DemandsGetAll();
             foreach (var demand in allDbDemands)

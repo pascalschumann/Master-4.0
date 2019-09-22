@@ -7,6 +7,7 @@ using Zpp.Common.DemandDomain.Wrappers;
 using Zpp.Common.ProviderDomain;
 using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.Common.ProviderDomain.WrappersForCollections;
+using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Mrp;
 using Zpp.Mrp.MachineManagement;
@@ -40,9 +41,9 @@ namespace Zpp.Test.Integration_Tests
         {
             InitThisTest(testConfigurationFileName);
 
-            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+            
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+                ZppConfiguration.CacheManager.ReloadTransactionData();
 
             foreach (var productionOrderOperation in dbTransactionData
                 .ProductionOrderOperationGetAll())
@@ -62,9 +63,9 @@ namespace Zpp.Test.Integration_Tests
         {
             InitThisTest(testConfigurationFileName);
 
-            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+            
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+                ZppConfiguration.CacheManager.ReloadTransactionData();
 
             foreach (var productionOrderOperation in dbTransactionData
                 .ProductionOrderOperationGetAll())
@@ -108,9 +109,9 @@ namespace Zpp.Test.Integration_Tests
         public void TestJobShopScheduling(string testConfigurationFileName)
         {
             InitThisTest(testConfigurationFileName);
-            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+            
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+                ZppConfiguration.CacheManager.ReloadTransactionData();
             foreach (var productionOrderOperation in dbTransactionData
                 .ProductionOrderOperationGetAll())
             {
@@ -138,9 +139,9 @@ namespace Zpp.Test.Integration_Tests
         {
             // init
             InitThisTest(testConfigurationFileName);
-            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+            
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+                ZppConfiguration.CacheManager.ReloadTransactionData();
 
             foreach (var demandToProvider in dbTransactionData.DemandToProviderGetAll())
             {
@@ -187,9 +188,9 @@ namespace Zpp.Test.Integration_Tests
             string testConfigurationFileName)
         {
             InitThisTest(testConfigurationFileName);
-            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+            
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+                ZppConfiguration.CacheManager.ReloadTransactionData();
 
             foreach (var productionOrderOperation in dbTransactionData
                 .ProductionOrderOperationGetAll())
@@ -226,12 +227,12 @@ namespace Zpp.Test.Integration_Tests
             string testConfigurationFileName)
         {
             InitThisTest(testConfigurationFileName);
-            IDbMasterDataCache dbMasterDataCache = new DbMasterDataCache(ProductionDomainContext);
+            
             IDbTransactionData dbTransactionData =
-                new DbTransactionData(ProductionDomainContext, dbMasterDataCache);
+                ZppConfiguration.CacheManager.ReloadTransactionData();
 
             ProductionOrderToOperationGraph productionOrderToOperationGraph =
-                new ProductionOrderToOperationGraph(dbMasterDataCache, dbTransactionData);
+                new ProductionOrderToOperationGraph(dbTransactionData);
 
             IStackSet<INode> innerLeafs =
                 productionOrderToOperationGraph.GetLeafNodes().ToStackSet();

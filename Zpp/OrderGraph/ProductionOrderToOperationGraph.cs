@@ -5,6 +5,7 @@ using Master40.DB.DataModel;
 using Zpp.Common.DemandDomain.Wrappers;
 using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.Common.ProviderDomain.WrappersForCollections;
+using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Mrp.MachineManagement;
 using Zpp.Mrp.ProductionManagement.ProductionTypes;
@@ -15,15 +16,15 @@ namespace Zpp.OrderGraph
 {
     public class ProductionOrderToOperationGraph : DirectedGraph, IProductionOrderToOperationGraph<INode>
     {
-        private readonly IDbMasterDataCache _dbMasterDataCache;
+        private readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
         private readonly IAggregator _aggregator;
         private readonly IDirectedGraph<INode> _productionOrderGraph;
 
 
-        public ProductionOrderToOperationGraph(IDbMasterDataCache dbMasterDataCache,
+        public ProductionOrderToOperationGraph(
             IDbTransactionData dbTransactionData) : base(dbTransactionData)
         {
-            _dbMasterDataCache = dbMasterDataCache;
+            
             _aggregator = dbTransactionData.GetAggregator();
             _productionOrderGraph = new ProductionOrderDirectedGraph(_dbTransactionData, false);
 

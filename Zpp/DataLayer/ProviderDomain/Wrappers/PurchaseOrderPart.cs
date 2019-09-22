@@ -34,13 +34,6 @@ namespace Zpp.Common.ProviderDomain.Wrappers
             throw new System.NotImplementedException();
         }
 
-        public override string GetGraphizString(IDbTransactionData dbTransactionData)
-        {
-            // Demand(CustomerOrder);20;Truck
-            string graphizString = $"P(PuOP);{base.GetGraphizString(dbTransactionData)}";
-            return graphizString;
-        }
-
         public override DueTime GetDueTime(IDbTransactionData dbTransactionData)
         {
             T_PurchaseOrderPart purchaseOrderPart = ((T_PurchaseOrderPart) _provider);

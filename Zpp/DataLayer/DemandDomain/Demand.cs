@@ -88,11 +88,6 @@ namespace Zpp.Common.DemandDomain
             return this;
         }
 
-        public virtual string GetGraphizString(IDbTransactionData dbTransactionData)
-        {
-            return $"{GetQuantity()};\\n{GetArticle().Name};{GetDueTime(dbTransactionData)}";
-        }
-
         public abstract DueTime GetStartTime(IDbTransactionData dbTransactionData);
     }
 }

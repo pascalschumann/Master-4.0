@@ -38,13 +38,6 @@ namespace Zpp.Common.DemandDomain.Wrappers
             return dueTime;
         }
 
-        public override string GetGraphizString(IDbTransactionData dbTransactionData)
-        {
-            // Demand(CustomerOrder);20;Truck
-            string graphizString = $"D(COP);{base.GetGraphizString(dbTransactionData)}";
-            return graphizString;
-        }
-
         public override DueTime GetStartTime(IDbTransactionData dbTransactionData)
         {
             return GetDueTime(dbTransactionData);

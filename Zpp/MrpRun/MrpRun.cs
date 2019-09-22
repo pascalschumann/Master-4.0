@@ -56,7 +56,7 @@ namespace Zpp.Mrp
 
                 
                 var simulationInterval = new SimulationInterval(0 * i, 1440 * i);
-                var simulator = new Simulator(dbTransactionData);
+                ISimulator simulator = new Simulator(dbTransactionData);
                 simulator.ProcessCurrentInterval(simulationInterval, orderGenerator);
                 dbTransactionData.PersistDbCache();
             }

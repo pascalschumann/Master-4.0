@@ -4,6 +4,7 @@ using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Zpp.Common.DemandDomain.Wrappers;
 using Zpp.DbCache;
+using Zpp.GraphicalRepresentation;
 using Zpp.Mrp.MachineManagement;
 
 namespace Zpp.OrderGraph
@@ -14,6 +15,7 @@ namespace Zpp.OrderGraph
             new Dictionary<INode, List<IEdge>>();
 
         protected readonly IDbTransactionData _dbTransactionData;
+        private readonly IGraphviz _graphviz = new Graphviz();
 
         public DirectedGraph(IDbTransactionData dbTransactionData)
         {
@@ -30,7 +32,8 @@ namespace Zpp.OrderGraph
             return new Nodes(_adjacencyList[tailNode].Select(x => x.GetHeadNode()).ToList());
         }
 
-        public void GetPredecessorNodesRecursively(INodes predecessorNodes, INodes newNodes, bool firstRun = true)
+        public void GetPredecessorNodesRecursively(INodes predecessorNodes, INodes newNodes,
+            bool firstRun = true)
         {
             INodes newNodes2 = new Nodes();
             foreach (var headNode in newNodes)
@@ -50,18 +53,19 @@ namespace Zpp.OrderGraph
             {
                 predecessorNodes.AddAll(newNodes);
             }
-            
+
             if (newNodes2.Any() == false)
             {
                 return;
             }
+
             GetPredecessorNodesRecursively(predecessorNodes, newNodes2, false);
         }
 
         public INodes GetPredecessorNodes(INode headNode)
         {
             INodes predecessorNodes = new Nodes();
-            
+
             if (GetAllEdgesTowardsHeadNode(headNode) == null)
             {
                 return null;
@@ -72,7 +76,7 @@ namespace Zpp.OrderGraph
                 INode tailNode = edge.GetTailNode();
                 if (tailNode != null && tailNode.GetEntity() != null)
                 {
-                    predecessorNodes.Add(tailNode);    
+                    predecessorNodes.Add(tailNode);
                 }
             }
 
@@ -101,7 +105,7 @@ namespace Zpp.OrderGraph
             {
                 _adjacencyList.Add(fromNode, new List<IEdge>());
             }
-            
+
             foreach (var node in nodes)
             {
                 _adjacencyList[fromNode].Add(new Edge(fromNode, node));
@@ -162,23 +166,26 @@ namespace Zpp.OrderGraph
             {
                 // foreach (var edge in GetAllEdgesFromTailNode(fromNode))
                 // {
-                    // <Type>, <Menge>, <ItemName> and on edges: <Menge>
-                    Quantity quantity = null;
-                    if (edge.GetLinkDemandAndProvider() != null)
-                    {
-                        quantity = edge.GetLinkDemandAndProvider().GetQuantity();
-                    }
+                // <Type>, <Menge>, <ItemName> and on edges: <Menge>
+                Quantity quantity = null;
+                if (edge.GetLinkDemandAndProvider() != null)
+                {
+                    quantity = edge.GetLinkDemandAndProvider().GetQuantity();
+                }
 
-                    mystring +=
-                        $"\"{edge.GetTailNode().GetId()};{edge.GetTailNode().GetGraphizString(_dbTransactionData)}\" -> " +
-                        $"\"{edge.GetHeadNode().GetId()};{edge.GetHeadNode().GetGraphizString(_dbTransactionData)}\"";
-                    // if (quantity.IsNull() == false)
-                    if (quantity != null && quantity.IsNull() == false)
-                    {
-                        mystring += $" [ label=\" {quantity}\" ]";
-                    }
+                string tailsGraphvizString =
+                    _graphviz.GetGraphizString(edge.GetTailNode().GetEntity());
+                string headsGraphvizString =
+                    _graphviz.GetGraphizString(edge.GetHeadNode().GetEntity());
+                mystring += $"\"{edge.GetTailNode().GetId()};{tailsGraphvizString}\" -> " +
+                            $"\"{edge.GetHeadNode().GetId()};{headsGraphvizString}\"";
+                // if (quantity.IsNull() == false)
+                if (quantity != null && quantity.IsNull() == false)
+                {
+                    mystring += $" [ label=\" {quantity}\" ]";
+                }
 
-                    mystring += ";" + Environment.NewLine;
+                mystring += ";" + Environment.NewLine;
                 // }
             }
 
@@ -371,7 +378,7 @@ namespace Zpp.OrderGraph
                     }
                 }
             }
-            
+
             // leafs --> successors 
             if (successors != null)
             {
@@ -383,7 +390,7 @@ namespace Zpp.OrderGraph
                     }
                 }
             }
-            
+
             // add all edges from graphToInsert
             foreach (var loopNode in graphToInsert.GetAdjacencyList().Keys)
             {
@@ -391,7 +398,8 @@ namespace Zpp.OrderGraph
             }
         }
 
-        public static IDirectedGraph<INode> MergeDirectedGraphs(List<IDirectedGraph<INode>> directedGraphs, IDbTransactionData dbTransactionData)
+        public static IDirectedGraph<INode> MergeDirectedGraphs(
+            List<IDirectedGraph<INode>> directedGraphs, IDbTransactionData dbTransactionData)
         {
             IDirectedGraph<INode> mergedDirectedGraph = new DirectedGraph(dbTransactionData);
             foreach (var directedGraph in directedGraphs)

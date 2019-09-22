@@ -114,34 +114,6 @@ namespace Zpp.Common.DemandDomain.Wrappers
             }
         }
 
-        public override string GetGraphizString(IDbTransactionData dbTransactionData)
-        {
-            // Demand(CustomerOrder);20;Truck
-
-            string graphizString;
-            if (_productionOrderBom.ProductionOrderOperationId != null)
-            {
-                if (_productionOrderBom.ProductionOrderOperation == null)
-                {
-                    _productionOrderBom.ProductionOrderOperation =
-                        dbTransactionData.ProductionOrderOperationGetById(new Id(_productionOrderBom
-                            .ProductionOrderOperationId.GetValueOrDefault())).GetValue();
-                }
-
-                T_ProductionOrderOperation tProductionOrderOperation =
-                    _productionOrderBom.ProductionOrderOperation;
-                graphizString = $"D(PrOB);{base.GetGraphizString(dbTransactionData)};" +
-                                $"bs({tProductionOrderOperation.StartBackward});" +
-                                $"be({tProductionOrderOperation.EndBackward});\\n{tProductionOrderOperation}";
-            }
-            else
-            {
-                graphizString = $"D(PrOB);{base.GetGraphizString(dbTransactionData)}";
-            }
-
-            return graphizString;
-        }
-
         public bool HasOperation()
         {
             return _productionOrderBom.ProductionOrderOperationId != null;

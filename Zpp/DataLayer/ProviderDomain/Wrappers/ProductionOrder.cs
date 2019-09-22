@@ -40,13 +40,6 @@ namespace Zpp.Common.ProviderDomain.Wrappers
                 parentProvider, demandedQuantity);
         }
 
-        public override string GetGraphizString(IDbTransactionData dbTransactionData)
-        {
-            // Demand(CustomerOrder);20;Truck
-            string graphizString = $"P(PrO);{base.GetGraphizString(dbTransactionData)}";
-            return graphizString;
-        }
-
         public override DueTime GetDueTime(IDbTransactionData dbTransactionData = null)
         {
             T_ProductionOrder productionOrder = (T_ProductionOrder) _provider;

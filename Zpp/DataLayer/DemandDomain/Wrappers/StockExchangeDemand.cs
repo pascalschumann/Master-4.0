@@ -77,14 +77,6 @@ namespace Zpp.Common.DemandDomain.Wrappers
             return stockExchangeDemand;
         }
 
-        public override string GetGraphizString(IDbTransactionData dbTransactionData)
-        {
-            // Demand(CustomerOrder);20;Truck
-            string exchangeType = Constants.EnumToString(((T_StockExchange)_demand).ExchangeType, typeof(ExchangeType));
-            string graphizString = $"D(SE:{exchangeType[0]});{base.GetGraphizString(dbTransactionData)}";
-            return graphizString;
-        }
-
         public bool IsTypeOfInsert()
         {
             return ((T_StockExchange) _demand).ExchangeType.Equals(ExchangeType.Insert);

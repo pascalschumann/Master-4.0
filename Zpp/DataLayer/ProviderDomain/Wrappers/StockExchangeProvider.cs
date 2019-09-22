@@ -120,16 +120,6 @@ namespace Zpp.Common.ProviderDomain.Wrappers
             throw new NotImplementedException();
         }
 
-        public override string GetGraphizString(IDbTransactionData dbTransactionData)
-        {
-            // Demand(CustomerOrder);20;Truck
-            string exchangeType = Constants.EnumToString(((T_StockExchange) _provider).ExchangeType,
-                typeof(ExchangeType));
-            string graphizString =
-                $"P(SE:{exchangeType[0]});{base.GetGraphizString(dbTransactionData)}";
-            return graphizString;
-        }
-
         public override DueTime GetDueTime(IDbTransactionData dbTransactionData)
         {
             T_StockExchange stockExchange = (T_StockExchange) _provider;

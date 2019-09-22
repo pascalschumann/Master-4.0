@@ -143,11 +143,6 @@ namespace Zpp.Common.ProviderDomain.Wrappers
             return this;
         }
 
-        public string GetGraphizString(IDbTransactionData dbTransactionData)
-        {
-            return $"{_productionOrderOperation.Name}";
-        }
-
         public Id GetProductionOrderId()
         {
             return new Id(_productionOrderOperation.ProductionOrderId);

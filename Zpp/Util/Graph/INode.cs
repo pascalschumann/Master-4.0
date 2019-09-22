@@ -10,9 +10,5 @@ namespace Zpp.OrderGraph
         NodeType GetNodeType();
 
         INode GetEntity();
-
-        string GetGraphizString(IDbTransactionData dbTransactionData);
-
-
     }
 }

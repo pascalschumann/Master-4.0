@@ -18,7 +18,7 @@ using Zpp.Configuration;
 
 namespace Zpp.Simulation
 {
-    public class Simulator
+    public class Simulator: ISimulator
     {
         private readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
         private readonly IDbTransactionData _dbTransactionData;

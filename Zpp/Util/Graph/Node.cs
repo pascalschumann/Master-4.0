@@ -42,11 +42,6 @@ namespace Zpp.OrderGraph
             return _id.GetHashCode();
         }
 
-        public string GetGraphizString(IDbTransactionData dbTransactionData)
-        {
-            return _entity.GetGraphizString(dbTransactionData);
-        }
-
         public override string ToString()
         {
             return $"{_entity.ToString()}";

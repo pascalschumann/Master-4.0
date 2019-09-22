@@ -19,7 +19,8 @@ namespace Zpp.Test.Integration_Tests
         {
             DateTime startTime = DateTime.UtcNow;
 
-            MrpRun.Start(ProductionDomainContext);
+            IMrpRun mrpRun = new MrpRun(ProductionDomainContext);
+            mrpRun.Start();
 
             DateTime endTime = DateTime.UtcNow;
             double neededTime = (endTime - startTime).TotalMilliseconds / 1000;

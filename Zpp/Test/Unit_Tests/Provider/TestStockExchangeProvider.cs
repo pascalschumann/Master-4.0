@@ -49,11 +49,10 @@ namespace Zpp.Test.Unit_Tests.Provider
             {
                 M_Stock stock = dbMasterDataCache.M_StockGetByArticleId(demand.GetArticleId());
 
-                StockManager stockManager = new StockManager();
+                IStockManager stockManager = new StockManager();
                 Common.ProviderDomain.Provider providerStockExchange =
                     stockManager.CreateStockExchangeProvider(demand.GetArticle(),
-                        demand.GetDueTime(dbTransactionData), demand.GetQuantity(),
-                        dbTransactionData);
+                        demand.GetDueTime(dbTransactionData), demand.GetQuantity());
                 Assert.True(providerStockExchange.GetQuantity().Equals(demand.GetQuantity()),
                     "Quantity is not correct.");
                 Assert.True(providerStockExchange.GetArticle().Equals(demand.GetArticle()),
@@ -80,10 +79,10 @@ namespace Zpp.Test.Unit_Tests.Provider
             M_Stock stock = dbMasterDataCache.M_StockGetByArticleId(demand.GetArticleId());
             // increase stock
             stock.Current = 10;
-            StockManager stockManager = new StockManager();
+            IStockManager stockManager = new StockManager();
             Common.ProviderDomain.Provider providerStockExchange =
                 stockManager.CreateStockExchangeProvider(demand.GetArticle(),
-                    demand.GetDueTime(dbTransactionData), demand.GetQuantity(), dbTransactionData);
+                    demand.GetDueTime(dbTransactionData), demand.GetQuantity());
 
 
             Assert.True(providerStockExchange.AnyDependingDemands() == false,

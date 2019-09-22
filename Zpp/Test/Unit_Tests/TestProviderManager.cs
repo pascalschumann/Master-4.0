@@ -31,7 +31,7 @@ namespace Zpp.Test.Unit_Tests
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.ReloadTransactionData();
 
-            StockManager stockManager =
+            IStockManager stockManager =
                 new StockManager();
             
             IOpenDemandManager openDemandManager = new OpenDemandManager();

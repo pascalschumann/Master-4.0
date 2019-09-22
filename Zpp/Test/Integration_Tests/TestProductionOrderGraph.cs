@@ -21,7 +21,8 @@ namespace Zpp.Test.Integration_Tests
         {
             InitTestScenario(testConfiguration);
 
-            MrpRun.Start(ProductionDomainContext);
+            IMrpRun mrpRun = new MrpRun(ProductionDomainContext);
+            mrpRun.Start();
         }
         
         /**

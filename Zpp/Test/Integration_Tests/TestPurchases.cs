@@ -19,7 +19,8 @@ namespace Zpp.Test.Integration_Tests
         [Fact]
         public void TestPurchaseQuantityIsAMultipleOfPackSize()
         {
-            MrpRun.Start(ProductionDomainContext);
+            IMrpRun mrpRun = new MrpRun(ProductionDomainContext);
+            mrpRun.Start();
 
         IDbMasterDataCache dbMasterDataCache =
             ZppConfiguration.CacheManager.GetMasterDataCache();

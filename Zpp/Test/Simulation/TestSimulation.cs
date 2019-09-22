@@ -20,7 +20,8 @@ namespace Zpp.Test.Simulation
         private readonly OrderGenerator _orderGenerator;
         public TestSimulation() : base(initDefaultTestConfig: true)
         {
-            MrpRun.Start(ProductionDomainContext);
+            IMrpRun mrpRun = new MrpRun(ProductionDomainContext);
+            mrpRun.Start();
             
             _dbTransactionData = new DbTransactionData(ProductionDomainContext);
             _orderGenerator = TestScenario.GetOrderGenerator(ProductionDomainContext

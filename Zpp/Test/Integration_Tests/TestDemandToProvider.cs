@@ -25,8 +25,9 @@ namespace Zpp.Test.Integration_Tests
         [Fact]
         public void TestAllDemandsAreInDemandToProviderTable()
         {
-            MrpRun.Start(ProductionDomainContext);
-            
+            IMrpRun mrpRun = new MrpRun(ProductionDomainContext);
+            mrpRun.Start();
+
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.ReloadTransactionData();
 
@@ -49,7 +50,8 @@ namespace Zpp.Test.Integration_Tests
         [Fact]
         public void TestAllDemandsAreSatisfiedWithinProviderTable()
         {
-            MrpRun.Start(ProductionDomainContext);
+            IMrpRun mrpRun = new MrpRun(ProductionDomainContext);
+            mrpRun.Start();
             
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.ReloadTransactionData();
@@ -67,7 +69,8 @@ namespace Zpp.Test.Integration_Tests
         [Fact]
         public void TestAllDemandsAreSatisfiedByProvidersOfDemandToProviderTable()
         {
-            MrpRun.Start(ProductionDomainContext);
+            IMrpRun mrpRun = new MrpRun(ProductionDomainContext);
+            mrpRun.Start();
             
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.ReloadTransactionData();

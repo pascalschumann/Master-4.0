@@ -13,11 +13,12 @@ using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Mrp.ProductionManagement.ProductionTypes;
 using Zpp.Mrp.Scheduling;
+using Zpp.Production;
 using Zpp.Utils;
 
 namespace Zpp.Mrp.ProductionManagement
 {
-    public class ProductionManager : IProvidingManager
+    public class ProductionManager : IProductionManager
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();

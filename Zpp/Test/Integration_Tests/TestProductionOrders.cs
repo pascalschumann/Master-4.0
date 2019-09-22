@@ -20,7 +20,8 @@ namespace Zpp.Test.Integration_Tests
             }
             else
             {
-                MrpRun.Start(ProductionDomainContext);
+                IMrpRun mrpRun = new MrpRun(ProductionDomainContext);
+            mrpRun.Start();
                 IDbMasterDataCache dbMasterDataCache =
                     ZppConfiguration.CacheManager.GetMasterDataCache();
                 IDbTransactionData dbTransactionData =
@@ -49,7 +50,8 @@ namespace Zpp.Test.Integration_Tests
             }
             else
             {
-                MrpRun.Start(ProductionDomainContext);
+                IMrpRun mrpRun = new MrpRun(ProductionDomainContext);
+            mrpRun.Start();
                 IDbMasterDataCache dbMasterDataCache =
                     ZppConfiguration.CacheManager.GetMasterDataCache();
                 IDbTransactionData dbTransactionData =

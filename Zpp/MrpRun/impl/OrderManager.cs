@@ -3,16 +3,17 @@ using Zpp.Common.DemandDomain;
 using Zpp.DbCache;
 using Zpp.Mrp.ProductionManagement;
 using Zpp.Mrp.PurchaseManagement;
+using Zpp.Production;
 
 namespace Zpp.Mrp
 {
     /**
      * abstracts over PurchaseManager+ProductionManager
      */
-    public class OrderManager : IProvidingManager
+    public class OrderManager : IOrderManager
     {
-        private readonly IProvidingManager _purchaseManager;
-        private readonly IProvidingManager _productionManager;
+        private readonly IPurchaseManager _purchaseManager;
+        private readonly IProductionManager _productionManager;
 
         public OrderManager()
         {

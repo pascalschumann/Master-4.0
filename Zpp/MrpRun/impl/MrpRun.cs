@@ -23,28 +23,33 @@ using Zpp.Utils.Queue;
 
 namespace Zpp.Mrp
 {
-    public static class MrpRun
+    public class MrpRun: IMrpRun
     {
         private static readonly NLog.Logger LOGGER = NLog.LogManager.GetCurrentClassLogger();
+        private readonly ProductionDomainContext _productionDomainContext;
+
+        public MrpRun(ProductionDomainContext productionDomainContext)
+        {
+            _productionDomainContext = productionDomainContext;
+        }
 
         /**
          * Only at start the demands are customerOrders
          */
-        public static void Start(ProductionDomainContext productionDomainContext,
-            bool withForwardScheduling = true)
+        public void Start(bool withForwardScheduling = true)
         {
-            OrderGenerator orderGenerator = TestScenario.GetOrderGenerator(productionDomainContext
+            OrderGenerator orderGenerator = TestScenario.GetOrderGenerator(_productionDomainContext
                 , new MinDeliveryTime(960)
                 , new MaxDeliveryTime(1440)
                 , new OrderArrivalRate(0.025));
 
-            // start
-            for (int i = 0; productionDomainContext.CustomerOrderParts.Count() < 10; i++)
+            // _productionDomainContext
+            for (int i = 0; _productionDomainContext.CustomerOrderParts.Count() < 10; i++)
             {
                 // remove all DemandToProvider entries
-                productionDomainContext.DemandToProviders.RemoveRange(productionDomainContext
+                _productionDomainContext.DemandToProviders.RemoveRange(_productionDomainContext
                     .DemandToProviders);
-                productionDomainContext.ProviderToDemand.RemoveRange(productionDomainContext
+                _productionDomainContext.ProviderToDemand.RemoveRange(_productionDomainContext
                     .ProviderToDemand);
 
                 // init data structures
@@ -67,7 +72,7 @@ namespace Zpp.Mrp
          * - save dependingDemands
          */
         public static void ProcessProvidingResponse(ResponseWithProviders responseWithProviders,
-            IProviderManager providerManager, StockManager stockManager,
+            IProviderManager providerManager, IStockManager stockManager,
             IDbTransactionData dbTransactionData, Demand demand,
             IOpenDemandManager openDemandManager)
         {
@@ -105,7 +110,7 @@ namespace Zpp.Mrp
 
         private static IDemands ProcessNextDemand(IDbTransactionData dbTransactionData,
             Demand demand, IProvidingManager orderManager,
-            StockManager stockManager, IProviderManager providerManager,
+            IStockManager stockManager, IProviderManager providerManager,
             IOpenDemandManager openDemandManager)
         {
             ResponseWithProviders responseWithProviders;
@@ -153,10 +158,10 @@ namespace Zpp.Mrp
             StockManager globalStockManager =
                 new StockManager();
 
-            StockManager stockManager = new StockManager(globalStockManager);
+            IStockManager stockManager = new StockManager(globalStockManager);
             IProviderManager providerManager = new ProviderManager(dbTransactionData);
 
-            IProvidingManager orderManager = new OrderManager();
+            IOrderManager orderManager = new OrderManager();
 
             IOpenDemandManager openDemandManager = new OpenDemandManager();
 
@@ -248,8 +253,8 @@ namespace Zpp.Mrp
                 dbTransactionData.SetProviderManager(providerManager);
 
                 // job shop scheduling
-                MachineManager machineManager = new MachineManager();
-                machineManager.JobSchedulingWithGifflerThompsonAsZaepfel(dbTransactionData,
+                JobShopScheduler jobShopScheduler = new JobShopScheduler();
+                jobShopScheduler.JobSchedulingWithGifflerThompsonAsZaepfel(
                     new PriorityRule());
 
                 dbTransactionData.PersistDbCache();

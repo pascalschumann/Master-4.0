@@ -3,6 +3,7 @@ using System.Text;
 using Xunit;
 using Zpp.Configuration;
 using Zpp.DbCache;
+using Zpp.GraphicalRepresentation;
 using Zpp.Mrp;
 using Zpp.Test.Configuration;
 using Zpp.Utils;
@@ -34,8 +35,10 @@ namespace Zpp.Test.Ordergraphs.GanttChart
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.ReloadTransactionData();
 
-            
-            string actualGanttChart = new GraphicalRepresentation.GanttChart(dbTransactionData.ProductionOrderOperationGetAll()).ToString();
+            IGanttChart ganttChart =
+                new GraphicalRepresentation.GanttChart(dbTransactionData
+                    .ProductionOrderOperationGetAll());
+            string actualGanttChart = ganttChart.ToString();
             // create initial file, if it doesn't exists (must be committed then)
             if (File.Exists(orderGraphAsGanttChartFile) == false)
             {
@@ -68,7 +71,8 @@ namespace Zpp.Test.Ordergraphs.GanttChart
         {
             InitTestScenario(testConfiguration);
 
-            MrpRun.Start(ProductionDomainContext);
+            IMrpRun mrpRun = new MrpRun(ProductionDomainContext);
+            mrpRun.Start();
         }
     }
 }

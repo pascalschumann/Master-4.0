@@ -24,7 +24,7 @@ using Zpp.Utils.Queue;
 
 namespace Zpp.Mrp
 {
-    public class MrpRun: IMrpRun
+    public class MrpRun : IMrpRun
     {
         private static readonly NLog.Logger LOGGER = NLog.LogManager.GetCurrentClassLogger();
         private readonly ProductionDomainContext _productionDomainContext;
@@ -32,7 +32,7 @@ namespace Zpp.Mrp
         private readonly JobShopScheduler _jobShopScheduler = new JobShopScheduler();
 
         private readonly IOrderManager _orderManager = new OrderManager();
-        
+
         private readonly Demands _newCreatedDemands = new Demands();
         private Provider _newCreatedProvider;
 
@@ -41,11 +41,9 @@ namespace Zpp.Mrp
         public MrpRun(ProductionDomainContext productionDomainContext)
         {
             _productionDomainContext = productionDomainContext;
-            
-            _orderGenerator = TestScenario.GetOrderGenerator(_productionDomainContext
-                , new MinDeliveryTime(960)
-                , new MaxDeliveryTime(1440)
-                , new OrderArrivalRate(0.025));
+
+            _orderGenerator = TestScenario.GetOrderGenerator(_productionDomainContext,
+                new MinDeliveryTime(960), new MaxDeliveryTime(1440), new OrderArrivalRate(0.025));
         }
 
         /**
@@ -54,21 +52,21 @@ namespace Zpp.Mrp
         public void Start(bool withForwardScheduling = true)
         {
             // _productionDomainContext
-            for (int i = 0; _productionDomainContext.CustomerOrderParts.Count() < 10; i++)
+            for (int i = 0; i < 2; i++)
             {
-                ApplyConfirmations();
-
                 // init transactionData
-                _dbTransactionData =
-                    ZppConfiguration.CacheManager.ReloadTransactionData();
+                _dbTransactionData = ZppConfiguration.CacheManager.ReloadTransactionData();
 
                 // execute mrp2
-                ManufacturingResourcePlanning(_dbTransactionData.T_CustomerOrderPartGetAll(),
-                    0, withForwardScheduling);
+                ManufacturingResourcePlanning(_dbTransactionData.T_CustomerOrderPartGetAll(), 0,
+                    withForwardScheduling);
 
-                var simulationInterval = new SimulationInterval(0 * i, 1440 * i);
-                
+                int interval = 1440;
+                var simulationInterval = new SimulationInterval(i * interval, interval * (i + 1));
+
                 CreateConfirmations(simulationInterval);
+
+                ApplyConfirmations();
             }
         }
 
@@ -77,8 +75,7 @@ namespace Zpp.Mrp
          * - save dependingDemands
          */
         private void ProcessProvidingResponse(ResponseWithProviders responseWithProviders,
-            IStockManager stockManager,
-            Demand demand)
+            IStockManager stockManager, Demand demand)
         {
             if (responseWithProviders == null)
             {
@@ -109,11 +106,9 @@ namespace Zpp.Mrp
                             Demands dependingDemands = provider.GetAllDependingDemands();
                             if (dependingDemands != null && dependingDemands.Any())
                             {
-                                _newCreatedDemands.AddAll(dependingDemands);    
+                                _newCreatedDemands.AddAll(dependingDemands);
                             }
-                            
                         }
-                        
                     }
                 }
             }
@@ -126,20 +121,16 @@ namespace Zpp.Mrp
             // SE:I --> satisfy by orders (PuOP/PrOBom)
             if (demand.GetType() == typeof(StockExchangeDemand))
             {
-                responseWithProviders = _orderManager.Satisfy(demand,
-                    demand.GetQuantity());
+                responseWithProviders = _orderManager.Satisfy(demand, demand.GetQuantity());
 
-                ProcessProvidingResponse(responseWithProviders, stockManager,
-                    demand);
+                ProcessProvidingResponse(responseWithProviders, stockManager, demand);
             }
             // COP or PrOB --> satisfy by SE:W
             else
             {
-                responseWithProviders = stockManager.Satisfy(demand,
-                    demand.GetQuantity());
+                responseWithProviders = stockManager.Satisfy(demand, demand.GetQuantity());
 
-                ProcessProvidingResponse(responseWithProviders, stockManager,
-                    demand);
+                ProcessProvidingResponse(responseWithProviders, stockManager, demand);
             }
 
             if (responseWithProviders.GetRemainingQuantity().IsNull() == false)
@@ -153,6 +144,11 @@ namespace Zpp.Mrp
         public void ManufacturingResourcePlanning(IDemands dbDemands, int count,
             bool withForwardScheduling)
         {
+            if (dbDemands == null || dbDemands.Any() == false)
+            {
+                return;
+            }
+
             // init
             IDemands finalAllDemands = new Demands();
             IProviders finalAllProviders = new Providers();
@@ -161,8 +157,7 @@ namespace Zpp.Mrp
             FastPriorityQueue<DemandQueueNode> demandQueue =
                 new FastPriorityQueue<DemandQueueNode>(MAX_DEMANDS_IN_QUEUE);
 
-            StockManager globalStockManager =
-                new StockManager();
+            StockManager globalStockManager = new StockManager();
 
             IStockManager stockManager = new StockManager(globalStockManager);
 
@@ -187,6 +182,7 @@ namespace Zpp.Mrp
                         demandQueue.Enqueue(new DemandQueueNode(demand),
                             demand.GetDueTime(_dbTransactionData).GetValue());
                     }
+
                     _newCreatedDemands.Clear();
                 }
             }
@@ -215,8 +211,6 @@ namespace Zpp.Mrp
 
                 LOGGER.Info("MrpRun done.");
             }
-            
-            
         }
 
         public void ScheduleBackward()
@@ -227,7 +221,7 @@ namespace Zpp.Mrp
         public void ScheduleForward(int count)
         {
             Demands demands = _dbTransactionData.T_CustomerOrderPartGetAll();
-            
+
             // TODO: remove this once forward scheduling is implemented
             // TODO 2: in forward scheduling, min must be calculuted by demand & provider,
             // not only providers, since operations are on PrOBom (which are demands)
@@ -249,24 +243,22 @@ namespace Zpp.Mrp
                     if (demand.GetType() == typeof(CustomerOrderPart))
                     {
                         T_CustomerOrderPart customerOrderPart =
-                            ((T_CustomerOrderPart)  demand.ToIDemand());
+                            ((T_CustomerOrderPart) demand.ToIDemand());
                         customerOrderPart.CustomerOrder.DueTime =
                             customerOrderPart.CustomerOrder.DueTime + Math.Abs(min);
                     }
                 }
 
-                ManufacturingResourcePlanning(demands, count+1,
-                    true);
+                ManufacturingResourcePlanning(demands, count + 1, true);
             }
         }
 
         public void JobShopScheduling()
         {
-            _jobShopScheduler.JobSchedulingWithGifflerThompsonAsZaepfel(
-                new PriorityRule());
+            _jobShopScheduler.JobSchedulingWithGifflerThompsonAsZaepfel(new PriorityRule());
         }
 
-        public void CreateConfirmations( SimulationInterval simulationInterval)
+        public void CreateConfirmations(SimulationInterval simulationInterval)
         {
             ISimulator simulator = new Simulator(_dbTransactionData);
             simulator.ProcessCurrentInterval(simulationInterval, _orderGenerator);
@@ -275,12 +267,13 @@ namespace Zpp.Mrp
 
         public void ApplyConfirmations()
         {
-            // TODO: This is not correct an incomplete
-            // remove all DemandToProvider entries
-            _productionDomainContext.DemandToProviders.RemoveRange(_productionDomainContext
-                .DemandToProviders);
-            _productionDomainContext.ProviderToDemand.RemoveRange(_productionDomainContext
-                .ProviderToDemand);
+            /**
+             * - löschen aller Verbindungen zwischen P(SE:W) und D(SE:I)
+             * - PrO: D(SE:I) bis P(SE:W) erhalten wenn eine der Ops angefangen
+             */
+
+
+            // _dbTransactionData.PersistDbCache();
         }
     }
 }

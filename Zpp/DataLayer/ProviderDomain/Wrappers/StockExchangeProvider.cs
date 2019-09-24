@@ -96,7 +96,7 @@ namespace Zpp.Common.ProviderDomain.Wrappers
                     if (lotSizeSum.IsGreaterThan(demandedQuantity))
                         // remember created demand as openDemand
                     {
-                        openDemandManager.AddDemand(GetId(), stockExchangeDemand,
+                        openDemandManager.AddDemand(stockExchangeDemand,
                             quantityOfNewCreatedDemandToReserve);
                     }
 

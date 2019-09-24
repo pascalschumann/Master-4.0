@@ -23,7 +23,7 @@ namespace Zpp.Test.Simulation
             IMrpRun mrpRun = new MrpRun(ProductionDomainContext);
             mrpRun.Start();
             
-            _dbTransactionData = new DbTransactionData(ProductionDomainContext);
+            _dbTransactionData = ZppConfiguration.CacheManager.ReloadTransactionData();
             _orderGenerator = TestScenario.GetOrderGenerator(ProductionDomainContext
                                                             , new MinDeliveryTime(960)
                                                             , new MaxDeliveryTime(1440)

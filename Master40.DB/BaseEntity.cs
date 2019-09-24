@@ -43,11 +43,11 @@ namespace Master40.DB
                     requester += methodFromRequester.Name;   
                 }
                 
-                Id = IdGeneratorHolder.GetIdGenerator().GetNewId(caller,requester);
+                Id = IdGeneratorHolder.GetIdGenerator().GetNewId(caller,requester).GetValue();
             }
             else
             {
-                Id = IdGeneratorHolder.GetIdGenerator().GetNewId();
+                Id = IdGeneratorHolder.GetIdGenerator().GetNewId().GetValue();
             }
 
             

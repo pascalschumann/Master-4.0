@@ -1,5 +1,12 @@
+using System;
+using System.IO;
 using Master40.DB.Data.Context;
+using Master40.DB.Data.WrappersForPrimitives;
+using Newtonsoft.Json;
+using Zpp.Configuration;
 using Zpp.Mrp.NodeManagement;
+using Zpp.Test.Configuration;
+using Zpp.Utils;
 
 namespace Zpp.DbCache
 {
@@ -9,13 +16,16 @@ namespace Zpp.DbCache
         private IDbMasterDataCache _dbMasterDataCache;
         private ProductionDomainContext _productionDomainContext;
         private IOpenDemandManager _openDemandManager;
+        private TestConfiguration _testConfiguration;
+        private readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
         
-        public void InitByReadingFromDatabase(ProductionDomainContext productionDomainContext)
+        public void InitByReadingFromDatabase(string testConfiguration)
         {
-            _dbMasterDataCache = new DbMasterDataCache(productionDomainContext);
-            _dbTransactionData = new DbTransactionData(productionDomainContext);
+            _productionDomainContext = Dbms.GetDbContext();
+            InitDb(testConfiguration);
+            _dbMasterDataCache = new DbMasterDataCache(_productionDomainContext);
+            _dbTransactionData = new DbTransactionData(_productionDomainContext);
             _openDemandManager = new OpenDemandManager();
-            _productionDomainContext = productionDomainContext;
         }
 
         public IDbTransactionData ReloadTransactionData()
@@ -37,7 +47,56 @@ namespace Zpp.DbCache
 
         public IOpenDemandManager GetOpenDemandManager()
         {
-            throw new System.NotImplementedException();
+            return _openDemandManager;
+        }
+        
+        /**
+         * Initialize the db:
+         * - deletes current
+         * - creates db according to given configuration
+         */
+        private void InitDb(string testConfiguration)
+        {
+            _testConfiguration = ReadTestConfiguration(testConfiguration);
+            if (Constants.IsLocalDb)
+            {
+                bool isDeleted = _productionDomainContext.Database.EnsureDeleted();
+                if (!isDeleted)
+                {
+                    _logger.Error("Database could not be deleted.");
+                }
+            }
+
+            else if(Constants.IsLocalDb == false && Constants.IsWindows)
+            {
+                bool wasDropped = Dbms.DropDatabase(
+                    Constants.GetDbName(),
+                    Constants.GetConnectionString());
+                if (wasDropped == false)
+                {
+                    _logger.Warn($"Database {Constants.GetDbName()} could not be dropped.");
+                }
+            }
+
+            Type dbSetInitializer = Type.GetType(_testConfiguration.DbSetInitializer);
+            dbSetInitializer.GetMethod("DbInitialize").Invoke(null, new[]
+            {
+                _productionDomainContext
+            });
+
+            LotSize.LotSize.SetDefaultLotSize(new Quantity(_testConfiguration.LotSize));
+            LotSize.LotSize.SetLotSizeType(_testConfiguration.LotSizeType);
+        }
+        
+        private static TestConfiguration ReadTestConfiguration(string testConfigurationFileNames)
+        {
+            return JsonConvert.DeserializeObject<TestConfiguration>(
+                File.ReadAllText(testConfigurationFileNames));
+        }
+
+        public ProductionDomainContext GetProductionDomainContext()
+        {
+            return _productionDomainContext;
         }
     }
 }

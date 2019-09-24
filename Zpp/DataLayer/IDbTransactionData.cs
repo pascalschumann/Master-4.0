@@ -11,10 +11,7 @@ using Zpp.WrappersForCollections;
 
 namespace Zpp.DbCache
 {
-
-    /**
-     * NOTE: TransactionData does NOT include CustomerOrders or CustomerOrderParts !
-     */
+    
     public interface IDbTransactionData
     {
         // TODO: M_* methods should be removed

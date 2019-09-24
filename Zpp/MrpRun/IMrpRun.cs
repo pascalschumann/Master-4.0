@@ -20,8 +20,12 @@ namespace Zpp.Mrp
 
         void JobShopScheduling();
 
-        void ApplyConfirmations();
-        
         void CreateConfirmations(SimulationInterval simulationInterval);
+        
+        /**
+         * - löschen aller Verbindungen zwischen P(SE:W) und D(SE:I)
+         * - PrO: D(SE:I) bis P(SE:W) erhalten wenn eine der Ops angefangen
+         */
+        void ApplyConfirmations();
     }
 }

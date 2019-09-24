@@ -13,17 +13,17 @@ namespace Master40.DB.Data.Helper
         private int _currentId = _start;
         private static  readonly Dictionary<Type, List<string>> objectTypeToIds = new Dictionary<Type, List<string>>();
 
-        public int GetNewId()
+        public Id GetNewId()
         {
             lock (this)
             {
                 _currentId++;
 
-                return _currentId;
+                return new Id(_currentId);
             }
         }
 
-        public int GetNewId(Type objectType, string requester)
+        public Id GetNewId(Type objectType, string requester)
         {
             lock (this)
             {
@@ -38,13 +38,8 @@ namespace Master40.DB.Data.Helper
                     objectTypeToIds[objectType].Add($"{_currentId} ({requester})");   
                 }
 
-                return _currentId;
+                return new Id(_currentId);
             }
-        }
-
-        public static Id GetRandomId(int minValue, int maxValue)
-        {
-            return new Id(new Random().Next(minValue, maxValue));
         }
 
         public static string GetObjectTypeToIdsAsString()

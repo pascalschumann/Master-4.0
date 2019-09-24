@@ -21,7 +21,7 @@ namespace Zpp.Test
     public abstract class AbstractTest : IDisposable
     {
         private readonly NLog.Logger LOGGER = NLog.LogManager.GetCurrentClassLogger();
-        protected readonly ProductionDomainContext ProductionDomainContext;
+        protected readonly ProductionDomainContext ProductionDomainContext = ZppConfiguration.CacheManager.GetProductionDomainContext();
 
         protected static TestConfiguration TestConfiguration;
 
@@ -42,7 +42,6 @@ namespace Zpp.Test
          */
         public AbstractTest(bool initDefaultTestConfig)
         {
-            ProductionDomainContext = Dbms.GetDbContext();
             if (initDefaultTestConfig)
             {
                 InitTestScenario(DefaultTestScenario);
@@ -52,7 +51,7 @@ namespace Zpp.Test
         // @before
         public AbstractTest(string testConfiguration) : this(false)
         {
-            InitDb(testConfiguration);
+            InitTestScenario(testConfiguration);
         }
 
         // @after
@@ -62,56 +61,12 @@ namespace Zpp.Test
         }
 
         /**
-         * Initialize the db:
-         * - deletes current
-         * - creates db according to given configuration
-         */
-        protected void InitDb(string testConfiguration)
-        {
-            TestConfiguration = ReadTestConfiguration(testConfiguration);
-            if (Constants.IsLocalDb)
-            {
-                bool isDeleted = ProductionDomainContext.Database.EnsureDeleted();
-                if (!isDeleted)
-                {
-                    LOGGER.Error("Database could not be deleted.");
-                }
-            }
-
-            else if(Constants.IsLocalDb == false && Constants.IsWindows)
-            {
-                bool wasDropped = Dbms.DropDatabase(
-                    Constants.GetDbName(),
-                    Constants.GetConnectionString());
-                if (wasDropped == false)
-                {
-                    LOGGER.Warn($"Database {Constants.GetDbName()} could not be dropped.");
-                }
-            }
-
-            Type dbSetInitializer = Type.GetType(TestConfiguration.DbSetInitializer);
-            dbSetInitializer.GetMethod("DbInitialize").Invoke(null, new[]
-            {
-                ProductionDomainContext
-            });
-
-            LotSize.LotSize.SetDefaultLotSize(new Quantity(TestConfiguration.LotSize));
-            LotSize.LotSize.SetLotSizeType(TestConfiguration.LotSizeType);
-        }
-
-        /**
          * init db and customerOrders
          */
         protected void InitTestScenario(string testConfiguration)
         {
-            InitDb(testConfiguration);
+            ZppConfiguration.CacheManager.InitByReadingFromDatabase(testConfiguration);
             
-        }
-
-        private static TestConfiguration ReadTestConfiguration(string testConfigurationFileNames)
-        {
-            return JsonConvert.DeserializeObject<TestConfiguration>(
-                File.ReadAllText(testConfigurationFileNames));
         }
     }
 }

@@ -7,7 +7,7 @@ namespace Zpp.Mrp.NodeManagement
 {
     public interface IOpenDemandManager
     {
-        void AddDemand(Id providerId, Demand oneDemand, Quantity reservedQuantity);
+        void AddDemand(Demand oneDemand, Quantity reservedQuantity);
 
         ResponseWithDemands SatisfyProviderByOpenDemand(Provider provider, Quantity demandedQuantity,
             IDbTransactionData dbTransactionData);

@@ -1,9 +1,11 @@
+using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Zpp.Common.DemandDomain;
 using Zpp.Common.DemandDomain.Wrappers;
 using Zpp.Common.DemandDomain.WrappersForCollections;
 using Zpp.Common.ProviderDomain;
+using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Utils;
 using Zpp.WrappersForCollections;
@@ -17,11 +19,31 @@ namespace Zpp.Mrp.NodeManagement
 
         private readonly OpenNodes<Demand> _openDemands = new OpenNodes<Demand>();
 
-        // 
-        private readonly IProviderToDemandTable
-            _providerToDemandTable = new ProviderToDemandTable();
+        private readonly IDbTransactionData _dbTransactionData =
+            ZppConfiguration.CacheManager.GetDbTransactionData();
 
-        public void AddDemand(Id providerId, Demand oneDemand, Quantity reservedQuantity)
+        public OpenDemandManager()
+        {
+            foreach (var stockExchangeDemand in _dbTransactionData.StockExchangeDemandsGetAll())
+            {
+                Quantity reservedQuantity = CalculateReservedQuantity(stockExchangeDemand);
+                AddDemand(stockExchangeDemand, reservedQuantity);
+            }
+        }
+
+        private Quantity CalculateReservedQuantity(Demand demand)
+        {
+            Quantity reservedQuantity = Quantity.Null();
+            _dbTransactionData.ProviderToDemandGetAll().Select(x =>
+                {
+                    reservedQuantity.IncrementBy(x.GetQuantity());
+                    return x;
+                })
+                .Where(x => x.GetDemandId().Equals(demand.GetId()));
+            return reservedQuantity;
+        }
+
+        public void AddDemand(Demand oneDemand, Quantity reservedQuantity)
         {
             if (_demands.GetDemandById(oneDemand.GetId()) != null)
             {
@@ -40,13 +62,6 @@ namespace Zpp.Mrp.NodeManagement
 
             // save demand
             _demands.Add(oneDemand);
-
-            T_ProviderToDemand providerToDemand = new T_ProviderToDemand();
-            providerToDemand.DemandId = oneDemand.GetId().GetValue();
-            providerToDemand.ProviderId = providerId.GetValue();
-            providerToDemand.Quantity = reservedQuantity.GetValue();
-
-            _providerToDemandTable.Add(providerToDemand);
         }
 
         /**

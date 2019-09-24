@@ -8,14 +8,16 @@ namespace Zpp.DbCache
      */
     public interface ICacheManager
     {
-        void InitByReadingFromDatabase(ProductionDomainContext productionDomainContext);
-
+        void InitByReadingFromDatabase(string testConfiguration);
+        
         IDbTransactionData ReloadTransactionData();
 
         IDbMasterDataCache GetMasterDataCache();
-
+        
         IDbTransactionData GetDbTransactionData();
 
         IOpenDemandManager GetOpenDemandManager();
+
+        ProductionDomainContext GetProductionDomainContext();
     }
 }

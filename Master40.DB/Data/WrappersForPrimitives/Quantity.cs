@@ -47,6 +47,11 @@ namespace Master40.DB.Data.WrappersForPrimitives
         {
             return _quantity > quantity._quantity;
         }
+        
+        public bool IsGreaterThanNull()
+        {
+            return IsGreaterThan(Quantity.Null());
+        }
 
         public bool IsSmallerThan(Quantity quantity)
         {

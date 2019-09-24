@@ -29,7 +29,7 @@ namespace Zpp.Test.Integration_Tests
         {
             InitTestScenario(testConfiguration);
 
-            IMrpRun mrpRun = new MrpRun(ProductionDomainContext);
+            IMrpRun mrpRun = new MrpRun();
             mrpRun.Start();
         }
 
@@ -89,15 +89,15 @@ namespace Zpp.Test.Integration_Tests
             List<DueTime> dueTimes = new List<DueTime>();
             foreach (var demand in dbTransactionData.DemandsGetAll())
             {
-                dueTimes.Add(demand.GetDueTime(dbTransactionData));
-                Assert.True(demand.GetDueTime(dbTransactionData).GetValue() >= 0,
+                dueTimes.Add(demand.GetDueTime());
+                Assert.True(demand.GetDueTime().GetValue() >= 0,
                     $"DueTime of demand ({demand}) is negative.");
             }
 
             foreach (var provider in dbTransactionData.ProvidersGetAll())
             {
-                dueTimes.Add(provider.GetDueTime(dbTransactionData));
-                Assert.True(provider.GetDueTime(dbTransactionData).GetValue() >= 0,
+                dueTimes.Add(provider.GetDueTime());
+                Assert.True(provider.GetDueTime().GetValue() >= 0,
                     $"DueTime of provider ({provider}) is negative.");
             }
         }
@@ -124,7 +124,7 @@ namespace Zpp.Test.Integration_Tests
                     $"{productionOrderOperation} was not scheduled.");
                 Assert.True(
                     tProductionOrderOperation.Start >= productionOrderOperation
-                        .GetDueTimeOfItsMaterial(dbTransactionData).GetValue(),
+                        .GetDueTimeOfItsMaterial().GetValue(),
                     "A productionOrderOperation cannot start before its material is available.");
             }
         }
@@ -157,8 +157,8 @@ namespace Zpp.Test.Integration_Tests
                     dbTransactionData.ProvidersGetById(demandToProvider.GetProviderId());
 
 
-                DueTime parentDueTime = parentDemand.GetDueTime(dbTransactionData);
-                DueTime childDueTime = childProvider.GetDueTime(dbTransactionData);
+                DueTime parentDueTime = parentDemand.GetDueTime();
+                DueTime childDueTime = childProvider.GetDueTime();
 
                 Assert.True(parentDueTime.IsGreaterThanOrEqualTo(childDueTime),
                     "ParentDemand's dueTime cannot be smaller than childProvider's dueTime.");
@@ -171,8 +171,8 @@ namespace Zpp.Test.Integration_Tests
                 Demand childDemand =
                     dbTransactionData.DemandsGetById(providerToDemand.GetDemandId());
 
-                DueTime parentDueTime = parentProvider.GetDueTime(dbTransactionData);
-                DueTime childDueTime = childDemand.GetDueTime(dbTransactionData);
+                DueTime parentDueTime = parentProvider.GetDueTime();
+                DueTime childDueTime = childDemand.GetDueTime();
 
                 Assert.True(parentDueTime.IsGreaterThanOrEqualTo(childDueTime),
                     "ParentProvider's dueTime cannot be smaller than childDemand's dueTime.");
@@ -197,7 +197,7 @@ namespace Zpp.Test.Integration_Tests
                 .ProductionOrderOperationGetAll())
             {
                 int expectedStartBackward =
-                    productionOrderOperation.GetDueTime(dbTransactionData).GetValue() +
+                    productionOrderOperation.GetDueTime().GetValue() +
                     OperationBackwardsSchedule.GetTransitionTimeFactor() *
                     productionOrderOperation.GetValue().Duration;
                 int actualStartBackward = productionOrderOperation.GetValue().StartBackward
@@ -207,7 +207,7 @@ namespace Zpp.Test.Integration_Tests
                     $"expectedStartBackward: {expectedStartBackward}, actualStartBackward {actualStartBackward}");
 
                 int expectedEndBackward =
-                    productionOrderOperation.GetDueTime(dbTransactionData).GetValue() +
+                    productionOrderOperation.GetDueTime().GetValue() +
                     OperationBackwardsSchedule.GetTransitionTimeFactor() *
                     productionOrderOperation.GetValue().Duration;
                 int actualEndBackward = productionOrderOperation.GetValue().StartBackward
@@ -233,7 +233,7 @@ namespace Zpp.Test.Integration_Tests
                 ZppConfiguration.CacheManager.ReloadTransactionData();
 
             ProductionOrderToOperationGraph productionOrderToOperationGraph =
-                new ProductionOrderToOperationGraph(dbTransactionData);
+                new ProductionOrderToOperationGraph();
 
             IStackSet<INode> innerLeafs =
                 productionOrderToOperationGraph.GetLeafNodes().ToStackSet();
@@ -244,7 +244,7 @@ namespace Zpp.Test.Integration_Tests
                 productionOrderToOperationGraph.GetPredecessorOperations(newPredecessorNodes, leaf);
                 ProductionOrderOperation lastOperation = (ProductionOrderOperation) leaf;
                 ValidatePredecessorOperationsTransitionTimeIsCorrect(newPredecessorNodes,
-                    lastOperation, dbTransactionData, productionOrderToOperationGraph,
+                    lastOperation, productionOrderToOperationGraph,
                     traversedNodes);
                 traversedNodes.Push(leaf.GetEntity());
             }
@@ -261,7 +261,7 @@ namespace Zpp.Test.Integration_Tests
 
         private void ValidatePredecessorOperationsTransitionTimeIsCorrect(
             IStackSet<INode> predecessorOperations, ProductionOrderOperation lastOperation,
-            IDbTransactionData dbTransactionData,
+            
             ProductionOrderToOperationGraph productionOrderToOperationGraph,
             IStackSet<INode> traversedOperations)
         {
@@ -293,7 +293,7 @@ namespace Zpp.Test.Integration_Tests
                     productionOrderToOperationGraph.GetPredecessorOperations(newPredecessorNodes,
                         currentPredecessor);
                     ValidatePredecessorOperationsTransitionTimeIsCorrect(newPredecessorNodes,
-                        currentOperation, dbTransactionData, productionOrderToOperationGraph,
+                        currentOperation, productionOrderToOperationGraph,
                         traversedOperations);
                 }
                 else

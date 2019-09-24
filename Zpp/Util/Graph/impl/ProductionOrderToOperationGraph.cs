@@ -21,18 +21,18 @@ namespace Zpp.OrderGraph
         private readonly IDirectedGraph<INode> _productionOrderGraph;
 
 
-        public ProductionOrderToOperationGraph(
-            IDbTransactionData dbTransactionData) : base(dbTransactionData)
+        public ProductionOrderToOperationGraph() : base()
         {
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
             
-            _aggregator = dbTransactionData.GetAggregator();
-            _productionOrderGraph = new ProductionOrderDirectedGraph(_dbTransactionData, false);
+            _aggregator = ZppConfiguration.CacheManager.GetAggregator();
+            _productionOrderGraph = new ProductionOrderDirectedGraph(false);
 
             foreach (var productionOrderNode in _productionOrderGraph.GetAllUniqueNodes())
             {
                 IDirectedGraph<INode> productionOrderOperationGraph =
-                    new ProductionOrderOperationDirectedGraph(_dbTransactionData,
-                        (ProductionOrder) productionOrderNode.GetEntity());
+                    new ProductionOrderOperationDirectedGraph((ProductionOrder) productionOrderNode.GetEntity());
                 
                 // connect
                 _productionOrderGraph.ReplaceNodeByDirectedGraph(productionOrderNode,

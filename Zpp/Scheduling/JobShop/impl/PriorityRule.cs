@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Zpp.Common.ProviderDomain.Wrappers;
+using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.WrappersForPrimitives;
 
@@ -10,9 +11,11 @@ namespace Zpp.Mrp.MachineManagement
     public class PriorityRule : IPriorityRule
     {
         public ProductionOrderOperation GetHighestPriorityOperation(DueTime now,
-            List<ProductionOrderOperation> productionOrderOperations,
-            IDbTransactionData dbTransactionData)
+            List<ProductionOrderOperation> productionOrderOperations)
         {
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
+            
             if (productionOrderOperations.Any()==false)
             {
                 return null;
@@ -24,10 +27,10 @@ namespace Zpp.Mrp.MachineManagement
                         .GetProductionOrderId());
                 // TODO: This is different from specification
                 DueTime minStartNextOfParentProvider =
-                    productionOrder.GetDueTime(dbTransactionData);
+                    productionOrder.GetDueTime();
                 
                 Priority priority = GetPriorityOfProductionOrderOperation(now,
-                    productionOrderOperation, dbTransactionData, minStartNextOfParentProvider);
+                    productionOrderOperation, minStartNextOfParentProvider);
                 productionOrderOperation.SetPriority(priority);
             }
 
@@ -36,13 +39,15 @@ namespace Zpp.Mrp.MachineManagement
 
         public Priority GetPriorityOfProductionOrderOperation(DueTime now,
             ProductionOrderOperation givenProductionOrderOperation,
-            IDbTransactionData dbTransactionData, DueTime minStartNextOfParentProvider)
+            DueTime minStartNextOfParentProvider)
         {
+            IAggregator aggregator =
+                ZppConfiguration.CacheManager.GetAggregator();
+            
             Dictionary<HierarchyNumber, DueTime> alreadySummedHierarchyNumbers =
                 new Dictionary<HierarchyNumber, DueTime>();
             DueTime sumDurationsOfOperations = DueTime.Null();
-            List<ProductionOrderOperation> productionOrderOperations = dbTransactionData
-                .GetAggregator()
+            List<ProductionOrderOperation> productionOrderOperations = aggregator
                 .GetProductionOrderOperationsOfProductionOrder(givenProductionOrderOperation
                     .GetProductionOrderId());
             foreach (var productionOrderOperation in productionOrderOperations)

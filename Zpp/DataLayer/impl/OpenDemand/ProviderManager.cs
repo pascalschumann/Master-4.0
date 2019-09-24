@@ -19,14 +19,13 @@ namespace Zpp.Mrp.NodeManagement
         private readonly IProviderToDemandTable _providerToDemandTable;
         private readonly IProviders _providers;
         private readonly List<Demand> _nextDemands = new List<Demand>();
-        private readonly IDbTransactionData _dbTransactionData;
+        
 
-        public ProviderManager(IDbTransactionData dbTransactionData)
+        public ProviderManager()
         {
             _providers = new Providers();
             _demandToProviderTable = new DemandToProviderTable();
             _providerToDemandTable = new ProviderToDemandTable();
-            _dbTransactionData = dbTransactionData;
         }
 
         public ProviderManager(IDemandToProviderTable demandToProviderTable,

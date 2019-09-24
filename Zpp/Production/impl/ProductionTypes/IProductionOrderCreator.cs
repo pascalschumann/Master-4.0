@@ -8,6 +8,6 @@ namespace Zpp.Mrp.ProductionManagement.ProductionTypes
     public interface IProductionOrderCreator
     {
         ProductionOrders CreateProductionOrder(
-            IDbTransactionData dbTransactionData, Demand demand, Quantity quantity);
+            Demand demand, Quantity quantity);
     }
 }

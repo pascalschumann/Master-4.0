@@ -21,7 +21,7 @@ namespace Zpp.Mrp.StockManagement
         private readonly Dictionary<Id, Stock> _stocks = new Dictionary<Id, Stock>();
         private HashSet<Provider> _alreadyConsideredProviders = new HashSet<Provider>();
         private readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
-        private readonly IDbTransactionData _dbTransactionData = ZppConfiguration.CacheManager.GetDbTransactionData();
+        private readonly ICacheManager _cacheManager = ZppConfiguration.CacheManager;
 
         private readonly IOpenDemandManager _openDemandManager =
             ZppConfiguration.CacheManager.GetOpenDemandManager();
@@ -49,7 +49,7 @@ namespace Zpp.Mrp.StockManagement
             }
         }
 
-        public void AdaptStock(Provider provider, IDbTransactionData dbTransactionData)
+        public void AdaptStock(Provider provider)
         {
             // a provider can influence the stock only once
             if (_alreadyConsideredProviders.Contains(provider))
@@ -68,8 +68,7 @@ namespace Zpp.Mrp.StockManagement
                 Quantity currentQuantity = stock.GetQuantity();
                 if (currentQuantity.IsSmallerThan(stock.GetMinStockLevel()))
                 {
-                    ((StockExchangeProvider)provider).CreateDependingDemands(provider.GetArticle(), dbTransactionData,
-                        provider, provider.GetQuantity(), _openDemandManager);
+                    ((StockExchangeProvider)provider).CreateDependingDemands(provider.GetArticle(), provider, provider.GetQuantity(), _openDemandManager);
                 }
             }
 
@@ -97,7 +96,7 @@ namespace Zpp.Mrp.StockManagement
             return _stocks.Values.ToList();
         }
 
-        public static void CalculateCurrent(M_Stock stock, IDbTransactionData dbTransactionData,
+        public static void CalculateCurrent(M_Stock stock, 
             Quantity startQuantity)
         {
             Quantity currentQuantity = new Quantity(startQuantity);
@@ -117,7 +116,7 @@ namespace Zpp.Mrp.StockManagement
             List<T_DemandToProvider> demandToProviders = new List<T_DemandToProvider>();
 
             Provider stockProvider = CreateStockExchangeProvider(demand.GetArticle(),
-                demand.GetDueTime(_dbTransactionData), demandedQuantity);
+                demand.GetDueTime(), demandedQuantity);
             providers.Add(stockProvider);
 
             T_DemandToProvider demandToProvider = new T_DemandToProvider()
@@ -132,8 +131,7 @@ namespace Zpp.Mrp.StockManagement
             return new ResponseWithProviders(providers, demandToProviders, demandedQuantity);
         }
 
-        public ResponseWithProviders SatisfyByAvailableStockQuantity(Demand demand, Quantity demandedQuantity,
-            IDbTransactionData dbTransactionData)
+        public ResponseWithProviders SatisfyByAvailableStockQuantity(Demand demand, Quantity demandedQuantity)
         {
             Stock stock = _stocks[demand.GetArticleId()];
             if (stock.GetQuantity().IsGreaterThan(Quantity.Null()))
@@ -149,7 +147,7 @@ namespace Zpp.Mrp.StockManagement
                 }
 
                 Provider stockProvider = CreateStockExchangeProvider(demand.GetArticle(),
-                    demand.GetDueTime(dbTransactionData), reservedQuantity);
+                    demand.GetDueTime(), reservedQuantity);
 
                 T_DemandToProvider demandToProvider = new T_DemandToProvider()
                 {

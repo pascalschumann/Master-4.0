@@ -32,7 +32,7 @@ namespace Zpp.Common.DemandDomain.Wrappers
             return _dbMasterDataCache.M_ArticleGetById(articleId);
         }
 
-        public override DueTime GetDueTime(IDbTransactionData dbTransactionData)
+        public override DueTime GetDueTime()
         {
             DueTime dueTime = new DueTime(((T_StockExchange) _demand).RequiredOnTime);
             return dueTime;
@@ -87,9 +87,9 @@ namespace Zpp.Common.DemandDomain.Wrappers
             return new Id(((T_StockExchange) _demand).StockId);
         }
 
-        public override DueTime GetStartTime(IDbTransactionData dbTransactionData)
+        public override DueTime GetStartTime()
         {
-            return GetDueTime(dbTransactionData);
+            return GetDueTime();
         }
     }
 }

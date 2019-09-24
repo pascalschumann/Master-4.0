@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Akka.Util.Internal;
 using Master40.DB;
 using Master40.DB.Data.Context;
 using Master40.DB.Data.Helper;
@@ -30,7 +32,9 @@ namespace Zpp.DbCache
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         private readonly ProductionDomainContext _productionDomainContext;
-        private readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
+
+        private readonly IDbMasterDataCache _dbMasterDataCache =
+            ZppConfiguration.CacheManager.GetMasterDataCache();
 
         // TODO: These 3 lines should be removed
         private readonly List<M_Article> _articles;
@@ -62,18 +66,13 @@ namespace Zpp.DbCache
 
         private readonly CustomerOrders _customerOrders;
 
-        private readonly IAggregator _aggregator;
-        
         private readonly DemandToProviderTable _demandToProviderTable;
 
         private readonly ProviderToDemandTable _providerToDemandTable;
 
-        public DbTransactionData(ProductionDomainContext productionDomainContext
-            )
+        public DbTransactionData(ProductionDomainContext productionDomainContext)
         {
             _productionDomainContext = productionDomainContext;
-            
-            _aggregator = new Aggregator(this);
 
             // cache tables
             // TODO: These 3 lines should be removed
@@ -93,21 +92,16 @@ namespace Zpp.DbCache
             _stockExchangeDemands =
                 new StockExchangeDemands(_productionDomainContext.StockExchanges.ToList());
             _stockExchangeProviders =
-                new StockExchangeProviders(_productionDomainContext.StockExchanges.ToList()
-                    );
+                new StockExchangeProviders(_productionDomainContext.StockExchanges.ToList());
 
             _productionOrders =
-                new ProductionOrders(_productionDomainContext.ProductionOrders.ToList()
-                    );
+                new ProductionOrders(_productionDomainContext.ProductionOrders.ToList());
             _purchaseOrderParts =
-                new PurchaseOrderParts(_productionDomainContext.PurchaseOrderParts.ToList()
-                    );
+                new PurchaseOrderParts(_productionDomainContext.PurchaseOrderParts.ToList());
 
             _customerOrderParts =
-                new CustomerOrderParts(_productionDomainContext.CustomerOrderParts.ToList()
-                    );
-            _customerOrders =
-                new CustomerOrders(_productionDomainContext.CustomerOrders.ToList());
+                new CustomerOrderParts(_productionDomainContext.CustomerOrderParts.ToList());
+            _customerOrders = new CustomerOrders(_productionDomainContext.CustomerOrders.ToList());
 
             // others
             _purchaseOrders = _productionDomainContext.PurchaseOrders.ToList();
@@ -161,11 +155,11 @@ namespace Zpp.DbCache
                 _productionOrderOperations.GetAllAsT_ProductionOrderOperation();
             List<T_PurchaseOrderPart> tPurchaseOrderParts =
                 _purchaseOrderParts.GetAllAs<T_PurchaseOrderPart>();
-            List<T_CustomerOrderPart> tCustomerOrderParts = 
+            List<T_CustomerOrderPart> tCustomerOrderParts =
                 _customerOrderParts.GetAllAs<T_CustomerOrderPart>();
             List<T_CustomerOrder> tCustomerOrders = _customerOrders.GetAllAsTCustomerOrders();
 
-            
+
             // Insert all T_* entities
             InsertOrUpdateRange(tProductionOrders, _productionDomainContext.ProductionOrders);
             InsertOrUpdateRange(tProductionOrderOperations,
@@ -343,7 +337,7 @@ namespace Zpp.DbCache
                 if (tProductionOrderBom != null)
                 {
                     tProductionOrderOperations.Push(new ProductionOrderOperation(
-                        tProductionOrderBom.ProductionOrderOperation ));
+                        tProductionOrderBom.ProductionOrderOperation));
                 }
             }
 
@@ -409,18 +403,12 @@ namespace Zpp.DbCache
             return _stockExchangeDemands;
         }
 
-        public IAggregator GetAggregator()
-        {
-            return _aggregator;
-        }
-
         public ProductionOrder ProductionOrderGetById(Id id)
         {
-            return new ProductionOrder(
-                _productionOrders.GetAllAs<T_ProductionOrder>().Single(x => x.GetId().Equals(id))
-                );
+            return new ProductionOrder(_productionOrders.GetAllAs<T_ProductionOrder>()
+                .Single(x => x.GetId().Equals(id)));
         }
-        
+
         public T_CustomerOrder T_CustomerOrderGetById(Id id)
         {
             return _customerOrders.Single(x => x.Id.Equals(id.GetValue()));
@@ -455,6 +443,24 @@ namespace Zpp.DbCache
         public void ProviderToDemandAdd(T_ProviderToDemand providerToDemand)
         {
             _providerToDemandTable.Add(providerToDemand);
+        }
+
+        public void Dispose()
+        {
+            _articles.Clear();
+            _articleBoms.Clear();
+            _businessPartners.Clear();
+            _customerOrders.Clear();
+            _productionOrders.Clear();
+            _purchaseOrders.Clear();
+            _customerOrderParts.Clear();
+            _productionOrderBoms.Clear();
+            _productionOrderOperations.Clear();
+            _purchaseOrderParts.Clear();
+            _stockExchangeDemands.Clear();
+            _stockExchangeProviders.Clear();
+            _demandToProviderTable.Clear();
+            _providerToDemandTable.Clear();
         }
     }
 }

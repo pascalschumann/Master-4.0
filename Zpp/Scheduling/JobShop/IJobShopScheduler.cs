@@ -5,7 +5,7 @@ namespace Zpp.Mrp.MachineManagement
         /**
          * Giffler-Thomson
          */
-        void JobSchedulingWithGifflerThompsonAsZaepfel(IPriorityRule priorityRule);
+        void ScheduleWithGifflerThompsonAsZaepfel(IPriorityRule priorityRule);
         
         
     }

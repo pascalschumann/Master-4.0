@@ -12,6 +12,9 @@ using Zpp.WrappersForCollections;
 namespace Zpp.DbCache
 {
     
+    /**
+     * Do NOT store a reference to this class, store ICacheManager instead and call GetDbTransactionData()
+     */
     public interface IDbTransactionData
     {
         // TODO: M_* methods should be removed
@@ -69,8 +72,6 @@ namespace Zpp.DbCache
         
         ProductionOrderOperations ProductionOrderOperationGetAll();
 
-        IAggregator GetAggregator();
-
         T_CustomerOrder T_CustomerOrderGetById(Id id);
         
         List<T_CustomerOrder> T_CustomerOrderGetAll();
@@ -82,5 +83,7 @@ namespace Zpp.DbCache
         void DemandToProviderAdd(T_DemandToProvider demandToProvider);
 
         void ProviderToDemandAdd(T_ProviderToDemand providerToDemand);
+        
+        void Dispose();
     }
 }

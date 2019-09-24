@@ -2,6 +2,7 @@ using Master40.DB.Data.WrappersForPrimitives;
 using Xunit;
 using Zpp.Common.DemandDomain;
 using Zpp.Common.ProviderDomain;
+using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Utils;
 
@@ -9,9 +10,11 @@ namespace Zpp.OrderGraph
 {
     public class DemandToProviderDirectedGraph : DirectedGraph, IDirectedGraph<INode>
     {
-        public DemandToProviderDirectedGraph(IDbTransactionData dbTransactionData) : base(
-            dbTransactionData)
+        public DemandToProviderDirectedGraph() : base()
         {
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
+            
             foreach (var demandToProvider in dbTransactionData.DemandToProviderGetAll())
             {
                 Demand demand = dbTransactionData.DemandsGetById(new Id(demandToProvider.DemandId));

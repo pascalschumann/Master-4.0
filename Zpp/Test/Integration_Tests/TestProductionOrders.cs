@@ -20,7 +20,7 @@ namespace Zpp.Test.Integration_Tests
             }
             else
             {
-                IMrpRun mrpRun = new MrpRun(ProductionDomainContext);
+                IMrpRun mrpRun = new MrpRun();
             mrpRun.Start();
                 IDbMasterDataCache dbMasterDataCache =
                     ZppConfiguration.CacheManager.GetMasterDataCache();
@@ -50,7 +50,7 @@ namespace Zpp.Test.Integration_Tests
             }
             else
             {
-                IMrpRun mrpRun = new MrpRun(ProductionDomainContext);
+                IMrpRun mrpRun = new MrpRun();
             mrpRun.Start();
                 IDbMasterDataCache dbMasterDataCache =
                     ZppConfiguration.CacheManager.GetMasterDataCache();
@@ -63,7 +63,7 @@ namespace Zpp.Test.Integration_Tests
                     T_ProductionOrderOperation tProductionOrderOperation =
                         productionOrderOperation.GetValue();
                     T_ProductionOrderBom aProductionOrderBom =
-                        (T_ProductionOrderBom) dbTransactionData.GetAggregator()
+                        (T_ProductionOrderBom) ZppConfiguration.CacheManager.GetAggregator()
                             .GetAnyProductionOrderBomByProductionOrderOperation(
                                 productionOrderOperation).ToIDemand();
                     M_ArticleBom articleBom =

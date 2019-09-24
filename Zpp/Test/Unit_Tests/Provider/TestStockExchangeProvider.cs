@@ -52,14 +52,14 @@ namespace Zpp.Test.Unit_Tests.Provider
                 IStockManager stockManager = new StockManager();
                 Common.ProviderDomain.Provider providerStockExchange =
                     stockManager.CreateStockExchangeProvider(demand.GetArticle(),
-                        demand.GetDueTime(dbTransactionData), demand.GetQuantity());
+                        demand.GetDueTime(), demand.GetQuantity());
                 Assert.True(providerStockExchange.GetQuantity().Equals(demand.GetQuantity()),
                     "Quantity is not correct.");
                 Assert.True(providerStockExchange.GetArticle().Equals(demand.GetArticle()),
                     "Article is not correct.");
                 Assert.True(
-                    providerStockExchange.GetDueTime(dbTransactionData)
-                        .Equals(demand.GetDueTime(dbTransactionData)), "DueTime is not correct.");
+                    providerStockExchange.GetDueTime()
+                        .Equals(demand.GetDueTime()), "DueTime is not correct.");
             }
         }
 
@@ -82,7 +82,7 @@ namespace Zpp.Test.Unit_Tests.Provider
             IStockManager stockManager = new StockManager();
             Common.ProviderDomain.Provider providerStockExchange =
                 stockManager.CreateStockExchangeProvider(demand.GetArticle(),
-                    demand.GetDueTime(dbTransactionData), demand.GetQuantity());
+                    demand.GetDueTime(), demand.GetQuantity());
 
 
             Assert.True(providerStockExchange.AnyDependingDemands() == false,

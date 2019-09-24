@@ -7,14 +7,14 @@ namespace Zpp.Mrp.Scheduling
 {
     public class ForwardScheduler
     {
-        public static DueTime FindMinDueTime(IDemands demands, IProviders providers, IDbTransactionData dbTransactionData)
+        public static DueTime FindMinDueTime(IDemands demands, IProviders providers)
         {
             DueTime minDueTime = null;
             
             // find min dueTime
             foreach (var provider in providers)
             {
-                DueTime currentDueTime = provider.GetDueTime(dbTransactionData);
+                DueTime currentDueTime = provider.GetDueTime();
                 if (minDueTime == null)
                 {
                     minDueTime = currentDueTime;

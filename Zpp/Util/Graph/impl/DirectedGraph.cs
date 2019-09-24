@@ -13,13 +13,12 @@ namespace Zpp.OrderGraph
     {
         protected Dictionary<INode, List<IEdge>> _adjacencyList =
             new Dictionary<INode, List<IEdge>>();
-
-        protected readonly IDbTransactionData _dbTransactionData;
+        
         private readonly IGraphviz _graphviz = new Graphviz();
 
-        public DirectedGraph(IDbTransactionData dbTransactionData)
+        public DirectedGraph()
         {
-            _dbTransactionData = dbTransactionData;
+
         }
 
         public INodes GetSuccessorNodes(INode tailNode)
@@ -399,9 +398,9 @@ namespace Zpp.OrderGraph
         }
 
         public static IDirectedGraph<INode> MergeDirectedGraphs(
-            List<IDirectedGraph<INode>> directedGraphs, IDbTransactionData dbTransactionData)
+            List<IDirectedGraph<INode>> directedGraphs)
         {
-            IDirectedGraph<INode> mergedDirectedGraph = new DirectedGraph(dbTransactionData);
+            IDirectedGraph<INode> mergedDirectedGraph = new DirectedGraph();
             foreach (var directedGraph in directedGraphs)
             {
                 foreach (var edge in directedGraph.GetAllEdges())

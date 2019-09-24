@@ -1,13 +1,16 @@
 using Zpp.Common.ProviderDomain.Wrappers;
+using Zpp.Configuration;
 using Zpp.DbCache;
 
 namespace Zpp.OrderGraph
 {
     public class ProductionOrderDirectedGraph : DemandToProviderDirectedGraph, IDirectedGraph<INode>
     {
-        public ProductionOrderDirectedGraph(IDbTransactionData dbTransactionData,
-            bool includeProductionOrdersWithoutOperations) : base(dbTransactionData)
+        public ProductionOrderDirectedGraph(bool includeProductionOrdersWithoutOperations) : base()
         {
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
+            
             foreach (var uniqueNode in GetAllUniqueNodes())
             {
                 if (uniqueNode.GetEntity().GetType() != typeof(ProductionOrder)
@@ -21,7 +24,7 @@ namespace Zpp.OrderGraph
                     if (includeProductionOrdersWithoutOperations == false)
                     {
                         ProductionOrder productionOrder = (ProductionOrder) uniqueNode.GetEntity();
-                        if (dbTransactionData.GetAggregator()
+                        if (ZppConfiguration.CacheManager.GetAggregator()
                             .GetProductionOrderOperationsOfProductionOrder(productionOrder) == null)
                         {
                             RemoveNode(uniqueNode);        

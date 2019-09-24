@@ -22,7 +22,7 @@ namespace Zpp.Test.Integration_Tests
             Assert.True(ProductionDomainContext.CustomerOrders.Count() == TestConfiguration.CustomerOrderPartQuantity,
                 "No customerOrders are initially available.");
 
-            IMrpRun mrpRun = new MrpRun(ProductionDomainContext);
+            IMrpRun mrpRun = new MrpRun();
             mrpRun.Start();
 
             // check certain constraints are not violated

@@ -9,7 +9,8 @@ namespace Zpp.Mrp.NodeManagement
     {
         void AddDemand(Demand oneDemand, Quantity reservedQuantity);
 
-        ResponseWithDemands SatisfyProviderByOpenDemand(Provider provider, Quantity demandedQuantity,
-            IDbTransactionData dbTransactionData);
+        ResponseWithDemands SatisfyProviderByOpenDemand(Provider provider, Quantity demandedQuantity);
+        
+        void Dispose();
     }
 }

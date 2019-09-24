@@ -2,6 +2,7 @@ using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Master40.DB.Interfaces;
 using Zpp.Common.DemandDomain.WrappersForCollections;
+using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.WrappersForPrimitives;
 
@@ -29,13 +30,15 @@ namespace Zpp.Common.ProviderDomain.Wrappers
         }
 
         public override void CreateDependingDemands(M_Article article,
-            IDbTransactionData dbTransactionData, Provider parentProvider, Quantity demandedQuantity)
+            Provider parentProvider, Quantity demandedQuantity)
         {
             throw new System.NotImplementedException();
         }
 
-        public override DueTime GetDueTime(IDbTransactionData dbTransactionData)
+        public override DueTime GetDueTime()
         {
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
             T_PurchaseOrderPart purchaseOrderPart = ((T_PurchaseOrderPart) _provider);
             if (purchaseOrderPart.PurchaseOrder == null)
             {
@@ -47,16 +50,18 @@ namespace Zpp.Common.ProviderDomain.Wrappers
             return new DueTime(purchaseOrderPart.PurchaseOrder.DueTime);
         }
 
-        public override DueTime GetStartTime(IDbTransactionData dbTransactionData)
+        public override DueTime GetStartTime()
         {
             // currently only one businessPartner per article TODO: This could be changing
             M_ArticleToBusinessPartner articleToBusinessPartner =
                 _dbMasterDataCache.M_ArticleToBusinessPartnerGetAllByArticleId(GetArticleId())[0];
-            return GetDueTime(dbTransactionData).Minus(articleToBusinessPartner.TimeToDelivery);
+            return GetDueTime().Minus(articleToBusinessPartner.TimeToDelivery);
         }
 
-        public override void SetDueTime(DueTime newDueTime, IDbTransactionData dbTransactionData)
+        public override void SetDueTime(DueTime newDueTime)
         {
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
             T_PurchaseOrderPart purchaseOrderPart = ((T_PurchaseOrderPart) _provider);
             if (purchaseOrderPart.PurchaseOrder == null)
             {

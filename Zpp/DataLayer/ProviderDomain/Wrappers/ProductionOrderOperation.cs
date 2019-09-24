@@ -95,9 +95,9 @@ namespace Zpp.Common.ProviderDomain.Wrappers
         /// </summary>
         /// <param name="dbTransactionData"></param>
         /// <returns></returns>
-        public List<Resource> GetMachines(IDbTransactionData dbTransactionData)
+        public List<Resource> GetMachines()
         {
-            return dbTransactionData.GetAggregator()
+            return ZppConfiguration.CacheManager.GetAggregator()
                 .GetResourcesByResourceSkillId(this.GetResourceSkillId());
         }
 
@@ -163,18 +163,20 @@ namespace Zpp.Common.ProviderDomain.Wrappers
             return _priority;
         }
 
-        public DueTime GetDueTime(IDbTransactionData dbTransactionData)
+        public DueTime GetDueTime()
         {
             // every productionOrderBom whith this operation o1 has the same dueTime
-            DueTime dueTime = dbTransactionData.GetAggregator()
+            DueTime dueTime = ZppConfiguration.CacheManager.GetAggregator()
                 .GetAnyProductionOrderBomByProductionOrderOperation(this)
-                .GetDueTime(dbTransactionData);
+                .GetDueTime();
 
             return dueTime;
         }
 
-        public ProductionOrder GetProductionOrder(IDbTransactionData dbTransactionData)
+        public ProductionOrder GetProductionOrder()
         {
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
             return dbTransactionData.ProductionOrderGetById(GetProductionOrderId());
         }
 
@@ -182,13 +184,16 @@ namespace Zpp.Common.ProviderDomain.Wrappers
          * Every operation needs material to start.
          * @returns the time when material of this operation is available
          */
-        public DueTime GetDueTimeOfItsMaterial(IDbTransactionData dbTransactionData)
+        public DueTime GetDueTimeOfItsMaterial()
         {
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
+            
             DueTime maxDueTime = null;
-            foreach (var productionOrderBom in dbTransactionData.GetAggregator()
+            foreach (var productionOrderBom in ZppConfiguration.CacheManager.GetAggregator()
                 .GetAllProductionOrderBomsBy(this))
             {
-                Providers providers = dbTransactionData.GetAggregator()
+                Providers providers = ZppConfiguration.CacheManager.GetAggregator()
                     .GetAllChildProvidersOf(productionOrderBom);
                 if (providers.Count() > 1)
                 {
@@ -197,17 +202,17 @@ namespace Zpp.Common.ProviderDomain.Wrappers
 
 
                 Provider stockExchangeProvider = providers.GetFirst();
-                Demands stockExchangeDemands = dbTransactionData.GetAggregator()
+                Demands stockExchangeDemands = ZppConfiguration.CacheManager.GetAggregator()
                     .GetAllChildDemandsOf(stockExchangeProvider);
                 if (maxDueTime == null)
                 {
-                    maxDueTime = stockExchangeProvider.GetDueTime(dbTransactionData);
+                    maxDueTime = stockExchangeProvider.GetDueTime();
                 }
 
                 if (stockExchangeDemands.Any() == false)
                     // StockExchangeProvider has no childs (stockExchangeDemands) take that from stockExchangeProvider
                 {
-                    DueTime childDueTime = stockExchangeProvider.GetDueTime(dbTransactionData);
+                    DueTime childDueTime = stockExchangeProvider.GetDueTime();
                     if (childDueTime.IsGreaterThan(maxDueTime))
                     {
                         maxDueTime = childDueTime;
@@ -219,7 +224,7 @@ namespace Zpp.Common.ProviderDomain.Wrappers
                     foreach (var stockExchangeDemand in stockExchangeDemands)
                     {
                         DueTime stockExchangeDemandDueTime =
-                            stockExchangeDemand.GetDueTime(dbTransactionData);
+                            stockExchangeDemand.GetDueTime();
                         if (stockExchangeDemandDueTime.IsGreaterThan(maxDueTime))
                         {
                             maxDueTime = stockExchangeDemandDueTime;

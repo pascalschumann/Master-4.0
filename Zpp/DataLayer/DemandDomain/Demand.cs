@@ -66,7 +66,7 @@ namespace Zpp.Common.DemandDomain
 
         public abstract M_Article GetArticle();
 
-        public abstract DueTime GetDueTime(IDbTransactionData dbTransactionData=null);
+        public abstract DueTime GetDueTime();
 
         public Id GetId()
         {
@@ -88,6 +88,6 @@ namespace Zpp.Common.DemandDomain
             return this;
         }
 
-        public abstract DueTime GetStartTime(IDbTransactionData dbTransactionData);
+        public abstract DueTime GetStartTime();
     }
 }

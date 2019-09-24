@@ -31,10 +31,9 @@ namespace Zpp.Mrp.ProductionManagement.ProductionTypes
         }
 
         public Demands CreateProductionOrderBomsForArticleBom(
-            IDbTransactionData dbTransactionData, M_ArticleBom articleBom, Quantity quantity,
+            M_ArticleBom articleBom, Quantity quantity,
             ProductionOrder parentProductionOrder)
         {
-            
             Demands newProductionOrderBoms = new Demands();
             ProductionOrderOperation productionOrderOperation = null;
             if (articleBom.OperationId == null)
@@ -73,7 +72,7 @@ namespace Zpp.Mrp.ProductionManagement.ProductionTypes
             if (_alreadyCreatedProductionOrderOperations.ContainsKey(articleBom.Operation) == false)
             {
                 _alreadyCreatedProductionOrderOperations.Add(articleBom.Operation,
-                    newProductionOrderBom.GetProductionOrderOperation(dbTransactionData));
+                    newProductionOrderBom.GetProductionOrderOperation());
             }
 
             newProductionOrderBoms.Add(newProductionOrderBom);

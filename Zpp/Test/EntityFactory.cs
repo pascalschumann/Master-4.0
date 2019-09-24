@@ -28,12 +28,12 @@ namespace Zpp.Test
         }*/
 
         public static ProductionOrder CreateT_ProductionOrder(
-            IDbTransactionData dbTransactionData,
+            
             Demand demand, Quantity quantity)
         {
             T_ProductionOrder tProductionOrder = new T_ProductionOrder();
             // [ArticleId],[Quantity],[Name],[DueTime],[ProviderId]
-            tProductionOrder.DueTime = demand.GetDueTime(dbTransactionData).GetValue();
+            tProductionOrder.DueTime = demand.GetDueTime().GetValue();
             tProductionOrder.Article = demand.GetArticle();
             tProductionOrder.ArticleId = demand.GetArticle().Id;
             tProductionOrder.Name = $"ProductionOrder for Demand {demand.GetArticle()}";

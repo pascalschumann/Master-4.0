@@ -44,14 +44,14 @@ namespace Zpp.Common.DemandDomain.WrappersForCollections
         }
         
 
-        public void OrderDemandsByUrgency(IDbTransactionData dbTransactionData)
+        public void OrderDemandsByUrgency()
         {
             // sort only, if there are more than one element
             if (List.Count > 1)
             {
                 List.Sort((x, y) =>
                 {
-                    return x.GetDueTime(dbTransactionData).CompareTo(y.GetDueTime(dbTransactionData));
+                    return x.GetDueTime().CompareTo(y.GetDueTime());
                 });
             }
         }
@@ -59,11 +59,6 @@ namespace Zpp.Common.DemandDomain.WrappersForCollections
         public HierarchyNumber GetHierarchyNumber()
         {
             return _hierarchyNumber;
-        }
-
-        public void Clear()
-        {
-            List.Clear();
         }
 
         public Quantity GetQuantityOfAll()

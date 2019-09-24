@@ -14,5 +14,7 @@ namespace Zpp.WrappersForCollections
         T GetFirst();
 
         IStackSet<T> ToStackSet();
+
+        void Clear();
     }
 }

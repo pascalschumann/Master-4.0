@@ -41,7 +41,7 @@ namespace Zpp.Common.ProviderDomain.Wrappers
             return new Id(stock.ArticleForeignKey);
         }
 
-        public void CreateDependingDemands(M_Article article, IDbTransactionData dbTransactionData,
+        public void CreateDependingDemands(M_Article article, 
             Provider parentProvider, Quantity demandedQuantity,
             IOpenDemandManager openDemandManager)
         {
@@ -55,7 +55,7 @@ namespace Zpp.Common.ProviderDomain.Wrappers
 
             // try to provider by existing demand
             ResponseWithDemands responseWithDemands =
-                openDemandManager.SatisfyProviderByOpenDemand(this, demandedQuantity, dbTransactionData);
+                openDemandManager.SatisfyProviderByOpenDemand(this, demandedQuantity);
 
             if (responseWithDemands.GetDemands().Count() > 1)
             {
@@ -81,7 +81,7 @@ namespace Zpp.Common.ProviderDomain.Wrappers
 
                     Demand stockExchangeDemand =
                         StockExchangeDemand.CreateStockExchangeStockDemand(article,
-                            GetDueTime(dbTransactionData), lotSize);
+                            GetDueTime(), lotSize);
                     stockExchangeDemands.Add(stockExchangeDemand);
 
                     // quantityToReserve can be calculated as following
@@ -114,13 +114,13 @@ namespace Zpp.Common.ProviderDomain.Wrappers
         }
 
         public override void CreateDependingDemands(M_Article article,
-            IDbTransactionData dbTransactionData, Provider parentProvider,
+            Provider parentProvider,
             Quantity demandedQuantity)
         {
             throw new NotImplementedException();
         }
 
-        public override DueTime GetDueTime(IDbTransactionData dbTransactionData)
+        public override DueTime GetDueTime()
         {
             T_StockExchange stockExchange = (T_StockExchange) _provider;
             return new DueTime(stockExchange.RequiredOnTime);
@@ -131,12 +131,12 @@ namespace Zpp.Common.ProviderDomain.Wrappers
             return new Id(((T_StockExchange) _provider).StockId);
         }
 
-        public override DueTime GetStartTime(IDbTransactionData dbTransactionData)
+        public override DueTime GetStartTime()
         {
-            return GetDueTime(dbTransactionData);
+            return GetDueTime();
         }
 
-        public override void SetDueTime(DueTime newDueTime, IDbTransactionData dbTransactionData)
+        public override void SetDueTime(DueTime newDueTime)
         {
             T_StockExchange stockExchange = (T_StockExchange) _provider;
             stockExchange.RequiredOnTime = newDueTime.GetValue();

@@ -57,7 +57,7 @@ namespace Zpp.Test
         // @after
         public void Dispose()
         {
-            ProductionDomainContext.Database.CloseConnection();
+            ZppConfiguration.CacheManager.Dispose();
         }
 
         /**
@@ -66,7 +66,8 @@ namespace Zpp.Test
         protected void InitTestScenario(string testConfiguration)
         {
             ZppConfiguration.CacheManager.InitByReadingFromDatabase(testConfiguration);
-            
+            TestConfiguration = ZppConfiguration.CacheManager.GetTestConfiguration();
+
         }
     }
 }

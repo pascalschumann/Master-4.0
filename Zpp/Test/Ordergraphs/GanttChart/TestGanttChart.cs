@@ -71,7 +71,7 @@ namespace Zpp.Test.Ordergraphs.GanttChart
         {
             InitTestScenario(testConfiguration);
 
-            IMrpRun mrpRun = new MrpRun(ProductionDomainContext);
+            IMrpRun mrpRun = new MrpRun();
             mrpRun.Start();
         }
     }

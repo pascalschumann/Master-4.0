@@ -62,5 +62,10 @@ namespace Zpp.WrappersForCollections
         {
             return new StackSet<T>(List);
         }
+
+        public void Clear()
+        {
+            List.Clear();
+        }
     }
 }

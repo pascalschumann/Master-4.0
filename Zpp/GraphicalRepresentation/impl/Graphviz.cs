@@ -15,20 +15,20 @@ namespace Zpp.GraphicalRepresentation
 {
     public class Graphviz : IGraphviz
     {
-        private IDbTransactionData _dbTransactionData =
-            ZppConfiguration.CacheManager.GetDbTransactionData();
+        private readonly ICacheManager _cacheManager =
+            ZppConfiguration.CacheManager;
 
 
         private string ToGraphizString(Demand demand)
         {
             return $"{demand.GetQuantity()};\\n{demand.GetArticle().Name};" +
-                   $"{demand.GetDueTime(_dbTransactionData)}";
+                   $"{demand.GetDueTime()}";
         }
 
         private string ToGraphizString(Provider provider)
         {
             return $"{provider.GetQuantity()};\\n{provider.GetArticle().Name};" +
-                   $"{provider.GetDueTime(_dbTransactionData)}";
+                   $"{provider.GetDueTime()}";
         }
 
         public string GetGraphizString(CustomerOrderPart customerOrderPart)
@@ -44,7 +44,7 @@ namespace Zpp.GraphicalRepresentation
 
             string graphizString;
             ProductionOrderOperation productionOrderOperation =
-                productionOrderBom.GetProductionOrderOperation(_dbTransactionData);
+                productionOrderBom.GetProductionOrderOperation();
             if (productionOrderOperation != null)
             {
                 T_ProductionOrderOperation tProductionOrderOperation =

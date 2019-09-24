@@ -54,12 +54,7 @@ namespace Zpp.Common.ProviderDomain.WrappersForCollections
 
             return providedQuantity;
         }
-
-        public void Clear()
-        {
-            List.Clear();
-        }
-
+        
         public bool AnyDependingDemands()
         {
             foreach (var provider in List)

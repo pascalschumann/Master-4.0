@@ -9,10 +9,9 @@ namespace Zpp.Mrp.MachineManagement
     {
         Priority GetPriorityOfProductionOrderOperation(DueTime now,
             ProductionOrderOperation givenProductionOrderOperation,
-            IDbTransactionData dbTransactionData, DueTime minStartNextOfParentProvider);
+            DueTime minStartNextOfParentProvider);
 
         ProductionOrderOperation GetHighestPriorityOperation(DueTime now,
-            List<ProductionOrderOperation> productionOrderOperations,
-            IDbTransactionData dbTransactionData);
+            List<ProductionOrderOperation> productionOrderOperations);
     }
 }

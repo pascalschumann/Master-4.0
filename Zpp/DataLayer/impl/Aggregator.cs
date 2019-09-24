@@ -19,10 +19,10 @@ namespace Zpp.DbCache
     public class Aggregator : IAggregator
     {
         private readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
+
         private readonly IDbTransactionData _dbTransactionData;
 
-        public Aggregator(
-            IDbTransactionData dbTransactionData)
+        public Aggregator(IDbTransactionData dbTransactionData)
         {
             _dbTransactionData = dbTransactionData;
             
@@ -130,8 +130,8 @@ namespace Zpp.DbCache
         {
             var providers = _dbTransactionData.StockExchangeProvidersGetAll();
             var currentProviders = providers.GetAll().FindAll(x =>
-                x.GetDueTime(_dbTransactionData).GetValue() >= from.GetValue() &&
-                x.GetDueTime(_dbTransactionData).GetValue() <= to.GetValue());
+                x.GetDueTime().GetValue() >= from.GetValue() &&
+                x.GetDueTime().GetValue() <= to.GetValue());
             return currentProviders;
         }
 

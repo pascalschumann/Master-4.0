@@ -21,7 +21,7 @@ namespace Zpp.Test.Integration_Tests
         {
             InitTestScenario(testConfiguration);
 
-            IMrpRun mrpRun = new MrpRun(ProductionDomainContext);
+            IMrpRun mrpRun = new MrpRun();
             mrpRun.Start();
         }
         
@@ -47,7 +47,7 @@ namespace Zpp.Test.Integration_Tests
             
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.ReloadTransactionData();
-            IDirectedGraph<INode> orderDirectedGraph = new ProductionOrderDirectedGraph(dbTransactionData, true);
+            IDirectedGraph<INode> orderDirectedGraph = new ProductionOrderDirectedGraph(true);
 
             
             string actualOrderGraph = orderDirectedGraph.ToString();

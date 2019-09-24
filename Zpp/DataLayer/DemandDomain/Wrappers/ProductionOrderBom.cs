@@ -4,6 +4,7 @@ using Master40.DB.DataModel;
 using Master40.DB.Interfaces;
 using Zpp.Common.ProviderDomain;
 using Zpp.Common.ProviderDomain.Wrappers;
+using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Mrp.ProductionManagement;
 using Zpp.Mrp.Scheduling;
@@ -84,8 +85,11 @@ namespace Zpp.Common.DemandDomain.Wrappers
          *   if ProductionOrderOperation is backwardsScheduled --> EndBackward
          *   else ProductionOrderParent.dueTime
          */
-        public override DueTime GetDueTime(IDbTransactionData dbTransactionData = null)
+        public override DueTime GetDueTime()
         {
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
+            
             // load ProductionOrderOperation if not done yet
             if (_productionOrderBom.ProductionOrderOperation == null)
             {
@@ -119,9 +123,10 @@ namespace Zpp.Common.DemandDomain.Wrappers
             return _productionOrderBom.ProductionOrderOperationId != null;
         }
 
-        public ProductionOrderOperation GetProductionOrderOperation(
-            IDbTransactionData dbTransactionData)
+        public ProductionOrderOperation GetProductionOrderOperation()
         {
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
             if (_productionOrderBom.ProductionOrderOperationId == null)
             {
                 return null;
@@ -138,8 +143,10 @@ namespace Zpp.Common.DemandDomain.Wrappers
             return new ProductionOrderOperation(_productionOrderBom.ProductionOrderOperation);
         }
 
-        public override DueTime GetStartTime(IDbTransactionData dbTransactionData)
+        public override DueTime GetStartTime()
         {
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
             if (_productionOrderBom.ProductionOrderOperationId != null)
             {
                 if (_productionOrderBom.ProductionOrderOperation == null)
@@ -166,8 +173,10 @@ namespace Zpp.Common.DemandDomain.Wrappers
             }
         }
 
-        public ProductionOrder GetProductionOrder(IDbTransactionData dbTransactionData)
+        public ProductionOrder GetProductionOrder()
         {
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
             if (_productionOrderBom.ProductionOrderParent == null)
             {
                 var productionOrder =

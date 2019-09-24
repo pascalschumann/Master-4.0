@@ -48,5 +48,10 @@ namespace Zpp.Mrp.NodeManagement
                 _openNodes.Add(article, new List<OpenNode<T>>());
             }
         }
+
+        public void Clear()
+        {
+            _openNodes.Clear();
+        }
     }
 }

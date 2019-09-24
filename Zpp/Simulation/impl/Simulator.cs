@@ -21,34 +21,36 @@ namespace Zpp.Simulation
     public class Simulator: ISimulator
     {
         private readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
-        private readonly IDbTransactionData _dbTransactionData;
         private long _currentTime { get; set; } = 0;
         private SimulationConfig _simulationConfig { get; }
         private AkkaSim.Simulation _akkaSimulation { get; set; }
         public SimulationInterval _simulationInterval { get; private set; }
 
-        public Simulator(IDbTransactionData dbTransactionData)
+        public Simulator()
         {
             _simulationConfig = new SimulationConfig(false, 300);
-            _dbTransactionData = dbTransactionData;
-            
+
         }
 
         public void RunSimulationFor(OrderGenerator orderGenerator, SimulationInterval simulationInterval)
         {
             ProcessCurrentInterval(simulationInterval, orderGenerator);
-            _dbTransactionData.PersistDbCache();
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
+            dbTransactionData.PersistDbCache();
         }
 
         public bool ProcessCurrentInterval(SimulationInterval simulationInterval, OrderGenerator orderGenerator)
         {
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
             Debug.WriteLine("Start simulation system. . . ");
             _simulationInterval = simulationInterval;
 
             _currentTime = simulationInterval.StartAt;
             _akkaSimulation = new AkkaSim.Simulation(_simulationConfig);
             var jobDistributor = _akkaSimulation.ActorSystem
-                                                .ActorOf(props: JobDistributor.Props(_akkaSimulation.SimulationContext, _currentTime, _dbTransactionData)
+                                                .ActorOf(props: JobDistributor.Props(_akkaSimulation.SimulationContext, _currentTime)
                                                         , name: "JobDistributor");
 
             // ToDo reflect CurrentTimespawn ?
@@ -87,6 +89,8 @@ namespace Zpp.Simulation
 
         private void CreateOrders(OrderGenerator orderGenerator, SimulationInterval interval)
         {
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
             var creationTime = interval.StartAt;
             var endOrderCreation = interval.EndAt;
 
@@ -95,9 +99,9 @@ namespace Zpp.Simulation
                 var order = orderGenerator.GetNewRandomOrder(time: creationTime);
                 foreach (var orderPart in order.CustomerOrderParts)
                 {
-                    _dbTransactionData.CustomerOrderPartAdd(orderPart);
+                    dbTransactionData.CustomerOrderPartAdd(orderPart);
                 }
-                _dbTransactionData.T_CustomerOrderGetAll().Add(order);
+                dbTransactionData.T_CustomerOrderGetAll().Add(order);
                 // TODO : Handle this another way
                 creationTime += order.CreationTime;
             }
@@ -105,7 +109,9 @@ namespace Zpp.Simulation
 
         private void ProvideJobDistributor(IActorRef jobDistributor)
         {
-            var operationManager = new ProductionOrderToOperationGraph(_dbTransactionData);
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
+            var operationManager = new ProductionOrderToOperationGraph();
             _akkaSimulation.SimulationContext
                            .Tell(message: OperationsToDistribute.Create(operationManager, jobDistributor)
                                 ,sender: ActorRefs.NoSender);
@@ -119,7 +125,7 @@ namespace Zpp.Simulation
         {
             var from = new DueTime((int)simulationInterval.StartAt);
             var to = new DueTime((int)simulationInterval.EndAt);
-            var stockExchanges = _dbTransactionData.GetAggregator().GetProvidersForInterval(from, to);
+            var stockExchanges = ZppConfiguration.CacheManager.GetAggregator().GetProvidersForInterval(from, to);
             foreach (var stockExchange in stockExchanges)
             {
                 stockExchange.SetProvided(stockExchange.GetDueTime());

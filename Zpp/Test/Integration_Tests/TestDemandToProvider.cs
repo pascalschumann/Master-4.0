@@ -27,7 +27,7 @@ namespace Zpp.Test.Integration_Tests
         [Fact]
         public void TestAllDemandsAreInDemandToProviderTable()
         {
-            IMrpRun mrpRun = new MrpRun(ProductionDomainContext);
+            IMrpRun mrpRun = new MrpRun();
             mrpRun.Start();
 
             IDbTransactionData dbTransactionData =
@@ -52,7 +52,7 @@ namespace Zpp.Test.Integration_Tests
         [Fact]
         public void TestAllDemandsAreSatisfiedWithinProviderTable()
         {
-            IMrpRun mrpRun = new MrpRun(ProductionDomainContext);
+            IMrpRun mrpRun = new MrpRun();
             mrpRun.Start();
             
             IDbTransactionData dbTransactionData =
@@ -71,7 +71,7 @@ namespace Zpp.Test.Integration_Tests
         [Fact]
         public void TestAllDemandsAreSatisfiedByProvidersOfDemandToProviderTable()
         {
-            IMrpRun mrpRun = new MrpRun(ProductionDomainContext);
+            IMrpRun mrpRun = new MrpRun();
             mrpRun.Start();
             
             IDbTransactionData dbTransactionData =

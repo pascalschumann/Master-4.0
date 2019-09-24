@@ -4,6 +4,7 @@ using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Master40.DB.Interfaces;
 using Zpp.Common.DemandDomain.WrappersForCollections;
+using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Mrp.ProductionManagement;
 using Zpp.WrappersForPrimitives;
@@ -34,31 +35,32 @@ namespace Zpp.Common.ProviderDomain.Wrappers
         }
 
         public override void CreateDependingDemands(M_Article article,
-            IDbTransactionData dbTransactionData, Provider parentProvider, Quantity demandedQuantity)
+            Provider parentProvider, Quantity demandedQuantity)
         {
-            _dependingDemands = ProductionManager.CreateProductionOrderBoms(article, dbTransactionData,
+            _dependingDemands = ProductionManager.CreateProductionOrderBoms(article,
                 parentProvider, demandedQuantity);
         }
 
-        public override DueTime GetDueTime(IDbTransactionData dbTransactionData = null)
+        public override DueTime GetDueTime()
         {
             T_ProductionOrder productionOrder = (T_ProductionOrder) _provider;
             return new DueTime(productionOrder.DueTime);
         }
 
-        public override DueTime GetStartTime(IDbTransactionData dbTransactionData)
+        public override DueTime GetStartTime()
         {
-            return GetDueTime(dbTransactionData);
+            return GetDueTime();
         }
 
-        public ProductionOrderBoms GetProductionOrderBoms(IDbTransactionData dbTransactionData)
+        public ProductionOrderBoms GetProductionOrderBoms()
         {
-            return dbTransactionData.GetAggregator().GetProductionOrderBomsOfProductionOrder(this);
+            return ZppConfiguration.CacheManager.GetAggregator().GetProductionOrderBomsOfProductionOrder(this);
         }
 
-        public bool HasOperations(IDbTransactionData dbTransactionData)
+        public bool HasOperations()
         {
-            List<ProductionOrderOperation> productionOrderOperations = dbTransactionData
+            ICacheManager cacheManager = ZppConfiguration.CacheManager;
+            List<ProductionOrderOperation> productionOrderOperations = cacheManager
                 .GetAggregator().GetProductionOrderOperationsOfProductionOrder(this);
             if (productionOrderOperations == null)
             {
@@ -68,7 +70,7 @@ namespace Zpp.Common.ProviderDomain.Wrappers
             return productionOrderOperations.Any();
         }
 
-        public override void SetDueTime(DueTime newDueTime, IDbTransactionData dbTransactionData)
+        public override void SetDueTime(DueTime newDueTime)
         {
             T_ProductionOrder productionOrder = (T_ProductionOrder) _provider;
             productionOrder.DueTime = newDueTime.GetValue();

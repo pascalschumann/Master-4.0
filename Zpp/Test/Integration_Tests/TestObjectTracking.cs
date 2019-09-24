@@ -19,7 +19,7 @@ namespace Zpp.Test.Integration_Tests
         public void TestTrackingOfObjects()
         {
 
-            IMrpRun mrpRun = new MrpRun(ProductionDomainContext);
+            IMrpRun mrpRun = new MrpRun();
             mrpRun.Start();
             
             string usedIdsFileName = IdGenerator.WriteToFile();

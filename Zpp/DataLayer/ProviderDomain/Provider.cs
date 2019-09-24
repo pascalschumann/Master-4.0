@@ -38,7 +38,7 @@ namespace Zpp.Common.ProviderDomain
             return _dependingDemands;
         }
 
-        public abstract DueTime GetDueTime(IDbTransactionData dbTransactionData = null);
+        public abstract DueTime GetDueTime();
 
         public abstract IProvider ToIProvider();
         
@@ -77,7 +77,7 @@ namespace Zpp.Common.ProviderDomain
         }
 
         public abstract void CreateDependingDemands(M_Article article,
-            IDbTransactionData dbTransactionData, Provider parentProvider, Quantity demandedQuantity);
+            Provider parentProvider, Quantity demandedQuantity);
         
         /**
          * returns Quantity.Null or higher
@@ -123,12 +123,12 @@ namespace Zpp.Common.ProviderDomain
             return this;
         }
 
-        public abstract DueTime GetStartTime(IDbTransactionData dbTransactionData);
+        public abstract DueTime GetStartTime();
         
         /**
          * Adapts the dueTime and also adapts the startTime accordingly (if exists)
          */
-        public abstract void SetDueTime(DueTime newDueTime, IDbTransactionData dbTransactionData);
+        public abstract void SetDueTime(DueTime newDueTime);
         public ProviderToDemandTable GetProviderToDemandTable()
         {
             return ProviderToDemandTable;

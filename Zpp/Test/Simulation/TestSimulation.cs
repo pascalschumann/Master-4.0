@@ -16,14 +16,14 @@ namespace Zpp.Test.Simulation
     public class TestSimulation : AbstractTest
     {
         private readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
-        private readonly IDbTransactionData _dbTransactionData;
+        
         private readonly OrderGenerator _orderGenerator;
         public TestSimulation() : base(initDefaultTestConfig: true)
         {
-            IMrpRun mrpRun = new MrpRun(ProductionDomainContext);
+            IMrpRun mrpRun = new MrpRun();
             mrpRun.Start();
             
-            _dbTransactionData = ZppConfiguration.CacheManager.ReloadTransactionData();
+            ZppConfiguration.CacheManager.ReloadTransactionData();
             _orderGenerator = TestScenario.GetOrderGenerator(ProductionDomainContext
                                                             , new MinDeliveryTime(960)
                                                             , new MaxDeliveryTime(1440)
@@ -35,14 +35,16 @@ namespace Zpp.Test.Simulation
         [Fact]
         public void TestSimulationWithResults()
         {
-            var Simulator = new Simulator(_dbTransactionData);
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
+            var simulator = new Simulator();
             var simulationInterval = new SimulationInterval(0, 1440);
-            Simulator.ProcessCurrentInterval(simulationInterval, _orderGenerator);
-            _dbTransactionData.PersistDbCache();
+            simulator.ProcessCurrentInterval(simulationInterval, _orderGenerator);
+            dbTransactionData.PersistDbCache();
             
 
             // Test for success
-            var processedItems = _dbTransactionData.ProductionOrderOperationGetAll()
+            var processedItems = dbTransactionData.ProductionOrderOperationGetAll()
                 .Where(x => x.GetValue().End <= 1800 && x.GetValue().ProducingState != ProducingState.Finished);
             Assert.True(!processedItems.Any());
         }
@@ -50,15 +52,17 @@ namespace Zpp.Test.Simulation
         [Fact(Skip = "Only for single Execution.")]
         public void ProvideStockExchanges()
         {
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
             var from = new DueTime(0);
             var to = new DueTime(1440);
-            var stockExchanges = _dbTransactionData.GetAggregator().GetProvidersForInterval(from, to);
+            var stockExchanges = ZppConfiguration.CacheManager.GetAggregator().GetProvidersForInterval(from, to);
             // .GetAll StockExchangeProvidersGetAll();
             foreach (var stockExchange in stockExchanges)
             {
                 stockExchange.SetProvided(stockExchange.GetDueTime());
             }
-            _dbTransactionData.PersistDbCache();
+            dbTransactionData.PersistDbCache();
         }
     }
 }

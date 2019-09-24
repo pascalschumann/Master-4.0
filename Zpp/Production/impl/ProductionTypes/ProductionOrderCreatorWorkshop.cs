@@ -22,11 +22,11 @@ namespace Zpp.Mrp.ProductionManagement.ProductionTypes
         }
 
         public ProductionOrders CreateProductionOrder(
-            IDbTransactionData dbTransactionData, Demand demand, Quantity quantity)
+            Demand demand, Quantity quantity)
         {
             T_ProductionOrder tProductionOrder = new T_ProductionOrder();
             // [ArticleId],[Quantity],[Name],[DueTime],[ProviderId]
-            tProductionOrder.DueTime = demand.GetDueTime(dbTransactionData).GetValue();
+            tProductionOrder.DueTime = demand.GetDueTime().GetValue();
             tProductionOrder.Article = demand.GetArticle();
             tProductionOrder.ArticleId = demand.GetArticle().Id;
             tProductionOrder.Name = $"ProductionOrder for Demand {demand.GetArticle()}";
@@ -35,8 +35,7 @@ namespace Zpp.Mrp.ProductionManagement.ProductionTypes
             ProductionOrder productionOrder =
                 new ProductionOrder(tProductionOrder);
 
-            productionOrder.CreateDependingDemands(demand.GetArticle(), dbTransactionData,
-                productionOrder, productionOrder.GetQuantity());
+            productionOrder.CreateDependingDemands(demand.GetArticle(), productionOrder, productionOrder.GetQuantity());
 
             return new ProductionOrders(productionOrder);
         }

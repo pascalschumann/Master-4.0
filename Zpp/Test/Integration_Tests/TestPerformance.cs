@@ -19,7 +19,7 @@ namespace Zpp.Test.Integration_Tests
         {
             DateTime startTime = DateTime.UtcNow;
 
-            IMrpRun mrpRun = new MrpRun(ProductionDomainContext);
+            IMrpRun mrpRun = new MrpRun();
             mrpRun.Start();
 
             DateTime endTime = DateTime.UtcNow;

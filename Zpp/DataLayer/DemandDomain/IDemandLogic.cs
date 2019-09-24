@@ -20,10 +20,10 @@ namespace Zpp.Common.DemandDomain
         
         Id GetArticleId();
 
-        DueTime GetDueTime(IDbTransactionData dbTransactionData);
+        DueTime GetDueTime();
 
         Id GetId();
 
-        DueTime GetStartTime(IDbTransactionData dbTransactionData);
+        DueTime GetStartTime();
     }
 }

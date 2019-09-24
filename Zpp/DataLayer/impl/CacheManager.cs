@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using Master40.DB.Data.Context;
 using Master40.DB.Data.WrappersForPrimitives;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Zpp.Configuration;
 using Zpp.Mrp.NodeManagement;
@@ -17,6 +18,7 @@ namespace Zpp.DbCache
         private ProductionDomainContext _productionDomainContext;
         private IOpenDemandManager _openDemandManager;
         private TestConfiguration _testConfiguration;
+        private IAggregator _aggregator;
         private readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
         
         public void InitByReadingFromDatabase(string testConfiguration)
@@ -25,6 +27,7 @@ namespace Zpp.DbCache
             InitDb(testConfiguration);
             _dbMasterDataCache = new DbMasterDataCache(_productionDomainContext);
             _dbTransactionData = new DbTransactionData(_productionDomainContext);
+            _aggregator = new Aggregator(_dbTransactionData);
             _openDemandManager = new OpenDemandManager();
         }
 
@@ -32,6 +35,7 @@ namespace Zpp.DbCache
         {
             _dbTransactionData = new DbTransactionData(_productionDomainContext);
             _openDemandManager = new OpenDemandManager();
+            _aggregator = new Aggregator(_dbTransactionData);
             return _dbTransactionData;
         }
 
@@ -97,6 +101,28 @@ namespace Zpp.DbCache
         public ProductionDomainContext GetProductionDomainContext()
         {
             return _productionDomainContext;
+        }
+
+        public TestConfiguration GetTestConfiguration()
+        {
+            return _testConfiguration;
+        }
+
+        public void Dispose()
+        {
+            _productionDomainContext.Database.CloseConnection();
+            _dbTransactionData.Dispose();
+            _openDemandManager.Dispose();
+            _dbTransactionData = null;
+            _openDemandManager = null;
+            _dbMasterDataCache = null;
+            _testConfiguration = null;
+            _productionDomainContext = null;
+        }
+        
+        public IAggregator GetAggregator()
+        {
+            return _aggregator;
         }
     }
 }

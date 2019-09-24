@@ -38,9 +38,9 @@ namespace Zpp.Mrp
 
         private readonly OrderGenerator _orderGenerator;
 
-        public MrpRun(ProductionDomainContext productionDomainContext)
+        public MrpRun()
         {
-            _productionDomainContext = productionDomainContext;
+            _productionDomainContext = ZppConfiguration.CacheManager.GetProductionDomainContext();
 
             _orderGenerator = TestScenario.GetOrderGenerator(_productionDomainContext,
                 new MinDeliveryTime(960), new MaxDeliveryTime(1440), new OrderArrivalRate(0.025));
@@ -100,7 +100,7 @@ namespace Zpp.Mrp
                             .GetProviderById(demandToProvider.GetProviderId());
                         if (provider != null)
                         {
-                            stockManager.AdaptStock(provider, _dbTransactionData);
+                            stockManager.AdaptStock(provider);
                             _newCreatedProvider = provider;
 
                             Demands dependingDemands = provider.GetAllDependingDemands();
@@ -164,7 +164,7 @@ namespace Zpp.Mrp
             foreach (var demand in dbDemands)
             {
                 demandQueue.Enqueue(new DemandQueueNode(demand),
-                    demand.GetDueTime(_dbTransactionData).GetValue());
+                    demand.GetDueTime().GetValue());
             }
 
             while (demandQueue.Count != 0)
@@ -180,7 +180,7 @@ namespace Zpp.Mrp
                     foreach (var demand in _newCreatedDemands)
                     {
                         demandQueue.Enqueue(new DemandQueueNode(demand),
-                            demand.GetDueTime(_dbTransactionData).GetValue());
+                            demand.GetDueTime().GetValue());
                     }
 
                     _newCreatedDemands.Clear();
@@ -199,7 +199,7 @@ namespace Zpp.Mrp
                 // it_s the first run, only do following here,
                 // avoids executing this twice (else latest in forward scheduling recursion would also execute this)
             {
-                // write data to dbTransactionData
+                // write data to _dbTransactionData
                 globalStockManager.AdaptStock(stockManager);
                 _dbTransactionData.DemandsAddAll(finalAllDemands);
                 _dbTransactionData.ProvidersAddAll(finalAllProviders);
@@ -228,7 +228,7 @@ namespace Zpp.Mrp
             int min = 0;
             foreach (var provider in _dbTransactionData.ProvidersGetAll())
             {
-                int start = provider.GetStartTime(_dbTransactionData).GetValue();
+                int start = provider.GetStartTime().GetValue();
                 if (start < min)
                 {
                     min = start;
@@ -255,12 +255,12 @@ namespace Zpp.Mrp
 
         public void JobShopScheduling()
         {
-            _jobShopScheduler.JobSchedulingWithGifflerThompsonAsZaepfel(new PriorityRule());
+            _jobShopScheduler.ScheduleWithGifflerThompsonAsZaepfel(new PriorityRule());
         }
 
         public void CreateConfirmations(SimulationInterval simulationInterval)
         {
-            ISimulator simulator = new Simulator(_dbTransactionData);
+            ISimulator simulator = new Simulator();
             simulator.ProcessCurrentInterval(simulationInterval, _orderGenerator);
             _dbTransactionData.PersistDbCache();
         }

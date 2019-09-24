@@ -27,7 +27,7 @@ namespace Zpp.Test.Integration_Tests
         {
             InitTestScenario(testConfiguration);
 
-            IMrpRun mrpRun = new MrpRun(ProductionDomainContext);
+            IMrpRun mrpRun = new MrpRun();
             mrpRun.Start();
         }
 
@@ -51,7 +51,7 @@ namespace Zpp.Test.Integration_Tests
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.ReloadTransactionData();
 
-            IDirectedGraph<INode> demandToProviderGraph = new DemandToProviderDirectedGraph(dbTransactionData);
+            IDirectedGraph<INode> demandToProviderGraph = new DemandToProviderDirectedGraph();
 
             Assert.True(demandToProviderGraph.GetAllHeadNodes().Any(),
                 "There are no toNodes in the demandToProviderGraph.");
@@ -137,7 +137,7 @@ namespace Zpp.Test.Integration_Tests
             
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.ReloadTransactionData();
-            IDirectedGraph<INode> demandToProviderGraph = new DemandToProviderDirectedGraph(dbTransactionData);
+            IDirectedGraph<INode> demandToProviderGraph = new DemandToProviderDirectedGraph();
 
             // verify edgeTypes
             foreach (var customerOrderPart in dbTransactionData.T_CustomerOrderPartGetAll())
@@ -180,7 +180,7 @@ namespace Zpp.Test.Integration_Tests
             
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.ReloadTransactionData();
-            IDirectedGraph<INode> demandToProviderGraph = new DemandToProviderDirectedGraph(dbTransactionData);
+            IDirectedGraph<INode> demandToProviderGraph = new DemandToProviderDirectedGraph();
 
             
             string actualDemandToProviderGraph = demandToProviderGraph.ToString();

@@ -19,12 +19,14 @@ namespace Zpp.Mrp.NodeManagement
 
         private readonly OpenNodes<Demand> _openDemands = new OpenNodes<Demand>();
 
-        private readonly IDbTransactionData _dbTransactionData =
-            ZppConfiguration.CacheManager.GetDbTransactionData();
+        private readonly ICacheManager _cacheManager =
+            ZppConfiguration.CacheManager;
 
         public OpenDemandManager()
         {
-            foreach (var stockExchangeDemand in _dbTransactionData.StockExchangeDemandsGetAll())
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
+            foreach (var stockExchangeDemand in dbTransactionData.StockExchangeDemandsGetAll())
             {
                 Quantity reservedQuantity = CalculateReservedQuantity(stockExchangeDemand);
                 AddDemand(stockExchangeDemand, reservedQuantity);
@@ -33,8 +35,10 @@ namespace Zpp.Mrp.NodeManagement
 
         private Quantity CalculateReservedQuantity(Demand demand)
         {
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
             Quantity reservedQuantity = Quantity.Null();
-            _dbTransactionData.ProviderToDemandGetAll().Select(x =>
+            dbTransactionData.ProviderToDemandGetAll().Select(x =>
                 {
                     reservedQuantity.IncrementBy(x.GetQuantity());
                     return x;
@@ -68,7 +72,7 @@ namespace Zpp.Mrp.NodeManagement
          * aka ReserveQuantityOfExistingDemand or satisfyByAlreadyExistingDemand
          */
         public ResponseWithDemands SatisfyProviderByOpenDemand(Provider provider,
-            Quantity demandedQuantity, IDbTransactionData dbTransactionData)
+            Quantity demandedQuantity)
         {
             if (_openDemands.AnyOpenProvider(provider.GetArticle()))
             {
@@ -107,6 +111,12 @@ namespace Zpp.Mrp.NodeManagement
 
             return new ResponseWithDemands((Demand) null, null, demandedQuantity);
             
+        }
+
+        public void Dispose()
+        {
+            _openDemands.Clear();
+            _demands.Clear();
         }
     }
 }

@@ -24,7 +24,7 @@ namespace Zpp.Test.Integration_Tests
         {
             InitTestScenario(testConfiguration);
 
-            IMrpRun mrpRun = new MrpRun(ProductionDomainContext);
+            IMrpRun mrpRun = new MrpRun();
             mrpRun.Start();
         }
         
@@ -52,7 +52,7 @@ namespace Zpp.Test.Integration_Tests
                 ZppConfiguration.CacheManager.ReloadTransactionData();
            
             IProductionOrderToOperationGraph<INode> productionOrderToOperationGraph =
-                new ProductionOrderToOperationGraph(dbTransactionData);
+                new ProductionOrderToOperationGraph();
             
             
             string actualOrderGraphWithIds = productionOrderToOperationGraph.ToString();

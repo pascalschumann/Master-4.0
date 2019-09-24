@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Zpp.Common.ProviderDomain.Wrappers;
+using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Utils;
 using Zpp.WrappersForPrimitives;
@@ -15,17 +16,18 @@ namespace Zpp.OrderGraph
             _directedProductionOrderOperationGraphs = new Dictionary<ProductionOrder, IDirectedGraph<INode>>();*/
 
 
-        public ProductionOrderOperationDirectedGraph(IDbTransactionData dbTransactionData,
-            ProductionOrder productionOrder) : base(dbTransactionData, false)
+        public ProductionOrderOperationDirectedGraph(ProductionOrder productionOrder) : base(false)
         {
+            IAggregator aggregator =
+                ZppConfiguration.CacheManager.GetAggregator();
+            
             Dictionary<HierarchyNumber, List<ProductionOrderOperation>>
                 hierarchyToProductionOrderOperation =
                     new Dictionary<HierarchyNumber, List<ProductionOrderOperation>>();
 
-            IDirectedGraph<INode> directedGraph = new DirectedGraph(dbTransactionData);
+            IDirectedGraph<INode> directedGraph = new DirectedGraph();
 
-            List<ProductionOrderOperation> productionOrderOperations = dbTransactionData
-                .GetAggregator().GetProductionOrderOperationsOfProductionOrder(productionOrder);
+            List<ProductionOrderOperation> productionOrderOperations = aggregator.GetProductionOrderOperationsOfProductionOrder(productionOrder);
             if (productionOrderOperations == null)
             {
                 /*directedGraph.AddEdge(productionOrder,

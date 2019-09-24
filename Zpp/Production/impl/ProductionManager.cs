@@ -22,8 +22,8 @@ namespace Zpp.Mrp.ProductionManagement
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
-        private readonly IDbTransactionData _dbTransactionData =
-            ZppConfiguration.CacheManager.GetDbTransactionData();
+        private readonly ICacheManager _cacheManager =
+            ZppConfiguration.CacheManager;
 
         public ProductionManager()
         {
@@ -36,8 +36,7 @@ namespace Zpp.Mrp.ProductionManagement
                 throw new MrpRunException("Must be a build article.");
             }
 
-            IProviders productionOrders = CreateProductionOrder(demand, _dbTransactionData,
-                demandedQuantity);
+            IProviders productionOrders = CreateProductionOrder(demand, demandedQuantity);
 
             Logger.Debug("ProductionOrder(s) created.");
 
@@ -59,7 +58,7 @@ namespace Zpp.Mrp.ProductionManagement
         }
 
         private ProductionOrders CreateProductionOrder(Demand demand,
-            IDbTransactionData dbTransactionData,
+            
             Quantity lotSize)
         {
             if (!demand.GetArticle().ToBuild)
@@ -87,7 +86,7 @@ namespace Zpp.Mrp.ProductionManagement
 
 
 
-            return productionOrderCreator.CreateProductionOrder(dbTransactionData, demand, lotSize);
+            return productionOrderCreator.CreateProductionOrder(demand, lotSize);
         }
 
         /// <summary>
@@ -101,9 +100,11 @@ namespace Zpp.Mrp.ProductionManagement
         /// --> is used for childs as: articleBom.Quantity * quantity</param>
         /// <returns></returns>
         public static Demands CreateProductionOrderBoms(M_Article article,
-            IDbTransactionData dbTransactionData,
             Provider parentProductionOrder, Quantity quantity)
         {
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
+            
             M_Article readArticle = dbTransactionData.M_ArticleGetById(article.GetId());
             if (readArticle.ArticleBoms != null && readArticle.ArticleBoms.Any())
             {
@@ -129,7 +130,7 @@ namespace Zpp.Mrp.ProductionManagement
                 {
                     newDemands.AddRange(
                         productionOrderBomCreator.CreateProductionOrderBomsForArticleBom(
-                            dbTransactionData, articleBom, quantity,
+                            articleBom, quantity,
                             (ProductionOrder)parentProductionOrder));
                 }
 
@@ -138,14 +139,14 @@ namespace Zpp.Mrp.ProductionManagement
 
                 IEnumerable<ProductionOrderOperation> sortedProductionOrderOperations = newDemands
                     .Select(x =>
-                        ((ProductionOrderBom)x).GetProductionOrderOperation(dbTransactionData))
+                        ((ProductionOrderBom)x).GetProductionOrderOperation())
                     .OrderByDescending(x => x.GetValue().HierarchyNumber);
 
                 foreach (var productionOrderOperation in sortedProductionOrderOperations)
                 {
                     lastOperationBackwardsSchedule = productionOrderOperation.ScheduleBackwards(
                         lastOperationBackwardsSchedule,
-                        parentProductionOrder.GetDueTime(dbTransactionData));
+                        parentProductionOrder.GetDueTime());
                 }
 
 

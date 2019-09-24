@@ -18,20 +18,19 @@ namespace Zpp.Mrp.MachineManagement
         private readonly IDbMasterDataCache _dbMasterDataCache =
             ZppConfiguration.CacheManager.GetMasterDataCache();
 
-        private readonly IDbTransactionData _dbTransactionData =
-            ZppConfiguration.CacheManager.GetDbTransactionData();
+        private readonly ICacheManager _cacheManager = ZppConfiguration.CacheManager;
 
-        public void JobSchedulingWithGifflerThompsonAsZaepfel(IPriorityRule priorityRule)
+        public void ScheduleWithGifflerThompsonAsZaepfel(IPriorityRule priorityRule)
         {
             IProductionOrderToOperationGraph<INode> productionOrderToOperationGraph =
-                new ProductionOrderToOperationGraph(_dbTransactionData);
+                new ProductionOrderToOperationGraph();
 
             Dictionary<Id, List<Resource>> resourcesByResourceSkillId =
                 new Dictionary<Id, List<Resource>>();
             foreach (var resourceSkill in _dbMasterDataCache.M_ResourceSkillGetAll())
             {
                 resourcesByResourceSkillId.Add(resourceSkill.GetId(),
-                    _dbTransactionData.GetAggregator()
+                    ZppConfiguration.CacheManager.GetAggregator()
                         .GetResourcesByResourceSkillId(resourceSkill.GetId()));
             }
 
@@ -104,7 +103,7 @@ namespace Zpp.Mrp.MachineManagement
 
                         ProductionOrderOperation o1 = null;
                         o1 = priorityRule.GetHighestPriorityOperation(machine.GetIdleStartTime(),
-                            K.GetAll(), _dbTransactionData);
+                            K.GetAll());
                         if (o1 == null)
                         {
                             throw new MrpRunException("This is not possible if K.Any() is true.");
@@ -124,7 +123,7 @@ namespace Zpp.Mrp.MachineManagement
 
                         // correct op's start time if op's material is later available
                         DueTime dueTimeOfOperationMaterial =
-                            o1.GetDueTimeOfItsMaterial(_dbTransactionData);
+                            o1.GetDueTimeOfItsMaterial();
                         if (dueTimeOfOperationMaterial.GetValue() > o1.GetValue().Start)
                         {
                             o1.GetValue().Start = dueTimeOfOperationMaterial.GetValue();
@@ -146,7 +145,7 @@ namespace Zpp.Mrp.MachineManagement
                      */
                     foreach (var o1 in allO1)
                     {
-                        ProductionOrder productionOrder = o1.GetProductionOrder(_dbTransactionData);
+                        ProductionOrder productionOrder = o1.GetProductionOrder();
 
                         IStackSet<INode> predecessorOperations = new StackSet<INode>();
                         productionOrderToOperationGraph.GetPredecessorOperations(

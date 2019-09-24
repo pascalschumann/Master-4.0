@@ -31,7 +31,7 @@ namespace Zpp.Mrp.ProductionManagement.ProductionTypes
         }
 
         public Demands CreateProductionOrderBomsForArticleBom(
-            IDbTransactionData dbTransactionData, M_ArticleBom articleBom, Quantity quantity,
+            M_ArticleBom articleBom, Quantity quantity,
             ProductionOrder parentProductionOrder)
         {
 
@@ -81,7 +81,7 @@ namespace Zpp.Mrp.ProductionManagement.ProductionTypes
                 if (_alreadyCreatedProductionOrderOperations[articleBom.Operation].Count <= i)
                 {
                     _alreadyCreatedProductionOrderOperations[articleBom.Operation].Add(
-                        newProductionOrderBom.GetProductionOrderOperation(dbTransactionData));
+                        newProductionOrderBom.GetProductionOrderOperation());
                 }
                 
                 newProductionOrderBoms.Add(newProductionOrderBom);

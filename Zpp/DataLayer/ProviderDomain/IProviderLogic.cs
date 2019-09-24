@@ -26,16 +26,15 @@ namespace Zpp.Common.ProviderDomain
 
         bool ProvidesMoreThan(Quantity quantity);
 
-        void CreateDependingDemands(M_Article article, IDbTransactionData dbTransactionData,
-            Provider parentProvider, Quantity demandedQuantity);
+        void CreateDependingDemands(M_Article article, Provider parentProvider, Quantity demandedQuantity);
 
-        DueTime GetDueTime(IDbTransactionData dbTransactionData);
+        DueTime GetDueTime();
 
         Id GetId();
         
-        DueTime GetStartTime(IDbTransactionData dbTransactionData);
+        DueTime GetStartTime();
 
-         void SetDueTime(DueTime newDueTime, IDbTransactionData dbTransactionData);
+         void SetDueTime(DueTime newDueTime);
 
          void SetProvided(DueTime atTime);
     }

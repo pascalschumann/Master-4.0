@@ -18,7 +18,7 @@ namespace Zpp.Test.Integration_Tests
         [Fact(Skip = "disabled, because it doesn't work on linux/travis.'")]
         public void TestEveryCreatedEntityIsPersisted()
         {
-            IMrpRun mrpRun = new MrpRun(ProductionDomainContext);
+            IMrpRun mrpRun = new MrpRun();
             mrpRun.Start(false);
 
             ValidateNumberOfEntities(ProductionDomainContext.ProductionOrders);

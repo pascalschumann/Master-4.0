@@ -82,7 +82,7 @@ namespace Zpp.DbCache
 
         void DemandToProviderAdd(T_DemandToProvider demandToProvider);
 
-        void ProviderToDemandAdd(T_ProviderToDemand providerToDemand);
+        void ProviderToDemandAddAll(ProviderToDemandTable providerToDemandTable);
         
         void Dispose();
     }

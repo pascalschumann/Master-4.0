@@ -440,9 +440,9 @@ namespace Zpp.DbCache
             _demandToProviderTable.Add(demandToProvider);
         }
 
-        public void ProviderToDemandAdd(T_ProviderToDemand providerToDemand)
+        public void ProviderToDemandAddAll(ProviderToDemandTable providerToDemandTable)
         {
-            _providerToDemandTable.Add(providerToDemand);
+            _providerToDemandTable.AddAll(providerToDemandTable);
         }
 
         public void Dispose()

@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 using System.Linq;
 using Master40.DB.Data.Context;
 using Master40.DB.Data.Helper;
@@ -21,6 +22,7 @@ using Zpp.Simulation.Types;
 using Zpp.Test.Configuration.Scenarios;
 using Zpp.Utils;
 using Zpp.Utils.Queue;
+using Zpp.WrappersForCollections;
 
 namespace Zpp.Mrp
 {
@@ -28,7 +30,6 @@ namespace Zpp.Mrp
     {
         private static readonly NLog.Logger LOGGER = NLog.LogManager.GetCurrentClassLogger();
         private readonly ProductionDomainContext _productionDomainContext;
-        private IDbTransactionData _dbTransactionData;
         private readonly JobShopScheduler _jobShopScheduler = new JobShopScheduler();
 
         private readonly IOrderManager _orderManager = new OrderManager();
@@ -55,10 +56,10 @@ namespace Zpp.Mrp
             for (int i = 0; i < 2; i++)
             {
                 // init transactionData
-                _dbTransactionData = ZppConfiguration.CacheManager.ReloadTransactionData();
+                IDbTransactionData dbTransactionData = ZppConfiguration.CacheManager.ReloadTransactionData();
 
                 // execute mrp2
-                ManufacturingResourcePlanning(_dbTransactionData.T_CustomerOrderPartGetAll(), 0,
+                ManufacturingResourcePlanning(dbTransactionData.T_CustomerOrderPartGetAll(), 0,
                     withForwardScheduling);
 
                 int interval = 1440;
@@ -107,6 +108,13 @@ namespace Zpp.Mrp
                             if (dependingDemands != null && dependingDemands.Any())
                             {
                                 _newCreatedDemands.AddAll(dependingDemands);
+                            }
+
+                            ProviderToDemandTable providerToDemandTable =
+                                provider.GetProviderToDemandTable();
+                            if (providerToDemandTable != null && providerToDemandTable.Any())
+                            {
+                                _dbTransactionData.ProviderToDemandAddAll(providerToDemandTable);
                             }
                         }
                     }
@@ -200,14 +208,16 @@ namespace Zpp.Mrp
                 // avoids executing this twice (else latest in forward scheduling recursion would also execute this)
             {
                 // write data to _dbTransactionData
+                IDbTransactionData dbTransactionData =
+                    ZppConfiguration.CacheManager.GetDbTransactionData();
                 globalStockManager.AdaptStock(stockManager);
-                _dbTransactionData.DemandsAddAll(finalAllDemands);
-                _dbTransactionData.ProvidersAddAll(finalAllProviders);
+                dbTransactionData.DemandsAddAll(finalAllDemands);
+                dbTransactionData.ProvidersAddAll(finalAllProviders);
 
                 // job shop scheduling
                 JobShopScheduling();
 
-                _dbTransactionData.PersistDbCache();
+                dbTransactionData.PersistDbCache();
 
                 LOGGER.Info("MrpRun done.");
             }

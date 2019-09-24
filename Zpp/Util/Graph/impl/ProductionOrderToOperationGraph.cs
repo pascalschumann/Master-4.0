@@ -17,16 +17,11 @@ namespace Zpp.OrderGraph
     public class ProductionOrderToOperationGraph : DirectedGraph, IProductionOrderToOperationGraph<INode>
     {
         private readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
-        private readonly IAggregator _aggregator;
         private readonly IDirectedGraph<INode> _productionOrderGraph;
 
 
         public ProductionOrderToOperationGraph() : base()
         {
-            IDbTransactionData dbTransactionData =
-                ZppConfiguration.CacheManager.GetDbTransactionData();
-            
-            _aggregator = ZppConfiguration.CacheManager.GetAggregator();
             _productionOrderGraph = new ProductionOrderDirectedGraph(false);
 
             foreach (var productionOrderNode in _productionOrderGraph.GetAllUniqueNodes())

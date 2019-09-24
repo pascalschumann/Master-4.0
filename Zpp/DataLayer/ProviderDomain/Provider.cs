@@ -129,6 +129,7 @@ namespace Zpp.Common.ProviderDomain
          * Adapts the dueTime and also adapts the startTime accordingly (if exists)
          */
         public abstract void SetDueTime(DueTime newDueTime);
+        
         public ProviderToDemandTable GetProviderToDemandTable()
         {
             return ProviderToDemandTable;

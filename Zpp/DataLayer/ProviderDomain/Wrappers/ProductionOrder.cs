@@ -69,16 +69,15 @@ namespace Zpp.Common.ProviderDomain.Wrappers
 
             return productionOrderOperations.Any();
         }
-
-        /*public override void SetDueTime(DueTime newDueTime)
-        {
-            T_ProductionOrder productionOrder = (T_ProductionOrder) _provider;
-            productionOrder.DueTime = newDueTime.GetValue();
-        }*/
-
+        
         public override void SetProvided(DueTime atTime)
         {
             throw new System.NotImplementedException();
+        }
+
+        public override void SetStartTime(DueTime dueTime)
+        {
+            _productionOrder.DueTime = dueTime.GetValue();
         }
     }
 }

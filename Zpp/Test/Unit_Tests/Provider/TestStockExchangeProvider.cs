@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Xunit;
 using Zpp.Configuration;

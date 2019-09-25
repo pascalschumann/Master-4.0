@@ -8,6 +8,11 @@ namespace Master40.DB.Data.WrappersForPrimitives
         {
         }
 
+        public DueTime(Duration duration):base(duration.GetValue())
+        {
+            
+        }
+
         public DueTime()
         {
         }

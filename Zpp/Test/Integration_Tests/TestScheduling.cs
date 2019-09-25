@@ -1,6 +1,7 @@
 using Master40.DB.DataModel;
 using System.Collections.Generic;
 using System.Linq;
+using Master40.DB.Data.WrappersForPrimitives;
 using Xunit;
 using Zpp.Common.DemandDomain;
 using Zpp.Common.DemandDomain.Wrappers;

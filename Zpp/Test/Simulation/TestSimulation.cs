@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.Enums;
 using Master40.SimulationCore.DistributionProvider;
 using Master40.SimulationCore.Environment.Options;

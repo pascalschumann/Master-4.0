@@ -2,6 +2,7 @@
 using AkkaSim.Definitions;
 using System.Diagnostics;
 using System.Linq;
+using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.Enums;
 using NLog.Targets;
 using Zpp.DbCache;

@@ -91,6 +91,13 @@ namespace Zpp.Common.DemandDomain
 
         public abstract DueTime GetStartTime();
 
-        public abstract DueTime GetEndTime();
+        public DueTime GetEndTime()
+        {
+            return GetStartTime().Plus(new DueTime(GetDuration()));
+        }
+
+        public abstract Duration GetDuration();
+
+        public abstract void SetStartTime(DueTime dueTime);
     }
 }

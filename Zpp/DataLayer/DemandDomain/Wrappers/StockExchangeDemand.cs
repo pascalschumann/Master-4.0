@@ -14,9 +14,11 @@ namespace Zpp.Common.DemandDomain.Wrappers
      */
     public class StockExchangeDemand : Demand, IDemandLogic
     {
+        private readonly T_StockExchange _tStockExchangeDemand;
 
         public StockExchangeDemand(IDemand demand) : base(demand)
         {
+            _tStockExchangeDemand = (T_StockExchange)demand;
         }
 
         public override IDemand ToIDemand()
@@ -90,6 +92,16 @@ namespace Zpp.Common.DemandDomain.Wrappers
         public override DueTime GetStartTime()
         {
             return GetDueTime();
+        }
+
+        public override Duration GetDuration()
+        {
+            return Duration.Null();
+        }
+
+        public override void SetStartTime(DueTime dueTime)
+        {
+            _tStockExchangeDemand.RequiredOnTime = dueTime.GetValue();
         }
     }
 }

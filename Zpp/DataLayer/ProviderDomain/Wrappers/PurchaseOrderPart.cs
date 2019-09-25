@@ -13,9 +13,12 @@ namespace Zpp.Common.ProviderDomain.Wrappers
      */
     public class PurchaseOrderPart : Provider, IProviderLogic
     {
+        private T_PurchaseOrderPart _tPurchaseOrderPart;
+        
         public PurchaseOrderPart(IProvider provider, Demands demands
             ) : base(provider)
         {
+            _tPurchaseOrderPart = (T_PurchaseOrderPart)provider;
         }
 
         public override IProvider ToIProvider()
@@ -37,17 +40,9 @@ namespace Zpp.Common.ProviderDomain.Wrappers
 
         public override DueTime GetDueTime()
         {
-            IDbTransactionData dbTransactionData =
-                ZppConfiguration.CacheManager.GetDbTransactionData();
-            T_PurchaseOrderPart purchaseOrderPart = ((T_PurchaseOrderPart) _provider);
-            if (purchaseOrderPart.PurchaseOrder == null)
-            {
-                purchaseOrderPart.PurchaseOrder =
-                    dbTransactionData.PurchaseOrderGetById(
-                        new Id(purchaseOrderPart.PurchaseOrderId));
-            }
+            EnsurePurchaseOrderIsLoaded();
 
-            return new DueTime(purchaseOrderPart.PurchaseOrder.DueTime);
+            return new DueTime(_tPurchaseOrderPart.PurchaseOrder.DueTime);
         }
 
         public override DueTime GetStartTime()
@@ -55,27 +50,30 @@ namespace Zpp.Common.ProviderDomain.Wrappers
             // currently only one businessPartner per article TODO: This could be changing
             M_ArticleToBusinessPartner articleToBusinessPartner =
                 _dbMasterDataCache.M_ArticleToBusinessPartnerGetAllByArticleId(GetArticleId())[0];
-            return GetDueTime().Minus(articleToBusinessPartner.TimeToDelivery);
+            return GetDueTime().Minus(new DueTime(articleToBusinessPartner.TimeToDelivery));
         }
-
-        /*public override void SetDueTime(DueTime newDueTime)
-        {
-            IDbTransactionData dbTransactionData =
-                ZppConfiguration.CacheManager.GetDbTransactionData();
-            T_PurchaseOrderPart purchaseOrderPart = ((T_PurchaseOrderPart) _provider);
-            if (purchaseOrderPart.PurchaseOrder == null)
-            {
-                purchaseOrderPart.PurchaseOrder =
-                    dbTransactionData.PurchaseOrderGetById(
-                        new Id(purchaseOrderPart.PurchaseOrderId));
-            }
-
-            purchaseOrderPart.PurchaseOrder.DueTime = newDueTime.GetValue();
-        }*/
 
         public override void SetProvided(DueTime atTime)
         {
             throw new System.NotImplementedException();
+        }
+
+        private void EnsurePurchaseOrderIsLoaded()
+        {
+            if (_tPurchaseOrderPart.PurchaseOrder == null)
+            {
+                IDbTransactionData dbTransactionData =
+                    ZppConfiguration.CacheManager.GetDbTransactionData();
+                _tPurchaseOrderPart.PurchaseOrder =
+                    dbTransactionData.PurchaseOrderGetById(
+                        new Id(_tPurchaseOrderPart.PurchaseOrderId));
+            }
+        }
+
+        public override void SetStartTime(DueTime dueTime)
+        {
+            EnsurePurchaseOrderIsLoaded();
+            _tPurchaseOrderPart.PurchaseOrder.DueTime = dueTime.GetValue();
         }
     }
 }

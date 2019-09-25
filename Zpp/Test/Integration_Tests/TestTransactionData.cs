@@ -19,7 +19,7 @@ namespace Zpp.Test.Integration_Tests
         public void TestEveryCreatedEntityIsPersisted()
         {
             IMrpRun mrpRun = new MrpRun();
-            mrpRun.Start(false);
+            mrpRun.Start();
 
             ValidateNumberOfEntities(ProductionDomainContext.ProductionOrders);
             ValidateNumberOfEntities(ProductionDomainContext.ProductionOrderBoms);

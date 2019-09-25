@@ -51,5 +51,15 @@ namespace Zpp.Common.DemandDomain.Wrappers
         {
             return (T_CustomerOrderPart)_demand;
         }
+
+        public override Duration GetDuration()
+        {
+            return Duration.Null();
+        }
+
+        public override void SetStartTime(DueTime dueTime)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

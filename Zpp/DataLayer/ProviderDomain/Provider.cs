@@ -137,5 +137,17 @@ namespace Zpp.Common.ProviderDomain
         }
 
         public abstract void SetProvided(DueTime atTime);
+
+        public Duration GetDuration()
+        {
+            return Duration.Null();
+        }
+
+        public DueTime GetEndTime()
+        {
+            return GetStartTime().Plus(new DueTime(GetDuration()));
+        }
+
+        public abstract void SetStartTime(DueTime dueTime);
     }
 }

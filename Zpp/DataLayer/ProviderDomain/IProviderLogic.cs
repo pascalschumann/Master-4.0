@@ -34,8 +34,6 @@ namespace Zpp.Common.ProviderDomain
         
         DueTime GetStartTime();
 
-         void SetDueTime(DueTime newDueTime);
-
-         void SetProvided(DueTime atTime);
+        void SetProvided(DueTime atTime);
     }
 }

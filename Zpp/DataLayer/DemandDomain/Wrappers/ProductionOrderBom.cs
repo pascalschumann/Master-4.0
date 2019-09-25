@@ -79,16 +79,6 @@ namespace Zpp.Common.DemandDomain.Wrappers
             return _dbMasterDataCache.M_ArticleGetById(articleId);
         }
 
-        public override DueTime GetEndTime()
-        {
-            EnsureOperationIsLoadedIfExists();
-            if (_productionOrderBom.ProductionOrderOperation?.EndBackward == null)
-            {
-                return null;
-            }
-            return new DueTime(_productionOrderBom.ProductionOrderOperation.EndBackward.GetValueOrDefault());
-        }
-
         /**
          * @return:
          *   if ProductionOrderOperation is backwardsScheduled --> EndBackward
@@ -184,6 +174,17 @@ namespace Zpp.Common.DemandDomain.Wrappers
         {
             return _dbMasterDataCache.M_ArticleBomGetByArticleChildId(
                 new Id(_productionOrderBom.ArticleChildId));
+        }
+
+        public override Duration GetDuration()
+        {
+            EnsureOperationIsLoadedIfExists();
+            return _productionOrderBom.ProductionOrderOperation.GetDuration();
+        }
+
+        public override void SetStartTime(DueTime dueTime)
+        {
+            throw new NotImplementedException();
         }
     }
 }

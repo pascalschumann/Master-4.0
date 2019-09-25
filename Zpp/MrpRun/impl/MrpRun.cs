@@ -16,6 +16,7 @@ using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Mrp.MachineManagement;
 using Zpp.Mrp.NodeManagement;
+using Zpp.Mrp.Scheduling;
 using Zpp.Mrp.StockManagement;
 using Zpp.Simulation;
 using Zpp.Simulation.Types;
@@ -28,22 +29,18 @@ namespace Zpp.Mrp
 {
     public class MrpRun : IMrpRun
     {
-        private static readonly NLog.Logger LOGGER = NLog.LogManager.GetCurrentClassLogger();
-        private readonly ProductionDomainContext _productionDomainContext;
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private readonly JobShopScheduler _jobShopScheduler = new JobShopScheduler();
 
         private readonly IOrderManager _orderManager = new OrderManager();
-
-        private readonly Demands _newCreatedDemands = new Demands();
-        private Provider _newCreatedProvider;
-
         private readonly OrderGenerator _orderGenerator;
 
         public MrpRun()
         {
-            _productionDomainContext = ZppConfiguration.CacheManager.GetProductionDomainContext();
+            ProductionDomainContext productionDomainContext =
+                ZppConfiguration.CacheManager.GetProductionDomainContext();
 
-            _orderGenerator = TestScenario.GetOrderGenerator(_productionDomainContext,
+            _orderGenerator = TestScenario.GetOrderGenerator(productionDomainContext,
                 new MinDeliveryTime(960), new MaxDeliveryTime(1440), new OrderArrivalRate(0.025));
         }
 
@@ -56,11 +53,11 @@ namespace Zpp.Mrp
             for (int i = 0; i < 2; i++)
             {
                 // init transactionData
-                IDbTransactionData dbTransactionData = ZppConfiguration.CacheManager.ReloadTransactionData();
+                IDbTransactionData dbTransactionData =
+                    ZppConfiguration.CacheManager.ReloadTransactionData();
 
                 // execute mrp2
-                ManufacturingResourcePlanning(dbTransactionData.T_CustomerOrderPartGetAll(), 0,
-                    withForwardScheduling);
+                ManufacturingResourcePlanning(dbTransactionData.T_CustomerOrderPartGetAll());
 
                 int interval = 1440;
                 var simulationInterval = new SimulationInterval(i * interval, interval * (i + 1));
@@ -76,7 +73,8 @@ namespace Zpp.Mrp
          * - save dependingDemands
          */
         private void ProcessProvidingResponse(ResponseWithProviders responseWithProviders,
-            IStockManager stockManager, Demand demand)
+            IStockManager stockManager, Demand demand,
+            EntityCollector entityCollector)
         {
             if (responseWithProviders == null)
             {
@@ -93,7 +91,7 @@ namespace Zpp.Mrp
                             "This demandToProvider does not fit to given demand.");
                     }
 
-                    _dbTransactionData.DemandToProviderAdd(demandToProvider);
+                    entityCollector._demandToProviderTable.Add(demandToProvider);
 
                     if (responseWithProviders.GetProviders() != null)
                     {
@@ -102,19 +100,20 @@ namespace Zpp.Mrp
                         if (provider != null)
                         {
                             stockManager.AdaptStock(provider);
-                            _newCreatedProvider = provider;
+                            entityCollector._providers.Add(provider);
 
                             Demands dependingDemands = provider.GetAllDependingDemands();
                             if (dependingDemands != null && dependingDemands.Any())
                             {
-                                _newCreatedDemands.AddAll(dependingDemands);
+                                entityCollector._demands.AddAll(dependingDemands);
                             }
 
                             ProviderToDemandTable providerToDemandTable =
                                 provider.GetProviderToDemandTable();
                             if (providerToDemandTable != null && providerToDemandTable.Any())
                             {
-                                _dbTransactionData.ProviderToDemandAddAll(providerToDemandTable);
+                                entityCollector._providerToDemandTable.AddAll(
+                                    providerToDemandTable);
                             }
                         }
                     }
@@ -122,8 +121,11 @@ namespace Zpp.Mrp
             }
         }
 
-        public void MaterialRequirementsPlanning(Demand demand, IStockManager stockManager)
+        public EntityCollector MaterialRequirementsPlanning(Demand demand,
+            IStockManager stockManager)
         {
+            EntityCollector entityCollector =
+                new EntityCollector();
             ResponseWithProviders responseWithProviders;
 
             // SE:I --> satisfy by orders (PuOP/PrOBom)
@@ -131,14 +133,16 @@ namespace Zpp.Mrp
             {
                 responseWithProviders = _orderManager.Satisfy(demand, demand.GetQuantity());
 
-                ProcessProvidingResponse(responseWithProviders, stockManager, demand);
+                ProcessProvidingResponse(responseWithProviders, stockManager, demand,
+                    entityCollector);
             }
             // COP or PrOB --> satisfy by SE:W
             else
             {
                 responseWithProviders = stockManager.Satisfy(demand, demand.GetQuantity());
 
-                ProcessProvidingResponse(responseWithProviders, stockManager, demand);
+                ProcessProvidingResponse(responseWithProviders, stockManager, demand,
+                    entityCollector);
             }
 
             if (responseWithProviders.GetRemainingQuantity().IsNull() == false)
@@ -146,6 +150,8 @@ namespace Zpp.Mrp
                 throw new MrpRunException(
                     $"'{demand}' was NOT satisfied: remaining is {responseWithProviders.GetRemainingQuantity()}");
             }
+
+            return entityCollector;
         }
 
 
@@ -157,69 +163,51 @@ namespace Zpp.Mrp
             }
 
             // init
-            IDemands finalAllDemands = new Demands();
-            IProviders finalAllProviders = new Providers();
             int MAX_DEMANDS_IN_QUEUE = 100000;
 
             FastPriorityQueue<DemandQueueNode> demandQueue =
                 new FastPriorityQueue<DemandQueueNode>(MAX_DEMANDS_IN_QUEUE);
 
-            StockManager globalStockManager = new StockManager();
-
-            IStockManager stockManager = new StockManager(globalStockManager);
+            IStockManager stockManager = new StockManager();
 
             foreach (var demand in dbDemands)
             {
-                demandQueue.Enqueue(new DemandQueueNode(demand),
-                    demand.GetDueTime().GetValue());
+                demandQueue.Enqueue(new DemandQueueNode(demand), demand.GetDueTime().GetValue());
             }
 
+            // MaterialRequirementsPlanning
+            EntityCollector allCreatedEntities = new EntityCollector();
             while (demandQueue.Count != 0)
             {
                 DemandQueueNode firstDemandInQueue = demandQueue.Dequeue();
 
-                MaterialRequirementsPlanning(firstDemandInQueue.GetDemand(), stockManager);
-                finalAllProviders.Add(_newCreatedProvider);
-                if (_newCreatedDemands.Any())
-                {
-                    finalAllDemands.AddAll(_newCreatedDemands);
-                    // TODO: EnqueueAll()
-                    foreach (var demand in _newCreatedDemands)
-                    {
-                        demandQueue.Enqueue(new DemandQueueNode(demand),
-                            demand.GetDueTime().GetValue());
-                    }
+                EntityCollector entity =
+                    MaterialRequirementsPlanning(firstDemandInQueue.GetDemand(), stockManager);
+                allCreatedEntities.AddAll(entity);
 
-                    _newCreatedDemands.Clear();
+                // TODO: EnqueueAll()
+                foreach (var demand in entity._demands)
+                {
+                    demandQueue.Enqueue(new DemandQueueNode(demand),
+                        demand.GetDueTime().GetValue());
                 }
             }
+            // write data to _dbTransactionData
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
+            dbTransactionData.AddAll(allCreatedEntities);
+            // End of MaterialRequirementsPlanning
 
             // forward scheduling
-            if (withForwardScheduling)
-            {
-                ScheduleForward(count);
-            }
+            ScheduleForward();
 
+            // job shop scheduling
+            JobShopScheduling();
 
-            // persisting data
-            if (count == 0)
-                // it_s the first run, only do following here,
-                // avoids executing this twice (else latest in forward scheduling recursion would also execute this)
-            {
-                // write data to _dbTransactionData
-                IDbTransactionData dbTransactionData =
-                    ZppConfiguration.CacheManager.GetDbTransactionData();
-                globalStockManager.AdaptStock(stockManager);
-                dbTransactionData.DemandsAddAll(finalAllDemands);
-                dbTransactionData.ProvidersAddAll(finalAllProviders);
+            // persisting cached/created data
+            dbTransactionData.PersistDbCache();
 
-                // job shop scheduling
-                JobShopScheduling();
-
-                dbTransactionData.PersistDbCache();
-
-                LOGGER.Info("MrpRun done.");
-            }
+            Logger.Info("MrpRun done.");
         }
 
         public void ScheduleBackward()
@@ -229,37 +217,8 @@ namespace Zpp.Mrp
 
         public void ScheduleForward()
         {
-            Demands demands = _dbTransactionData.T_CustomerOrderPartGetAll();
-
-            // TODO: remove this once forward scheduling is implemented
-            // TODO 2: in forward scheduling, min must be calculuted by demand & provider,
-            // not only providers, since operations are on PrOBom (which are demands)
-            int min = 0;
-            foreach (var provider in _dbTransactionData.ProvidersGetAll())
-            {
-                int start = provider.GetStartTime().GetValue();
-                if (start < min)
-                {
-                    min = start;
-                }
-            }
-
-
-            if (min < 0)
-            {
-                foreach (var demand in demands)
-                {
-                    if (demand.GetType() == typeof(CustomerOrderPart))
-                    {
-                        T_CustomerOrderPart customerOrderPart =
-                            ((T_CustomerOrderPart) demand.ToIDemand());
-                        customerOrderPart.CustomerOrder.DueTime =
-                            customerOrderPart.CustomerOrder.DueTime + Math.Abs(min);
-                    }
-                }
-
-                ManufacturingResourcePlanning(demands, count + 1, true);
-            }
+            IForwardScheduler forwardScheduler = new ForwardScheduler();
+            forwardScheduler.ScheduleForward();
         }
 
         public void JobShopScheduling()
@@ -271,7 +230,7 @@ namespace Zpp.Mrp
         {
             ISimulator simulator = new Simulator();
             simulator.ProcessCurrentInterval(simulationInterval, _orderGenerator);
-            _dbTransactionData.PersistDbCache();
+            ZppConfiguration.CacheManager.GetDbTransactionData().PersistDbCache();
         }
 
         public void ApplyConfirmations()

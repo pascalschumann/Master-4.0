@@ -29,7 +29,7 @@ namespace Zpp.Mrp.Scheduling
             IStackSet<INode> S = new StackSet<INode>();
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.GetDbTransactionData();
-            IDirectedGraph<INode> demandToProviderGraph = new DirectedGraph();
+            IDirectedGraph<INode> demandToProviderGraph = new DemandToProviderDirectedGraph();
 
             // S = {0} (alle einplanbaren Operation)
             S.PushAll(demandToProviderGraph.GetLeafNodes());
@@ -40,7 +40,7 @@ namespace Zpp.Mrp.Scheduling
                 IDemandOrProvider demandOrProvider = (IDemandOrProvider) node.GetEntity();
                 if (demandOrProvider.GetStartTime().IsNegative())
                 {
-                    // implizitely the due/endTime will also be set accordingly
+                    // implicitly the due/endTime will also be set accordingly
                     demandOrProvider.SetStartTime(DueTime.Null());
                 }
                 else

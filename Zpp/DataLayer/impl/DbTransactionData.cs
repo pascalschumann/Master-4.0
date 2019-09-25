@@ -17,6 +17,7 @@ using Zpp.Common.ProviderDomain;
 using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.Common.ProviderDomain.WrappersForCollections;
 using Zpp.Configuration;
+using Zpp.Mrp;
 using Zpp.Mrp.MachineManagement;
 using Zpp.Mrp.NodeManagement;
 using Zpp.Utils;
@@ -461,6 +462,26 @@ namespace Zpp.DbCache
             _stockExchangeProviders.Clear();
             _demandToProviderTable.Clear();
             _providerToDemandTable.Clear();
+        }
+
+        public void AddAll(EntityCollector otherEntityCollector)
+        {
+            if (otherEntityCollector._demands.Any())
+            {
+                DemandsAddAll(otherEntityCollector._demands);
+            }
+            if (otherEntityCollector._providers.Any())
+            {
+                ProvidersAddAll(otherEntityCollector._providers);
+            }
+            if (otherEntityCollector._demandToProviderTable.Any())
+            {
+                _demandToProviderTable.AddAll(otherEntityCollector._demandToProviderTable);
+            }
+            if (otherEntityCollector._providerToDemandTable.Any())
+            {
+                _providerToDemandTable.AddAll(otherEntityCollector._providerToDemandTable);
+            }
         }
     }
 }

@@ -6,6 +6,7 @@ using Zpp.Common.DemandDomain.WrappersForCollections;
 using Zpp.Common.ProviderDomain;
 using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.Common.ProviderDomain.WrappersForCollections;
+using Zpp.Mrp;
 using Zpp.Mrp.NodeManagement;
 using Zpp.WrappersForCollections;
 
@@ -85,5 +86,7 @@ namespace Zpp.DbCache
         void ProviderToDemandAddAll(ProviderToDemandTable providerToDemandTable);
         
         void Dispose();
+
+        void AddAll(EntityCollector entityCollector);
     }
 }

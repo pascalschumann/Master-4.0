@@ -16,5 +16,16 @@ namespace Zpp.OrderGraph
         public Nodes()
         {
         }
+
+        public IEnumerable<T> As<T>()
+        {
+            List<T> newList = new List<T>();
+            foreach (var item in List)
+            {
+                newList.Add((T)item);
+            }
+
+            return newList;
+        }
     }
 }

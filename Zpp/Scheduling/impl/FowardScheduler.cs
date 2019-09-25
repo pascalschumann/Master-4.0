@@ -82,22 +82,26 @@ namespace Zpp.Mrp.Scheduling
                     // d_i = t_i + p_i
                     // --> is implicitly done by SetStartTime
                 }
-
                 // end if
+                
                 // for all j aus N(i) do
                 INodes successors = demandToProviderGraph.GetSuccessorNodes(i);
-                foreach (var j in successors)
+                if (successors != null)
                 {
-                    // z_j--
-                    // --> not necessary, since z_j is always 0 here (we traverse the d2p graph
-                    // bottom upwards and remove the leafs at the end of a loop iteration)
-                    // if z_j == 0 then
-                    // --> always the case
-                    // S = S vereinigt {j}
-                    S.Push(j);
-                    // end if
-                    // --> ignored
+                    foreach (var j in successors)
+                    {
+                        // z_j--
+                        // --> not necessary, since z_j is always 0 here (we traverse the d2p graph
+                        // bottom upwards and remove the leafs at the end of a loop iteration)
+                        // if z_j == 0 then
+                        // --> always the case
+                        // S = S vereinigt {j}
+                        S.Push(j);
+                        // end if
+                        // --> ignored
+                    }
                 }
+
                 // end for
             }
         }

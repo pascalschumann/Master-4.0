@@ -64,19 +64,25 @@ namespace Master40.DB.Data.WrappersForPrimitives
         public T Minus(T t)
         {
             decimal newValue = _decimal - t._decimal;
-            return (T) Activator.CreateInstance(typeof(T), new {newValue});
+            T newObject = (T) Activator.CreateInstance(typeof(T));
+            newObject._decimal = newValue;
+            return newObject;
         }
         
         public T Plus(T t)
         {
             decimal newValue = _decimal + t._decimal;
-            return (T) Activator.CreateInstance(typeof(T), new {newValue});
+            T newObject = (T) Activator.CreateInstance(typeof(T));
+            newObject._decimal = newValue;
+            return newObject;
         }
 
         public T AbsoluteValue()
         {
             decimal newValue = Math.Abs(_decimal);
-            return (T) Activator.CreateInstance(typeof(T), new {newValue});
+            T newObject = (T) Activator.CreateInstance(typeof(T));
+            newObject._decimal = newValue;
+            return newObject;
         }
         
         public bool IsNull()
@@ -91,8 +97,10 @@ namespace Master40.DB.Data.WrappersForPrimitives
         
         public static T Null()
         {
-            int newValue = 0;
-            return (T) Activator.CreateInstance(typeof(T), new {newValue});
+            decimal newValue = 0;
+            T newObject = (T) Activator.CreateInstance(typeof(T));
+            newObject._decimal = newValue;
+            return newObject;
         }
         
         public int CompareTo(T that)

@@ -124,7 +124,7 @@ namespace Zpp.Test.Integration_Tests
                     $"{productionOrderOperation} was not scheduled.");
                 Assert.True(
                     tProductionOrderOperation.Start >= productionOrderOperation
-                        .GetDueTimeOfItsMaterial().GetValue(),
+                        .GetEarliestPossibleStartTime().GetValue(),
                     "A productionOrderOperation cannot start before its material is available.");
             }
         }

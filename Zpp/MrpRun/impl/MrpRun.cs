@@ -50,7 +50,7 @@ namespace Zpp.Mrp
         /**
          * Only at start the demands are customerOrders
          */
-        public void Start(bool withForwardScheduling = true)
+        public void Start()
         {
             // _productionDomainContext
             for (int i = 0; i < 2; i++)
@@ -149,8 +149,7 @@ namespace Zpp.Mrp
         }
 
 
-        public void ManufacturingResourcePlanning(IDemands dbDemands, int count,
-            bool withForwardScheduling)
+        public void ManufacturingResourcePlanning(IDemands dbDemands)
         {
             if (dbDemands == null || dbDemands.Any() == false)
             {
@@ -228,7 +227,7 @@ namespace Zpp.Mrp
             throw new NotImplementedException();
         }
 
-        public void ScheduleForward(int count)
+        public void ScheduleForward()
         {
             Demands demands = _dbTransactionData.T_CustomerOrderPartGetAll();
 

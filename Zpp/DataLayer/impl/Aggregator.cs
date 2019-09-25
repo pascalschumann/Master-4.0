@@ -162,5 +162,55 @@ namespace Zpp.DbCache
 
             return demands;
         }
+
+        public DueTime GetEarliestPossibleStartTimeOf(ProductionOrderBom productionOrderBom)
+        {
+            DueTime earliestStartTime = productionOrderBom.GetStartTime();
+            Providers providers = ZppConfiguration.CacheManager.GetAggregator()
+                .GetAllChildProvidersOf(productionOrderBom);
+            if (providers.Count() > 1)
+            {
+                throw new MrpRunException("A productionOrderBom can only have one provider !");
+            }
+
+
+            Provider stockExchangeProvider = providers.GetFirst();
+            Demands stockExchangeDemands = ZppConfiguration.CacheManager.GetAggregator()
+                .GetAllChildDemandsOf(stockExchangeProvider);
+            if (earliestStartTime.IsGreaterThanOrEqualTo(stockExchangeProvider.GetDueTime()))
+            {
+                earliestStartTime = stockExchangeProvider.GetDueTime();
+            }
+            else
+            {
+                throw new MrpRunException("A provider of a demand cannot have a later dueTime.");
+            }
+
+            if (stockExchangeDemands.Any() == false)
+                // StockExchangeProvider has no childs (stockExchangeDemands),
+                // take that from stockExchangeProvider
+            {
+                DueTime childDueTime = stockExchangeProvider.GetDueTime();
+                if (childDueTime.IsGreaterThan(earliestStartTime))
+                {
+                    earliestStartTime = childDueTime;
+                }
+            }
+            else
+                // StockExchangeProvider has childs (stockExchangeDemands)
+            {
+                foreach (var stockExchangeDemand in stockExchangeDemands)
+                {
+                    DueTime stockExchangeDemandDueTime =
+                        stockExchangeDemand.GetDueTime();
+                    if (stockExchangeDemandDueTime.IsGreaterThan(earliestStartTime))
+                    {
+                        earliestStartTime = stockExchangeDemandDueTime;
+                    }
+                }
+            }
+
+            return earliestStartTime;
+        }
     }
 }

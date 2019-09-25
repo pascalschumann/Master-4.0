@@ -7,16 +7,15 @@ namespace Zpp.Mrp
 {
     public interface IMrpRun
     {
-        void Start(bool withForwardScheduling = true);
+        void Start();
 
-        void ManufacturingResourcePlanning(IDemands dbDemands, int count,
-            bool withForwardScheduling);
+        void ManufacturingResourcePlanning(IDemands dbDemands);
         
         void MaterialRequirementsPlanning(Demand demand, IStockManager stockManager);
 
         void ScheduleBackward();
         
-        void ScheduleForward(int count);
+        void ScheduleForward();
 
         void JobShopScheduling();
 

@@ -6,12 +6,20 @@ namespace Zpp.DataLayer
 {
     public interface IDemandOrProvider: INode
     {
+        /**
+         * For a demand this is usually the startTime, for a provider it's usually the endTime
+         */
         DueTime GetDueTime();
 
-        void SetDueTime(DueTime dueTime);
-        
+        DueTime GetEndTime();
+
         DueTime GetStartTime();
 
+        /**
+         * Adapts the startTime and also adapts the dueTime/endTime accordingly (if exists)
+         */
         void SetStartTime(DueTime dueTime);
+
+        Duration GetDuration();
     }
 }

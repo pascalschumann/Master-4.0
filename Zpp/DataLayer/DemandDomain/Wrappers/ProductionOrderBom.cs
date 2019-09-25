@@ -17,8 +17,7 @@ namespace Zpp.Common.DemandDomain.Wrappers
     {
         private readonly T_ProductionOrderBom _productionOrderBom;
 
-        public ProductionOrderBom(IDemand demand) : base(
-            demand)
+        public ProductionOrderBom(IDemand demand) : base(demand)
         {
             _productionOrderBom = (T_ProductionOrderBom) _demand;
         }
@@ -34,8 +33,8 @@ namespace Zpp.Common.DemandDomain.Wrappers
         /// <param name="productionOrderOperation">use already created, null if no one was created before</param>
         /// <returns></returns>
         public static ProductionOrderBom CreateTProductionOrderBom(M_ArticleBom articleBom,
-            Provider parentProductionOrder,
-            ProductionOrderOperation productionOrderOperation, Quantity quantity)
+            Provider parentProductionOrder, ProductionOrderOperation productionOrderOperation,
+            Quantity quantity)
         {
             T_ProductionOrderBom productionOrderBom = new T_ProductionOrderBom();
             // TODO: Terminierung+Maschinenbelegung
@@ -80,6 +79,16 @@ namespace Zpp.Common.DemandDomain.Wrappers
             return _dbMasterDataCache.M_ArticleGetById(articleId);
         }
 
+        public override DueTime GetEndTime()
+        {
+            EnsureOperationIsLoadedIfExists();
+            if (_productionOrderBom.ProductionOrderOperation?.EndBackward == null)
+            {
+                return null;
+            }
+            return new DueTime(_productionOrderBom.ProductionOrderOperation.EndBackward.GetValueOrDefault());
+        }
+
         /**
          * @return:
          *   if ProductionOrderOperation is backwardsScheduled --> EndBackward
@@ -87,35 +96,7 @@ namespace Zpp.Common.DemandDomain.Wrappers
          */
         public override DueTime GetDueTime()
         {
-            IDbTransactionData dbTransactionData =
-                ZppConfiguration.CacheManager.GetDbTransactionData();
-            
-            // load ProductionOrderOperation if not done yet
-            if (_productionOrderBom.ProductionOrderOperation == null)
-            {
-                Id productionOrderOperationId =
-                    new Id(_productionOrderBom.ProductionOrderOperationId.GetValueOrDefault());
-                _productionOrderBom.ProductionOrderOperation = dbTransactionData
-                    .ProductionOrderOperationGetById(productionOrderOperationId).GetValue();
-            }
-
-            if (_productionOrderBom.ProductionOrderOperation != null &&
-                _productionOrderBom.ProductionOrderOperation.EndBackward != null)
-                // backwards scheduling was already done --> job-shop-scheduling was done --> return End
-            {
-                T_ProductionOrderOperation productionOrderOperation =
-                    _productionOrderBom.ProductionOrderOperation;
-                DueTime dueTime =
-                    new DueTime(productionOrderOperation.StartBackward.GetValueOrDefault() -
-                                OperationBackwardsSchedule.CalculateTransitionTime(
-                                    productionOrderOperation.GetDuration()));
-                return dueTime;
-            }
-            else
-            {
-                throw new MrpRunException(
-                    "Requesting dueTime for ProductionOrderBom before it was backwards-scheduled.");
-            }
+            return GetStartTime();
         }
 
         public bool HasOperation()
@@ -125,52 +106,56 @@ namespace Zpp.Common.DemandDomain.Wrappers
 
         public ProductionOrderOperation GetProductionOrderOperation()
         {
-            IDbTransactionData dbTransactionData =
-                ZppConfiguration.CacheManager.GetDbTransactionData();
             if (_productionOrderBom.ProductionOrderOperationId == null)
             {
                 return null;
             }
 
-            if (_productionOrderBom.ProductionOrderOperation == null)
-                // load it
-            {
-                _productionOrderBom.ProductionOrderOperation = dbTransactionData
-                    .ProductionOrderOperationGetById(new Id(_productionOrderBom
-                        .ProductionOrderOperationId.GetValueOrDefault())).GetValue();
-            }
+            EnsureOperationIsLoadedIfExists();
 
             return new ProductionOrderOperation(_productionOrderBom.ProductionOrderOperation);
         }
 
-        public override DueTime GetStartTime()
+        public DueTime GetStartTimeOfOperation()
         {
-            IDbTransactionData dbTransactionData =
-                ZppConfiguration.CacheManager.GetDbTransactionData();
-            if (_productionOrderBom.ProductionOrderOperationId != null)
+            EnsureOperationIsLoadedIfExists();
+
+            if (_productionOrderBom.ProductionOrderOperation?.StartBackward != null)
+                // backwards scheduling was already done --> job-shop-scheduling was done
             {
-                if (_productionOrderBom.ProductionOrderOperation == null)
-                    // load it
-                {
-                    _productionOrderBom.ProductionOrderOperation =
-                        dbTransactionData.ProductionOrderOperationGetById(new Id(_productionOrderBom
-                            .ProductionOrderOperationId.GetValueOrDefault())).GetValue();
-                }
-
-                T_ProductionOrderOperation tProductionOrderOperation =
+                T_ProductionOrderOperation productionOrderOperation =
                     _productionOrderBom.ProductionOrderOperation;
-                if (tProductionOrderOperation.StartBackward == null)
-                {
-                    throw new MrpRunException(
-                        "Requesting start time of ProductionOrderBom before it was backwards-scheduled.");
-                }
-
-                return new DueTime(tProductionOrderOperation.StartBackward.GetValueOrDefault());
+                DueTime dueTime =
+                    new DueTime(productionOrderOperation.StartBackward.GetValueOrDefault());
+                return dueTime;
             }
             else
             {
-                return null;
+                throw new MrpRunException(
+                    "Requesting dueTime for ProductionOrderBom before it was backwards-scheduled.");
             }
+        }
+
+        private void EnsureOperationIsLoadedIfExists()
+        {
+            // load ProductionOrderOperation if not done yet
+            if (_productionOrderBom.ProductionOrderOperation == null)
+            {
+                IDbTransactionData dbTransactionData =
+                    ZppConfiguration.CacheManager.GetDbTransactionData();
+                Id productionOrderOperationId =
+                    new Id(_productionOrderBom.ProductionOrderOperationId.GetValueOrDefault());
+                _productionOrderBom.ProductionOrderOperation = dbTransactionData
+                    .ProductionOrderOperationGetById(productionOrderOperationId).GetValue();
+            }
+        }
+
+        public override DueTime GetStartTime()
+        {
+            EnsureOperationIsLoadedIfExists();
+            DueTime transitionTime = new DueTime(OperationBackwardsSchedule.CalculateTransitionTime(
+                _productionOrderBom.ProductionOrderOperation.GetDuration()));
+            return GetStartTimeOfOperation().Minus(transitionTime);
         }
 
         public ProductionOrder GetProductionOrder()

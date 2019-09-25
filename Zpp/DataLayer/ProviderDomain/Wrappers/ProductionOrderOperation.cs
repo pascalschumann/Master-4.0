@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
+using Zpp.Common.DemandDomain.Wrappers;
 using Zpp.Common.DemandDomain.WrappersForCollections;
 using Zpp.Common.ProviderDomain.WrappersForCollections;
 using Zpp.Configuration;
@@ -184,52 +185,20 @@ namespace Zpp.Common.ProviderDomain.Wrappers
          * Every operation needs material to start.
          * @returns the time when material of this operation is available
          */
-        public DueTime GetDueTimeOfItsMaterial()
+        public DueTime GetEarliestPossibleStartTime()
         {
-            IDbTransactionData dbTransactionData =
-                ZppConfiguration.CacheManager.GetDbTransactionData();
-            
+           
             DueTime maxDueTime = null;
-            foreach (var productionOrderBom in ZppConfiguration.CacheManager.GetAggregator()
-                .GetAllProductionOrderBomsBy(this))
+            IAggregator aggregator = ZppConfiguration.CacheManager.GetAggregator();
+            
+            foreach (var productionOrderBom in 
+                aggregator.GetAllProductionOrderBomsBy(this))
             {
-                Providers providers = ZppConfiguration.CacheManager.GetAggregator()
-                    .GetAllChildProvidersOf(productionOrderBom);
-                if (providers.Count() > 1)
+                DueTime earliestDueTime = aggregator.GetEarliestPossibleStartTimeOf((ProductionOrderBom)productionOrderBom);
+                if (maxDueTime == null || earliestDueTime.IsGreaterThan(maxDueTime))
                 {
-                    throw new MrpRunException("A productionOrderBom can only have one provider !");
-                }
+                    maxDueTime = earliestDueTime;
 
-
-                Provider stockExchangeProvider = providers.GetFirst();
-                Demands stockExchangeDemands = ZppConfiguration.CacheManager.GetAggregator()
-                    .GetAllChildDemandsOf(stockExchangeProvider);
-                if (maxDueTime == null)
-                {
-                    maxDueTime = stockExchangeProvider.GetDueTime();
-                }
-
-                if (stockExchangeDemands.Any() == false)
-                    // StockExchangeProvider has no childs (stockExchangeDemands) take that from stockExchangeProvider
-                {
-                    DueTime childDueTime = stockExchangeProvider.GetDueTime();
-                    if (childDueTime.IsGreaterThan(maxDueTime))
-                    {
-                        maxDueTime = childDueTime;
-                    }
-                }
-                else
-                    // StockExchangeProvider has childs (stockExchangeDemands)
-                {
-                    foreach (var stockExchangeDemand in stockExchangeDemands)
-                    {
-                        DueTime stockExchangeDemandDueTime =
-                            stockExchangeDemand.GetDueTime();
-                        if (stockExchangeDemandDueTime.IsGreaterThan(maxDueTime))
-                        {
-                            maxDueTime = stockExchangeDemandDueTime;
-                        }
-                    }
                 }
             }
 

@@ -123,7 +123,7 @@ namespace Zpp.Mrp.MachineManagement
 
                         // correct op's start time if op's material is later available
                         DueTime dueTimeOfOperationMaterial =
-                            o1.GetDueTimeOfItsMaterial();
+                            o1.GetEarliestPossibleStartTime();
                         if (dueTimeOfOperationMaterial.GetValue() > o1.GetValue().Start)
                         {
                             o1.GetValue().Start = dueTimeOfOperationMaterial.GetValue();

@@ -2,6 +2,7 @@ using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Master40.DB.Interfaces;
 using Zpp.Configuration;
+using Zpp.DataLayer;
 using Zpp.DbCache;
 using Zpp.OrderGraph;
 using Zpp.Utils;
@@ -12,7 +13,7 @@ namespace Zpp.Common.DemandDomain
     /**
      * Provides default implementations for interface methods, can be moved to interface once C# 8.0 is released
      */
-    public abstract class Demand : IDemandLogic, INode
+    public abstract class Demand : IDemandLogic, INode, IDemandOrProvider
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         protected readonly IDemand _demand;
@@ -89,5 +90,7 @@ namespace Zpp.Common.DemandDomain
         }
 
         public abstract DueTime GetStartTime();
+
+        public abstract DueTime GetEndTime();
     }
 }

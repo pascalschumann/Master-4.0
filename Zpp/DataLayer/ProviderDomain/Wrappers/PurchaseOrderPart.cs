@@ -58,7 +58,7 @@ namespace Zpp.Common.ProviderDomain.Wrappers
             return GetDueTime().Minus(articleToBusinessPartner.TimeToDelivery);
         }
 
-        public override void SetDueTime(DueTime newDueTime)
+        /*public override void SetDueTime(DueTime newDueTime)
         {
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.GetDbTransactionData();
@@ -71,7 +71,7 @@ namespace Zpp.Common.ProviderDomain.Wrappers
             }
 
             purchaseOrderPart.PurchaseOrder.DueTime = newDueTime.GetValue();
-        }
+        }*/
 
         public override void SetProvided(DueTime atTime)
         {

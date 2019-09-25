@@ -4,6 +4,7 @@ using Master40.DB.DataModel;
 using Master40.DB.Interfaces;
 using Zpp.Common.DemandDomain.WrappersForCollections;
 using Zpp.Configuration;
+using Zpp.DataLayer;
 using Zpp.DbCache;
 using Zpp.OrderGraph;
 using Zpp.Utils;
@@ -15,7 +16,7 @@ namespace Zpp.Common.ProviderDomain
     /**
      * Provides default implementations for interface methods, can be moved to interface once C# 8.0 is released
      */
-    public abstract class Provider : IProviderLogic, INode
+    public abstract class Provider : IProviderLogic, INode, IDemandOrProvider
     {
         protected Demands _dependingDemands;
         protected readonly ProviderToDemandTable ProviderToDemandTable = new ProviderToDemandTable();
@@ -124,12 +125,7 @@ namespace Zpp.Common.ProviderDomain
         }
 
         public abstract DueTime GetStartTime();
-        
-        /**
-         * Adapts the dueTime and also adapts the startTime accordingly (if exists)
-         */
-        public abstract void SetDueTime(DueTime newDueTime);
-        
+
         public ProviderToDemandTable GetProviderToDemandTable()
         {
             return ProviderToDemandTable;

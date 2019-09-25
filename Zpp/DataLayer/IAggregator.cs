@@ -40,5 +40,7 @@ namespace Zpp.DbCache
 
         List<Provider> GetProvidersForInterval(DueTime from, DueTime to);
 
+        DueTime GetEarliestPossibleStartTimeOf(ProductionOrderBom productionOrderBom);
+
     }
 }

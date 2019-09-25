@@ -33,7 +33,7 @@ namespace Zpp.Mrp.Scheduling
             _timeBetweenOperations =
                 new DueTime(CalculateTransitionTime(_duration));
             _endBackwards = dueTime;
-            _startBackwards = _endBackwards.Minus(duration.GetValue());
+            _startBackwards = _endBackwards.Minus(new DueTime(duration.GetValue()));
             
             _startOfOperation = _startBackwards.Minus(_timeBetweenOperations);
             _endOfOperation = _endBackwards;

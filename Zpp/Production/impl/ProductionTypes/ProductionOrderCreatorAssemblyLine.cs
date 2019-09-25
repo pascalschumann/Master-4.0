@@ -1,6 +1,7 @@
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Zpp.Common.DemandDomain;
+using Zpp.Common.DemandDomain.WrappersForCollections;
 using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.Common.ProviderDomain.WrappersForCollections;
 using Zpp.DbCache;
@@ -11,7 +12,7 @@ namespace Zpp.Mrp.ProductionManagement.ProductionTypes
     /**
      * Here ProductionOrders.Count == given quantity productionOrders will be created
      */
-    public class ProductionOrderCreatorAssemblyLine: IProductionOrderCreator
+    public class ProductionOrderCreatorAssemblyLine: ProductionOrderCreator
     {
         public ProductionOrderCreatorAssemblyLine()
         {
@@ -21,10 +22,9 @@ namespace Zpp.Mrp.ProductionManagement.ProductionTypes
             }
         }
 
-        public ProductionOrders CreateProductionOrder(
-            Demand demand, Quantity quantity)
+        public override EntityCollector CreateProductionOrder(Demand demand, Quantity quantity)
         {
-            ProductionOrders productionOrders = new ProductionOrders();
+            EntityCollector entityCollector = new EntityCollector();
             
             for (int i = 0; i < quantity.GetValue(); i++)
             {
@@ -40,13 +40,13 @@ namespace Zpp.Mrp.ProductionManagement.ProductionTypes
                 ProductionOrder productionOrder =
                     new ProductionOrder(tProductionOrder);
 
-                productionOrder.CreateDependingDemands(demand.GetArticle(),
+                Demands dependingDemands = CreateDependingDemands(demand.GetArticle(),
                     productionOrder, productionOrder.GetQuantity());
-                
-                productionOrders.Add(productionOrder);
+                entityCollector.AddAll(dependingDemands);
+                entityCollector.Add(productionOrder);
             }
-
-            return productionOrders;
+            
+            return entityCollector;
         }
     }
 }

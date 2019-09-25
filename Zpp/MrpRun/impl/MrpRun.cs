@@ -41,7 +41,7 @@ namespace Zpp.Mrp
                 ZppConfiguration.CacheManager.GetProductionDomainContext();
 
             _orderGenerator = TestScenario.GetOrderGenerator(productionDomainContext,
-                new MinDeliveryTime(960), new MaxDeliveryTime(1440), new OrderArrivalRate(0.025));
+                new MinDeliveryTime(200), new MaxDeliveryTime(1440), new OrderArrivalRate(0.025));
         }
 
         /**
@@ -99,22 +99,9 @@ namespace Zpp.Mrp
                             .GetProviderById(demandToProvider.GetProviderId());
                         if (provider != null)
                         {
-                            stockManager.AdaptStock(provider);
+                            EntityCollector dependings = stockManager.AdaptStock(provider);
                             entityCollector._providers.Add(provider);
-
-                            Demands dependingDemands = provider.GetAllDependingDemands();
-                            if (dependingDemands != null && dependingDemands.Any())
-                            {
-                                entityCollector._demands.AddAll(dependingDemands);
-                            }
-
-                            ProviderToDemandTable providerToDemandTable =
-                                provider.GetProviderToDemandTable();
-                            if (providerToDemandTable != null && providerToDemandTable.Any())
-                            {
-                                entityCollector._providerToDemandTable.AddAll(
-                                    providerToDemandTable);
-                            }
+                            entityCollector.AddAll(dependings);
                         }
                     }
                 }
@@ -198,6 +185,9 @@ namespace Zpp.Mrp
             dbTransactionData.AddAll(allCreatedEntities);
             // End of MaterialRequirementsPlanning
 
+            // TODO: remove this line (debugging only)
+            dbTransactionData.PersistDbCache();
+            
             // forward scheduling
             ScheduleForward();
 

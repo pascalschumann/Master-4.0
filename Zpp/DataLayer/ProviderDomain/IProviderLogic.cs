@@ -12,22 +12,17 @@ namespace Zpp.Common.ProviderDomain
      */
     public interface IProviderLogic
     {
-        Demands GetAllDependingDemands();
 
         IProvider ToIProvider();
 
         Quantity GetQuantity();
-
-        bool AnyDependingDemands();
 
         Id GetArticleId();
         
         M_Article GetArticle();
 
         bool ProvidesMoreThan(Quantity quantity);
-
-        void CreateDependingDemands(M_Article article, Provider parentProvider, Quantity demandedQuantity);
-
+        
         DueTime GetDueTime();
 
         Id GetId();

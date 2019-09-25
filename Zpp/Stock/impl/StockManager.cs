@@ -4,23 +4,30 @@ using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Master40.DB.Enums;
 using Zpp.Common.DemandDomain;
+using Zpp.Common.DemandDomain.Wrappers;
+using Zpp.Common.DemandDomain.WrappersForCollections;
 using Zpp.Common.ProviderDomain;
 using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.Common.ProviderDomain.WrappersForCollections;
 using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Mrp.NodeManagement;
+using Zpp.Utils;
+using Zpp.WrappersForCollections;
 using Zpp.WrappersForPrimitives;
 
 namespace Zpp.Mrp.StockManagement
 {
     public class StockManager : IStockManager
     {
-        private static readonly NLog.Logger LOGGER = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         private readonly Dictionary<Id, Stock> _stocks = new Dictionary<Id, Stock>();
         private HashSet<Provider> _alreadyConsideredProviders = new HashSet<Provider>();
-        private readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
+
+        private readonly IDbMasterDataCache _dbMasterDataCache =
+            ZppConfiguration.CacheManager.GetMasterDataCache();
+
         private readonly ICacheManager _cacheManager = ZppConfiguration.CacheManager;
 
         private readonly IOpenDemandManager _openDemandManager =
@@ -29,7 +36,6 @@ namespace Zpp.Mrp.StockManagement
         // for duplicating it
         public StockManager(IStockManager stockManager)
         {
-            
             foreach (var stock in stockManager.GetStocks())
             {
                 _stocks.Add(stock.GetArticleId(),
@@ -39,7 +45,6 @@ namespace Zpp.Mrp.StockManagement
 
         public StockManager()
         {
-            
             foreach (var stock in _dbMasterDataCache.M_StockGetAll())
             {
                 Id articleId = new Id(stock.ArticleForeignKey);
@@ -49,34 +54,30 @@ namespace Zpp.Mrp.StockManagement
             }
         }
 
-        public void AdaptStock(Provider provider)
+        public EntityCollector AdaptStock(Provider provider)
         {
             // a provider can influence the stock only once
             if (_alreadyConsideredProviders.Contains(provider))
             {
-                return;
+                return null;
             }
 
             _alreadyConsideredProviders.Add(provider);
 
             // SE:W decrements stock
-            Stock stock = _stocks[provider.GetArticleId()];
-
             if (provider.GetType() == typeof(StockExchangeProvider))
             {
+                Stock stock = _stocks[provider.GetArticleId()];
                 stock.DecrementBy(provider.GetQuantity());
                 Quantity currentQuantity = stock.GetQuantity();
                 if (currentQuantity.IsSmallerThan(stock.GetMinStockLevel()))
                 {
-                    ((StockExchangeProvider)provider).CreateDependingDemands(provider.GetArticle(), provider, provider.GetQuantity(), _openDemandManager);
+                    return CreateDependingDemands(provider.GetArticle(), provider,
+                        provider.GetQuantity(), _openDemandManager, provider);
                 }
             }
 
-            /*// PrO, PuOP increases stock
-            else
-            {
-                stock.IncrementBy(provider.GetQuantity());
-            }*/
+            return null;
         }
 
         /**
@@ -96,8 +97,7 @@ namespace Zpp.Mrp.StockManagement
             return _stocks.Values.ToList();
         }
 
-        public static void CalculateCurrent(M_Stock stock, 
-            Quantity startQuantity)
+        public static void CalculateCurrent(M_Stock stock, Quantity startQuantity)
         {
             Quantity currentQuantity = new Quantity(startQuantity);
             // TODO
@@ -131,7 +131,8 @@ namespace Zpp.Mrp.StockManagement
             return new ResponseWithProviders(providers, demandToProviders, demandedQuantity);
         }
 
-        public ResponseWithProviders SatisfyByAvailableStockQuantity(Demand demand, Quantity demandedQuantity)
+        public ResponseWithProviders SatisfyByAvailableStockQuantity(Demand demand,
+            Quantity demandedQuantity)
         {
             Stock stock = _stocks[demand.GetArticleId()];
             if (stock.GetQuantity().IsGreaterThan(Quantity.Null()))
@@ -180,15 +181,88 @@ namespace Zpp.Mrp.StockManagement
             stockExchange.StockId = stock.Id;
             stockExchange.RequiredOnTime = dueTime.GetValue();
             stockExchange.ExchangeType = ExchangeType.Withdrawal;
-            StockExchangeProvider stockExchangeProvider =
-                new StockExchangeProvider(stockExchange);
+            StockExchangeProvider stockExchangeProvider = new StockExchangeProvider(stockExchange);
 
             return stockExchangeProvider;
         }
-        
+
         public HashSet<Provider> GetAlreadyConsideredProviders()
         {
             return _alreadyConsideredProviders;
+        }
+
+        private EntityCollector CreateDependingDemands(M_Article article, Provider parentProvider,
+            Quantity demandedQuantity, IOpenDemandManager openDemandManager, Provider provider)
+        {
+            if (demandedQuantity.IsNull())
+            {
+                return null;
+            }
+
+            Demands stockExchangeDemands = new Demands();
+            ProviderToDemandTable providerToDemandTable = new ProviderToDemandTable();
+
+            // try to provider by existing demand
+            ResponseWithDemands responseWithDemands =
+                openDemandManager.SatisfyProviderByOpenDemand(provider, demandedQuantity);
+
+            if (responseWithDemands.GetDemands().Count() > 1)
+            {
+                throw new MrpRunException("Only one demand should be reservable.");
+            }
+
+            Quantity remainingQuantity = new Quantity(demandedQuantity);
+            if (responseWithDemands.CalculateReservedQuantity().IsGreaterThan(Quantity.Null()))
+            {
+                stockExchangeDemands.AddAll(responseWithDemands.GetDemands());
+                providerToDemandTable.AddAll(responseWithDemands.GetProviderToDemands());
+                remainingQuantity = responseWithDemands.GetRemainingQuantity();
+            }
+
+            if (responseWithDemands.IsSatisfied() == false)
+            {
+                LotSize.LotSize lotSizes = new LotSize.LotSize(remainingQuantity, article.GetId());
+                Quantity lotSizeSum = Quantity.Null();
+                foreach (var lotSize in lotSizes.GetLotSizes())
+                {
+                    lotSizeSum.IncrementBy(lotSize);
+
+
+                    Demand stockExchangeDemand =
+                        StockExchangeDemand.CreateStockExchangeStockDemand(article,
+                            provider.GetDueTime(), lotSize);
+                    stockExchangeDemands.Add(stockExchangeDemand);
+
+                    // quantityToReserve can be calculated as following
+                    // given demandedQuantity - (sumLotSize - lotSize) - (lotSize - providedByOpen.remaining)
+                    Quantity quantityOfNewCreatedDemandToReserve = demandedQuantity
+                        .Minus(lotSizeSum.Minus(lotSize)).Minus(
+                            demandedQuantity.Minus(responseWithDemands.GetRemainingQuantity()));
+
+                    providerToDemandTable.Add(provider, stockExchangeDemand.GetId(),
+                        quantityOfNewCreatedDemandToReserve);
+
+                    if (lotSizeSum.IsGreaterThan(demandedQuantity))
+                        // remember created demand as openDemand
+                    {
+                        openDemandManager.AddDemand(stockExchangeDemand,
+                            quantityOfNewCreatedDemandToReserve);
+                    }
+
+
+                    /*if (stockExchangeDemands.GetQuantity().IsSmallerThan(lotSize))
+                    {
+                        throw new MrpRunException($"Created demand should have not a smaller " +
+                                                  $"quantity ({stockExchangeDemand.GetQuantity()}) " +
+                                                  $"than the needed quantity ({lotSize}).");
+                    }*/
+                }
+            }
+
+            EntityCollector entityCollector = new EntityCollector();
+            entityCollector._demands.AddAll(stockExchangeDemands);
+            entityCollector._providerToDemandTable.AddAll(providerToDemandTable);
+            return entityCollector;
         }
     }
 }

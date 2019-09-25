@@ -32,12 +32,6 @@ namespace Zpp.Common.ProviderDomain.Wrappers
             return articleId;
         }
 
-        public override void CreateDependingDemands(M_Article article,
-            Provider parentProvider, Quantity demandedQuantity)
-        {
-            throw new System.NotImplementedException();
-        }
-
         public override DueTime GetDueTime()
         {
             EnsurePurchaseOrderIsLoaded();

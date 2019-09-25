@@ -18,8 +18,6 @@ namespace Zpp.Common.ProviderDomain
      */
     public abstract class Provider : IProviderLogic, INode, IDemandOrProvider
     {
-        protected Demands _dependingDemands;
-        protected readonly ProviderToDemandTable ProviderToDemandTable = new ProviderToDemandTable();
         protected readonly IProvider _provider;
         protected readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
         protected static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
@@ -32,11 +30,6 @@ namespace Zpp.Common.ProviderDomain
             }
             _provider = provider;
             
-        }
-
-        public Demands GetAllDependingDemands()
-        {
-            return _dependingDemands;
         }
 
         public abstract DueTime GetDueTime();
@@ -65,20 +58,12 @@ namespace Zpp.Common.ProviderDomain
             return _provider.GetQuantity();
         }
 
-        public bool AnyDependingDemands()
-        {
-            return _dependingDemands != null && _dependingDemands.Any();
-        }
-
         public abstract Id GetArticleId();
 
         public bool ProvidesMoreThan(Quantity quantity)
         {
             return GetQuantity().IsGreaterThanOrEqualTo(quantity);
         }
-
-        public abstract void CreateDependingDemands(M_Article article,
-            Provider parentProvider, Quantity demandedQuantity);
         
         /**
          * returns Quantity.Null or higher
@@ -125,16 +110,6 @@ namespace Zpp.Common.ProviderDomain
         }
 
         public abstract DueTime GetStartTime();
-
-        public ProviderToDemandTable GetProviderToDemandTable()
-        {
-            return ProviderToDemandTable;
-        }
-
-        public void AddProviderToDemand(T_ProviderToDemand providerToDemand)
-        {
-            ProviderToDemandTable.Add(providerToDemand);
-        }
 
         public abstract void SetProvided(DueTime atTime);
 

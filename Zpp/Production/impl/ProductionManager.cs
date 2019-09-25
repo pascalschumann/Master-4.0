@@ -36,11 +36,9 @@ namespace Zpp.Mrp.ProductionManagement
                 throw new MrpRunException("Must be a build article.");
             }
 
-            IProviders productionOrders = CreateProductionOrder(demand, demandedQuantity);
+            EntityCollector entityCollector = CreateProductionOrder(demand, demandedQuantity);
 
             Logger.Debug("ProductionOrder(s) created.");
-
-            List<T_DemandToProvider> demandToProviders = new List<T_DemandToProvider>();
 
             foreach (var productionOrder in productionOrders)
             {
@@ -57,7 +55,7 @@ namespace Zpp.Mrp.ProductionManagement
             return new ResponseWithProviders(productionOrders, demandToProviders, demandedQuantity);
         }
 
-        private ProductionOrders CreateProductionOrder(Demand demand,
+        private EntityCollector CreateProductionOrder(Demand demand,
             
             Quantity lotSize)
         {

@@ -34,13 +34,6 @@ namespace Zpp.Common.ProviderDomain.Wrappers
             return articleId;
         }
 
-        public override void CreateDependingDemands(M_Article article,
-            Provider parentProvider, Quantity demandedQuantity)
-        {
-            _dependingDemands = ProductionManager.CreateProductionOrderBoms(article,
-                parentProvider, demandedQuantity);
-        }
-
         public override DueTime GetDueTime()
         {
             T_ProductionOrder productionOrder = (T_ProductionOrder) _provider;

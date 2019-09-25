@@ -33,8 +33,6 @@ namespace Zpp.Test.Unit_Tests.Provider
         {
             IDbMasterDataCache dbMasterDataCache =
                 ZppConfiguration.CacheManager.GetMasterDataCache();
-            IDbTransactionData dbTransactionData =
-                ZppConfiguration.CacheManager.ReloadTransactionData();
 
             // CustomerOrderPart
             Common.DemandDomain.Demand randomCustomerOrderPart =
@@ -48,7 +46,6 @@ namespace Zpp.Test.Unit_Tests.Provider
             };
             foreach (var demand in demands)
             {
-                M_Stock stock = dbMasterDataCache.M_StockGetByArticleId(demand.GetArticleId());
 
                 IStockManager stockManager = new StockManager();
                 Common.ProviderDomain.Provider providerStockExchange =
@@ -63,31 +60,6 @@ namespace Zpp.Test.Unit_Tests.Provider
                         .Equals(demand.GetDueTime()), "DueTime is not correct.");
             }
         }
-
-        [Fact]
-        public void TestNoDependingDemandsIfStockHasEnough()
-        {
-        IDbMasterDataCache dbMasterDataCache =
-            ZppConfiguration.CacheManager.GetMasterDataCache();
-            IDbTransactionData dbTransactionData =
-                ZppConfiguration.CacheManager.ReloadTransactionData();
-
-            // CustomerOrderPart
-            Common.DemandDomain.Demand demand =
-                EntityFactory.CreateCustomerOrderPartRandomArticleToBuy(new Random().Next(1, 9),
-                    new DueTime(50));
-
-            M_Stock stock = dbMasterDataCache.M_StockGetByArticleId(demand.GetArticleId());
-            // increase stock
-            stock.Current = 10;
-            IStockManager stockManager = new StockManager();
-            Common.ProviderDomain.Provider providerStockExchange =
-                stockManager.CreateStockExchangeProvider(demand.GetArticle(),
-                    demand.GetDueTime(), demand.GetQuantity());
-
-
-            Assert.True(providerStockExchange.AnyDependingDemands() == false,
-                "Provider should have no depending demands.");
-        }
+        
     }
 }

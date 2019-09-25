@@ -54,19 +54,6 @@ namespace Zpp.Common.ProviderDomain.WrappersForCollections
 
             return providedQuantity;
         }
-        
-        public bool AnyDependingDemands()
-        {
-            foreach (var provider in List)
-            {
-                if (provider.AnyDependingDemands())
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
 
         public bool IsSatisfied(Quantity demandedQuantity, Id articleId)
         {

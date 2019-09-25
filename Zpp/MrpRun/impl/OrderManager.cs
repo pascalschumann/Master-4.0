@@ -21,7 +21,7 @@ namespace Zpp.Mrp
             _productionManager = new ProductionManager();
         }
 
-        public ResponseWithProviders Satisfy(Demand demand, Quantity demandedQuantity)
+        public EntityCollector Satisfy(Demand demand, Quantity demandedQuantity)
         {
             if (demand.GetArticle().ToBuild)
             {

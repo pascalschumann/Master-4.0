@@ -71,12 +71,12 @@ namespace Zpp.Mrp.NodeManagement
         /**
          * aka ReserveQuantityOfExistingDemand or satisfyByAlreadyExistingDemand
          */
-        public ResponseWithDemands SatisfyProviderByOpenDemand(Provider provider,
+        public EntityCollector SatisfyProviderByOpenDemand(Provider provider,
             Quantity demandedQuantity)
         {
             if (_openDemands.AnyOpenProvider(provider.GetArticle()))
             {
-
+                EntityCollector entityCollector = new EntityCollector();
                 foreach (var openDemand in _openDemands.GetOpenProvider(provider.GetArticle()))
                 {
                     if (openDemand != null && provider.GetDueTime()
@@ -104,13 +104,16 @@ namespace Zpp.Mrp.NodeManagement
                             Quantity = demandedQuantity.Minus(remainingQuantity).GetValue()
                         };
 
-                        return new ResponseWithDemands(null, providerToDemand, demandedQuantity);
+                        entityCollector.Add(providerToDemand);
                     }
                 }
+                return entityCollector;
+            }
+            else
+            {
+                return null;
             }
 
-            return new ResponseWithDemands((Demand) null, null, demandedQuantity);
-            
         }
 
         public void Dispose()

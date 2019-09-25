@@ -14,8 +14,6 @@ namespace Zpp.Common.DemandDomain
 
         IDemand ToIDemand();
 
-        Quantity GetQuantity();
-
         M_Article GetArticle();
         
         Id GetArticleId();

@@ -15,6 +15,17 @@ namespace Master40.DB.DataModel
         
         public decimal Quantity { get; set; }
 
+        public T_DemandToProvider()
+        {
+        }
+
+        public T_DemandToProvider(Id demandId, Id providerId, Quantity quantity)
+        {
+            ProviderId = providerId.GetValue();
+            DemandId = demandId.GetValue();
+            Quantity = quantity.GetValue();
+        }
+
         public override string ToString()
         {
             return $"demand: {DemandId}, provider: {ProviderId}, quantity: {Quantity}";

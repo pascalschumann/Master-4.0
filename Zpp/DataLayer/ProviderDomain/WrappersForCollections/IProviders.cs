@@ -16,8 +16,6 @@ namespace Zpp.Common.ProviderDomain.WrappersForCollections
 
         bool ProvideMoreThanOrEqualTo(Id articleId, Quantity demandedQuantity);
 
-        bool AnyDependingDemands();
-
         bool IsSatisfied(Quantity demandedQuantity, Id articleId);
         
         IDemands CalculateUnsatisfiedDemands(IDemands demands);

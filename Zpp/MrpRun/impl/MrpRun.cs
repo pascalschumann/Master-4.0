@@ -68,74 +68,35 @@ namespace Zpp.Mrp
             }
         }
 
-        /**
-         * - save providers
-         * - save dependingDemands
-         */
-        private void ProcessProvidingResponse(ResponseWithProviders responseWithProviders,
-            IStockManager stockManager, Demand demand,
-            EntityCollector entityCollector)
-        {
-            if (responseWithProviders == null)
-            {
-                return;
-            }
-
-            if (responseWithProviders.GetDemandToProviders() != null)
-            {
-                foreach (var demandToProvider in responseWithProviders.GetDemandToProviders())
-                {
-                    if (demandToProvider.GetDemandId().Equals(demand.GetId()) == false)
-                    {
-                        throw new MrpRunException(
-                            "This demandToProvider does not fit to given demand.");
-                    }
-
-                    entityCollector._demandToProviderTable.Add(demandToProvider);
-
-                    if (responseWithProviders.GetProviders() != null)
-                    {
-                        Provider provider = responseWithProviders.GetProviders()
-                            .GetProviderById(demandToProvider.GetProviderId());
-                        if (provider != null)
-                        {
-                            EntityCollector dependings = stockManager.AdaptStock(provider);
-                            entityCollector._providers.Add(provider);
-                            entityCollector.AddAll(dependings);
-                        }
-                    }
-                }
-            }
-        }
 
         public EntityCollector MaterialRequirementsPlanning(Demand demand,
             IStockManager stockManager)
         {
-            EntityCollector entityCollector =
-                new EntityCollector();
-            ResponseWithProviders responseWithProviders;
+            EntityCollector entityCollector = new EntityCollector();
+            EntityCollector response;
 
             // SE:I --> satisfy by orders (PuOP/PrOBom)
             if (demand.GetType() == typeof(StockExchangeDemand))
             {
-                responseWithProviders = _orderManager.Satisfy(demand, demand.GetQuantity());
-
-                ProcessProvidingResponse(responseWithProviders, stockManager, demand,
-                    entityCollector);
+                response = _orderManager.Satisfy(demand, demand.GetQuantity());
+                entityCollector.AddAll(response);
+                response = stockManager.AdaptStock(response.GetProviders());
+                entityCollector.AddAll(response);
             }
             // COP or PrOB --> satisfy by SE:W
             else
             {
-                responseWithProviders = stockManager.Satisfy(demand, demand.GetQuantity());
-
-                ProcessProvidingResponse(responseWithProviders, stockManager, demand,
-                    entityCollector);
+                response = stockManager.Satisfy(demand, demand.GetQuantity());
+                entityCollector.AddAll(response);
+                response = stockManager.AdaptStock(response.GetProviders());
+                entityCollector.AddAll(response);
             }
 
-            if (responseWithProviders.GetRemainingQuantity().IsNull() == false)
+            if (entityCollector.IsSatisfied(demand))
             {
                 throw new MrpRunException(
-                    $"'{demand}' was NOT satisfied: remaining is {responseWithProviders.GetRemainingQuantity()}");
+                    $"'{demand}' was NOT satisfied: remaining is " + 
+                    $"{entityCollector.GetRemainingQuantity(demand)}");
             }
 
             return entityCollector;
@@ -168,17 +129,18 @@ namespace Zpp.Mrp
             {
                 DemandQueueNode firstDemandInQueue = demandQueue.Dequeue();
 
-                EntityCollector entity =
+                EntityCollector response =
                     MaterialRequirementsPlanning(firstDemandInQueue.GetDemand(), stockManager);
-                allCreatedEntities.AddAll(entity);
+                allCreatedEntities.AddAll(response);
 
                 // TODO: EnqueueAll()
-                foreach (var demand in entity._demands)
+                foreach (var demand in response.GetDemands())
                 {
                     demandQueue.Enqueue(new DemandQueueNode(demand),
                         demand.GetDueTime().GetValue());
                 }
             }
+
             // write data to _dbTransactionData
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.GetDbTransactionData();
@@ -187,7 +149,7 @@ namespace Zpp.Mrp
 
             // TODO: remove this line (debugging only)
             dbTransactionData.PersistDbCache();
-            
+
             // forward scheduling
             ScheduleForward();
 

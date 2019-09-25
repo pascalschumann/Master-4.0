@@ -10,6 +10,17 @@ namespace Master40.DB.DataModel
         
         public decimal Quantity { get; set; }
 
+        public T_ProviderToDemand()
+        {
+        }
+
+        public T_ProviderToDemand(Id providerId, Id demandId, Quantity quantity)
+        {
+            ProviderId = providerId.GetValue();
+            DemandId = demandId.GetValue();
+            Quantity = quantity.GetValue();
+        }
+
         public override string ToString()
         {
             return $"provider: {ProviderId}, demand: {DemandId}";

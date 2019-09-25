@@ -23,8 +23,9 @@ namespace Zpp.Mrp.PurchaseManagement
             
         }
 
-        public ResponseWithProviders Satisfy(Demand demand, Quantity demandedQuantity)
+        public EntityCollector Satisfy(Demand demand, Quantity demandedQuantity)
         {
+            EntityCollector entityCollector = new EntityCollector();
             M_Article article = demand.GetArticle();
             DueTime dueTime = demand.GetDueTime();
             if (article.ToBuild)
@@ -83,8 +84,9 @@ namespace Zpp.Mrp.PurchaseManagement
                 ProviderId = purchaseOrderPart.GetId().GetValue(),
                 Quantity = demandedQuantity.GetValue()
             };
-            
-            return new ResponseWithProviders(purchaseOrderPart, demandToProvider, demandedQuantity);
+            entityCollector.Add(purchaseOrderPart);
+            entityCollector.Add(demandToProvider);
+            return entityCollector;
         }
         
         private static int CalculateQuantity(M_ArticleToBusinessPartner articleToBusinessPartner,

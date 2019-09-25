@@ -9,6 +9,6 @@ namespace Zpp.Mrp
      */
     public interface IProvidingManager
     {
-        ResponseWithProviders Satisfy(Demand demand, Quantity demandedQuantity);
+        EntityCollector Satisfy(Demand demand, Quantity demandedQuantity);
     }
 }

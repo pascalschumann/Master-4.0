@@ -15,8 +15,6 @@ namespace Zpp.Common.ProviderDomain
 
         IProvider ToIProvider();
 
-        Quantity GetQuantity();
-
         Id GetArticleId();
         
         M_Article GetArticle();

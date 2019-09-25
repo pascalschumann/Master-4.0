@@ -466,21 +466,21 @@ namespace Zpp.DbCache
 
         public void AddAll(EntityCollector otherEntityCollector)
         {
-            if (otherEntityCollector._demands.Any())
+            if (otherEntityCollector.GetDemands().Any())
             {
-                DemandsAddAll(otherEntityCollector._demands);
+                DemandsAddAll(otherEntityCollector.GetDemands());
             }
-            if (otherEntityCollector._providers.Any())
+            if (otherEntityCollector.GetProviders().Any())
             {
-                ProvidersAddAll(otherEntityCollector._providers);
+                ProvidersAddAll(otherEntityCollector.GetProviders());
             }
-            if (otherEntityCollector._demandToProviderTable.Any())
+            if (otherEntityCollector.GetDemandToProviderTable().Any())
             {
-                _demandToProviderTable.AddAll(otherEntityCollector._demandToProviderTable);
+                _demandToProviderTable.AddAll(otherEntityCollector.GetDemandToProviderTable());
             }
-            if (otherEntityCollector._providerToDemandTable.Any())
+            if (otherEntityCollector.GetProviderToDemandTable().Any())
             {
-                _providerToDemandTable.AddAll(otherEntityCollector._providerToDemandTable);
+                _providerToDemandTable.AddAll(otherEntityCollector.GetProviderToDemandTable());
             }
         }
     }

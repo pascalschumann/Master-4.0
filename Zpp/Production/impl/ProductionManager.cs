@@ -29,7 +29,7 @@ namespace Zpp.Mrp.ProductionManagement
         {
         }
 
-        public ResponseWithProviders Satisfy(Demand demand, Quantity demandedQuantity)
+        public EntityCollector Satisfy(Demand demand, Quantity demandedQuantity)
         {
             if (demand.GetArticle().ToBuild == false)
             {
@@ -40,19 +40,19 @@ namespace Zpp.Mrp.ProductionManagement
 
             Logger.Debug("ProductionOrder(s) created.");
 
-            foreach (var productionOrder in productionOrders)
+            foreach (var provider in entityCollector.GetProviders())
             {
                 T_DemandToProvider demandToProvider = new T_DemandToProvider()
                 {
                     DemandId = demand.GetId().GetValue(),
-                    ProviderId = productionOrder.GetId().GetValue(),
-                    Quantity = productionOrder.GetQuantity().GetValue()
+                    ProviderId = provider.GetId().GetValue(),
+                    Quantity = provider.GetQuantity().GetValue()
                 };
-                demandToProviders.Add(demandToProvider);
+                entityCollector.Add(demandToProvider);
             }
 
 
-            return new ResponseWithProviders(productionOrders, demandToProviders, demandedQuantity);
+            return entityCollector;
         }
 
         private EntityCollector CreateProductionOrder(Demand demand,

@@ -21,5 +21,7 @@ namespace Zpp.DataLayer
         void SetStartTime(DueTime dueTime);
 
         Duration GetDuration();
+
+        Quantity GetQuantity();
     }
 }

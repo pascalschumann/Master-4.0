@@ -19,12 +19,14 @@ using Zpp.Utils;
 
 namespace Zpp.Mrp.ProductionManagement
 {
-    public class ProductionManager : ProviderManager
+    public class ProductionManager
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        private readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
-        private readonly ICacheManager _cacheManager =
-            ZppConfiguration.CacheManager;
+
+        private readonly IDbMasterDataCache _dbMasterDataCache =
+            ZppConfiguration.CacheManager.GetMasterDataCache();
+
+        private readonly ICacheManager _cacheManager = ZppConfiguration.CacheManager;
 
         public ProductionManager()
         {
@@ -56,9 +58,7 @@ namespace Zpp.Mrp.ProductionManagement
             return entityCollector;
         }
 
-        private EntityCollector CreateProductionOrder(Demand demand,
-            
-            Quantity lotSize)
+        private EntityCollector CreateProductionOrder(Demand demand, Quantity lotSize)
         {
             if (!demand.GetArticle().ToBuild)
             {
@@ -84,7 +84,6 @@ namespace Zpp.Mrp.ProductionManagement
             }
 
 
-
             return productionOrderCreator.CreateProductionOrder(demand, lotSize);
         }
 
@@ -103,7 +102,7 @@ namespace Zpp.Mrp.ProductionManagement
         {
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.GetDbTransactionData();
-            
+
             M_Article readArticle = dbTransactionData.M_ArticleGetById(article.GetId());
             if (readArticle.ArticleBoms != null && readArticle.ArticleBoms.Any())
             {
@@ -128,24 +127,21 @@ namespace Zpp.Mrp.ProductionManagement
                 foreach (M_ArticleBom articleBom in readArticle.ArticleBoms)
                 {
                     newDemands.AddRange(
-                        productionOrderBomCreator.CreateProductionOrderBomsForArticleBom(
-                            articleBom, quantity,
-                            (ProductionOrder)parentProductionOrder));
+                        productionOrderBomCreator.CreateProductionOrderBomsForArticleBom(articleBom,
+                            quantity, (ProductionOrder) parentProductionOrder));
                 }
 
                 // backwards scheduling
                 OperationBackwardsSchedule lastOperationBackwardsSchedule = null;
 
                 IEnumerable<ProductionOrderOperation> sortedProductionOrderOperations = newDemands
-                    .Select(x =>
-                        ((ProductionOrderBom)x).GetProductionOrderOperation())
+                    .Select(x => ((ProductionOrderBom) x).GetProductionOrderOperation())
                     .OrderByDescending(x => x.GetValue().HierarchyNumber);
 
                 foreach (var productionOrderOperation in sortedProductionOrderOperations)
                 {
                     lastOperationBackwardsSchedule = productionOrderOperation.ScheduleBackwards(
-                        lastOperationBackwardsSchedule,
-                        parentProductionOrder.GetDueTime());
+                        lastOperationBackwardsSchedule, parentProductionOrder.GetDueTime());
                 }
 
 
@@ -162,7 +158,8 @@ namespace Zpp.Mrp.ProductionManagement
             productionOrderOperation = new T_ProductionOrderOperation();
             productionOrderOperation.Name = articleBom.Operation.Name;
             productionOrderOperation.HierarchyNumber = articleBom.Operation.HierarchyNumber;
-            productionOrderOperation.Duration = articleBom.Operation.Duration * (int)quantity.GetValue();
+            productionOrderOperation.Duration =
+                articleBom.Operation.Duration * (int) quantity.GetValue();
             // Tool has no meaning yet, ignore it
             productionOrderOperation.ResourceToolId = articleBom.Operation.ResourceToolId;
             productionOrderOperation.ResourceTool = articleBom.Operation.ResourceTool;
@@ -170,20 +167,26 @@ namespace Zpp.Mrp.ProductionManagement
             productionOrderOperation.ResourceSkillId = articleBom.Operation.ResourceSkillId;
             productionOrderOperation.ProducingState = ProducingState.Created;
             productionOrderOperation.ProductionOrder =
-                (T_ProductionOrder)parentProductionOrder.ToIProvider();
+                (T_ProductionOrder) parentProductionOrder.ToIProvider();
             productionOrderOperation.ProductionOrderId =
                 productionOrderOperation.ProductionOrder.Id;
 
             return productionOrderOperation;
         }
 
-        public EntityCollector CreateDependingDemands(IOpenDemandManager openDemandManager, Provider provider)
+        public EntityCollector CreateDependingDemands(Provider provider)
         {
-
-            EntityCollector entityCollector = new EntityCollector();    
-            Demands dependingDemands = CreateProductionOrderBoms(provider.GetArticle(),
-                    provider, provider.GetQuantity());
+            EntityCollector entityCollector = new EntityCollector();
+            Demands dependingDemands = CreateProductionOrderBoms(provider.GetArticle(), provider,
+                provider.GetQuantity());
             entityCollector.AddAll(dependingDemands);
+            foreach (var dependingDemand in dependingDemands)
+            {
+                T_ProviderToDemand providerToDemand = new T_ProviderToDemand(provider.GetId(),
+                    dependingDemand.GetId(), dependingDemand.GetQuantity());
+                entityCollector.Add(providerToDemand);
+            }
+
             return entityCollector;
         }
     }

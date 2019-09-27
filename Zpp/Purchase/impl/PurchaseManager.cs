@@ -12,7 +12,7 @@ using Zpp.WrappersForPrimitives;
 
 namespace Zpp.Mrp.PurchaseManagement
 {
-    public class PurchaseManager : ProviderManager
+    public class PurchaseManager
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();

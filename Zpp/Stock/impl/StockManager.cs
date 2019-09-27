@@ -19,7 +19,7 @@ using Zpp.WrappersForPrimitives;
 
 namespace Zpp.Mrp.StockManagement
 {
-    public class StockManager : IStockManager
+    public class StockManager
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 

@@ -14,7 +14,7 @@ namespace Zpp.Mrp
     {
         EntityCollector Satisfy(Demand demand, Quantity demandedQuantity);
 
-        EntityCollector CreateDependingDemands(Provider provider);
+        EntityCollector CreateDependingDemands(Providers providers);
         
         void AdaptStock(Providers providers);
     }

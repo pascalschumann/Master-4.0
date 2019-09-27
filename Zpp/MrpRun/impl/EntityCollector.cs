@@ -22,6 +22,10 @@ namespace Zpp.Mrp
 
         public void AddAll(EntityCollector otherEntityCollector)
         {
+            if (otherEntityCollector == null)
+            {
+                return;
+            }
             if (otherEntityCollector._demands.Any())
             {
                 _demands.AddAll(otherEntityCollector._demands);

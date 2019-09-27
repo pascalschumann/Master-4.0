@@ -31,8 +31,6 @@ namespace Zpp.Mrp
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private readonly JobShopScheduler _jobShopScheduler = new JobShopScheduler();
-
-        private readonly IOrderManager _orderManager = new ProviderManager();
         private readonly OrderGenerator _orderGenerator;
 
         public MrpRun()
@@ -73,31 +71,17 @@ namespace Zpp.Mrp
             IProviderManager providerManager)
         {
             EntityCollector entityCollector = new EntityCollector();
-            EntityCollector response;
 
-            // SE:I --> satisfy by orders (PuOP/PrOBom)
-            if (demand.GetType() == typeof(StockExchangeDemand))
-            {
-                response = _orderManager.Satisfy(demand, demand.GetQuantity());
-                entityCollector.AddAll(response);
-                providerManager.AdaptStock(response.GetProviders());
-                response = providerManager.CreateDependingDemands(entityCollector.GetProviders());
-                entityCollector.AddAll(response);
-            }
-            // COP or PrOB --> satisfy by SE:W
-            else
-            {
-                response = providerManager.Satisfy(demand, demand.GetQuantity());
-                entityCollector.AddAll(response);
-                response = providerManager.AdaptStock(response.GetProviders());
-                entityCollector.AddAll(response);
-            }
-
+            EntityCollector response = providerManager.Satisfy(demand, demand.GetQuantity());
+            entityCollector.AddAll(response);
+            providerManager.AdaptStock(response.GetProviders());
+            response = providerManager.CreateDependingDemands(entityCollector.GetProviders());
+            entityCollector.AddAll(response);
+            
             if (entityCollector.IsSatisfied(demand) == false)
             {
-                throw new MrpRunException(
-                    $"'{demand}' was NOT satisfied: remaining is " + 
-                    $"{entityCollector.GetRemainingQuantity(demand)}");
+                throw new MrpRunException($"'{demand}' was NOT satisfied: remaining is " +
+                                          $"{entityCollector.GetRemainingQuantity(demand)}");
             }
 
             return entityCollector;
@@ -117,7 +101,7 @@ namespace Zpp.Mrp
             FastPriorityQueue<DemandQueueNode> demandQueue =
                 new FastPriorityQueue<DemandQueueNode>(MAX_DEMANDS_IN_QUEUE);
 
-            IStockManager stockManager = new StockManager();
+            IProviderManager providerManager = new ProviderManager();
 
             foreach (var demand in dbDemands)
             {
@@ -131,7 +115,7 @@ namespace Zpp.Mrp
                 DemandQueueNode firstDemandInQueue = demandQueue.Dequeue();
 
                 EntityCollector response =
-                    MaterialRequirementsPlanning(firstDemandInQueue.GetDemand(), stockManager);
+                    MaterialRequirementsPlanning(firstDemandInQueue.GetDemand(), providerManager);
                 allCreatedEntities.AddAll(response);
 
                 // TODO: EnqueueAll()

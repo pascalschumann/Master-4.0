@@ -37,7 +37,7 @@ namespace Zpp.Mrp.StockManagement
         // for duplicating it
         public StockManager(IStockManager stockManager)
         {
-            foreach (var stock in stockManager.GetStocks())
+            foreach (var stock in GetStocks())
             {
                 _stocks.Add(stock.GetArticleId(),
                     new Stock(stock.GetQuantity(), stock.GetArticleId(), stock.GetMinStockLevel()));
@@ -55,9 +55,8 @@ namespace Zpp.Mrp.StockManagement
             }
         }
 
-        public EntityCollector AdaptStock(Providers providers)
+        public void AdaptStock(Providers providers)
         {
-            EntityCollector entityCollector = new EntityCollector();
             foreach (var provider in providers)
             {
                 // a provider can influence the stock only once
@@ -73,21 +72,12 @@ namespace Zpp.Mrp.StockManagement
                 {
                     Stock stock = _stocks[provider.GetArticleId()];
                     stock.DecrementBy(provider.GetQuantity());
-
-                    Quantity currentQuantity = stock.GetQuantity();
-                    if (currentQuantity.IsSmallerThan(stock.GetMinStockLevel()))
-                    {
-                        EntityCollector dependings =
-                            CreateDependingDemands(_openDemandManager, provider);
-                        entityCollector.AddAll(dependings);
-                    }
+                    
                 }
             }
-
-            return entityCollector;
         }
 
-        public List<Stock> GetStocks()
+        private List<Stock> GetStocks()
         {
             return _stocks.Values.ToList();
         }
@@ -147,18 +137,30 @@ namespace Zpp.Mrp.StockManagement
             return _alreadyConsideredProviders;
         }
 
-        private EntityCollector CreateDependingDemands(IOpenDemandManager openDemandManager,
-            Provider provider)
+        public EntityCollector CreateDependingDemands(Provider provider)
         {
             if (provider.GetQuantity().IsNull())
             {
                 return null;
             }
 
+            if (provider.GetType() != typeof(StockExchangeProvider))
+            {
+                throw new MrpRunException("This can only be called for StockExchangeProviders");
+            }
+            
+            Stock stock = _stocks[provider.GetArticleId()];
+            Quantity currentQuantity = stock.GetQuantity();
+            if (currentQuantity.IsGreaterThanOrEqualTo(stock.GetMinStockLevel()))
+            {
+                // no dependingDemands are needed
+                return null;
+            }
+
             // try to provider by existing demand
             // collects stockExchangeDemands, providerToDemands
             EntityCollector entityCollector =
-                openDemandManager.SatisfyProviderByOpenDemand(provider, provider.GetQuantity());
+                _openDemandManager.SatisfyProviderByOpenDemand(provider, provider.GetQuantity());
             if (entityCollector == null)
             {
                 entityCollector = new EntityCollector();
@@ -198,7 +200,7 @@ namespace Zpp.Mrp.StockManagement
                     if (lotSizeSum.IsGreaterThan(provider.GetQuantity()))
                         // remember created demand as openDemand
                     {
-                        openDemandManager.AddDemand(stockExchangeDemand,
+                        _openDemandManager.AddDemand(stockExchangeDemand,
                             quantityOfNewCreatedDemandToReserve);
                     }
                 }
@@ -206,5 +208,7 @@ namespace Zpp.Mrp.StockManagement
 
             return entityCollector;
         }
+        
+        
     }
 }

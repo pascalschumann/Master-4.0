@@ -9,22 +9,8 @@ using Zpp.WrappersForPrimitives;
 
 namespace Zpp.Mrp.StockManagement
 {
-    public interface IStockManager : IProvidingManager
+    public interface IStockManager : IProviderManager
     {
-        List<Stock> GetStocks();
 
-        /**
-         * A provider can influence the stock only once.
-         * @return: providers that already have considered (=adapted the stock)
-         */
-        HashSet<Provider> GetAlreadyConsideredProviders();
-
-        Provider CreateStockExchangeProvider(M_Article article, DueTime dueTime,
-            Quantity demandedQuantity);
-
-        /**
-         * return dependingDemands
-         */
-        EntityCollector AdaptStock(Providers providers);
     }
 }

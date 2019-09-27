@@ -39,10 +39,7 @@ namespace Zpp.Mrp.ProductionManagement.ProductionTypes
 
                 ProductionOrder productionOrder =
                     new ProductionOrder(tProductionOrder);
-
-                Demands dependingDemands = CreateDependingDemands(demand.GetArticle(),
-                    productionOrder, productionOrder.GetQuantity());
-                entityCollector.AddAll(dependingDemands);
+                
                 entityCollector.Add(productionOrder);
             }
             

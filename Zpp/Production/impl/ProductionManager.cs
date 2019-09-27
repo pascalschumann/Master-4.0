@@ -11,6 +11,7 @@ using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.Common.ProviderDomain.WrappersForCollections;
 using Zpp.Configuration;
 using Zpp.DbCache;
+using Zpp.Mrp.NodeManagement;
 using Zpp.Mrp.ProductionManagement.ProductionTypes;
 using Zpp.Mrp.Scheduling;
 using Zpp.Production;
@@ -18,7 +19,7 @@ using Zpp.Utils;
 
 namespace Zpp.Mrp.ProductionManagement
 {
-    public class ProductionManager : IProductionManager
+    public class ProductionManager : ProviderManager
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
@@ -174,6 +175,16 @@ namespace Zpp.Mrp.ProductionManagement
                 productionOrderOperation.ProductionOrder.Id;
 
             return productionOrderOperation;
+        }
+
+        public EntityCollector CreateDependingDemands(IOpenDemandManager openDemandManager, Provider provider)
+        {
+
+            EntityCollector entityCollector = new EntityCollector();    
+            Demands dependingDemands = CreateProductionOrderBoms(provider.GetArticle(),
+                    provider, provider.GetQuantity());
+            entityCollector.AddAll(dependingDemands);
+            return entityCollector;
         }
     }
 }

@@ -1,6 +1,6 @@
 namespace Zpp.Mrp.PurchaseManagement
 {
-    public interface IPurchaseManager: IProvidingManager
+    public interface IPurchaseManager: IProviderManager
     {
         
     }

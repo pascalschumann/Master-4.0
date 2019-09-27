@@ -2,15 +2,17 @@ using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Master40.DB.Enums;
 using Zpp.Common.DemandDomain;
+using Zpp.Common.ProviderDomain;
 using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.Configuration;
 using Zpp.DbCache;
+using Zpp.Mrp.NodeManagement;
 using Zpp.Utils;
 using Zpp.WrappersForPrimitives;
 
 namespace Zpp.Mrp.PurchaseManagement
 {
-    public class PurchaseManager : IPurchaseManager
+    public class PurchaseManager : ProviderManager
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
@@ -108,6 +110,12 @@ namespace Zpp.Mrp.PurchaseManagement
             }
 
             return purchaseQuantity;
+        }
+
+        public EntityCollector CreateDependingDemands(IOpenDemandManager openDemandManager, Provider provider)
+        {
+            // NOT needed, since PurchaseOrderPart has never dependingDemands
+            throw new System.NotImplementedException();
         }
     }
 }

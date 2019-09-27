@@ -11,7 +11,7 @@ namespace Zpp.Mrp
 
         void ManufacturingResourcePlanning(IDemands dbDemands);
         
-        EntityCollector MaterialRequirementsPlanning(Demand demand, IStockManager stockManager);
+        EntityCollector MaterialRequirementsPlanning(Demand demand, IProviderManager providerManager);
 
         void ScheduleBackward();
         

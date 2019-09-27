@@ -32,7 +32,7 @@ namespace Zpp.Mrp
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private readonly JobShopScheduler _jobShopScheduler = new JobShopScheduler();
 
-        private readonly IOrderManager _orderManager = new OrderManager();
+        private readonly IOrderManager _orderManager = new ProviderManager();
         private readonly OrderGenerator _orderGenerator;
 
         public MrpRun()
@@ -70,7 +70,7 @@ namespace Zpp.Mrp
 
 
         public EntityCollector MaterialRequirementsPlanning(Demand demand,
-            IStockManager stockManager)
+            IProviderManager providerManager)
         {
             EntityCollector entityCollector = new EntityCollector();
             EntityCollector response;
@@ -80,15 +80,16 @@ namespace Zpp.Mrp
             {
                 response = _orderManager.Satisfy(demand, demand.GetQuantity());
                 entityCollector.AddAll(response);
-                response = stockManager.AdaptStock(response.GetProviders());
+                providerManager.AdaptStock(response.GetProviders());
+                response = providerManager.CreateDependingDemands(entityCollector.GetProviders());
                 entityCollector.AddAll(response);
             }
             // COP or PrOB --> satisfy by SE:W
             else
             {
-                response = stockManager.Satisfy(demand, demand.GetQuantity());
+                response = providerManager.Satisfy(demand, demand.GetQuantity());
                 entityCollector.AddAll(response);
-                response = stockManager.AdaptStock(response.GetProviders());
+                response = providerManager.AdaptStock(response.GetProviders());
                 entityCollector.AddAll(response);
             }
 

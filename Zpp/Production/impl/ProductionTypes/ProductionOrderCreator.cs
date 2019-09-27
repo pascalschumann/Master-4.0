@@ -11,11 +11,6 @@ namespace Zpp.Mrp.ProductionManagement.ProductionTypes
     {
         public abstract EntityCollector CreateProductionOrder(Demand demand, Quantity quantity);
         
-        public Demands CreateDependingDemands(M_Article article,
-            Provider parentProvider, Quantity demandedQuantity)
-        {
-            return ProductionManager.CreateProductionOrderBoms(article,
-                parentProvider, demandedQuantity);
-        }
+        
     }
 }

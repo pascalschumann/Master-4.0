@@ -11,8 +11,5 @@ namespace Zpp.Mrp.ProductionManagement.ProductionTypes
     public interface IProductionOrderCreator
     {
         EntityCollector CreateProductionOrder(Demand demand, Quantity quantity);
-
-        Demands CreateDependingDemands(M_Article article, Provider parentProvider,
-            Quantity demandedQuantity);
     }
 }

@@ -8,6 +8,7 @@ using Zpp.Common.DemandDomain.WrappersForCollections;
 using Zpp.Common.ProviderDomain;
 using Zpp.Common.ProviderDomain.WrappersForCollections;
 using Zpp.DataLayer;
+using Zpp.OrderGraph;
 using Zpp.WrappersForCollections;
 
 namespace Zpp.Mrp
@@ -123,13 +124,13 @@ namespace Zpp.Mrp
 
         private Quantity SumReservedQuantity(IDemandOrProvider demandOrProvider)
         {
-            if (demandOrProvider.GetType() == typeof(Demand))
+            if (demandOrProvider.GetNodeType().Equals(NodeType.Demand))
             {
-                return SumReservedQuantity((Demand) demandOrProvider);
+                return SumReservedQuantity(Demand.AsDemand(demandOrProvider));
             }
             else
             {
-                return SumReservedQuantity((Provider) demandOrProvider);
+                return SumReservedQuantity(Provider.AsProvider(demandOrProvider));
             }
         }
 

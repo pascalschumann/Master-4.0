@@ -1,6 +1,7 @@
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Master40.DB.Interfaces;
+using Zpp.Common.DemandDomain.Wrappers;
 using Zpp.Configuration;
 using Zpp.DataLayer;
 using Zpp.DbCache;
@@ -99,5 +100,25 @@ namespace Zpp.Common.DemandDomain
         public abstract Duration GetDuration();
 
         public abstract void SetStartTime(DueTime dueTime);
+
+        public static Demand AsDemand(IDemandOrProvider demandOrProvider)
+        {
+            if (demandOrProvider.GetType() == typeof(ProductionOrderBom))
+            {
+                return (ProductionOrderBom)demandOrProvider;
+            }
+            else if (demandOrProvider.GetType() == typeof(StockExchangeDemand))
+            {
+                return (StockExchangeDemand)demandOrProvider;
+            }
+            else if (demandOrProvider.GetType() == typeof(CustomerOrderPart))
+            {
+                return (CustomerOrderPart)demandOrProvider;
+            }
+            else
+            {
+                throw new MrpRunException("Unknown type implementing Demand");
+            }
+        }
     }
 }

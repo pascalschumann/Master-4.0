@@ -159,6 +159,10 @@ namespace Zpp.Mrp.StockManagement
             // collects stockExchangeDemands, providerToDemands
             EntityCollector entityCollector =
                 openDemandManager.SatisfyProviderByOpenDemand(provider, provider.GetQuantity());
+            if (entityCollector == null)
+            {
+                entityCollector = new EntityCollector();
+            }
 
             if (entityCollector.GetDemands().Count() > 1)
             {

@@ -3,6 +3,7 @@ using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Master40.DB.Interfaces;
 using Zpp.Common.DemandDomain.WrappersForCollections;
+using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.Configuration;
 using Zpp.DataLayer;
 using Zpp.DbCache;
@@ -124,5 +125,26 @@ namespace Zpp.Common.ProviderDomain
         }
 
         public abstract void SetStartTime(DueTime dueTime);
+        
+        public static Provider AsProvider(IDemandOrProvider demandOrProvider)
+        {
+           
+            if (demandOrProvider.GetType() == typeof(ProductionOrder))
+            {
+                return (ProductionOrder)demandOrProvider;
+            }
+            else if (demandOrProvider.GetType() == typeof(PurchaseOrderPart))
+            {
+                return (PurchaseOrderPart)demandOrProvider;
+            }
+            else if (demandOrProvider.GetType() == typeof(StockExchangeProvider))
+            {
+                return (StockExchangeProvider)demandOrProvider;
+            }
+            else
+            {
+                throw new MrpRunException("Unknown type implementing Provider");
+            }
+        }
     }
 }

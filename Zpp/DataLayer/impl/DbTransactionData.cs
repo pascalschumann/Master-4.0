@@ -244,6 +244,10 @@ namespace Zpp.DbCache
             {
                 _stockExchangeDemands.Add((StockExchangeDemand) demand);
             }
+            else if (demand.GetType() == typeof(CustomerOrderPart))
+            {
+                
+            }
             else
             {
                 Logger.Error("Unknown type implementing Demand");

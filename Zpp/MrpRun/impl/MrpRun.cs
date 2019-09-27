@@ -92,7 +92,7 @@ namespace Zpp.Mrp
                 entityCollector.AddAll(response);
             }
 
-            if (entityCollector.IsSatisfied(demand))
+            if (entityCollector.IsSatisfied(demand) == false)
             {
                 throw new MrpRunException(
                     $"'{demand}' was NOT satisfied: remaining is " + 

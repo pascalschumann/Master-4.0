@@ -48,7 +48,7 @@ namespace Zpp.Mrp
         public void Start()
         {
             // _productionDomainContext
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 1; i++)
             {
                 // init transactionData
                 IDbTransactionData dbTransactionData =

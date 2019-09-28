@@ -197,6 +197,7 @@ namespace Zpp.Mrp
                 // TODO : Handle this another way
                 creationTime += order.CreationTime;
             }
+            ZppConfiguration.CacheManager.GetDbTransactionData().PersistDbCache();
         }
     }
 }

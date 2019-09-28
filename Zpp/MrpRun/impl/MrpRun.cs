@@ -54,11 +54,12 @@ namespace Zpp.Mrp
                 IDbTransactionData dbTransactionData =
                     ZppConfiguration.CacheManager.ReloadTransactionData();
 
-                // execute mrp2
-                ManufacturingResourcePlanning(dbTransactionData.T_CustomerOrderPartGetAll());
-
                 int interval = 1440;
                 var simulationInterval = new SimulationInterval(i * interval, interval * (i + 1));
+                CreateOrders(simulationInterval);
+                
+                // execute mrp2
+                ManufacturingResourcePlanning(dbTransactionData.T_CustomerOrderPartGetAll());
 
                 CreateConfirmations(simulationInterval);
 
@@ -176,6 +177,26 @@ namespace Zpp.Mrp
 
 
             // _dbTransactionData.PersistDbCache();
+        }
+        
+        public void CreateOrders(SimulationInterval interval)
+        {
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
+            var creationTime = interval.StartAt;
+            var endOrderCreation = interval.EndAt;
+
+            while (creationTime < endOrderCreation)
+            {
+                var order = _orderGenerator.GetNewRandomOrder(time: creationTime);
+                foreach (var orderPart in order.CustomerOrderParts)
+                {
+                    dbTransactionData.CustomerOrderPartAdd(orderPart);
+                }
+                dbTransactionData.T_CustomerOrderGetAll().Add(order);
+                // TODO : Handle this another way
+                creationTime += order.CreationTime;
+            }
         }
     }
 }

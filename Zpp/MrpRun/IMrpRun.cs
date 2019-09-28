@@ -26,5 +26,7 @@ namespace Zpp.Mrp
          * - PrO: D(SE:I) bis P(SE:W) erhalten wenn eine der Ops angefangen
          */
         void ApplyConfirmations();
+
+        void CreateOrders(SimulationInterval interval);
     }
 }

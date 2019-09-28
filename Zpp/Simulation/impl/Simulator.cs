@@ -80,32 +80,9 @@ namespace Zpp.Simulation
                 Continuation(_simulationConfig.Inbox, _akkaSimulation);
             }
 
-            Debug.WriteLine("Create new Orders");
-            CreateOrders(orderGenerator, simulationInterval);
-
             Debug.WriteLine("System shutdown. . . ");
             Debug.WriteLine("System Runtime " + _akkaSimulation.ActorSystem.Uptime);
             return true;
-        }
-
-        private void CreateOrders(OrderGenerator orderGenerator, SimulationInterval interval)
-        {
-            IDbTransactionData dbTransactionData =
-                ZppConfiguration.CacheManager.GetDbTransactionData();
-            var creationTime = interval.StartAt;
-            var endOrderCreation = interval.EndAt;
-
-            while (creationTime < endOrderCreation)
-            {
-                var order = orderGenerator.GetNewRandomOrder(time: creationTime);
-                foreach (var orderPart in order.CustomerOrderParts)
-                {
-                    dbTransactionData.CustomerOrderPartAdd(orderPart);
-                }
-                dbTransactionData.T_CustomerOrderGetAll().Add(order);
-                // TODO : Handle this another way
-                creationTime += order.CreationTime;
-            }
         }
 
         private void ProvideJobDistributor(IActorRef jobDistributor)

@@ -175,8 +175,6 @@ namespace Zpp.DbCache
 
 
             Provider stockExchangeProvider = providers.GetFirst();
-            Demands stockExchangeDemands = ZppConfiguration.CacheManager.GetAggregator()
-                .GetAllChildDemandsOf(stockExchangeProvider);
             if (earliestStartTime.IsGreaterThanOrEqualTo(stockExchangeProvider.GetDueTime()))
             {
                 earliestStartTime = stockExchangeProvider.GetDueTime();
@@ -186,6 +184,8 @@ namespace Zpp.DbCache
                 throw new MrpRunException("A provider of a demand cannot have a later dueTime.");
             }
 
+            Demands stockExchangeDemands = ZppConfiguration.CacheManager.GetAggregator()
+                .GetAllChildDemandsOf(stockExchangeProvider);
             if (stockExchangeDemands.Any() == false)
                 // StockExchangeProvider has no childs (stockExchangeDemands),
                 // take that from stockExchangeProvider

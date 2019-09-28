@@ -132,9 +132,6 @@ namespace Zpp.Mrp
             dbTransactionData.AddAll(allCreatedEntities);
             // End of MaterialRequirementsPlanning
 
-            // TODO: remove this line (debugging only)
-            dbTransactionData.PersistDbCache();
-
             // forward scheduling
             ScheduleForward();
 

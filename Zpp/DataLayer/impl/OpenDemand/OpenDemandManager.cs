@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
@@ -77,7 +78,10 @@ namespace Zpp.Mrp.NodeManagement
             if (_openDemands.AnyOpenProvider(provider.GetArticle()))
             {
                 EntityCollector entityCollector = new EntityCollector();
-                foreach (var openDemand in _openDemands.GetOpenProvider(provider.GetArticle()))
+                // ths is needed, because openDemands will be removed once they are consumed
+                List<OpenNode<Demand>> copyOfOpenDemands = new List<OpenNode<Demand>>();
+                copyOfOpenDemands.AddRange(_openDemands.GetOpenProvider(provider.GetArticle()));
+                foreach (var openDemand in copyOfOpenDemands)
                 {
                     if (openDemand != null && provider.GetDueTime()
                             .IsGreaterThanOrEqualTo(openDemand.GetOpenNode().GetDueTime()))

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
+using Zpp.Configuration;
 using Zpp.Mrp;
 
 namespace Zpp.Test.Integration_Tests
@@ -18,9 +19,6 @@ namespace Zpp.Test.Integration_Tests
         public void TestMasterDataIsNotChangedByMrpRun()
         {
             List<int> countsMasterDataBefore = CountMasterData();
-
-            Assert.True(ProductionDomainContext.CustomerOrders.Count() == TestConfiguration.CustomerOrderPartQuantity,
-                "No customerOrders are initially available.");
 
             IMrpRun mrpRun = new MrpRun();
             mrpRun.Start();
@@ -50,8 +48,6 @@ namespace Zpp.Test.Integration_Tests
             counts.Add(ProductionDomainContext.Stocks.Count());
             counts.Add(ProductionDomainContext.Units.Count());
             counts.Add(ProductionDomainContext.Operations.Count());
-            counts.Add(ProductionDomainContext.CustomerOrders.Count());
-            counts.Add(ProductionDomainContext.CustomerOrderParts.Count());
             return counts;
         }
     }

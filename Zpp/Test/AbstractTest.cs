@@ -21,7 +21,7 @@ namespace Zpp.Test
     public abstract class AbstractTest : IDisposable
     {
         private readonly NLog.Logger LOGGER = NLog.LogManager.GetCurrentClassLogger();
-        protected readonly ProductionDomainContext ProductionDomainContext = ZppConfiguration.CacheManager.GetProductionDomainContext();
+        protected ProductionDomainContext ProductionDomainContext;
 
         protected static TestConfiguration TestConfiguration;
 
@@ -67,7 +67,7 @@ namespace Zpp.Test
         {
             ZppConfiguration.CacheManager.InitByReadingFromDatabase(testConfiguration);
             TestConfiguration = ZppConfiguration.CacheManager.GetTestConfiguration();
-
+            ProductionDomainContext = ZppConfiguration.CacheManager.GetProductionDomainContext();
         }
     }
 }

@@ -39,7 +39,7 @@ namespace Zpp.Mrp
                 ZppConfiguration.CacheManager.GetProductionDomainContext();
 
             _orderGenerator = TestScenario.GetOrderGenerator(productionDomainContext,
-                new MinDeliveryTime(200), new MaxDeliveryTime(1440), new OrderArrivalRate(0.025));
+                new MinDeliveryTime(200), new MaxDeliveryTime(1440), new OrderArrivalRate(0.0001));
         }
 
         /**

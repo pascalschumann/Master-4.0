@@ -110,25 +110,18 @@ namespace Zpp.GraphicalRepresentation
             {
                 case StockExchangeProvider t1:
                     return GetGraphizString(t1);
-                    break;
                 case PurchaseOrderPart t2:
                     return GetGraphizString(t2);
-                    break;
                 case ProductionOrder t3:
                     return GetGraphizString(t3);
-                    break;
                 case ProductionOrderOperation t4:
                     return GetGraphizString(t4);
-                    break;
                 case StockExchangeDemand t5:
                     return GetGraphizString(t5);
-                    break;
                 case ProductionOrderBom t6:
                     return GetGraphizString(t6);
-                    break;
                 case CustomerOrderPart t7:
                     return GetGraphizString(t7);
-                    break;
                 default: throw new MrpRunException("Call getEntity() before calling this method.");
             }
         }

@@ -48,7 +48,9 @@ namespace Zpp.Mrp
         public void Start()
         {
             // _productionDomainContext
-            for (int i = 0; i < 5; i++)
+            int customerOrderPartQuantity = ZppConfiguration.CacheManager.GetTestConfiguration()
+                .CustomerOrderPartQuantity;
+            for (int i = 0; i < customerOrderPartQuantity; i++)
             {
                 // init transactionData
                 IDbTransactionData dbTransactionData =

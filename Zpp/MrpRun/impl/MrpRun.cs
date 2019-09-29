@@ -48,7 +48,7 @@ namespace Zpp.Mrp
         public void Start()
         {
             // _productionDomainContext
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < 5; i++)
             {
                 // init transactionData
                 IDbTransactionData dbTransactionData =
@@ -57,9 +57,11 @@ namespace Zpp.Mrp
                 int interval = 1440;
                 var simulationInterval = new SimulationInterval(i * interval, interval * (i + 1));
                 CreateOrders(simulationInterval);
-                
+
                 // execute mrp2
-                ManufacturingResourcePlanning(dbTransactionData.T_CustomerOrderPartGetAll());
+                Demands unsatisfiedCustomerOrderParts = ZppConfiguration.CacheManager
+                    .GetAggregator().GetUnsatisfiedCustomerOrders();
+                ManufacturingResourcePlanning(unsatisfiedCustomerOrderParts);
 
                 CreateConfirmations(simulationInterval);
 
@@ -78,7 +80,7 @@ namespace Zpp.Mrp
             providerManager.AdaptStock(response.GetProviders());
             response = providerManager.CreateDependingDemands(entityCollector.GetProviders());
             entityCollector.AddAll(response);
-            
+
             if (entityCollector.IsSatisfied(demand) == false)
             {
                 throw new MrpRunException($"'{demand}' was NOT satisfied: remaining is " +
@@ -178,7 +180,7 @@ namespace Zpp.Mrp
 
             // _dbTransactionData.PersistDbCache();
         }
-        
+
         public void CreateOrders(SimulationInterval interval)
         {
             IDbTransactionData dbTransactionData =
@@ -191,12 +193,15 @@ namespace Zpp.Mrp
                 var order = _orderGenerator.GetNewRandomOrder(time: creationTime);
                 foreach (var orderPart in order.CustomerOrderParts)
                 {
+                    orderPart.CustomerOrder = order;
                     dbTransactionData.CustomerOrderPartAdd(orderPart);
                 }
-                dbTransactionData.T_CustomerOrderGetAll().Add(order);
+                dbTransactionData.CustomerOrderAdd(order);
+                
                 // TODO : Handle this another way
                 creationTime += order.CreationTime;
             }
+
             ZppConfiguration.CacheManager.GetDbTransactionData().PersistDbCache();
         }
     }

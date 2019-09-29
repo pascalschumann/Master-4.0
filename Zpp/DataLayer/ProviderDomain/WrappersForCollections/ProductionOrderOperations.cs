@@ -6,7 +6,7 @@ using Zpp.WrappersForCollections;
 
 namespace Zpp.Common.ProviderDomain.WrappersForCollections
 {
-    public class ProductionOrderOperations : CollectionWrapperWithList<ProductionOrderOperation>
+    public class ProductionOrderOperations : CollectionWrapperWithStackSet<ProductionOrderOperation>
     {
         public ProductionOrderOperations(IEnumerable<T_ProductionOrderOperation> list
             ) : base(Wrap(list))
@@ -33,7 +33,7 @@ namespace Zpp.Common.ProviderDomain.WrappersForCollections
         public List<T_ProductionOrderOperation> GetAllAsT_ProductionOrderOperation()
         {
             List<T_ProductionOrderOperation> providers = new List<T_ProductionOrderOperation>();
-            foreach (var operation in List)
+            foreach (var operation in StackSet)
             {
                 providers.Add( operation.GetValue());
             }

@@ -7,7 +7,7 @@ namespace Zpp.WrappersForCollections
     /**
      * wraps the collection with all purchaseOrders
      */
-    public class PurchaseOrders: CollectionWrapperWithList<PurchaseOrder>
+    public class PurchaseOrders: CollectionWrapperWithStackSet<PurchaseOrder>
     {
         public PurchaseOrders(List<PurchaseOrder> list) : base(list)
         {
@@ -20,7 +20,7 @@ namespace Zpp.WrappersForCollections
         public List<T_PurchaseOrder> GetAllAsT_PurchaseOrder()
         {
             List<T_PurchaseOrder> productionOrderBoms = new List<T_PurchaseOrder>();
-            foreach (var demand in List)
+            foreach (var demand in StackSet)
             {
                 productionOrderBoms.Add(demand.ToT_PurchaseOrder());
             }

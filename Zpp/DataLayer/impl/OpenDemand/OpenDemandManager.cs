@@ -6,6 +6,7 @@ using Zpp.Common.DemandDomain;
 using Zpp.Common.DemandDomain.Wrappers;
 using Zpp.Common.DemandDomain.WrappersForCollections;
 using Zpp.Common.ProviderDomain;
+using Zpp.Common.ProviderDomain.WrappersForCollections;
 using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Utils;
@@ -20,8 +21,7 @@ namespace Zpp.Mrp.NodeManagement
 
         private readonly OpenNodes<Demand> _openDemands = new OpenNodes<Demand>();
 
-        private readonly ICacheManager _cacheManager =
-            ZppConfiguration.CacheManager;
+        private readonly ICacheManager _cacheManager = ZppConfiguration.CacheManager;
 
         public OpenDemandManager()
         {
@@ -39,12 +39,14 @@ namespace Zpp.Mrp.NodeManagement
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.GetDbTransactionData();
             Quantity reservedQuantity = Quantity.Null();
-            dbTransactionData.ProviderToDemandGetAll().Select(x =>
-                {
-                    reservedQuantity.IncrementBy(x.GetQuantity());
-                    return x;
-                })
-                .Where(x => x.GetDemandId().Equals(demand.GetId()));
+            List<T_ProviderToDemand> linksToDemand = dbTransactionData.ProviderToDemandGetAll()
+                .Where(x => x.GetDemandId().Equals(demand.GetId())).ToList();
+            foreach (var linkToDemand in linksToDemand)
+            {
+                reservedQuantity.IncrementBy(linkToDemand.GetQuantity());
+            }
+
+
             return reservedQuantity;
         }
 
@@ -111,13 +113,13 @@ namespace Zpp.Mrp.NodeManagement
                         entityCollector.Add(providerToDemand);
                     }
                 }
+
                 return entityCollector;
             }
             else
             {
                 return null;
             }
-
         }
 
         public void Dispose()

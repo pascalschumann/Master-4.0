@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Zpp.Mrp.MachineManagement
 {
-    public class StackSet<T>:IStackSet<T>
+    public class StackSet<T> : IStackSet<T>
     {
         private List<T> _list = new List<T>();
         private int _count = 0;
@@ -13,30 +13,35 @@ namespace Zpp.Mrp.MachineManagement
         public StackSet()
         {
         }
-        
+
         public StackSet(IEnumerable<T> list)
         {
             PushAll(list);
         }
-        
+
         public void Push(T element)
         {
+            if (element == null)
+            {
+                return;
+            }
+
             // a set contains the element only once, else skip adding
             if (_indices.ContainsKey(element) == false)
             {
                 _list.Add(element);
                 _indices.Add(element, _count);
                 _count++;
-                
             }
         }
 
         public void Remove(T element)
         {
-            if (element==null)
+            if (element == null)
             {
                 return;
             }
+
             _list.RemoveAt(_indices[element]);
             _count--;
             reIndexList();
@@ -45,7 +50,7 @@ namespace Zpp.Mrp.MachineManagement
         private void reIndexList()
         {
             _indices = new Dictionary<T, int>();
-            for(int i = 0; i < _count; i++)
+            for (int i = 0; i < _count; i++)
             {
                 _indices.Add(_list[i], i);
             }
@@ -100,12 +105,12 @@ namespace Zpp.Mrp.MachineManagement
             return all;
         }
 
-        public List<T2> GetAllAs<T2>() where T2: T
+        public List<T2> GetAllAs<T2>() where T2 : T
         {
             List<T2> list = new List<T2>();
             foreach (var item in GetAll())
             {
-                list.Add((T2)item);
+                list.Add((T2) item);
             }
 
             return list;
@@ -113,7 +118,14 @@ namespace Zpp.Mrp.MachineManagement
 
         public IStackSet<T2> As<T2>() where T2 : T
         {
-            return new StackSet<T2>(_list.Select(x=>(T2)x));
+            return new StackSet<T2>(_list.Select(x => (T2) x));
+        }
+
+        public void Clear()
+        {
+            _list = new List<T>();
+            _count = 0;
+            _indices = new Dictionary<T, int>();
         }
     }
 }

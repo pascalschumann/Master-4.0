@@ -20,6 +20,7 @@ namespace Zpp.Common.DemandDomain.Wrappers
         public ProductionOrderBom(IDemand demand) : base(demand)
         {
             _productionOrderBom = (T_ProductionOrderBom) _demand;
+            // EnsureOperationIsLoadedIfExists();
         }
 
         /// <summary>
@@ -126,7 +127,7 @@ namespace Zpp.Common.DemandDomain.Wrappers
             }
         }
 
-        private void EnsureOperationIsLoadedIfExists()
+        public void EnsureOperationIsLoadedIfExists()
         {
             // load ProductionOrderOperation if not done yet
             if (_productionOrderBom.ProductionOrderOperation == null)

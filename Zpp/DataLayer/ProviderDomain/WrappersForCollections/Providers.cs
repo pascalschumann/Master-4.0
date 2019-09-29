@@ -10,7 +10,7 @@ namespace Zpp.Common.ProviderDomain.WrappersForCollections
     /**
      * wraps the collection with all providers
      */
-    public class Providers : CollectionWrapperWithList<Provider>, IProviders
+    public class Providers : CollectionWrapperWithStackSet<Provider>, IProviders
     {
         public Providers(List<Provider> list) : base(list)
         {
@@ -27,7 +27,7 @@ namespace Zpp.Common.ProviderDomain.WrappersForCollections
         public List<T> GetAllAs<T>()
         {
             List<T> providers = new List<T>();
-            foreach (var provider in List)
+            foreach (var provider in StackSet)
             {
                 providers.Add((T) provider.ToIProvider());
             }
@@ -44,7 +44,7 @@ namespace Zpp.Common.ProviderDomain.WrappersForCollections
         {
             Quantity providedQuantity = new Quantity(Quantity.Null());
 
-            foreach (var provider in List)
+            foreach (var provider in StackSet)
             {
                 if (articleId.Equals(provider.GetArticleId()))
                 {
@@ -77,7 +77,7 @@ namespace Zpp.Common.ProviderDomain.WrappersForCollections
             List<Demand> unSatisfiedDemands = new List<Demand>();
             Dictionary<Provider, Quantity> reservableQuantityToProvider =
                 new Dictionary<Provider, Quantity>();
-            foreach (var provider in List)
+            foreach (var provider in StackSet)
             {
                 reservableQuantityToProvider.Add(provider, provider.GetQuantity());
             }
@@ -85,7 +85,7 @@ namespace Zpp.Common.ProviderDomain.WrappersForCollections
             foreach (var demand in demands.GetAll())
             {
                 Quantity neededQuantity = demand.GetQuantity();
-                foreach (var provider in List)
+                foreach (var provider in StackSet)
                 {
                     Quantity reservableQuantity = reservableQuantityToProvider[provider];
                     if (provider.GetArticleId().Equals(demand.GetArticleId()) &&
@@ -116,7 +116,7 @@ namespace Zpp.Common.ProviderDomain.WrappersForCollections
         public Provider GetProviderById(Id id)
         {
             // performance: cache this in a dictionary
-            foreach (var provider in List)
+            foreach (var provider in StackSet)
             {
                 if (provider.GetId().Equals(id))
                 {
@@ -131,7 +131,7 @@ namespace Zpp.Common.ProviderDomain.WrappersForCollections
         {
             List<Provider> providers = new List<Provider>();
             // performance: cache this in a dictionary
-            foreach (var provider in List)
+            foreach (var provider in StackSet)
             {
                 if (provider.GetArticleId().Equals(id))
                 {

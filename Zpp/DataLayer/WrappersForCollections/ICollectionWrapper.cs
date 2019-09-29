@@ -11,7 +11,7 @@ namespace Zpp.WrappersForCollections
         
         void AddAll(IEnumerable<T> items);
 
-        T GetFirst();
+        T GetAny();
 
         IStackSet<T> ToStackSet();
 

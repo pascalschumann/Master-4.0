@@ -5,7 +5,7 @@ using Zpp.Common.ProviderDomain;
 
 namespace Zpp.WrappersForCollections
 {
-    public class ProviderToDemandTable : CollectionWrapperWithList<T_ProviderToDemand>, IProviderToDemandTable
+    public class ProviderToDemandTable : CollectionWrapperWithStackSet<T_ProviderToDemand>, IProviderToDemandTable
     {
         public ProviderToDemandTable(List<T_ProviderToDemand> list) : base(list)
         {
@@ -22,7 +22,7 @@ namespace Zpp.WrappersForCollections
             providerToDemand.ProviderId = provider.GetId().GetValue();
             providerToDemand.Quantity = quantity.GetValue();
 
-            List.Add(providerToDemand);
+            StackSet.Push(providerToDemand);
         }
         
     }

@@ -80,6 +80,8 @@ namespace Zpp.DbCache
         Demands T_CustomerOrderPartGetAll();
 
         void CustomerOrderPartAdd(T_CustomerOrderPart customerOrderPart);
+        
+        void CustomerOrderAdd(T_CustomerOrder customerOrder);
 
         void DemandToProviderAdd(T_DemandToProvider demandToProvider);
 
@@ -88,5 +90,7 @@ namespace Zpp.DbCache
         void Dispose();
 
         void AddAll(EntityCollector entityCollector);
+
+        void ProductionOrderOperationAdd(T_ProductionOrderOperation productionOrderOperation);
     }
 }

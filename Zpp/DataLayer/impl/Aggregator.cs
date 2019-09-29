@@ -174,7 +174,7 @@ namespace Zpp.DbCache
             }
 
 
-            Provider stockExchangeProvider = providers.GetFirst();
+            Provider stockExchangeProvider = providers.GetAny();
             if (earliestStartTime.IsGreaterThanOrEqualTo(stockExchangeProvider.GetDueTime()))
             {
                 earliestStartTime = stockExchangeProvider.GetDueTime();
@@ -211,6 +211,22 @@ namespace Zpp.DbCache
             }
 
             return earliestStartTime;
+        }
+
+        public Demands GetUnsatisfiedCustomerOrders()
+        {
+            Demands customerOrderParts = ZppConfiguration.CacheManager.GetDbTransactionData().T_CustomerOrderPartGetAll();
+            Demands unsatisfied = new Demands();
+            foreach (var customerOrderPart in customerOrderParts)
+            {
+                Providers childs = GetAllChildProvidersOf(customerOrderPart);
+                if (childs == null || childs.Any() == false)
+                {
+                    unsatisfied.Add(customerOrderPart);
+                }
+            }
+
+            return unsatisfied;
         }
     }
 }

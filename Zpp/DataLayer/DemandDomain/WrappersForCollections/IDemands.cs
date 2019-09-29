@@ -18,8 +18,6 @@ namespace Zpp.Common.DemandDomain.WrappersForCollections
 
         List<T> GetAllAs<T>();
 
-        void OrderDemandsByUrgency();
-        
         HierarchyNumber GetHierarchyNumber();
         /**
          * sums quantites of all demands

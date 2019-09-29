@@ -60,7 +60,7 @@ namespace Zpp.DbCache
         private readonly ProductionOrders _productionOrders;
 
         // others
-        private List<T_PurchaseOrder> _purchaseOrders;
+        private IStackSet<T_PurchaseOrder> _purchaseOrders = new StackSet<T_PurchaseOrder>();
         private readonly ProductionOrderOperations _productionOrderOperations;
 
         private readonly CustomerOrderParts _customerOrderParts;
@@ -105,7 +105,7 @@ namespace Zpp.DbCache
             _customerOrders = new CustomerOrders(_productionDomainContext.CustomerOrders.ToList());
 
             // others
-            _purchaseOrders = _productionDomainContext.PurchaseOrders.ToList();
+            _purchaseOrders.PushAll(_productionDomainContext.PurchaseOrders.ToList());
             _productionOrderOperations = new ProductionOrderOperations(
                 _productionDomainContext.ProductionOrderOperations.ToList());
 
@@ -160,7 +160,6 @@ namespace Zpp.DbCache
                 _customerOrderParts.GetAllAs<T_CustomerOrderPart>();
             List<T_CustomerOrder> tCustomerOrders = _customerOrders.GetAllAsTCustomerOrders();
 
-
             // Insert all T_* entities
             InsertOrUpdateRange(tProductionOrders, _productionDomainContext.ProductionOrders);
             InsertOrUpdateRange(tProductionOrderOperations,
@@ -193,6 +192,11 @@ namespace Zpp.DbCache
                 Logger.Error("DbCache could not be persisted.");
                 throw e;
             }
+        }
+
+        public void CustomerOrderAdd(T_CustomerOrder customerOrder)
+        {
+            _customerOrders.Add(customerOrder);
         }
 
         private void InsertOrUpdateRange<TEntity>(IEnumerable<TEntity> entities,
@@ -246,7 +250,6 @@ namespace Zpp.DbCache
             }
             else if (demand.GetType() == typeof(CustomerOrderPart))
             {
-                
             }
             else
             {
@@ -341,12 +344,30 @@ namespace Zpp.DbCache
                     (T_ProductionOrderBom) productionOrderBom.ToIDemand();
                 if (tProductionOrderBom != null)
                 {
+                    ((ProductionOrderBom)productionOrderBom).EnsureOperationIsLoadedIfExists();
+                    if (tProductionOrderBom.ProductionOrderOperation == null)
+                    {
+                        throw new MrpRunException(
+                            "Every tProductionOrderBom must have an operation.");
+                    }
+
                     tProductionOrderOperations.Push(new ProductionOrderOperation(
                         tProductionOrderBom.ProductionOrderOperation));
                 }
             }
 
             _productionOrderOperations.AddAll(tProductionOrderOperations);
+        }
+
+        public void ProductionOrderOperationAdd(
+            T_ProductionOrderOperation tProductionOrderOperation)
+        {
+            ProductionOrderOperation productionOrderOperation =
+                new ProductionOrderOperation(tProductionOrderOperation);
+            if (_productionOrderOperations.Contains(productionOrderOperation) == false)
+            {
+                _productionOrderOperations.Add(productionOrderOperation);
+            }
         }
 
         public void ProvidersAddAll(IProviders providers)
@@ -359,7 +380,7 @@ namespace Zpp.DbCache
             // T_PurchaseOrders
             foreach (var tPurchaseOrderPart in _purchaseOrderParts.GetAllAs<T_PurchaseOrderPart>())
             {
-                _purchaseOrders.Add(tPurchaseOrderPart.PurchaseOrder);
+                _purchaseOrders.Push(tPurchaseOrderPart.PurchaseOrder);
             }
         }
 
@@ -390,12 +411,21 @@ namespace Zpp.DbCache
 
         public List<T_PurchaseOrder> PurchaseOrderGetAll()
         {
-            return _purchaseOrders;
+            return _purchaseOrders.GetAll();
         }
 
         public ProductionOrderOperation ProductionOrderOperationGetById(Id id)
         {
-            return _productionOrderOperations.GetAll().SingleOrDefault(x => x.GetId().Equals(id));
+            try
+            {
+                return _productionOrderOperations.GetAll()
+                    .SingleOrDefault(x => x.GetId().Equals(id));
+            }
+            catch (InvalidOperationException e)
+            {
+            }
+
+            return null;
         }
 
         public ProductionOrderOperations ProductionOrderOperationGetAll()
@@ -474,14 +504,17 @@ namespace Zpp.DbCache
             {
                 DemandsAddAll(otherEntityCollector.GetDemands());
             }
+
             if (otherEntityCollector.GetProviders().Any())
             {
                 ProvidersAddAll(otherEntityCollector.GetProviders());
             }
+
             if (otherEntityCollector.GetDemandToProviderTable().Any())
             {
                 _demandToProviderTable.AddAll(otherEntityCollector.GetDemandToProviderTable());
             }
+
             if (otherEntityCollector.GetProviderToDemandTable().Any())
             {
                 _providerToDemandTable.AddAll(otherEntityCollector.GetProviderToDemandTable());

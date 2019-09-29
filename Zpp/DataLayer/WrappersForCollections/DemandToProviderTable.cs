@@ -9,7 +9,7 @@ namespace Zpp.WrappersForCollections
     /**
      * wraps T_DemandToProvider
      */
-    public class DemandToProviderTable : CollectionWrapperWithList<T_DemandToProvider>, IDemandToProviderTable
+    public class DemandToProviderTable : CollectionWrapperWithStackSet<T_DemandToProvider>, IDemandToProviderTable
     {
         public DemandToProviderTable(List<T_DemandToProvider> list) : base(list)
         {
@@ -21,13 +21,13 @@ namespace Zpp.WrappersForCollections
 
         public bool Contains(Demand demand)
         {
-            return List.Select(x => x.DemandId).ToList()
+            return StackSet.Select(x => x.DemandId).ToList()
                 .Contains(demand.GetId().GetValue());
         }
 
         public bool Contains(Provider provider)
         {
-            return List.Select(x => x.ProviderId).ToList()
+            return StackSet.Select(x => x.ProviderId).ToList()
                 .Contains(provider.GetId().GetValue());
         }
 

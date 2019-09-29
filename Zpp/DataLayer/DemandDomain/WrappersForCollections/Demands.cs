@@ -10,7 +10,7 @@ namespace Zpp.Common.DemandDomain.WrappersForCollections
     /**
      * wraps the collection with all demands, earlier named "DemandManager"
      */
-    public class Demands : CollectionWrapperWithList<Demand>, IDemands
+    public class Demands : CollectionWrapperWithStackSet<Demand>, IDemands
     {
         private readonly HierarchyNumber _hierarchyNumber;
 
@@ -25,7 +25,7 @@ namespace Zpp.Common.DemandDomain.WrappersForCollections
         public List<IDemand> GetAllAsIDemand()
         {
             List<IDemand> iDemands = new List<IDemand>();
-            foreach (var iDemand in List)
+            foreach (var iDemand in StackSet)
             {
                 iDemands.Add(iDemand.ToIDemand());
             }
@@ -36,26 +36,13 @@ namespace Zpp.Common.DemandDomain.WrappersForCollections
         public List<T> GetAllAs<T>()
         {
             List<T> productionOrderBoms = new List<T>();
-            foreach (var demand in List)
+            foreach (var demand in StackSet)
             {
                 productionOrderBoms.Add((T)demand.ToIDemand());
             }
             return productionOrderBoms;
         }
-        
 
-        public void OrderDemandsByUrgency()
-        {
-            // sort only, if there are more than one element
-            if (List.Count > 1)
-            {
-                List.Sort((x, y) =>
-                {
-                    return x.GetDueTime().CompareTo(y.GetDueTime());
-                });
-            }
-        }
-        
         public HierarchyNumber GetHierarchyNumber()
         {
             return _hierarchyNumber;
@@ -64,7 +51,7 @@ namespace Zpp.Common.DemandDomain.WrappersForCollections
         public Quantity GetQuantityOfAll()
         {
             Quantity sumQuantity = Quantity.Null();
-            foreach (var demand in List)
+            foreach (var demand in StackSet)
             {
                 sumQuantity.IncrementBy(demand.GetQuantity());
             }
@@ -75,7 +62,7 @@ namespace Zpp.Common.DemandDomain.WrappersForCollections
         public Demand GetDemandById(Id id)
         {
             // performance: cache this in a dictionary
-            foreach (var demand in List)
+            foreach (var demand in StackSet)
             {
                 if (demand.GetId().Equals(id))
                 {

@@ -4,7 +4,7 @@ using Zpp.WrapperForEntities;
 
 namespace Zpp.WrappersForCollections
 {
-    public class CustomerOrders : CollectionWrapperWithList<T_CustomerOrder>
+    public class CustomerOrders : CollectionWrapperWithStackSet<T_CustomerOrder>
     {
         public CustomerOrders(List<T_CustomerOrder> list) : base(list)
         {
@@ -17,7 +17,7 @@ namespace Zpp.WrappersForCollections
         public List<T_CustomerOrder> GetAllAsTCustomerOrders()
         {
             List<T_CustomerOrder> customerOrders = new List<T_CustomerOrder>();
-            foreach (var customerOrder in this.List)
+            foreach (var customerOrder in this.StackSet)
             {
                 customerOrders.Add(customerOrder);
             }

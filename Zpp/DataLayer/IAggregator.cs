@@ -42,5 +42,6 @@ namespace Zpp.DbCache
 
         DueTime GetEarliestPossibleStartTimeOf(ProductionOrderBom productionOrderBom);
 
+        Demands GetUnsatisfiedCustomerOrders();
     }
 }

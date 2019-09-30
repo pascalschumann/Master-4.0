@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Master40.DB.Data.Context;
@@ -11,6 +12,7 @@ using Zpp.Common.DemandDomain;
 using Zpp.Common.DemandDomain.Wrappers;
 using Zpp.Common.DemandDomain.WrappersForCollections;
 using Zpp.Common.ProviderDomain;
+using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.Common.ProviderDomain.WrappersForCollections;
 using Zpp.Configuration;
 using Zpp.DbCache;
@@ -68,6 +70,9 @@ namespace Zpp.Mrp
                 CreateConfirmations(simulationInterval);
 
                 ApplyConfirmations();
+                
+                // persisting cached/created data
+                dbTransactionData.PersistDbCache();
             }
         }
 
@@ -143,9 +148,6 @@ namespace Zpp.Mrp
             // job shop scheduling
             JobShopScheduling();
 
-            // persisting cached/created data
-            dbTransactionData.PersistDbCache();
-
             Logger.Info("MrpRun done.");
         }
 
@@ -175,7 +177,14 @@ namespace Zpp.Mrp
             IAggregator aggregator = ZppConfiguration.CacheManager.GetAggregator();
             
             // set in progress
-            // TODO ProductionOrderOperations operationsStartWithinInterval = dbTransactionData.ProductionOrderOperationGetAll().GetAll().Where(x=>x.GetValue().)
+            List<ProductionOrderOperation> operationsStartWithinInterval = dbTransactionData
+                .ProductionOrderOperationGetAll().GetAll().Where(x =>
+                    x.GetStartTime().GetValue() >= simulationInterval.StartAt).ToList();
+            foreach (var operation in operationsStartWithinInterval)
+            {
+                operation.SetInProgress();
+            }
+            
             
             // set done
             foreach (var customerOrderPart in aggregator.FilterTimeWithinInterval(
@@ -194,8 +203,13 @@ namespace Zpp.Mrp
                 stockExchangeProvider.SetDone();
             }
             // TODO for ops
-
-            ZppConfiguration.CacheManager.GetDbTransactionData().PersistDbCache();
+            List<ProductionOrderOperation> operationsEndWithinInterval = dbTransactionData
+                .ProductionOrderOperationGetAll().GetAll().Where(x =>
+                    x.GetEndTime().GetValue() <= simulationInterval.EndAt).ToList();
+            foreach (var operation in operationsStartWithinInterval)
+            {
+                operation.SetDone();
+            }
         }
 
         public void ApplyConfirmations()

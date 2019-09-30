@@ -215,5 +215,23 @@ namespace Zpp.Common.ProviderDomain.Wrappers
         {
             _productionOrderOperation.ProducingState = ProducingState.Producing;
         }
+        
+        public DueTime GetEndTime()
+        {
+            if (_productionOrderOperation.EndBackward == null)
+            {
+                throw new MrpRunException("Cannot request endTime before operation is scheduled.");
+            }
+            return new DueTime(_productionOrderOperation.EndBackward.GetValueOrDefault());
+        }
+        
+        public DueTime GetStartTime()
+        {
+            if (_productionOrderOperation.StartBackward == null)
+            {
+                throw new MrpRunException("Cannot request startTime before operation is scheduled.");
+            }
+            return new DueTime(_productionOrderOperation.StartBackward.GetValueOrDefault());
+        }
     }
 }

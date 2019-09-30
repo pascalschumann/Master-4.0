@@ -19,14 +19,14 @@ namespace Zpp.DbCache
 {
     public class Aggregator : IAggregator
     {
-        private readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
+        private readonly IDbMasterDataCache _dbMasterDataCache =
+            ZppConfiguration.CacheManager.GetMasterDataCache();
 
         private readonly IDbTransactionData _dbTransactionData;
 
         public Aggregator(IDbTransactionData dbTransactionData)
         {
             _dbTransactionData = dbTransactionData;
-            
         }
 
         public ProductionOrderBoms GetProductionOrderBomsOfProductionOrder(
@@ -202,8 +202,7 @@ namespace Zpp.DbCache
             {
                 foreach (var stockExchangeDemand in stockExchangeDemands)
                 {
-                    DueTime stockExchangeDemandDueTime =
-                        stockExchangeDemand.GetDueTime();
+                    DueTime stockExchangeDemandDueTime = stockExchangeDemand.GetDueTime();
                     if (stockExchangeDemandDueTime.IsGreaterThan(earliestStartTime))
                     {
                         earliestStartTime = stockExchangeDemandDueTime;
@@ -216,7 +215,8 @@ namespace Zpp.DbCache
 
         public Demands GetUnsatisfiedCustomerOrders()
         {
-            Demands customerOrderParts = ZppConfiguration.CacheManager.GetDbTransactionData().T_CustomerOrderPartGetAll();
+            Demands customerOrderParts = ZppConfiguration.CacheManager.GetDbTransactionData()
+                .T_CustomerOrderPartGetAll();
             Demands unsatisfied = new Demands();
             foreach (var customerOrderPart in customerOrderParts)
             {
@@ -230,15 +230,30 @@ namespace Zpp.DbCache
             return unsatisfied;
         }
 
-        public Demands FilterTimeWithinInterval(SimulationInterval simulationInterval, IDemands demands)
+        public IDemands FilterTimeWithinInterval(SimulationInterval simulationInterval,
+            IDemands demands)
         {
-            // demands.GetAll().Where(x=>x.GetStartTime().y(simulationInterval.StartAt));
-            throw new NotImplementedException();
+            IDemands filteredDemands = new Demands();
+            // startTime within interval
+            filteredDemands.AddAll(demands.GetAll()
+                .Where(x => x.GetStartTime().GetValue() >= simulationInterval.StartAt).ToList());
+            // endTime within interval
+            filteredDemands.AddAll(demands.GetAll()
+                .Where(x => x.GetEndTime().GetValue() <= simulationInterval.EndAt).ToList());
+            return filteredDemands;
         }
 
-        public Providers FilterTimeWithinInterval(SimulationInterval simulationInterval, IProviders providers)
+        public IProviders FilterTimeWithinInterval(SimulationInterval simulationInterval,
+            IProviders providers)
         {
-            throw new NotImplementedException();
+            IProviders filteredProviders = new Providers();
+            // startTime within interval
+            filteredProviders.AddAll(providers.GetAll()
+                .Where(x => x.GetStartTime().GetValue() >= simulationInterval.StartAt).ToList());
+            // endTime within interval
+            filteredProviders.AddAll(providers.GetAll()
+                .Where(x => x.GetEndTime().GetValue() <= simulationInterval.EndAt).ToList());
+            return filteredProviders;
         }
     }
 }

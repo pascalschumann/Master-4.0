@@ -23,5 +23,9 @@ namespace Zpp.DataLayer
         Duration GetDuration();
 
         Quantity GetQuantity();
+
+        void SetDone();
+
+        void SetInProgress();
     }
 }

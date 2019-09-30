@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
+using Master40.DB.Enums;
 using Zpp.Common.DemandDomain.Wrappers;
 using Zpp.Common.DemandDomain.WrappersForCollections;
 using Zpp.Common.ProviderDomain.WrappersForCollections;
@@ -203,6 +204,16 @@ namespace Zpp.Common.ProviderDomain.Wrappers
             }
 
             return maxDueTime;
+        }
+        
+        public void SetDone()
+        {
+            _productionOrderOperation.ProducingState = ProducingState.Finished;
+        }
+
+        public void SetInProgress()
+        {
+            _productionOrderOperation.ProducingState = ProducingState.Producing;
         }
     }
 }

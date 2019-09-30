@@ -1,5 +1,6 @@
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
+using Master40.DB.Enums;
 using Master40.DB.Interfaces;
 using Zpp.Common.DemandDomain.WrappersForCollections;
 using Zpp.Configuration;
@@ -68,6 +69,16 @@ namespace Zpp.Common.ProviderDomain.Wrappers
         {
             EnsurePurchaseOrderIsLoaded();
             _tPurchaseOrderPart.PurchaseOrder.DueTime = dueTime.GetValue();
+        }
+
+        public override void SetDone()
+        {
+            _tPurchaseOrderPart.State = State.Finished;
+        }
+
+        public override void SetInProgress()
+        {
+            _tPurchaseOrderPart.State = State.Producing;
         }
     }
 }

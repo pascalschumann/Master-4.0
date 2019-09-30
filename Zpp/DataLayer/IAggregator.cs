@@ -6,7 +6,10 @@ using Zpp.Common.DemandDomain.WrappersForCollections;
 using Zpp.Common.ProviderDomain;
 using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.Common.ProviderDomain.WrappersForCollections;
+using Zpp.DataLayer;
 using Zpp.Mrp.MachineManagement;
+using Zpp.Simulation.Types;
+using Zpp.WrappersForCollections;
 using Zpp.WrappersForPrimitives;
 
 namespace Zpp.DbCache
@@ -16,15 +19,19 @@ namespace Zpp.DbCache
      */
     public interface IAggregator
     {
-        ProductionOrderBoms GetProductionOrderBomsOfProductionOrder(ProductionOrder productionOrder);
+        ProductionOrderBoms
+            GetProductionOrderBomsOfProductionOrder(ProductionOrder productionOrder);
 
         List<Resource> GetResourcesByResourceSkillId(Id resourceSkillId);
 
-        List<ProductionOrderOperation> GetProductionOrderOperationsOfProductionOrder(ProductionOrder productionOrder);
+        List<ProductionOrderOperation> GetProductionOrderOperationsOfProductionOrder(
+            ProductionOrder productionOrder);
 
-        List<ProductionOrderOperation> GetProductionOrderOperationsOfProductionOrder(Id productionOrderId);
+        List<ProductionOrderOperation> GetProductionOrderOperationsOfProductionOrder(
+            Id productionOrderId);
 
-        ProductionOrderBom GetAnyProductionOrderBomByProductionOrderOperation(ProductionOrderOperation productionOrderOperation);
+        ProductionOrderBom GetAnyProductionOrderBomByProductionOrderOperation(
+            ProductionOrderOperation productionOrderOperation);
 
         ProductionOrderBoms GetAllProductionOrderBomsBy(
             ProductionOrderOperation productionOrderOperation);
@@ -43,5 +50,12 @@ namespace Zpp.DbCache
         DueTime GetEarliestPossibleStartTimeOf(ProductionOrderBom productionOrderBom);
 
         Demands GetUnsatisfiedCustomerOrders();
+
+        Demands FilterTimeWithinInterval(SimulationInterval simulationInterval,
+            IDemands demands);
+        
+        Providers FilterTimeWithinInterval(SimulationInterval simulationInterval,
+            IProviders providers);
+        
     }
 }

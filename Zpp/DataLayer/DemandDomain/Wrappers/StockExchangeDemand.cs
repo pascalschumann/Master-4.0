@@ -103,5 +103,15 @@ namespace Zpp.Common.DemandDomain.Wrappers
         {
             _tStockExchangeDemand.RequiredOnTime = dueTime.GetValue();
         }
+        
+        public override void SetDone()
+        {
+            _tStockExchangeDemand.State = State.Finished;
+        }
+
+        public override void SetInProgress()
+        {
+            _tStockExchangeDemand.State = State.Producing;
+        }
     }
 }

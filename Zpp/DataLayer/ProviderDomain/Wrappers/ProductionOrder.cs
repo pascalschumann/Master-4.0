@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
+using Master40.DB.Enums;
 using Master40.DB.Interfaces;
 using Zpp.Common.DemandDomain.WrappersForCollections;
 using Zpp.Configuration;
@@ -71,6 +72,16 @@ namespace Zpp.Common.ProviderDomain.Wrappers
         public override void SetStartTime(DueTime dueTime)
         {
             _productionOrder.DueTime = dueTime.GetValue();
+        }
+
+        public override void SetDone()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void SetInProgress()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

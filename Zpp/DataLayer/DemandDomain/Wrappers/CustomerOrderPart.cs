@@ -1,5 +1,6 @@
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
+using Master40.DB.Enums;
 using Master40.DB.Interfaces;
 using Zpp.Configuration;
 using Zpp.DbCache;
@@ -7,11 +8,13 @@ using Zpp.WrappersForPrimitives;
 
 namespace Zpp.Common.DemandDomain.Wrappers
 {
-    public class CustomerOrderPart : Demand 
+    public class CustomerOrderPart : Demand
     {
+        private T_CustomerOrderPart _customerOrderPart;
+        
         public CustomerOrderPart(IDemand demand) : base(demand)
         {
-            
+            _customerOrderPart = (T_CustomerOrderPart) demand;
         }
 
         public override IDemand ToIDemand()
@@ -60,6 +63,16 @@ namespace Zpp.Common.DemandDomain.Wrappers
         public override void SetStartTime(DueTime dueTime)
         {
             throw new System.NotImplementedException();
+        }
+
+        public override void SetDone()
+        {
+            _customerOrderPart.State = State.Finished;
+        }
+
+        public override void SetInProgress()
+        {
+            _customerOrderPart.State = State.Producing;
         }
     }
 }

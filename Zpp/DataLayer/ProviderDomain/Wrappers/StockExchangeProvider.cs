@@ -67,5 +67,15 @@ namespace Zpp.Common.ProviderDomain.Wrappers
         {
             _stockExchange.RequiredOnTime = dueTime.GetValue();
         }
+        
+        public override void SetDone()
+        {
+            _stockExchange.State = State.Finished;
+        }
+
+        public override void SetInProgress()
+        {
+            _stockExchange.State = State.Producing;
+        }
     }
 }

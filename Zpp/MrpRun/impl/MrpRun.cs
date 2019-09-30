@@ -167,8 +167,34 @@ namespace Zpp.Mrp
 
         public void CreateConfirmations(SimulationInterval simulationInterval)
         {
-            ISimulator simulator = new Simulator();
-            simulator.ProcessCurrentInterval(simulationInterval, _orderGenerator);
+            /*ISimulator simulator = new Simulator();
+            simulator.ProcessCurrentInterval(simulationInterval, _orderGenerator);*/
+            // --> does not work correctly, use trivial impl instead
+
+            IDbTransactionData dbTransactionData = ZppConfiguration.CacheManager.GetDbTransactionData();
+            IAggregator aggregator = ZppConfiguration.CacheManager.GetAggregator();
+            
+            // set in progress
+            // TODO ProductionOrderOperations operationsStartWithinInterval = dbTransactionData.ProductionOrderOperationGetAll().GetAll().Where(x=>x.GetValue().)
+            
+            // set done
+            foreach (var customerOrderPart in aggregator.FilterTimeWithinInterval(
+                simulationInterval, dbTransactionData.T_CustomerOrderPartGetAll()))
+            {
+                customerOrderPart.SetDone();
+            }
+            foreach (var stockExchangeDemand in aggregator.FilterTimeWithinInterval(
+                simulationInterval, dbTransactionData.StockExchangeDemandsGetAll()))
+            {
+                stockExchangeDemand.SetDone();
+            }
+            foreach (var stockExchangeProvider in aggregator.FilterTimeWithinInterval(
+                simulationInterval, dbTransactionData.StockExchangeProvidersGetAll()))
+            {
+                stockExchangeProvider.SetDone();
+            }
+            // TODO for ops
+
             ZppConfiguration.CacheManager.GetDbTransactionData().PersistDbCache();
         }
 
@@ -198,8 +224,9 @@ namespace Zpp.Mrp
                     orderPart.CustomerOrder = order;
                     dbTransactionData.CustomerOrderPartAdd(orderPart);
                 }
+
                 dbTransactionData.CustomerOrderAdd(order);
-                
+
                 // TODO : Handle this another way
                 creationTime += order.CreationTime;
             }

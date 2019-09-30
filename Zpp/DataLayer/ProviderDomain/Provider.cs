@@ -146,5 +146,9 @@ namespace Zpp.Common.ProviderDomain
                 throw new MrpRunException("Unknown type implementing Provider");
             }
         }
+
+        public abstract void SetDone();
+
+        public abstract void SetInProgress();
     }
 }

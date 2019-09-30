@@ -120,5 +120,9 @@ namespace Zpp.Common.DemandDomain
                 throw new MrpRunException("Unknown type implementing Demand");
             }
         }
+
+        public abstract void SetDone();
+
+        public abstract void SetInProgress();
     }
 }

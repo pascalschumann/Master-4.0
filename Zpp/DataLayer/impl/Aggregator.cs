@@ -11,6 +11,7 @@ using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.Common.ProviderDomain.WrappersForCollections;
 using Zpp.Configuration;
 using Zpp.Mrp.MachineManagement;
+using Zpp.Simulation.Types;
 using Zpp.Utils;
 using Zpp.WrappersForPrimitives;
 
@@ -227,6 +228,17 @@ namespace Zpp.DbCache
             }
 
             return unsatisfied;
+        }
+
+        public Demands FilterTimeWithinInterval(SimulationInterval simulationInterval, IDemands demands)
+        {
+            // demands.GetAll().Where(x=>x.GetStartTime().y(simulationInterval.StartAt));
+            throw new NotImplementedException();
+        }
+
+        public Providers FilterTimeWithinInterval(SimulationInterval simulationInterval, IProviders providers)
+        {
+            throw new NotImplementedException();
         }
     }
 }

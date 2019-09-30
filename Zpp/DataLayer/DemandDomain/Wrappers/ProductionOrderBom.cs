@@ -187,5 +187,15 @@ namespace Zpp.Common.DemandDomain.Wrappers
         {
             throw new NotImplementedException();
         }
+
+        public override void SetDone()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void SetInProgress()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

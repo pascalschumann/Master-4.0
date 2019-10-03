@@ -32,7 +32,7 @@ namespace Zpp.Mrp.Scheduling
                 ZppConfiguration.CacheManager.GetDbTransactionData();
             IDirectedGraph<INode> demandToProviderGraph = new DemandToProviderDirectedGraph();
 
-            // S = {0} (alle einplanbaren Operation)
+            // S = {0} (alle einplanbaren "Operation"=Demand/Provider Elemente)
             S.PushAll(demandToProviderGraph.GetLeafNodes());
 
             // d_0 = 0
@@ -44,8 +44,9 @@ namespace Zpp.Mrp.Scheduling
                     // implicitly the due/endTime will also be set accordingly
                     demandOrProvider.SetStartTime(DueTime.Null());
                 }
-                else
+                else // no forward scheduling is needed
                 {
+                    S.Remove(node);
                 }
             }
 

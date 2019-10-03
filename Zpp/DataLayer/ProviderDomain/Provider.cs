@@ -147,5 +147,7 @@ namespace Zpp.Common.ProviderDomain
         public abstract void SetDone();
 
         public abstract void SetInProgress();
+
+        public abstract bool IsDone();
     }
 }

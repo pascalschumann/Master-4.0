@@ -15,11 +15,13 @@ using Zpp.Common.ProviderDomain;
 using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.Common.ProviderDomain.WrappersForCollections;
 using Zpp.Configuration;
+using Zpp.DataLayer;
 using Zpp.DbCache;
 using Zpp.Mrp.MachineManagement;
 using Zpp.Mrp.NodeManagement;
 using Zpp.Mrp.Scheduling;
 using Zpp.Mrp.StockManagement;
+using Zpp.OrderGraph;
 using Zpp.Simulation.Types;
 using Zpp.Test.Configuration.Scenarios;
 using Zpp.Utils;
@@ -33,6 +35,7 @@ namespace Zpp.Mrp
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private readonly JobShopScheduler _jobShopScheduler = new JobShopScheduler();
         private readonly OrderGenerator _orderGenerator;
+        const int _interval = 1430;
 
         public MrpRun()
         {
@@ -40,7 +43,8 @@ namespace Zpp.Mrp
                 ZppConfiguration.CacheManager.GetProductionDomainContext();
 
             _orderGenerator = TestScenario.GetOrderGenerator(productionDomainContext,
-                new MinDeliveryTime(200), new MaxDeliveryTime(1440), new OrderArrivalRate(0.025));
+                new MinDeliveryTime(200), new MaxDeliveryTime(_interval),
+                new OrderArrivalRate(0.025));
         }
 
         /**
@@ -48,18 +52,17 @@ namespace Zpp.Mrp
          */
         public void Start()
         {
-            // _productionDomainContext
             int customerOrderPartQuantity = ZppConfiguration.CacheManager.GetTestConfiguration()
                 .CustomerOrderPartQuantity;
+
             // for (int i = 0; i < customerOrderPartQuantity; i++)
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < 2; i++)
             {
                 // init transactionData
                 IDbTransactionData dbTransactionData =
                     ZppConfiguration.CacheManager.ReloadTransactionData();
 
-                int interval = 1440;
-                var simulationInterval = new SimulationInterval(i * interval, interval * (i + 1));
+                var simulationInterval = new SimulationInterval(i * _interval, _interval * (i + 1));
                 CreateOrders(simulationInterval);
 
                 // execute mrp2
@@ -70,7 +73,7 @@ namespace Zpp.Mrp
                 CreateConfirmations(simulationInterval);
 
                 ApplyConfirmations();
-                
+
                 // persisting cached/created data
                 dbTransactionData.PersistDbCache();
             }
@@ -143,7 +146,7 @@ namespace Zpp.Mrp
             // End of MaterialRequirementsPlanning
 
             // forward scheduling
-           ScheduleForward();
+            ScheduleForward();
 
             // job shop scheduling
             JobShopScheduling();
@@ -173,43 +176,90 @@ namespace Zpp.Mrp
             simulator.ProcessCurrentInterval(simulationInterval, _orderGenerator);*/
             // --> does not work correctly, use trivial impl instead
 
-            IDbTransactionData dbTransactionData = ZppConfiguration.CacheManager.GetDbTransactionData();
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
             IAggregator aggregator = ZppConfiguration.CacheManager.GetAggregator();
-            
-            // set in progress
-            List<ProductionOrderOperation> operationsStartWithinInterval = dbTransactionData
-                .ProductionOrderOperationGetAll().GetAll().Where(x =>
-                    x.GetStartTime().GetValue() >= simulationInterval.StartAt).ToList();
-            foreach (var operation in operationsStartWithinInterval)
+
+            // stockExchanges, purchaseOrderParts, operations(use PrBom instead):
+            // set in progress when startTime is within interval
+            DemandOrProviders demandOrProvidersToSetInProgress = new DemandOrProviders();
+            demandOrProvidersToSetInProgress.AddAll(
+                aggregator.GetDemandsOrProvidersWhereStartTimeIsWithinInterval(simulationInterval,
+                    new DemandOrProviders(dbTransactionData.PurchaseOrderPartGetAll())));
+            demandOrProvidersToSetInProgress.AddAll(
+                aggregator.GetDemandsOrProvidersWhereStartTimeIsWithinInterval(simulationInterval,
+                    new DemandOrProviders(dbTransactionData.StockExchangeDemandsGetAll())));
+            demandOrProvidersToSetInProgress.AddAll(
+                aggregator.GetDemandsOrProvidersWhereStartTimeIsWithinInterval(simulationInterval,
+                    new DemandOrProviders(dbTransactionData.StockExchangeProvidersGetAll())));
+            demandOrProvidersToSetInProgress.AddAll(
+                aggregator.GetDemandsOrProvidersWhereStartTimeIsWithinInterval(simulationInterval,
+                    new DemandOrProviders(dbTransactionData.ProductionOrderBomGetAll())));
+
+            foreach (var demandOrProvider in demandOrProvidersToSetInProgress)
             {
-                operation.SetInProgress();
+                demandOrProvider.SetInProgress();
+            }
+
+            // stockExchanges, purchaseOrderParts, operations(use PrBom instead):
+            // set done when endTime is within interval
+            DemandOrProviders demandOrProvidersToSetDone = new DemandOrProviders();
+            demandOrProvidersToSetDone.AddAll(
+                aggregator.GetDemandsOrProvidersWhereEndTimeIsWithinInterval(simulationInterval,
+                    new DemandOrProviders(dbTransactionData.PurchaseOrderPartGetAll())));
+            demandOrProvidersToSetDone.AddAll(
+                aggregator.GetDemandsOrProvidersWhereEndTimeIsWithinInterval(simulationInterval,
+                    new DemandOrProviders(dbTransactionData.StockExchangeDemandsGetAll())));
+            demandOrProvidersToSetDone.AddAll(
+                aggregator.GetDemandsOrProvidersWhereEndTimeIsWithinInterval(simulationInterval,
+                    new DemandOrProviders(dbTransactionData.StockExchangeProvidersGetAll())));
+            demandOrProvidersToSetDone.AddAll(
+                aggregator.GetDemandsOrProvidersWhereEndTimeIsWithinInterval(simulationInterval,
+                    new DemandOrProviders(dbTransactionData.ProductionOrderBomGetAll())));
+            foreach (var demandOrProvider in demandOrProvidersToSetDone)
+            {
+                demandOrProvider.SetDone();
             }
             
-            
-            // set done
-            foreach (var customerOrderPart in aggregator.FilterTimeWithinInterval(
-                simulationInterval, dbTransactionData.T_CustomerOrderPartGetAll()))
+            // customerOrderParts: set done if all childs are done
+            DemandToProviderDirectedGraph demandToProviderGraph =
+                new DemandToProviderDirectedGraph();
+            INodes rootNodes = demandToProviderGraph.GetRootNodes();
+            foreach (var rootNode in rootNodes)
             {
-                customerOrderPart.SetDone();
+                bool isDone = processChilds(demandToProviderGraph.GetSuccessorNodes(rootNode),
+                    demandToProviderGraph);
+                if (isDone)
+                {
+                    CustomerOrderPart customerOrderPart = (CustomerOrderPart) rootNode.GetEntity();
+                    customerOrderPart.SetDone();
+                }
             }
-            foreach (var stockExchangeDemand in aggregator.FilterTimeWithinInterval(
-                simulationInterval, dbTransactionData.StockExchangeDemandsGetAll()))
+        }
+
+        private bool processChilds(INodes childs,
+            DemandToProviderDirectedGraph demandToProviderGraph)
+        {
+            if (childs == null)
             {
-                stockExchangeDemand.SetDone();
+                return true;
             }
-            foreach (var stockExchangeProvider in aggregator.FilterTimeWithinInterval(
-                simulationInterval, dbTransactionData.StockExchangeProvidersGetAll()))
+
+            foreach (var child in childs)
             {
-                stockExchangeProvider.SetDone();
+                IDemandOrProvider demandOrProvider = (IDemandOrProvider) child.GetEntity();
+                if (demandOrProvider.IsDone())
+                {
+                    return processChilds(demandToProviderGraph.GetSuccessorNodes(child),
+                        demandToProviderGraph);
+                }
+                else
+                {
+                    return false;
+                }
             }
-            // TODO for ops
-            List<ProductionOrderOperation> operationsEndWithinInterval = dbTransactionData
-                .ProductionOrderOperationGetAll().GetAll().Where(x =>
-                    x.GetEndTime().GetValue() <= simulationInterval.EndAt).ToList();
-            foreach (var operation in operationsStartWithinInterval)
-            {
-                operation.SetDone();
-            }
+
+            return true;
         }
 
         public void ApplyConfirmations()

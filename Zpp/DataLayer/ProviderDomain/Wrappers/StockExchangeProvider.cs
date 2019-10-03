@@ -81,5 +81,10 @@ namespace Zpp.Common.ProviderDomain.Wrappers
         {
             return new DueTime(_stockExchange.RequiredOnTime);
         }
+
+        public override bool IsDone()
+        {
+            return _stockExchange.State.Equals(State.Finished);
+        }
     }
 }

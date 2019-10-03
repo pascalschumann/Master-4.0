@@ -3,7 +3,7 @@ using Zpp.DataLayer;
 
 namespace Zpp.WrappersForCollections
 {
-    public abstract class DemandOrProviders: CollectionWrapperWithStackSet<IDemandOrProvider>
+    public class DemandOrProviders: CollectionWrapperWithStackSet<IDemandOrProvider>
     {
         public DemandOrProviders()
         {

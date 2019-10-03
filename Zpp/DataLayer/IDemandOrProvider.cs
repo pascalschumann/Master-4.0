@@ -30,5 +30,7 @@ namespace Zpp.DataLayer
         void SetDone();
 
         void SetInProgress();
+
+        bool IsDone();
     }
 }

@@ -18,7 +18,10 @@ namespace Zpp.Mrp
         void ScheduleForward();
 
         void JobShopScheduling();
-
+        
+        /**
+         * Adapts the states of operations, customerOrders, stockExchanges, purchaseOrderParts
+         */
         void CreateConfirmations(SimulationInterval simulationInterval);
         
         /**

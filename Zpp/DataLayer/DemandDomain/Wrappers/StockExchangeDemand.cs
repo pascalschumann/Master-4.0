@@ -112,5 +112,10 @@ namespace Zpp.Common.DemandDomain.Wrappers
         {
             return new DueTime(_tStockExchangeDemand.RequiredOnTime);
         }
+
+        public override bool IsDone()
+        {
+            return _tStockExchangeDemand.State.Equals(State.Finished);
+        }
     }
 }

@@ -36,6 +36,7 @@ namespace Zpp.Mrp.Scheduling
             S.PushAll(demandToProviderGraph.GetLeafNodes());
 
             // d_0 = 0
+            IStackSet<INode> newS = new StackSet<INode>();
             foreach (var node in S)
             {
                 IDemandOrProvider demandOrProvider = (IDemandOrProvider) node.GetEntity();
@@ -43,12 +44,13 @@ namespace Zpp.Mrp.Scheduling
                 {
                     // implicitly the due/endTime will also be set accordingly
                     demandOrProvider.SetStartTime(DueTime.Null());
+                    newS.Push(node);
                 }
                 else // no forward scheduling is needed
                 {
-                    S.Remove(node);
                 }
             }
+            S = newS;
 
 
             // while S nor empty do

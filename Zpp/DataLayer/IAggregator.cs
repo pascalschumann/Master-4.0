@@ -51,11 +51,11 @@ namespace Zpp.DbCache
 
         Demands GetUnsatisfiedCustomerOrders();
 
-        IDemands FilterTimeWithinInterval(SimulationInterval simulationInterval,
-            IDemands demands);
-        
-        IProviders FilterTimeWithinInterval(SimulationInterval simulationInterval,
-            IProviders providers);
-        
+        DemandOrProviders GetDemandsOrProvidersWhereEndTimeIsWithinInterval(
+            SimulationInterval simulationInterval, DemandOrProviders demandOrProviders);
+
+        DemandOrProviders GetDemandsOrProvidersWhereStartTimeIsWithinInterval(
+            SimulationInterval simulationInterval, DemandOrProviders demandOrProviders);
+
     }
 }

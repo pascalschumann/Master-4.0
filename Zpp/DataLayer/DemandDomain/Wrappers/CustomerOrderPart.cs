@@ -75,5 +75,10 @@ namespace Zpp.Common.DemandDomain.Wrappers
             DueTime dueTime = new DueTime(_customerOrderPart.CustomerOrder.DueTime);
             return dueTime;
         }
+
+        public override bool IsDone()
+        {
+            return _customerOrderPart.State.Equals(State.Finished);
+        }
     }
 }

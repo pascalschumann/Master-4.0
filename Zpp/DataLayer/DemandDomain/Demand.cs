@@ -124,5 +124,7 @@ namespace Zpp.Common.DemandDomain
         public abstract void SetDone();
 
         public abstract void SetInProgress();
+
+        public abstract bool IsDone();
     }
 }

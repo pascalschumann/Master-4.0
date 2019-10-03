@@ -70,11 +70,13 @@ namespace Zpp.Common.ProviderDomain.Wrappers
 
         public override void SetDone()
         {
+            // has no state
             throw new System.NotImplementedException();
         }
 
         public override void SetInProgress()
         {
+            // has no state
             throw new System.NotImplementedException();
         }
         
@@ -86,6 +88,12 @@ namespace Zpp.Common.ProviderDomain.Wrappers
         public override DueTime GetEndTime()
         {
             return new DueTime(_productionOrder.DueTime);
+        }
+
+        public override bool IsDone()
+        {
+            // has no state --> always true
+            return true;
         }
     }
 }

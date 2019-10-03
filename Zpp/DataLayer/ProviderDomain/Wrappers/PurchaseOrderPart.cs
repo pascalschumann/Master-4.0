@@ -85,5 +85,10 @@ namespace Zpp.Common.ProviderDomain.Wrappers
                  articleToBusinessPartner.TimeToDelivery);
             return duration;
         }
+
+        public override bool IsDone()
+        {
+            return _tPurchaseOrderPart.State.Equals(State.Finished);
+        }
     }
 }

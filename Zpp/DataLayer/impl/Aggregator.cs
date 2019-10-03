@@ -10,9 +10,11 @@ using Zpp.Common.ProviderDomain;
 using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.Common.ProviderDomain.WrappersForCollections;
 using Zpp.Configuration;
+using Zpp.DataLayer;
 using Zpp.Mrp.MachineManagement;
 using Zpp.Simulation.Types;
 using Zpp.Utils;
+using Zpp.WrappersForCollections;
 using Zpp.WrappersForPrimitives;
 
 namespace Zpp.DbCache
@@ -230,30 +232,20 @@ namespace Zpp.DbCache
             return unsatisfied;
         }
 
-        public IDemands FilterTimeWithinInterval(SimulationInterval simulationInterval,
-            IDemands demands)
+        public DemandOrProviders GetDemandsOrProvidersWhereStartTimeIsWithinInterval(SimulationInterval simulationInterval,
+            DemandOrProviders demandOrProviders)
         {
-            IDemands filteredDemands = new Demands();
             // startTime within interval
-            filteredDemands.AddAll(demands.GetAll()
-                .Where(x => x.GetStartTime().GetValue() >= simulationInterval.StartAt).ToList());
-            // endTime within interval
-            filteredDemands.AddAll(demands.GetAll()
-                .Where(x => x.GetEndTime().GetValue() <= simulationInterval.EndAt).ToList());
-            return filteredDemands;
+            return new DemandOrProviders(demandOrProviders.GetAll()
+                .Where(x => simulationInterval.IsWithinInterval(x.GetStartTime())));
         }
-
-        public IProviders FilterTimeWithinInterval(SimulationInterval simulationInterval,
-            IProviders providers)
+        
+        public DemandOrProviders GetDemandsOrProvidersWhereEndTimeIsWithinInterval(SimulationInterval simulationInterval,
+            DemandOrProviders demandOrProviders)
         {
-            IProviders filteredProviders = new Providers();
-            // startTime within interval
-            filteredProviders.AddAll(providers.GetAll()
-                .Where(x => x.GetStartTime().GetValue() >= simulationInterval.StartAt).ToList());
             // endTime within interval
-            filteredProviders.AddAll(providers.GetAll()
-                .Where(x => x.GetEndTime().GetValue() <= simulationInterval.EndAt).ToList());
-            return filteredProviders;
+            return new DemandOrProviders(demandOrProviders.GetAll()
+                .Where(x => simulationInterval.IsWithinInterval(x.GetEndTime())));
         }
     }
 }

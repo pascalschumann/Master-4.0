@@ -1,6 +1,7 @@
 using System;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
+using Master40.DB.Enums;
 using Master40.DB.Interfaces;
 using Zpp.Common.ProviderDomain;
 using Zpp.Common.ProviderDomain.Wrappers;
@@ -126,7 +127,7 @@ namespace Zpp.Common.DemandDomain.Wrappers
                     "Requesting dueTime for ProductionOrderBom before it was backwards-scheduled.");
             }
         }
-        
+
         public DueTime GetEndTimeOfOperation()
         {
             EnsureOperationIsLoadedIfExists();
@@ -211,8 +212,8 @@ namespace Zpp.Common.DemandDomain.Wrappers
         {
             EnsureOperationIsLoadedIfExists();
             Duration operationDuration = GetDurationOfOperation();
-            Duration transitionTime = new Duration(OperationBackwardsSchedule.CalculateTransitionTime(
-                operationDuration ));
+            Duration transitionTime =
+                new Duration(OperationBackwardsSchedule.CalculateTransitionTime(operationDuration));
             return transitionTime.Plus(operationDuration);
         }
 
@@ -225,8 +226,9 @@ namespace Zpp.Common.DemandDomain.Wrappers
         public override void SetStartTime(DueTime startTime)
         {
             EnsureOperationIsLoadedIfExists();
-            DueTime transitionTime = new DueTime(OperationBackwardsSchedule.CalculateTransitionTime(
-                GetDurationOfOperation()));
+            DueTime transitionTime =
+                new DueTime(
+                    OperationBackwardsSchedule.CalculateTransitionTime(GetDurationOfOperation()));
             // startBackwards
             DueTime startTimeOfOperation = startTime.Plus(transitionTime);
             SetStartTimeOfOperation(startTimeOfOperation);
@@ -236,17 +238,24 @@ namespace Zpp.Common.DemandDomain.Wrappers
 
         public override void SetDone()
         {
-            throw new NotImplementedException();
+            _productionOrderBom.ProductionOrderOperation.ProducingState = ProducingState.Finished;
         }
 
         public override void SetInProgress()
         {
-            throw new NotImplementedException();
+            _productionOrderBom.ProductionOrderOperation.ProducingState = ProducingState.Producing;
         }
 
         public override DueTime GetEndTime()
         {
             return GetEndTimeOfOperation();
+        }
+
+        public override bool IsDone()
+        {
+            EnsureOperationIsLoadedIfExists();
+            return _productionOrderBom.ProductionOrderOperation.ProducingState.Equals(ProducingState
+                .Finished);
         }
     }
 }

@@ -52,11 +52,11 @@ namespace Zpp.GraphicalRepresentation
                 graphizString = $"D(PrOB);{ToGraphizString(productionOrderBom)};" +
                                 $"bs({tProductionOrderOperation.StartBackward});" +
                                 $"be({tProductionOrderOperation.EndBackward});" +
-                                $"\\n{tProductionOrderOperation}";
+                                $"\\nOperationName: {tProductionOrderOperation}";
             }
             else
             {
-                graphizString = $"D(PrOB);{ToGraphizString(productionOrderBom)}";
+                throw new MrpRunException("Every productionOrderBom must have exact one operation.");
             }
 
             return graphizString;

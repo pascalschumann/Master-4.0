@@ -45,6 +45,7 @@ namespace Zpp.Common.DemandDomain.Wrappers
 
         public override void SetStartTime(DueTime startTime)
         {
+            // is NOT allowed to change
             throw new System.NotImplementedException();
         }
 

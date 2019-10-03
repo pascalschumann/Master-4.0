@@ -226,12 +226,12 @@ namespace Zpp.Common.DemandDomain.Wrappers
         {
             EnsureOperationIsLoadedIfExists();
             DueTime transitionTime = new DueTime(OperationBackwardsSchedule.CalculateTransitionTime(
-                _productionOrderBom.ProductionOrderOperation.GetDuration()));
+                GetDurationOfOperation()));
             // startBackwards
             DueTime startTimeOfOperation = startTime.Plus(transitionTime);
             SetStartTimeOfOperation(startTimeOfOperation);
             // endBackwards
-            SetEndTimeOfOperation(startTimeOfOperation.Plus(new DueTime(GetDuration())));
+            SetEndTimeOfOperation(startTimeOfOperation.Plus(new DueTime(GetDurationOfOperation())));
         }
 
         public override void SetDone()

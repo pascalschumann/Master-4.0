@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
+using Zpp.Common.DemandDomain.Wrappers;
 using Zpp.Common.DemandDomain.WrappersForCollections;
 using Zpp.Common.ProviderDomain.WrappersForCollections;
 using Zpp.Configuration;
@@ -71,9 +72,14 @@ namespace Zpp.Mrp.Scheduling
                         if (predecessorDemandOrProvider.GetStartTime()
                                 .IsSmallerThan(iAsDemandOrProvider.GetEndTime()))
                         {
-                            // don't take getDueTime() since in case of a demand,
-                            // this will be the startTime, which is to early
-                            predecessorDemandOrProvider.SetStartTime(iAsDemandOrProvider.GetEndTime());
+                            // COPs are not allowed to change
+                            if (predecessorDemandOrProvider.GetType() != typeof(CustomerOrderPart))
+                            {
+                                // don't take getDueTime() since in case of a demand,
+                                // this will be the startTime, which is to early
+                                predecessorDemandOrProvider.SetStartTime(iAsDemandOrProvider.GetEndTime());    
+                            }
+                            
                         }
                         S.Push(predecessor);
                     }

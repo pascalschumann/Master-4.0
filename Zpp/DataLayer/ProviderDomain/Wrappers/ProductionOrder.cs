@@ -69,9 +69,9 @@ namespace Zpp.Common.ProviderDomain.Wrappers
             throw new System.NotImplementedException();
         }
 
-        public override void SetStartTime(DueTime dueTime)
+        public override void SetStartTime(DueTime startTime)
         {
-            _productionOrder.DueTime = dueTime.GetValue();
+            _productionOrder.DueTime = startTime.GetValue();
         }
 
         public override void SetDone()

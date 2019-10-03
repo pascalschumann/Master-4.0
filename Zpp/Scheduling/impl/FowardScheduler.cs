@@ -58,25 +58,25 @@ namespace Zpp.Mrp.Scheduling
 
 
                 // t_i = max{ d_j | j aus V(i) }
+                // predecessors in d2pGraph must start later (exact the other way around)
                 INodes predecessors = demandToProviderGraph.GetPredecessorNodes(i);
                 // if i != 0 then --> node has predecessor
                 if (predecessors != null && predecessors.Any())
                 {
-                    DueTime d_jMax = null;
                     foreach (var predecessor in predecessors)
                     {
                         IDemandOrProvider predecessorDemandOrProvider =
                             (IDemandOrProvider) predecessor.GetEntity();
-                        if (d_jMax == null || predecessorDemandOrProvider.GetEndTime()
-                                .IsGreaterThan(d_jMax))
+                        // if predecessor starts before endTime of current d/p --> change that
+                        if (predecessorDemandOrProvider.GetStartTime()
+                                .IsSmallerThan(iAsDemandOrProvider.GetEndTime()))
                         {
                             // don't take getDueTime() since in case of a demand,
                             // this will be the startTime, which is to early
-                            d_jMax = predecessorDemandOrProvider.GetEndTime();
+                            predecessorDemandOrProvider.SetStartTime(iAsDemandOrProvider.GetEndTime());
                         }
+                        S.Push(predecessor);
                     }
-
-                    iAsDemandOrProvider.SetStartTime(d_jMax);
                     // Done: t_i = max{ d_j | j aus V(i) }
 
                     // d_i = t_i + p_i
@@ -85,7 +85,7 @@ namespace Zpp.Mrp.Scheduling
                 // end if
                 
                 // for all j aus N(i) do
-                INodes successors = demandToProviderGraph.GetSuccessorNodes(i);
+                /*INodes successors = demandToProviderGraph.GetSuccessorNodes(i);
                 if (successors != null)
                 {
                     foreach (var j in successors)
@@ -103,6 +103,8 @@ namespace Zpp.Mrp.Scheduling
                 }
 
                 // end for
+                */
+                // --> already done for predecessors, we traverse d2pG bottom up, so we only need to process predecessors
             }
         }
     }

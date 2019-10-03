@@ -15,11 +15,10 @@ namespace Zpp.Common.ProviderDomain.Wrappers
     public class PurchaseOrderPart : Provider, IProviderLogic
     {
         private T_PurchaseOrderPart _tPurchaseOrderPart;
-        
-        public PurchaseOrderPart(IProvider provider, Demands demands
-            ) : base(provider)
+
+        public PurchaseOrderPart(IProvider provider, Demands demands) : base(provider)
         {
-            _tPurchaseOrderPart = (T_PurchaseOrderPart)provider;
+            _tPurchaseOrderPart = (T_PurchaseOrderPart) provider;
         }
 
         public override IProvider ToIProvider()
@@ -60,15 +59,19 @@ namespace Zpp.Common.ProviderDomain.Wrappers
                 IDbTransactionData dbTransactionData =
                     ZppConfiguration.CacheManager.GetDbTransactionData();
                 _tPurchaseOrderPart.PurchaseOrder =
-                    dbTransactionData.PurchaseOrderGetById(
-                        new Id(_tPurchaseOrderPart.PurchaseOrderId));
+                    dbTransactionData.PurchaseOrderGetById(new Id(_tPurchaseOrderPart
+                        .PurchaseOrderId));
             }
         }
 
-        public override void SetStartTime(DueTime dueTime)
+        public override void SetStartTime(DueTime startTime)
         {
             EnsurePurchaseOrderIsLoaded();
-            _tPurchaseOrderPart.PurchaseOrder.DueTime = dueTime.GetValue();
+            // currently only one businessPartner per article TODO: This could be changing
+            M_ArticleToBusinessPartner articleToBusinessPartner =
+                _dbMasterDataCache.M_ArticleToBusinessPartnerGetAllByArticleId(GetArticleId())[0];
+            _tPurchaseOrderPart.PurchaseOrder.DueTime =
+                startTime.GetValue() + articleToBusinessPartner.TimeToDelivery;
         }
 
         public override void SetDone()

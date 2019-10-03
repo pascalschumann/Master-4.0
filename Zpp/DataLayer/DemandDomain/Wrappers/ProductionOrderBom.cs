@@ -127,6 +127,24 @@ namespace Zpp.Common.DemandDomain.Wrappers
             }
         }
 
+        private void SetStartTimeOfOperation(DueTime startTime)
+        {
+            EnsureOperationIsLoadedIfExists();
+
+            T_ProductionOrderOperation productionOrderOperation =
+                _productionOrderBom.ProductionOrderOperation;
+            productionOrderOperation.StartBackward = startTime.GetValue();
+        }
+        
+        private void SetEndTimeOfOperation(DueTime endTime)
+        {
+            EnsureOperationIsLoadedIfExists();
+
+            T_ProductionOrderOperation productionOrderOperation =
+                _productionOrderBom.ProductionOrderOperation;
+            productionOrderOperation.EndBackward = endTime.GetValue();
+        }
+
         public void EnsureOperationIsLoadedIfExists()
         {
             // load ProductionOrderOperation if not done yet
@@ -183,9 +201,17 @@ namespace Zpp.Common.DemandDomain.Wrappers
             return _productionOrderBom.ProductionOrderOperation.GetDuration();
         }
 
-        public override void SetStartTime(DueTime dueTime)
+        public override void SetStartTime(DueTime startTime)
         {
-            throw new NotImplementedException();
+            EnsureOperationIsLoadedIfExists();
+            DueTime transitionTime = new DueTime(OperationBackwardsSchedule.CalculateTransitionTime(
+                _productionOrderBom.ProductionOrderOperation.GetDuration()));
+            // startBackwards
+            DueTime startTimeOfOperation = startTime.Plus(transitionTime);
+            SetStartTimeOfOperation(startTimeOfOperation);
+            // endBackwards
+            SetEndTimeOfOperation(startTimeOfOperation.Plus(new DueTime(GetDuration())));
+            
         }
 
         public override void SetDone()

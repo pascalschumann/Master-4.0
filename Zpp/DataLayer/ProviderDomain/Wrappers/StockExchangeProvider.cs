@@ -63,9 +63,9 @@ namespace Zpp.Common.ProviderDomain.Wrappers
             _stockExchange.Time = atTime.GetValue();
         }
 
-        public override void SetStartTime(DueTime dueTime)
+        public override void SetStartTime(DueTime startTime)
         {
-            _stockExchange.RequiredOnTime = dueTime.GetValue();
+            _stockExchange.RequiredOnTime = startTime.GetValue();
         }
         
         public override void SetDone()

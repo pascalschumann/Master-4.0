@@ -20,7 +20,6 @@ using Zpp.Mrp.MachineManagement;
 using Zpp.Mrp.NodeManagement;
 using Zpp.Mrp.Scheduling;
 using Zpp.Mrp.StockManagement;
-using Zpp.Simulation;
 using Zpp.Simulation.Types;
 using Zpp.Test.Configuration.Scenarios;
 using Zpp.Utils;
@@ -41,7 +40,7 @@ namespace Zpp.Mrp
                 ZppConfiguration.CacheManager.GetProductionDomainContext();
 
             _orderGenerator = TestScenario.GetOrderGenerator(productionDomainContext,
-                new MinDeliveryTime(200), new MaxDeliveryTime(1440), new OrderArrivalRate(0.0001));
+                new MinDeliveryTime(200), new MaxDeliveryTime(1440), new OrderArrivalRate(0.025));
         }
 
         /**
@@ -143,7 +142,7 @@ namespace Zpp.Mrp
             // End of MaterialRequirementsPlanning
 
             // forward scheduling
-            // ScheduleForward();
+           ScheduleForward();
 
             // job shop scheduling
             JobShopScheduling();
@@ -244,8 +243,6 @@ namespace Zpp.Mrp
                 // TODO : Handle this another way
                 creationTime += order.CreationTime;
             }
-
-            ZppConfiguration.CacheManager.GetDbTransactionData().PersistDbCache();
         }
     }
 }

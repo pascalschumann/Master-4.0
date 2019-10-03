@@ -165,16 +165,6 @@ namespace Zpp.Common.ProviderDomain.Wrappers
             return _priority;
         }
 
-        public DueTime GetDueTime()
-        {
-            // every productionOrderBom whith this operation o1 has the same dueTime
-            DueTime dueTime = ZppConfiguration.CacheManager.GetAggregator()
-                .GetAnyProductionOrderBomByProductionOrderOperation(this)
-                .GetDueTime();
-
-            return dueTime;
-        }
-
         public ProductionOrder GetProductionOrder()
         {
             IDbTransactionData dbTransactionData =

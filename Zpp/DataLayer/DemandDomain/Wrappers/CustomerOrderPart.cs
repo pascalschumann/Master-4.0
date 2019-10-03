@@ -60,7 +60,7 @@ namespace Zpp.Common.DemandDomain.Wrappers
             return Duration.Null();
         }
 
-        public override void SetStartTime(DueTime dueTime)
+        public override void SetStartTime(DueTime startTime)
         {
             throw new System.NotImplementedException();
         }

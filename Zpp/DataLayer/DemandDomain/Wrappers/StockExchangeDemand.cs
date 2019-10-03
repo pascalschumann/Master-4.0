@@ -99,9 +99,9 @@ namespace Zpp.Common.DemandDomain.Wrappers
             return Duration.Null();
         }
 
-        public override void SetStartTime(DueTime dueTime)
+        public override void SetStartTime(DueTime startTime)
         {
-            _tStockExchangeDemand.RequiredOnTime = dueTime.GetValue();
+            _tStockExchangeDemand.RequiredOnTime = startTime.GetValue();
         }
         
         public override void SetDone()

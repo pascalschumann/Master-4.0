@@ -191,25 +191,22 @@ namespace Zpp.Test.Integration_Tests
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.ReloadTransactionData();
 
-            foreach (var productionOrderOperation in dbTransactionData
-                .ProductionOrderOperationGetAll())
+            foreach (var productionOrderBom in dbTransactionData
+                .ProductionOrderBomGetAll().GetAllAs<ProductionOrderBom>())
             {
                 int expectedStartBackward =
-                    productionOrderOperation.GetDueTime().GetValue() +
+                    productionOrderBom.GetStartTime().GetValue() +
                     OperationBackwardsSchedule.GetTransitionTimeFactor() *
-                    productionOrderOperation.GetValue().Duration;
-                int actualStartBackward = productionOrderOperation.GetValue().StartBackward
-                    .GetValueOrDefault();
+                    productionOrderBom.GetDuration().GetValue();
+                int actualStartBackward = productionOrderBom.GetStartTimeOfOperation().GetValue();
                 Assert.True(expectedStartBackward.Equals(actualStartBackward),
                     $"The transition time before operationStart is not correct: " +
                     $"expectedStartBackward: {expectedStartBackward}, actualStartBackward {actualStartBackward}");
 
                 int expectedEndBackward =
-                    productionOrderOperation.GetDueTime().GetValue() +
-                    OperationBackwardsSchedule.GetTransitionTimeFactor() *
-                    productionOrderOperation.GetValue().Duration;
-                int actualEndBackward = productionOrderOperation.GetValue().StartBackward
-                    .GetValueOrDefault();
+                    productionOrderBom.GetStartTimeOfOperation().GetValue() + 
+                    productionOrderBom.GetDuration().GetValue();
+                int actualEndBackward = productionOrderBom.GetEndTime().GetValue();
                 Assert.True(expectedEndBackward.Equals(actualEndBackward),
                     $"EndBackward is not correct: " +
                     $"expectedEndBackward: {expectedEndBackward}, actualEndBackward {actualEndBackward}");

@@ -124,7 +124,7 @@ namespace Zpp.Common.ProviderDomain
             return GetStartTime().Plus(new DueTime(GetDuration()));
         }
 
-        public abstract void SetStartTime(DueTime dueTime);
+        public abstract void SetStartTime(DueTime startTime);
         
         public static Provider AsProvider(IDemandOrProvider demandOrProvider)
         {

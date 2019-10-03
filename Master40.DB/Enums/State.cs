@@ -9,7 +9,7 @@
         ForwardScheduleExists,
         ExistsInCapacityPlan,
         Producing,
-        Finished
+        Finished // 7
     }
 
     public enum ProducingState
@@ -17,6 +17,6 @@
         Created,
         Waiting,
         Producing,
-        Finished
+        Finished // 3
     }
 }

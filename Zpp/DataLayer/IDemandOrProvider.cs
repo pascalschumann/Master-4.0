@@ -18,7 +18,7 @@ namespace Zpp.DataLayer
         /**
          * Adapts the startTime and also adapts the dueTime/endTime accordingly (if exists)
          */
-        void SetStartTime(DueTime dueTime);
+        void SetStartTime(DueTime startTime);
 
         Duration GetDuration();
 

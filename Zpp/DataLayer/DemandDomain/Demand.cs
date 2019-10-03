@@ -99,7 +99,7 @@ namespace Zpp.Common.DemandDomain
 
         public abstract Duration GetDuration();
 
-        public abstract void SetStartTime(DueTime dueTime);
+        public abstract void SetStartTime(DueTime startTime);
 
         public static Demand AsDemand(IDemandOrProvider demandOrProvider)
         {

@@ -36,8 +36,7 @@ namespace Zpp.Common.DemandDomain.Wrappers
 
         public override DueTime GetDueTime()
         {
-            DueTime dueTime = new DueTime(((T_StockExchange) _demand).RequiredOnTime);
-            return dueTime;
+            return GetStartTime();
         }
 
         public static Demand CreateStockExchangeProductionOrderDemand(M_ArticleBom articleBom, DueTime dueTime)
@@ -89,11 +88,6 @@ namespace Zpp.Common.DemandDomain.Wrappers
             return new Id(((T_StockExchange) _demand).StockId);
         }
 
-        public override DueTime GetStartTime()
-        {
-            return GetDueTime();
-        }
-
         public override Duration GetDuration()
         {
             return Duration.Null();
@@ -112,6 +106,11 @@ namespace Zpp.Common.DemandDomain.Wrappers
         public override void SetInProgress()
         {
             _tStockExchangeDemand.State = State.Producing;
+        }
+
+        public override DueTime GetEndTime()
+        {
+            return new DueTime(_tStockExchangeDemand.RequiredOnTime);
         }
     }
 }

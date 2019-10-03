@@ -30,24 +30,7 @@ namespace Zpp.Common.DemandDomain.Wrappers
 
         public override DueTime GetDueTime()
         {
-            IDbTransactionData dbTransactionData =
-                ZppConfiguration.CacheManager.GetDbTransactionData();
-            
-            T_CustomerOrderPart customerOrderPart = ((T_CustomerOrderPart) _demand);
-            if (customerOrderPart.CustomerOrder != null)
-            {
-                return new DueTime(customerOrderPart.CustomerOrder.DueTime);
-            }
-            Id customerOrderId = new Id(customerOrderPart.CustomerOrderId);
-            customerOrderPart.CustomerOrder =
-                dbTransactionData.T_CustomerOrderGetById(customerOrderId);
-            DueTime dueTime = new DueTime(customerOrderPart.CustomerOrder.DueTime);
-            return dueTime;
-        }
-
-        public override DueTime GetStartTime()
-        {
-            return GetDueTime();
+            return GetStartTime();
         }
 
         public T_CustomerOrderPart GetValue()
@@ -73,6 +56,23 @@ namespace Zpp.Common.DemandDomain.Wrappers
         public override void SetInProgress()
         {
             _customerOrderPart.State = State.Producing;
+        }
+
+        private void EnsureCustomerOrderIsLoaded()
+        {
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
+            Id customerOrderId = new Id(_customerOrderPart.CustomerOrderId);
+            _customerOrderPart.CustomerOrder =
+                dbTransactionData.T_CustomerOrderGetById(customerOrderId);
+        }
+
+        public override DueTime GetEndTime()
+        {
+            EnsureCustomerOrderIsLoaded();
+
+            DueTime dueTime = new DueTime(_customerOrderPart.CustomerOrder.DueTime);
+            return dueTime;
         }
     }
 }

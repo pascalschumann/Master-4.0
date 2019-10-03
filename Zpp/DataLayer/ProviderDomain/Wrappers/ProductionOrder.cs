@@ -37,13 +37,7 @@ namespace Zpp.Common.ProviderDomain.Wrappers
 
         public override DueTime GetDueTime()
         {
-            T_ProductionOrder productionOrder = (T_ProductionOrder) _provider;
-            return new DueTime(productionOrder.DueTime);
-        }
-
-        public override DueTime GetStartTime()
-        {
-            return GetDueTime();
+            return GetEndTime();
         }
 
         public ProductionOrderBoms GetProductionOrderBoms()
@@ -82,6 +76,16 @@ namespace Zpp.Common.ProviderDomain.Wrappers
         public override void SetInProgress()
         {
             throw new System.NotImplementedException();
+        }
+        
+        public override Duration GetDuration()
+        {
+            return Duration.Null();
+        }
+
+        public override DueTime GetEndTime()
+        {
+            return new DueTime(_productionOrder.DueTime);
         }
     }
 }

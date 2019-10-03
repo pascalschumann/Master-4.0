@@ -22,13 +22,13 @@ namespace Zpp.GraphicalRepresentation
         private string ToGraphizString(Demand demand)
         {
             return $"{demand.GetQuantity()};\\n{demand.GetArticle().Name};" +
-                   $"{demand.GetDueTime()}";
+                   $" Start/End/Due: {demand.GetStartTime()}/{demand.GetEndTime()}/{demand.GetDueTime()};";
         }
 
         private string ToGraphizString(Provider provider)
         {
             return $"{provider.GetQuantity()};\\n{provider.GetArticle().Name};" +
-                   $"{provider.GetDueTime()}";
+                   $" Start/End/Due: {provider.GetStartTime()}/{provider.GetEndTime()}/{provider.GetDueTime()};";
         }
 
         public string GetGraphizString(CustomerOrderPart customerOrderPart)

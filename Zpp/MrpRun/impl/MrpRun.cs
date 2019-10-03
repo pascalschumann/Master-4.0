@@ -51,7 +51,8 @@ namespace Zpp.Mrp
             // _productionDomainContext
             int customerOrderPartQuantity = ZppConfiguration.CacheManager.GetTestConfiguration()
                 .CustomerOrderPartQuantity;
-            for (int i = 0; i < customerOrderPartQuantity; i++)
+            // for (int i = 0; i < customerOrderPartQuantity; i++)
+            for (int i = 0; i < 1; i++)
             {
                 // init transactionData
                 IDbTransactionData dbTransactionData =
@@ -142,7 +143,7 @@ namespace Zpp.Mrp
             // End of MaterialRequirementsPlanning
 
             // forward scheduling
-           ScheduleForward();
+           // ScheduleForward();
 
             // job shop scheduling
             JobShopScheduling();
@@ -235,6 +236,7 @@ namespace Zpp.Mrp
                 foreach (var orderPart in order.CustomerOrderParts)
                 {
                     orderPart.CustomerOrder = order;
+                    orderPart.CustomerOrderId = order.Id;
                     dbTransactionData.CustomerOrderPartAdd(orderPart);
                 }
 

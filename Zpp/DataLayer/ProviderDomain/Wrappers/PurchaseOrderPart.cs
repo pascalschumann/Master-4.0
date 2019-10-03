@@ -34,17 +34,13 @@ namespace Zpp.Common.ProviderDomain.Wrappers
 
         public override DueTime GetDueTime()
         {
-            EnsurePurchaseOrderIsLoaded();
-
-            return new DueTime(_tPurchaseOrderPart.PurchaseOrder.DueTime);
+            return GetEndTime();
         }
 
-        public override DueTime GetStartTime()
+        public override DueTime GetEndTime()
         {
-            // currently only one businessPartner per article TODO: This could be changing
-            M_ArticleToBusinessPartner articleToBusinessPartner =
-                _dbMasterDataCache.M_ArticleToBusinessPartnerGetAllByArticleId(GetArticleId())[0];
-            return GetDueTime().Minus(new DueTime(articleToBusinessPartner.TimeToDelivery));
+            EnsurePurchaseOrderIsLoaded();
+            return new DueTime(_tPurchaseOrderPart.PurchaseOrder.DueTime);
         }
 
         public override void SetProvided(DueTime atTime)
@@ -66,12 +62,8 @@ namespace Zpp.Common.ProviderDomain.Wrappers
 
         public override void SetStartTime(DueTime startTime)
         {
-            EnsurePurchaseOrderIsLoaded();
-            // currently only one businessPartner per article TODO: This could be changing
-            M_ArticleToBusinessPartner articleToBusinessPartner =
-                _dbMasterDataCache.M_ArticleToBusinessPartnerGetAllByArticleId(GetArticleId())[0];
             _tPurchaseOrderPart.PurchaseOrder.DueTime =
-                startTime.GetValue() + articleToBusinessPartner.TimeToDelivery;
+                startTime.GetValue() + GetDuration().GetValue();
         }
 
         public override void SetDone()
@@ -82,6 +74,16 @@ namespace Zpp.Common.ProviderDomain.Wrappers
         public override void SetInProgress()
         {
             _tPurchaseOrderPart.State = State.Producing;
+        }
+
+        public override Duration GetDuration()
+        {
+            // currently only one businessPartner per article TODO: This could be changing
+            M_ArticleToBusinessPartner articleToBusinessPartner =
+                _dbMasterDataCache.M_ArticleToBusinessPartnerGetAllByArticleId(GetArticleId())[0];
+            Duration duration = new Duration(
+                 articleToBusinessPartner.TimeToDelivery);
+            return duration;
         }
     }
 }

@@ -20,6 +20,9 @@ namespace Zpp.DataLayer
          */
         void SetStartTime(DueTime startTime);
 
+        /**
+         * Contains transition time if exits
+         */
         Duration GetDuration();
 
         Quantity GetQuantity();

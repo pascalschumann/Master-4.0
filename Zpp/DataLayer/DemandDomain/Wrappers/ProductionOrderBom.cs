@@ -126,6 +126,26 @@ namespace Zpp.Common.DemandDomain.Wrappers
                     "Requesting dueTime for ProductionOrderBom before it was backwards-scheduled.");
             }
         }
+        
+        public DueTime GetEndTimeOfOperation()
+        {
+            EnsureOperationIsLoadedIfExists();
+
+            if (_productionOrderBom.ProductionOrderOperation?.EndBackward != null)
+                // backwards scheduling was already done --> job-shop-scheduling was done
+            {
+                T_ProductionOrderOperation productionOrderOperation =
+                    _productionOrderBom.ProductionOrderOperation;
+                DueTime dueTime =
+                    new DueTime(productionOrderOperation.EndBackward.GetValueOrDefault());
+                return dueTime;
+            }
+            else
+            {
+                throw new MrpRunException(
+                    "Requesting dueTime for ProductionOrderBom before it was backwards-scheduled.");
+            }
+        }
 
         private void SetStartTimeOfOperation(DueTime startTime)
         {
@@ -135,7 +155,7 @@ namespace Zpp.Common.DemandDomain.Wrappers
                 _productionOrderBom.ProductionOrderOperation;
             productionOrderOperation.StartBackward = startTime.GetValue();
         }
-        
+
         private void SetEndTimeOfOperation(DueTime endTime)
         {
             EnsureOperationIsLoadedIfExists();
@@ -157,14 +177,6 @@ namespace Zpp.Common.DemandDomain.Wrappers
                 _productionOrderBom.ProductionOrderOperation = dbTransactionData
                     .ProductionOrderOperationGetById(productionOrderOperationId).GetValue();
             }
-        }
-
-        public override DueTime GetStartTime()
-        {
-            EnsureOperationIsLoadedIfExists();
-            DueTime transitionTime = new DueTime(OperationBackwardsSchedule.CalculateTransitionTime(
-                _productionOrderBom.ProductionOrderOperation.GetDuration()));
-            return GetStartTimeOfOperation().Minus(transitionTime);
         }
 
         public ProductionOrder GetProductionOrder()
@@ -198,6 +210,15 @@ namespace Zpp.Common.DemandDomain.Wrappers
         public override Duration GetDuration()
         {
             EnsureOperationIsLoadedIfExists();
+            Duration operationDuration = GetDurationOfOperation();
+            Duration transitionTime = new Duration(OperationBackwardsSchedule.CalculateTransitionTime(
+                operationDuration ));
+            return transitionTime.Plus(operationDuration);
+        }
+
+        public Duration GetDurationOfOperation()
+        {
+            EnsureOperationIsLoadedIfExists();
             return _productionOrderBom.ProductionOrderOperation.GetDuration();
         }
 
@@ -211,7 +232,6 @@ namespace Zpp.Common.DemandDomain.Wrappers
             SetStartTimeOfOperation(startTimeOfOperation);
             // endBackwards
             SetEndTimeOfOperation(startTimeOfOperation.Plus(new DueTime(GetDuration())));
-            
         }
 
         public override void SetDone()
@@ -222,6 +242,11 @@ namespace Zpp.Common.DemandDomain.Wrappers
         public override void SetInProgress()
         {
             throw new NotImplementedException();
+        }
+
+        public override DueTime GetEndTime()
+        {
+            return GetEndTimeOfOperation();
         }
     }
 }

@@ -43,18 +43,12 @@ namespace Zpp.Common.ProviderDomain.Wrappers
 
         public override DueTime GetDueTime()
         {
-            T_StockExchange stockExchange = (T_StockExchange) _provider;
-            return new DueTime(stockExchange.RequiredOnTime);
+            return GetEndTime();
         }
 
         public Id GetStockId()
         {
             return new Id(((T_StockExchange) _provider).StockId);
-        }
-
-        public override DueTime GetStartTime()
-        {
-            return GetDueTime();
         }
 
         public override void SetProvided(DueTime atTime)
@@ -76,6 +70,16 @@ namespace Zpp.Common.ProviderDomain.Wrappers
         public override void SetInProgress()
         {
             _stockExchange.State = State.Producing;
+        }
+        
+        public override Duration GetDuration()
+        {
+            return Duration.Null();
+        }
+
+        public override DueTime GetEndTime()
+        {
+            return new DueTime(_stockExchange.RequiredOnTime);
         }
     }
 }

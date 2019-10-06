@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
-using Zpp.Common.DemandDomain;
-using Zpp.Common.DemandDomain.WrappersForCollections;
-using Zpp.WrappersForCollections;
+using Zpp.DataLayer.DemandDomain;
+using Zpp.DataLayer.DemandDomain.WrappersForCollections;
+using Zpp.DataLayer.WrappersForCollections;
 
-namespace Zpp.Common.ProviderDomain.WrappersForCollections
+namespace Zpp.DataLayer.ProviderDomain.WrappersForCollections
 {
     /**
      * wraps the collection with all providers

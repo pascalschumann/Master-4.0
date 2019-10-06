@@ -1,4 +1,4 @@
-namespace Zpp.LotSize
+namespace Zpp.LotSize.Impl
 {
     public enum LotSizeType
     {

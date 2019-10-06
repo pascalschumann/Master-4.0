@@ -1,4 +1,4 @@
-namespace Zpp.GraphicalRepresentation
+namespace Zpp.GraphicalRepresentation.impl
 {
     public class GanttChartBar
     {

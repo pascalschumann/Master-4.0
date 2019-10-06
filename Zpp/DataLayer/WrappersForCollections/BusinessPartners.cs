@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Master40.DB.DataModel;
 
-namespace Zpp.WrappersForCollections
+namespace Zpp.DataLayer.WrappersForCollections
 {
     public class BusinessPartners
     {

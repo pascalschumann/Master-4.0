@@ -1,4 +1,4 @@
-namespace Zpp.Mrp.Scheduling
+namespace Zpp.Scheduling
 {
     public interface IForwardScheduler
     {

@@ -1,9 +1,9 @@
 using Master40.DB.Data.WrappersForPrimitives;
-using Zpp.Common.DemandDomain;
-using Zpp.Common.ProviderDomain;
-using Zpp.DbCache;
+using Zpp.DataLayer.DemandDomain;
+using Zpp.DataLayer.ProviderDomain;
+using Zpp.Mrp.impl;
 
-namespace Zpp.Mrp.NodeManagement
+namespace Zpp.DataLayer
 {
     public interface IOpenDemandManager
     {

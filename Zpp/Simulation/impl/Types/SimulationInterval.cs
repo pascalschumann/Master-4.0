@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Master40.DB.Data.WrappersForPrimitives;
-using MathNet.Numerics.Distributions;
+﻿using Master40.DB.Data.WrappersForPrimitives;
 
-namespace Zpp.Simulation.Types
+namespace Zpp.Simulation.impl.Types
 {
     public class SimulationInterval
     {

@@ -1,18 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Master40.DB.Enums;
-using Master40.DB.DataModel;
-using Zpp.Common.DemandDomain.Wrappers;
-using Zpp.Common.ProviderDomain.Wrappers;
-using Zpp.Common.ProviderDomain.WrappersForCollections;
-using Zpp.Configuration;
-using Zpp.DbCache;
-using Zpp.Mrp.MachineManagement;
-using Zpp.Mrp.ProductionManagement.ProductionTypes;
-using Zpp.OrderGraph;
-using Zpp.Utils;
+﻿using Zpp.Configuration;
+using Zpp.DataLayer;
+using Zpp.DataLayer.ProviderDomain.Wrappers;
+using Zpp.DataLayer.ProviderDomain.WrappersForCollections;
+using Zpp.Util.StackSet;
 
-namespace Zpp.OrderGraph
+namespace Zpp.Util.Graph.impl
 {
     public class ProductionOrderToOperationGraph : DirectedGraph, IProductionOrderToOperationGraph<INode>
     {

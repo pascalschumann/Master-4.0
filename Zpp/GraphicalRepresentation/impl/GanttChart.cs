@@ -1,13 +1,12 @@
-using System;
 using System.Collections.Generic;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Newtonsoft.Json;
-using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.Configuration;
-using Zpp.DbCache;
+using Zpp.DataLayer;
+using Zpp.DataLayer.ProviderDomain.Wrappers;
 
-namespace Zpp.GraphicalRepresentation
+namespace Zpp.GraphicalRepresentation.impl
 {
     public class GanttChart : IGanttChart
     {

@@ -1,12 +1,12 @@
 using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Xunit;
-using Zpp.Common.DemandDomain.WrappersForCollections;
-using Zpp.Common.ProviderDomain.WrappersForCollections;
 using Zpp.Configuration;
-using Zpp.DbCache;
+using Zpp.DataLayer;
+using Zpp.DataLayer.DemandDomain.WrappersForCollections;
+using Zpp.DataLayer.ProviderDomain.WrappersForCollections;
+using Zpp.DataLayer.WrappersForCollections;
 using Zpp.Mrp;
-using Zpp.WrappersForCollections;
 using Zpp.ZppSimulator;
 
 namespace Zpp.Test.Integration_Tests

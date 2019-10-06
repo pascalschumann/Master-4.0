@@ -2,11 +2,11 @@ using System.IO;
 using System.Text;
 using Xunit;
 using Zpp.Configuration;
-using Zpp.DbCache;
+using Zpp.DataLayer;
 using Zpp.GraphicalRepresentation;
 using Zpp.Mrp;
 using Zpp.Test.Configuration;
-using Zpp.Utils;
+using Zpp.Util;
 using Zpp.ZppSimulator;
 using Zpp.ZppSimulator.impl;
 
@@ -38,7 +38,7 @@ namespace Zpp.Test.Ordergraphs.GanttChart
                 ZppConfiguration.CacheManager.ReloadTransactionData();
 
             IGanttChart ganttChart =
-                new GraphicalRepresentation.GanttChart(dbTransactionData
+                new GraphicalRepresentation.impl.GanttChart(dbTransactionData
                     .ProductionOrderOperationGetAll());
             string actualGanttChart = ganttChart.ToString();
             // create initial file, if it doesn't exists (must be committed then)

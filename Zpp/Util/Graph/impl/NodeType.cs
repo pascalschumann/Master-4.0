@@ -1,4 +1,4 @@
-namespace Zpp.OrderGraph
+namespace Zpp.Util.Graph.impl
 {
     public enum NodeType
     {

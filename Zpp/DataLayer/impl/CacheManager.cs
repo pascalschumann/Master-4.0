@@ -4,12 +4,11 @@ using Master40.DB.Data.Context;
 using Master40.DB.Data.WrappersForPrimitives;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using Zpp.Configuration;
-using Zpp.Mrp.NodeManagement;
+using Zpp.DataLayer.impl.OpenDemand;
 using Zpp.Test.Configuration;
-using Zpp.Utils;
+using Zpp.Util;
 
-namespace Zpp.DbCache
+namespace Zpp.DataLayer.impl
 {
     public class CacheManager: ICacheManager
     {
@@ -88,8 +87,8 @@ namespace Zpp.DbCache
                 _productionDomainContext
             });
 
-            LotSize.LotSize.SetDefaultLotSize(new Quantity(_testConfiguration.LotSize));
-            LotSize.LotSize.SetLotSizeType(_testConfiguration.LotSizeType);
+            LotSize.Impl.LotSize.SetDefaultLotSize(new Quantity(_testConfiguration.LotSize));
+            LotSize.Impl.LotSize.SetLotSizeType(_testConfiguration.LotSizeType);
         }
         
         private static TestConfiguration ReadTestConfiguration(string testConfigurationFileNames)

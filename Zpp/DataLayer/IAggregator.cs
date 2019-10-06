@@ -1,18 +1,16 @@
 using System.Collections.Generic;
 using Master40.DB.Data.WrappersForPrimitives;
-using Zpp.Common.DemandDomain;
-using Zpp.Common.DemandDomain.Wrappers;
-using Zpp.Common.DemandDomain.WrappersForCollections;
-using Zpp.Common.ProviderDomain;
-using Zpp.Common.ProviderDomain.Wrappers;
-using Zpp.Common.ProviderDomain.WrappersForCollections;
-using Zpp.DataLayer;
-using Zpp.Mrp.MachineManagement;
-using Zpp.Simulation.Types;
-using Zpp.WrappersForCollections;
-using Zpp.WrappersForPrimitives;
+using Zpp.DataLayer.DemandDomain;
+using Zpp.DataLayer.DemandDomain.Wrappers;
+using Zpp.DataLayer.DemandDomain.WrappersForCollections;
+using Zpp.DataLayer.ProviderDomain;
+using Zpp.DataLayer.ProviderDomain.Wrappers;
+using Zpp.DataLayer.ProviderDomain.WrappersForCollections;
+using Zpp.DataLayer.WrappersForCollections;
+using Zpp.Scheduling.impl.JobShop.impl;
+using Zpp.Simulation.impl.Types;
 
-namespace Zpp.DbCache
+namespace Zpp.DataLayer
 {
     /**
      * A layer over masterData/transactionData that provides aggregations of entities from masterData/transactionData

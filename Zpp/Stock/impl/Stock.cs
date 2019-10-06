@@ -1,7 +1,7 @@
 using Master40.DB.Data.WrappersForPrimitives;
-using Zpp.Utils;
+using Zpp.Util;
 
-namespace Zpp.Mrp.StockManagement
+namespace Zpp.Stock.impl
 {
     public class Stock
     {

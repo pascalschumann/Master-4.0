@@ -1,11 +1,8 @@
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Master40.DB.Interfaces;
-using Zpp.Common.DemandDomain.WrappersForCollections;
-using Zpp.DbCache;
-using Zpp.WrappersForPrimitives;
 
-namespace Zpp.Common.ProviderDomain
+namespace Zpp.DataLayer.ProviderDomain
 {
     /**
      * A wrapper for IProvider providing methods that every wrapped ProviderType implements

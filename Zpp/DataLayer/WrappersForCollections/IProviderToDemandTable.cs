@@ -1,8 +1,8 @@
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
-using Zpp.Common.ProviderDomain;
+using Zpp.DataLayer.ProviderDomain;
 
-namespace Zpp.WrappersForCollections
+namespace Zpp.DataLayer.WrappersForCollections
 {
     public interface IProviderToDemandTable: ICollectionWrapper<T_ProviderToDemand>
     {

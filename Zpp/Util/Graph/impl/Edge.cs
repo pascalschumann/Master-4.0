@@ -1,7 +1,6 @@
-using Master40.DB.DataModel;
 using Master40.DB.Interfaces;
 
-namespace Zpp.OrderGraph
+namespace Zpp.Util.Graph.impl
 {
     public class Edge : IEdge
     {

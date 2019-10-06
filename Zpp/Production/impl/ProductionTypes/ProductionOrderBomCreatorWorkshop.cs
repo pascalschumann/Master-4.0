@@ -1,14 +1,14 @@
 using System.Collections.Generic;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
-using Zpp.Common.DemandDomain.Wrappers;
-using Zpp.Common.DemandDomain.WrappersForCollections;
-using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.Configuration;
-using Zpp.DbCache;
-using Zpp.Utils;
+using Zpp.DataLayer;
+using Zpp.DataLayer.DemandDomain.Wrappers;
+using Zpp.DataLayer.DemandDomain.WrappersForCollections;
+using Zpp.DataLayer.ProviderDomain.Wrappers;
+using Zpp.Util;
 
-namespace Zpp.Mrp.ProductionManagement.ProductionTypes
+namespace Zpp.Production.impl.ProductionTypes
 {
     /**
      * (quantity * articleBom.Quantity) ProductionOrderBoms will be created

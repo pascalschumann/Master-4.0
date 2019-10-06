@@ -1,10 +1,8 @@
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Master40.DB.Interfaces;
-using Zpp.DbCache;
-using Zpp.WrappersForPrimitives;
 
-namespace Zpp.Common.DemandDomain
+namespace Zpp.DataLayer.DemandDomain
 {
     /**
      * A wrapper for IDemand providing methods that every wrapped DemandType needs to implement

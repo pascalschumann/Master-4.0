@@ -5,10 +5,9 @@ using Newtonsoft.Json;
 using System;
 using System.IO;
 using Zpp.Configuration;
-using Zpp.DbCache;
+using Zpp.DataLayer;
 using Zpp.Test.Configuration;
 using Zpp.Test.Configuration.Scenarios;
-using Zpp.Utils;
 
 namespace Zpp.Test
 {

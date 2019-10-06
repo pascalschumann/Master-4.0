@@ -1,4 +1,4 @@
-namespace Zpp.Mrp.MachineManagement
+namespace Zpp.Scheduling.impl.JobShop
 {
     public interface IJobShopScheduler
     {

@@ -1,4 +1,4 @@
-namespace Zpp.Confirmation
+namespace Zpp.Confirmation.impl
 {
     public class ConfirmationManager : IConfirmationManager
     {

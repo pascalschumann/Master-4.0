@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Zpp.Common.ProviderDomain.Wrappers;
-using Zpp.OrderGraph;
+﻿using System.Collections.Generic;
+using Zpp.DataLayer.ProviderDomain.Wrappers;
+using Zpp.Util.Graph;
 
-namespace Zpp.Mrp.ProductionManagement.ProductionTypes
+namespace Zpp.Production.impl.ProductionTypes
 {
     public class ProductionOrderOperationGraphsAsDictionary : Dictionary<ProductionOrder, IDirectedGraph<INode>>
     {

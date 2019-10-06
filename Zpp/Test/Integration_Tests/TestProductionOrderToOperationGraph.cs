@@ -2,15 +2,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Xunit;
-using Zpp.Common.ProviderDomain.Wrappers;
-using Zpp.Common.ProviderDomain.WrappersForCollections;
 using Zpp.Configuration;
-using Zpp.DbCache;
+using Zpp.DataLayer;
+using Zpp.DataLayer.ProviderDomain.WrappersForCollections;
 using Zpp.Mrp;
-using Zpp.Mrp.MachineManagement;
-using Zpp.OrderGraph;
 using Zpp.Test.Configuration;
-using Zpp.Utils;
+using Zpp.Util;
+using Zpp.Util.Graph;
+using Zpp.Util.Graph.impl;
 using Zpp.ZppSimulator;
 
 namespace Zpp.Test.Integration_Tests

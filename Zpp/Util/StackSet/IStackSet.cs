@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Zpp.Mrp.MachineManagement
+namespace Zpp.Util.StackSet
 {
     /**
      * own Set impl, since HashSet ist not useful if:

@@ -1,12 +1,12 @@
+using System;
+using System.Data;
+using System.Data.SqlClient;
 using Master40.DB.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
-using System;
-using System.Data;
-using System.Data.SqlClient;
 
-namespace Zpp.Utils
+namespace Zpp.Util
 {
     public static class Dbms
     {

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using Zpp.Mrp.MachineManagement;
+using Zpp.Util.StackSet;
 
-namespace Zpp.WrappersForCollections
+namespace Zpp.DataLayer.WrappersForCollections
 {
     public interface ICollectionWrapper<T>: IEnumerable<T>
     {

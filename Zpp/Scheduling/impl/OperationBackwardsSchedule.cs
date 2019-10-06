@@ -1,8 +1,7 @@
 using Master40.DB.Data.WrappersForPrimitives;
-using Zpp.Utils;
-using Zpp.WrappersForPrimitives;
+using Zpp.Util;
 
-namespace Zpp.Mrp.Scheduling
+namespace Zpp.Scheduling.impl
 {
     public class OperationBackwardsSchedule
     {

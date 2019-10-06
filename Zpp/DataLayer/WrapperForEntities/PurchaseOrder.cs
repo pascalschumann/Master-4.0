@@ -1,6 +1,6 @@
 using Master40.DB.DataModel;
 
-namespace Zpp.WrapperForEntities
+namespace Zpp.DataLayer.WrapperForEntities
 {
     /**
      * wraps T_PurchaseOrder

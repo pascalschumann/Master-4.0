@@ -1,8 +1,7 @@
 using Master40.DB.Data.Context;
-using Zpp.Mrp.NodeManagement;
 using Zpp.Test.Configuration;
 
-namespace Zpp.DbCache
+namespace Zpp.DataLayer
 {
     /**
      * Controls data layer objects like dbMasterCache, dbTransactionData to force singleton pattern

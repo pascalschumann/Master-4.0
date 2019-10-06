@@ -4,7 +4,6 @@ using System.Linq;
 using Master40.DB.Data.Context;
 using Master40.DB.Data.Initializer.Tables;
 using Master40.DB.DataModel;
-using Zpp.DbCache;
 
 namespace Zpp.Test.Configuration
 {

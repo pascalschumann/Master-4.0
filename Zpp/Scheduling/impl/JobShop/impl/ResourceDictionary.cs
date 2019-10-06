@@ -1,7 +1,7 @@
-﻿using Master40.DB.Data.WrappersForPrimitives;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Master40.DB.Data.WrappersForPrimitives;
 
-namespace Zpp.Mrp.MachineManagement
+namespace Zpp.Scheduling.impl.JobShop.impl
 {
     public class ResourceDictionary : Dictionary<Id, List<Resource>>
     {

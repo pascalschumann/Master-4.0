@@ -2,17 +2,15 @@ using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
-using Zpp.Common.DemandDomain;
-using Zpp.Common.DemandDomain.Wrappers;
-using Zpp.Common.DemandDomain.WrappersForCollections;
-using Zpp.Common.ProviderDomain;
-using Zpp.Common.ProviderDomain.WrappersForCollections;
 using Zpp.Configuration;
-using Zpp.DbCache;
-using Zpp.Utils;
-using Zpp.WrappersForCollections;
+using Zpp.DataLayer.DemandDomain;
+using Zpp.DataLayer.DemandDomain.Wrappers;
+using Zpp.DataLayer.DemandDomain.WrappersForCollections;
+using Zpp.DataLayer.ProviderDomain;
+using Zpp.Mrp.impl;
+using Zpp.Util;
 
-namespace Zpp.Mrp.NodeManagement
+namespace Zpp.DataLayer.impl.OpenDemand
 {
     public class OpenDemandManager : IOpenDemandManager
     {

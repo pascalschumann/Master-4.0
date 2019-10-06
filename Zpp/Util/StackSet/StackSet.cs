@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Zpp.Mrp.MachineManagement
+namespace Zpp.Util.StackSet
 {
     public class StackSet<T> : IStackSet<T>
     {

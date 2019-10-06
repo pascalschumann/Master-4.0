@@ -1,16 +1,15 @@
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Master40.DB.Enums;
-using Zpp.Common.DemandDomain;
-using Zpp.Common.ProviderDomain;
-using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.Configuration;
-using Zpp.DbCache;
-using Zpp.Mrp.NodeManagement;
-using Zpp.Utils;
-using Zpp.WrappersForPrimitives;
+using Zpp.DataLayer;
+using Zpp.DataLayer.DemandDomain;
+using Zpp.DataLayer.ProviderDomain;
+using Zpp.DataLayer.ProviderDomain.Wrappers;
+using Zpp.Mrp.impl;
+using Zpp.Util;
 
-namespace Zpp.Mrp.PurchaseManagement
+namespace Zpp.Purchase.impl
 {
     public class PurchaseManager
     {

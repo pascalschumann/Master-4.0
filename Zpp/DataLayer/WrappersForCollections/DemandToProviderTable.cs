@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.DataModel;
-using Zpp.Common.DemandDomain;
-using Zpp.Common.ProviderDomain;
+using Zpp.DataLayer.DemandDomain;
+using Zpp.DataLayer.ProviderDomain;
 
-namespace Zpp.WrappersForCollections
+namespace Zpp.DataLayer.WrappersForCollections
 {
     /**
      * wraps T_DemandToProvider

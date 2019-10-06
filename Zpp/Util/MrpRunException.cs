@@ -1,6 +1,6 @@
 using System;
 
-namespace Zpp.Utils
+namespace Zpp.Util
 {
     public class MrpRunException : SystemException
     {

@@ -1,13 +1,6 @@
-using System.Collections.Generic;
-using Master40.DB.Data.WrappersForPrimitives;
-using Master40.DB.DataModel;
-using Zpp.Common.ProviderDomain;
-using Zpp.Common.ProviderDomain.WrappersForCollections;
-using Zpp.DbCache;
-using Zpp.Mrp.NodeManagement;
-using Zpp.WrappersForPrimitives;
+using Zpp.Mrp;
 
-namespace Zpp.Mrp.StockManagement
+namespace Zpp.Stock
 {
     public interface IStockManager : IProviderManager
     {

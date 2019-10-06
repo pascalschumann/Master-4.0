@@ -1,6 +1,6 @@
 using Xunit;
 using Zpp.Configuration;
-using Zpp.DbCache;
+using Zpp.DataLayer;
 
 namespace Zpp.Test.Unit_Tests.Demand
 {

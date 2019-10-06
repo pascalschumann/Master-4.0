@@ -1,4 +1,4 @@
-namespace Zpp.Mrp.ProductionManagement.ProductionTypes
+namespace Zpp.Production.impl.ProductionTypes
 {
     public enum ProductionType
     {

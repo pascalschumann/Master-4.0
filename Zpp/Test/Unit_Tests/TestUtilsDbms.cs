@@ -1,7 +1,7 @@
 using Master40.DB.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
-using Zpp.Utils;
+using Zpp.Util;
 
 namespace Zpp.Test.Unit_Tests
 {

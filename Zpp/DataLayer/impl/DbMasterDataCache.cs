@@ -6,13 +6,11 @@ using Master40.DB.Data.Context;
 using Master40.DB.Data.Initializer.Tables;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
-using Zpp.Common.DemandDomain;
-using Zpp.Common.DemandDomain.Wrappers;
-using Zpp.Common.DemandDomain.WrappersForCollections;
-using Zpp.Mrp.MachineManagement;
-using Zpp.WrappersForCollections;
+using Microsoft.EntityFrameworkCore;
+using Zpp.DataLayer.WrappersForCollections;
+using Zpp.Scheduling.impl.JobShop.impl;
 
-namespace Zpp.DbCache
+namespace Zpp.DataLayer.impl
 {
     /**
      * MasterData includes T_CustomerOrders and T_CustomerOrderParts, since they will not be changed by MRP-Run
@@ -46,7 +44,7 @@ namespace Zpp.DbCache
             _productionDomainContext = productionDomainContext;
 
             // cache tables
-            _articles = new MasterDataTable<M_Article>(_productionDomainContext.Articles);
+            _articles = new MasterDataTable<M_Article>(_productionDomainContext.Articles.Include(x=>x.ArticleType).ToList());
             _articleBoms = new MasterDataTable<M_ArticleBom>(_productionDomainContext.ArticleBoms);
             _articleToBusinessPartners =
                 new MasterDataTable<M_ArticleToBusinessPartner>(_productionDomainContext.ArticleToBusinessPartners);

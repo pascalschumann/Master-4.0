@@ -1,9 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
-using Master40.DB.Data.Helper;
 
-namespace Zpp.Utils
+namespace Zpp.Util
 {
     public static class Constants
     {

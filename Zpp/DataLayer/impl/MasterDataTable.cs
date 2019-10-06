@@ -4,9 +4,9 @@ using System.Linq;
 using Master40.DB;
 using Master40.DB.Data.WrappersForPrimitives;
 using Microsoft.EntityFrameworkCore;
-using Zpp.Utils;
+using Zpp.Util;
 
-namespace Zpp.DbCache
+namespace Zpp.DataLayer.impl
 {
     public class MasterDataTable<T> : IMasterDataTable<T> where T : BaseEntity
     {
@@ -16,6 +16,12 @@ namespace Zpp.DbCache
         public MasterDataTable(DbSet<T> entitySet)
         {
             _entities = entitySet.ToList();
+            _entitesAsDictionary = entityListToDictionary(_entities);
+        }
+        
+        public MasterDataTable(List<T> entitySetAsList)
+        {
+            _entities = entitySetAsList;
             _entitesAsDictionary = entityListToDictionary(_entities);
         }
         

@@ -1,9 +1,7 @@
 using Master40.DB.Data.WrappersForPrimitives;
-using Zpp.Common.DemandDomain;
-using Zpp.Common.ProviderDomain;
-using Zpp.Common.ProviderDomain.WrappersForCollections;
-using Zpp.DbCache;
-using Zpp.Mrp.NodeManagement;
+using Zpp.DataLayer.DemandDomain;
+using Zpp.DataLayer.ProviderDomain.WrappersForCollections;
+using Zpp.Mrp.impl;
 
 namespace Zpp.Mrp
 {

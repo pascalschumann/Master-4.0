@@ -2,12 +2,10 @@ using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Master40.DB.Enums;
 using Master40.DB.Interfaces;
-using Zpp.Common.DemandDomain.WrappersForCollections;
 using Zpp.Configuration;
-using Zpp.DbCache;
-using Zpp.WrappersForPrimitives;
+using Zpp.DataLayer.DemandDomain.WrappersForCollections;
 
-namespace Zpp.Common.ProviderDomain.Wrappers
+namespace Zpp.DataLayer.ProviderDomain.Wrappers
 {
     /**
      * wraps T_PurchaseOrderPart

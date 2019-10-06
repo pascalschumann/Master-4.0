@@ -1,8 +1,9 @@
-using Zpp.Common.DemandDomain.WrappersForCollections;
+using Master40.DB.Data.WrappersForPrimitives;
 using Zpp.Configuration;
-using Zpp.DbCache;
+using Zpp.DataLayer;
+using Zpp.DataLayer.DemandDomain.WrappersForCollections;
 using Zpp.Mrp;
-using Zpp.Simulation.Types;
+using Zpp.Simulation.impl.Types;
 
 namespace Zpp.ZppSimulator.impl
 {
@@ -10,24 +11,25 @@ namespace Zpp.ZppSimulator.impl
     {
         const int _interval = 1430;
 
-        public void StartOneCycle(SimulationInterval simulationInterval)
+        public void StartOneCycle(SimulationInterval simulationInterval,
+            Quantity customerOrderQuantity)
         {
-            IMrpRun mrpRun = new MrpRun();
+            IMrp mrp = new Mrp.impl.Mrp();
 
             // init transactionData
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.ReloadTransactionData();
-            
-            mrpRun.CreateOrders(simulationInterval);
+
+            mrp.CreateOrders(simulationInterval, customerOrderQuantity);
 
             // execute mrp2
             Demands unsatisfiedCustomerOrderParts = ZppConfiguration.CacheManager.GetAggregator()
                 .GetPendingCustomerOrderParts();
-            mrpRun.ManufacturingResourcePlanning(unsatisfiedCustomerOrderParts);
+            mrp.ManufacturingResourcePlanning(unsatisfiedCustomerOrderParts);
 
-            mrpRun.CreateConfirmations(simulationInterval);
+            mrp.CreateConfirmations(simulationInterval);
 
-            mrpRun.ApplyConfirmations();
+            mrp.ApplyConfirmations();
 
             // persisting cached/created data
             dbTransactionData.PersistDbCache();
@@ -35,28 +37,30 @@ namespace Zpp.ZppSimulator.impl
 
         public void StartTestCycle()
         {
-            int cycles = ZppConfiguration.CacheManager
-                .GetTestConfiguration().CustomerOrderPartQuantity;
+            Quantity customerOrderPartQuantity = new Quantity(ZppConfiguration.CacheManager
+                .GetTestConfiguration().CustomerOrderPartQuantity);
 
-            for (int i = 0; i < cycles; i++)
+            SimulationInterval simulationInterval = new SimulationInterval(0, _interval);
+            // StartOneCycle(simulationInterval, customerOrderPartQuantity);
+            StartOneCycle(simulationInterval, new Quantity(2));
+            
+            /*for (int i = 0; i < 100; i++)
             {
                 SimulationInterval simulationInterval =
-                    new SimulationInterval(i * _interval,
-                        _interval * (i + 1));
-                StartOneCycle(simulationInterval);
-            }
+                    new SimulationInterval(i * _interval, _interval * (i + 1));
+                StartOneCycle(simulationInterval, new Quantity(5));
+            }*/
         }
 
         public void StartPerformanceStudy()
         {
-            const int cycles = 100; // approximately equivalent to 500 COPs
+            const int cycles = 100; // a 5 CO with one COP
 
             for (int i = 0; i < cycles; i++)
             {
                 SimulationInterval simulationInterval =
-                    new SimulationInterval(i * _interval,
-                        _interval * (i + 1));
-                StartOneCycle(simulationInterval);
+                    new SimulationInterval(i * _interval, _interval * (i + 1));
+                StartOneCycle(simulationInterval, new Quantity(5));
             }
         }
     }

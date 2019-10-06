@@ -1,12 +1,10 @@
 using Master40.DB.Data.WrappersForPrimitives;
-using Xunit;
-using Zpp.Common.DemandDomain;
-using Zpp.Common.ProviderDomain;
 using Zpp.Configuration;
-using Zpp.DbCache;
-using Zpp.Utils;
+using Zpp.DataLayer;
+using Zpp.DataLayer.DemandDomain;
+using Zpp.DataLayer.ProviderDomain;
 
-namespace Zpp.OrderGraph
+namespace Zpp.Util.Graph.impl
 {
     public class DemandToProviderDirectedGraph : DirectedGraph, IDirectedGraph<INode>
     {

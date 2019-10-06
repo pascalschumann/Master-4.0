@@ -1,6 +1,7 @@
 using EntityFrameworkCore.Cacheable;
-using Zpp.DbCache;
-using Zpp.Mrp.ProductionManagement.ProductionTypes;
+using Zpp.DataLayer;
+using Zpp.DataLayer.impl;
+using Zpp.Production.impl.ProductionTypes;
 
 namespace Zpp.Configuration
 {

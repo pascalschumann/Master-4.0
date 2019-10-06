@@ -1,49 +1,38 @@
 using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using Master40.DB.Data.Context;
-using Master40.DB.Data.Helper;
-using Master40.DB.DataModel;
+using Master40.DB.Data.WrappersForPrimitives;
 using Master40.SimulationCore.DistributionProvider;
 using Master40.SimulationCore.Environment.Options;
 using Priority_Queue;
-using Zpp.Common.DemandDomain;
-using Zpp.Common.DemandDomain.Wrappers;
-using Zpp.Common.DemandDomain.WrappersForCollections;
-using Zpp.Common.ProviderDomain;
-using Zpp.Common.ProviderDomain.Wrappers;
-using Zpp.Common.ProviderDomain.WrappersForCollections;
 using Zpp.Configuration;
 using Zpp.DataLayer;
-using Zpp.DbCache;
-using Zpp.Mrp.MachineManagement;
-using Zpp.Mrp.NodeManagement;
-using Zpp.Mrp.Scheduling;
-using Zpp.Mrp.StockManagement;
-using Zpp.OrderGraph;
-using Zpp.Simulation.Types;
+using Zpp.DataLayer.DemandDomain;
+using Zpp.DataLayer.DemandDomain.Wrappers;
+using Zpp.DataLayer.DemandDomain.WrappersForCollections;
+using Zpp.DataLayer.WrappersForCollections;
+using Zpp.Scheduling;
+using Zpp.Scheduling.impl;
+using Zpp.Scheduling.impl.JobShop.impl;
+using Zpp.Simulation.impl.Types;
 using Zpp.Test.Configuration.Scenarios;
-using Zpp.Utils;
-using Zpp.Utils.Queue;
-using Zpp.WrappersForCollections;
+using Zpp.Util;
+using Zpp.Util.Graph;
+using Zpp.Util.Graph.impl;
+using Zpp.Util.Queue;
 
-namespace Zpp.Mrp
+namespace Zpp.Mrp.impl
 {
-    public class MrpRun : IMrpRun
+    public class Mrp : IMrp
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private readonly JobShopScheduler _jobShopScheduler = new JobShopScheduler();
-        private readonly OrderGenerator _orderGenerator;
+        private IOrderGenerator _orderGenerator = null;
 
-        public MrpRun()
+        public Mrp()
         {
             ProductionDomainContext productionDomainContext =
                 ZppConfiguration.CacheManager.GetProductionDomainContext();
-
-            _orderGenerator = TestScenario.GetOrderGenerator(productionDomainContext,
-                new MinDeliveryTime(200), new MaxDeliveryTime(1430),
-                new OrderArrivalRate(0.025));
         }
 
         public EntityCollector MaterialRequirementsPlanning(Demand demand,
@@ -186,7 +175,7 @@ namespace Zpp.Mrp
             {
                 demandOrProvider.SetDone();
             }
-            
+
             // customerOrderParts: set done if all childs are done
             DemandToProviderDirectedGraph demandToProviderGraph =
                 new DemandToProviderDirectedGraph();
@@ -239,14 +228,31 @@ namespace Zpp.Mrp
             // TODO
         }
 
-        public void CreateOrders(SimulationInterval interval)
+        public void CreateOrders(SimulationInterval interval, Quantity customerOrderQuantity)
         {
+            IDbMasterDataCache masterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.GetDbTransactionData();
+            // (Menge der zu erzeugenden auftrage im intervall +1) / (die dauer des intervalls)
+            // OrderArrivalRate orderArrivalRate = new OrderArrivalRate(0.025);
+            OrderArrivalRate orderArrivalRate =
+                new OrderArrivalRate((double) (customerOrderQuantity.GetValue() * 5) /
+                                     interval.Interval);
+            if (_orderGenerator == null ||
+                _orderGenerator.GetOrderArrivalRate().Equals(orderArrivalRate) == false)
+            {
+                _orderGenerator = TestScenario.GetOrderGenerator(new MinDeliveryTime(200),
+                    new MaxDeliveryTime(1430), orderArrivalRate, masterDataCache.M_ArticleGetAll(),
+                    masterDataCache.M_BusinessPartnerGetAll());
+            }
+
             var creationTime = interval.StartAt;
             var endOrderCreation = interval.EndAt;
 
-            while (creationTime < endOrderCreation)
+            // Generate exact given quantity of customerOrders
+            while (creationTime < endOrderCreation ||
+                   dbTransactionData.T_CustomerOrderGetAll().Count <
+                   customerOrderQuantity.GetValue())
             {
                 var order = _orderGenerator.GetNewRandomOrder(time: creationTime);
                 foreach (var orderPart in order.CustomerOrderParts)
@@ -258,7 +264,7 @@ namespace Zpp.Mrp
 
                 dbTransactionData.CustomerOrderAdd(order);
 
-                // TODO : Handle this another way
+                // TODO : Handle this another way (Why Martin ?)
                 creationTime += order.CreationTime;
             }
         }

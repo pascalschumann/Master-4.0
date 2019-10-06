@@ -1,4 +1,5 @@
 using Zpp.LotSize;
+using Zpp.LotSize.Impl;
 
 namespace Zpp.Test.Configuration
 {

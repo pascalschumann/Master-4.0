@@ -3,21 +3,17 @@ using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Master40.DB.Enums;
-using Master40.DB.Interfaces;
-using Zpp.Common.DemandDomain;
-using Zpp.Common.DemandDomain.Wrappers;
-using Zpp.Common.DemandDomain.WrappersForCollections;
-using Zpp.Common.ProviderDomain;
-using Zpp.Common.ProviderDomain.Wrappers;
-using Zpp.Common.ProviderDomain.WrappersForCollections;
 using Zpp.Configuration;
-using Zpp.DbCache;
-using Zpp.Mrp.NodeManagement;
-using Zpp.Utils;
-using Zpp.WrappersForCollections;
-using Zpp.WrappersForPrimitives;
+using Zpp.DataLayer;
+using Zpp.DataLayer.DemandDomain;
+using Zpp.DataLayer.DemandDomain.Wrappers;
+using Zpp.DataLayer.ProviderDomain;
+using Zpp.DataLayer.ProviderDomain.Wrappers;
+using Zpp.DataLayer.ProviderDomain.WrappersForCollections;
+using Zpp.Mrp.impl;
+using Zpp.Util;
 
-namespace Zpp.Mrp.StockManagement
+namespace Zpp.Stock.impl
 {
     public class StockManager
     {
@@ -175,8 +171,8 @@ namespace Zpp.Mrp.StockManagement
 
             if (remainingQuantity.IsGreaterThan(Quantity.Null()))
             {
-                LotSize.LotSize lotSizes =
-                    new LotSize.LotSize(remainingQuantity, provider.GetArticleId());
+                LotSize.Impl.LotSize lotSizes =
+                    new LotSize.Impl.LotSize(remainingQuantity, provider.GetArticleId());
                 Quantity lotSizeSum = Quantity.Null();
                 foreach (var lotSize in lotSizes.GetLotSizes())
                 {

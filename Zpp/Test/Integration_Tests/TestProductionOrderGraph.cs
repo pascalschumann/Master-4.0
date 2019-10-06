@@ -2,11 +2,12 @@ using System.IO;
 using System.Text;
 using Xunit;
 using Zpp.Configuration;
-using Zpp.DbCache;
+using Zpp.DataLayer;
 using Zpp.Mrp;
-using Zpp.OrderGraph;
 using Zpp.Test.Configuration;
-using Zpp.Utils;
+using Zpp.Util;
+using Zpp.Util.Graph;
+using Zpp.Util.Graph.impl;
 using Zpp.ZppSimulator;
 
 namespace Zpp.Test.Integration_Tests

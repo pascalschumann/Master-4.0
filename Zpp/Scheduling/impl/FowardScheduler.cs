@@ -1,17 +1,13 @@
-using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
-using Zpp.Common.DemandDomain.Wrappers;
-using Zpp.Common.DemandDomain.WrappersForCollections;
-using Zpp.Common.ProviderDomain.WrappersForCollections;
 using Zpp.Configuration;
 using Zpp.DataLayer;
-using Zpp.DbCache;
-using Zpp.Mrp.MachineManagement;
-using Zpp.OrderGraph;
-using Zpp.WrappersForPrimitives;
+using Zpp.DataLayer.DemandDomain.Wrappers;
+using Zpp.Util.Graph;
+using Zpp.Util.Graph.impl;
+using Zpp.Util.StackSet;
 
-namespace Zpp.Mrp.Scheduling
+namespace Zpp.Scheduling.impl
 {
     public class ForwardScheduler : IForwardScheduler
     {

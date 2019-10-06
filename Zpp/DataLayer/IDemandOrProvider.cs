@@ -1,6 +1,5 @@
 using Master40.DB.Data.WrappersForPrimitives;
-using Zpp.OrderGraph;
-using Zpp.WrappersForPrimitives;
+using Zpp.Util.Graph;
 
 namespace Zpp.DataLayer
 {

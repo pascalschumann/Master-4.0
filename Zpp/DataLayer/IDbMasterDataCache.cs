@@ -1,11 +1,10 @@
 using System.Collections.Generic;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
-using Zpp.Common.DemandDomain.WrappersForCollections;
-using Zpp.Mrp.MachineManagement;
-using Zpp.WrappersForCollections;
+using Zpp.DataLayer.WrappersForCollections;
+using Zpp.Scheduling.impl.JobShop.impl;
 
-namespace Zpp.DbCache
+namespace Zpp.DataLayer
 {
     /// <summary>
     /// A wrapper around the ProductionDomainContext (e.g. to find DB calls), that should be DB Cache in future.

@@ -1,11 +1,9 @@
 using System.Collections.Generic;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.Interfaces;
-using Zpp.DbCache;
-using Zpp.WrappersForCollections;
-using Zpp.WrappersForPrimitives;
+using Zpp.DataLayer.WrappersForCollections;
 
-namespace Zpp.Common.DemandDomain.WrappersForCollections
+namespace Zpp.DataLayer.DemandDomain.WrappersForCollections
 {
     /**
      * wraps the collection with all demands

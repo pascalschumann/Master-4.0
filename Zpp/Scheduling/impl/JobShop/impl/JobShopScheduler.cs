@@ -2,16 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
-using Microsoft.EntityFrameworkCore.Internal;
-using Zpp.Common.DemandDomain.Wrappers;
-using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.Configuration;
-using Zpp.DbCache;
-using Zpp.OrderGraph;
-using Zpp.Utils;
-using Zpp.WrappersForPrimitives;
+using Zpp.DataLayer;
+using Zpp.DataLayer.ProviderDomain.Wrappers;
+using Zpp.Util;
+using Zpp.Util.Graph;
+using Zpp.Util.Graph.impl;
+using Zpp.Util.StackSet;
 
-namespace Zpp.Mrp.MachineManagement
+namespace Zpp.Scheduling.impl.JobShop.impl
 {
     public class JobShopScheduler : IJobShopScheduler
     {

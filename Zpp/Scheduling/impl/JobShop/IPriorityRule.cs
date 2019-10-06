@@ -1,10 +1,8 @@
 using System.Collections.Generic;
 using Master40.DB.Data.WrappersForPrimitives;
-using Zpp.Common.ProviderDomain.Wrappers;
-using Zpp.DbCache;
-using Zpp.WrappersForPrimitives;
+using Zpp.DataLayer.ProviderDomain.Wrappers;
 
-namespace Zpp.Mrp.MachineManagement
+namespace Zpp.Scheduling.impl.JobShop
 {
     public interface IPriorityRule
     {

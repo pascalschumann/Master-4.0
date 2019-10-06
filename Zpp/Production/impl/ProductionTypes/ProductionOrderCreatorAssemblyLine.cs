@@ -1,13 +1,11 @@
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
-using Zpp.Common.DemandDomain;
-using Zpp.Common.DemandDomain.WrappersForCollections;
-using Zpp.Common.ProviderDomain.Wrappers;
-using Zpp.Common.ProviderDomain.WrappersForCollections;
-using Zpp.DbCache;
-using Zpp.Utils;
+using Zpp.DataLayer.DemandDomain;
+using Zpp.DataLayer.ProviderDomain.Wrappers;
+using Zpp.Mrp.impl;
+using Zpp.Util;
 
-namespace Zpp.Mrp.ProductionManagement.ProductionTypes
+namespace Zpp.Production.impl.ProductionTypes
 {
     /**
      * Here ProductionOrders.Count == given quantity productionOrders will be created

@@ -1,9 +1,7 @@
-using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
-using Zpp.WrappersForPrimitives;
 
-namespace Zpp.Mrp.MachineManagement
+namespace Zpp.Scheduling.impl.JobShop.impl
 {
     public class Resource : IResource
     {

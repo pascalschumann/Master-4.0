@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using Master40.DB.DataModel;
-using Zpp.Common.ProviderDomain.Wrappers;
-using Zpp.DbCache;
+using Zpp.DataLayer.ProviderDomain.Wrappers;
 
-namespace Zpp.Common.ProviderDomain.WrappersForCollections
+namespace Zpp.DataLayer.ProviderDomain.WrappersForCollections
 {
     /**
      * wraps the collection with all productionOrders

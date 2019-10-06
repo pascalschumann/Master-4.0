@@ -1,11 +1,12 @@
-using Zpp.Common.DemandDomain;
-using Zpp.Common.DemandDomain.WrappersForCollections;
-using Zpp.Mrp.StockManagement;
-using Zpp.Simulation.Types;
+using Master40.DB.Data.WrappersForPrimitives;
+using Zpp.DataLayer.DemandDomain;
+using Zpp.DataLayer.DemandDomain.WrappersForCollections;
+using Zpp.Mrp.impl;
+using Zpp.Simulation.impl.Types;
 
 namespace Zpp.Mrp
 {
-    public interface IMrpRun
+    public interface IMrp
     {
         void ManufacturingResourcePlanning(IDemands dbDemands);
         
@@ -28,6 +29,6 @@ namespace Zpp.Mrp
          */
         void ApplyConfirmations();
 
-        void CreateOrders(SimulationInterval interval);
+        void CreateOrders(SimulationInterval interval, Quantity customerOrderQuantity);
     }
 }

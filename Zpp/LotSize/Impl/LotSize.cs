@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using Master40.DB.Data.WrappersForPrimitives;
 using Zpp.Configuration;
-using Zpp.DbCache;
+using Zpp.DataLayer;
 
-namespace Zpp.LotSize
+namespace Zpp.LotSize.Impl
 {
     public class LotSize : ILotSize
     {

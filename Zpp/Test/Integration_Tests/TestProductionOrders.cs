@@ -2,9 +2,9 @@ using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Xunit;
 using Zpp.Configuration;
-using Zpp.DbCache;
+using Zpp.DataLayer;
 using Zpp.Mrp;
-using Zpp.Mrp.ProductionManagement.ProductionTypes;
+using Zpp.Production.impl.ProductionTypes;
 using Zpp.ZppSimulator;
 
 namespace Zpp.Test.Integration_Tests

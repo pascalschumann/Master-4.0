@@ -1,7 +1,6 @@
-using Zpp.Common.DemandDomain.Wrappers;
-using Zpp.Common.DemandDomain.WrappersForCollections;
-using Zpp.Common.ProviderDomain.Wrappers;
-using Zpp.OrderGraph;
+using Zpp.DataLayer.DemandDomain.Wrappers;
+using Zpp.DataLayer.ProviderDomain.Wrappers;
+using Zpp.Util.Graph;
 
 namespace Zpp.GraphicalRepresentation
 {

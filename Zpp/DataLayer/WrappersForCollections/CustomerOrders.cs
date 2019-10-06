@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using Master40.DB.DataModel;
-using Zpp.WrapperForEntities;
 
-namespace Zpp.WrappersForCollections
+namespace Zpp.DataLayer.WrappersForCollections
 {
     public class CustomerOrders : CollectionWrapperWithStackSet<T_CustomerOrder>
     {

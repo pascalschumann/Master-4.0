@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using Zpp.DataLayer;
 
-namespace Zpp.WrappersForCollections
+namespace Zpp.DataLayer.WrappersForCollections
 {
     public class DemandOrProviders: CollectionWrapperWithStackSet<IDemandOrProvider>
     {

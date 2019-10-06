@@ -1,10 +1,7 @@
-using System;
-using Zpp.Common.DemandDomain.Wrappers;
-using Zpp.Common.ProviderDomain.Wrappers;
-using Zpp.Common.ProviderDomain.WrappersForCollections;
-using Zpp.Mrp.MachineManagement;
+using Zpp.DataLayer.ProviderDomain.WrappersForCollections;
+using Zpp.Util.StackSet;
 
-namespace Zpp.OrderGraph
+namespace Zpp.Util.Graph
 {
     public interface IProductionOrderToOperationGraph<TNode>: IDirectedGraph<TNode>
     {

@@ -1,18 +1,13 @@
-using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Master40.DB.Interfaces;
-using Zpp.Common.DemandDomain.WrappersForCollections;
-using Zpp.Common.ProviderDomain.Wrappers;
 using Zpp.Configuration;
-using Zpp.DataLayer;
-using Zpp.DbCache;
-using Zpp.OrderGraph;
-using Zpp.Utils;
-using Zpp.WrappersForCollections;
-using Zpp.WrappersForPrimitives;
+using Zpp.DataLayer.ProviderDomain.Wrappers;
+using Zpp.Util;
+using Zpp.Util.Graph;
+using Zpp.Util.Graph.impl;
 
-namespace Zpp.Common.ProviderDomain
+namespace Zpp.DataLayer.ProviderDomain
 {
     /**
      * Provides default implementations for interface methods, can be moved to interface once C# 8.0 is released

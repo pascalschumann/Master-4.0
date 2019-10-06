@@ -3,15 +3,15 @@ using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Master40.DB.Interfaces;
-using Zpp.Common.DemandDomain;
-using Zpp.Common.DemandDomain.WrappersForCollections;
-using Zpp.Common.ProviderDomain;
-using Zpp.Common.ProviderDomain.WrappersForCollections;
 using Zpp.DataLayer;
-using Zpp.OrderGraph;
-using Zpp.WrappersForCollections;
+using Zpp.DataLayer.DemandDomain;
+using Zpp.DataLayer.DemandDomain.WrappersForCollections;
+using Zpp.DataLayer.ProviderDomain;
+using Zpp.DataLayer.ProviderDomain.WrappersForCollections;
+using Zpp.DataLayer.WrappersForCollections;
+using Zpp.Util.Graph.impl;
 
-namespace Zpp.Mrp
+namespace Zpp.Mrp.impl
 {
     public class EntityCollector
     {

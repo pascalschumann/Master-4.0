@@ -1,17 +1,13 @@
 using Master40.DB.Data.WrappersForPrimitives;
-using Zpp.Common.DemandDomain;
-using Zpp.Common.DemandDomain.Wrappers;
-using Zpp.Common.ProviderDomain;
-using Zpp.Common.ProviderDomain.Wrappers;
-using Zpp.Common.ProviderDomain.WrappersForCollections;
-using Zpp.DbCache;
-using Zpp.Mrp.NodeManagement;
-using Zpp.Mrp.ProductionManagement;
-using Zpp.Mrp.PurchaseManagement;
-using Zpp.Mrp.StockManagement;
-using Zpp.Production;
+using Zpp.DataLayer.DemandDomain;
+using Zpp.DataLayer.DemandDomain.Wrappers;
+using Zpp.DataLayer.ProviderDomain.Wrappers;
+using Zpp.DataLayer.ProviderDomain.WrappersForCollections;
+using Zpp.Production.impl;
+using Zpp.Purchase.impl;
+using Zpp.Stock.impl;
 
-namespace Zpp.Mrp
+namespace Zpp.Mrp.impl
 {
     /**
      * abstracts over PurchaseManager+ProductionManager+Stockmanager

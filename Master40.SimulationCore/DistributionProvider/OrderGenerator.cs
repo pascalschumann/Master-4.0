@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Master40.SimulationCore.DistributionProvider
 {
-    public class OrderGenerator
+    public class OrderGenerator : IOrderGenerator
     {
         private bool _debug { get; set; }
         private List<int> _productIds { get; set; }
@@ -51,6 +51,11 @@ namespace Master40.SimulationCore.DistributionProvider
             // only Returns new Order does not save context.
             var order = _productionDomainContext.CreateNewOrder(articleId: productId, amount: 1, creationTime: time + creationTime, dueTime: due);
             return order;
+        }
+
+        public OrderArrivalRate GetOrderArrivalRate()
+        {
+            throw new NotImplementedException();
         }
     }
 }

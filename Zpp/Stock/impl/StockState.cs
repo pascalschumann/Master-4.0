@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Master40.DB.DataModel;
 using Newtonsoft.Json;
 
-namespace Zpp.Mrp.StockManagement
+namespace Zpp.Stock.impl
 {
     public class StockState
     {

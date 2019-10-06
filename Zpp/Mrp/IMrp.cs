@@ -29,6 +29,14 @@ namespace Zpp.Mrp
          */
         void ApplyConfirmations();
 
+        /**
+         * For Graph generating: Customize delta so, that more customerOrders are created than needed, works only for numbers smaller than 10
+         */
         void CreateOrders(SimulationInterval interval, Quantity customerOrderQuantity);
+
+        /**
+         * Uses default delta 0.025
+         */
+        void CreateOrders(SimulationInterval interval);
     }
 }

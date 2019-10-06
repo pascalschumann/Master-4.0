@@ -228,16 +228,31 @@ namespace Zpp.Mrp.impl
             // TODO
         }
 
+        public void CreateOrders(SimulationInterval interval)
+        {
+            CreateOrders(interval, null);
+        }
+
         public void CreateOrders(SimulationInterval interval, Quantity customerOrderQuantity)
         {
             IDbMasterDataCache masterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.GetDbTransactionData();
-            // (Menge der zu erzeugenden auftrage im intervall +1) / (die dauer des intervalls)
-            // OrderArrivalRate orderArrivalRate = new OrderArrivalRate(0.025);
-            OrderArrivalRate orderArrivalRate =
-                new OrderArrivalRate((double) (customerOrderQuantity.GetValue() * 5) /
-                                     interval.Interval);
+            OrderArrivalRate orderArrivalRate;
+            if (customerOrderQuantity == null)
+            {
+                orderArrivalRate =
+                    new OrderArrivalRate(0.025);
+            }
+            else
+            {
+                // (Menge der zu erzeugenden auftrage im intervall +1) / (die dauer des intervalls)
+                // works only small numbers e.g. 10
+                orderArrivalRate =
+                    new OrderArrivalRate((double) (customerOrderQuantity.GetValue() * 2) /
+                                         interval.Interval);
+            }
+
             if (_orderGenerator == null ||
                 _orderGenerator.GetOrderArrivalRate().Equals(orderArrivalRate) == false)
             {
@@ -250,7 +265,7 @@ namespace Zpp.Mrp.impl
             var endOrderCreation = interval.EndAt;
 
             // Generate exact given quantity of customerOrders
-            while (creationTime < endOrderCreation ||
+            while (creationTime < endOrderCreation &&
                    dbTransactionData.T_CustomerOrderGetAll().Count <
                    customerOrderQuantity.GetValue())
             {

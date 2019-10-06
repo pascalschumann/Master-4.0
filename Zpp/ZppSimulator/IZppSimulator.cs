@@ -8,6 +8,8 @@ namespace Zpp.ZppSimulator
     {
         void StartOneCycle(SimulationInterval simulationInterval, Quantity customerOrderQuantity);
 
+        void StartOneCycle(SimulationInterval simulationInterval);
+
         void StartPerformanceStudy();
 
         void StartTestCycle();

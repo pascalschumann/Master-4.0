@@ -9,7 +9,12 @@ namespace Zpp.ZppSimulator.impl
 {
     public class ZppSimulator : IZppSimulator
     {
-        const int _interval = 1430;
+        const int _interval = 1440;
+
+        public void StartOneCycle(SimulationInterval simulationInterval)
+        {
+            StartOneCycle(simulationInterval, null);
+        }
 
         public void StartOneCycle(SimulationInterval simulationInterval,
             Quantity customerOrderQuantity)
@@ -43,24 +48,17 @@ namespace Zpp.ZppSimulator.impl
             SimulationInterval simulationInterval = new SimulationInterval(0, _interval);
             // StartOneCycle(simulationInterval, customerOrderPartQuantity);
             StartOneCycle(simulationInterval, new Quantity(2));
-            
-            /*for (int i = 0; i < 100; i++)
-            {
-                SimulationInterval simulationInterval =
-                    new SimulationInterval(i * _interval, _interval * (i + 1));
-                StartOneCycle(simulationInterval, new Quantity(5));
-            }*/
         }
 
         public void StartPerformanceStudy()
         {
-            const int cycles = 100; // a 5 CO with one COP
+            const int maxSimulatingTime = 20160;
 
-            for (int i = 0; i < cycles; i++)
+            for (int i = 0; i * _interval < maxSimulatingTime; i++)
             {
                 SimulationInterval simulationInterval =
                     new SimulationInterval(i * _interval, _interval * (i + 1));
-                StartOneCycle(simulationInterval, new Quantity(5));
+                StartOneCycle(simulationInterval);
             }
         }
     }

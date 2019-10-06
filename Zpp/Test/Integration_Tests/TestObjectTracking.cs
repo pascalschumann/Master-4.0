@@ -3,6 +3,7 @@ using System.IO;
 using Master40.DB.Data.Helper;
 using Xunit;
 using Zpp.Mrp;
+using Zpp.ZppSimulator;
 
 namespace Zpp.Test.Integration_Tests
 {
@@ -19,8 +20,8 @@ namespace Zpp.Test.Integration_Tests
         public void TestTrackingOfObjects()
         {
 
-            IMrpRun mrpRun = new MrpRun();
-            mrpRun.Start();
+            IZppSimulator zppSimulator = new ZppSimulator.impl.ZppSimulator();
+            zppSimulator.StartTestCycle();
             
             string usedIdsFileName = IdGenerator.WriteToFile();
             

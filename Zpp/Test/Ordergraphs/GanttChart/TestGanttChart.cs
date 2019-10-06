@@ -7,6 +7,8 @@ using Zpp.GraphicalRepresentation;
 using Zpp.Mrp;
 using Zpp.Test.Configuration;
 using Zpp.Utils;
+using Zpp.ZppSimulator;
+using Zpp.ZppSimulator.impl;
 
 namespace Zpp.Test.Ordergraphs.GanttChart
 {
@@ -71,8 +73,8 @@ namespace Zpp.Test.Ordergraphs.GanttChart
         {
             InitTestScenario(testConfiguration);
 
-            IMrpRun mrpRun = new MrpRun();
-            mrpRun.Start();
+            IZppSimulator zppSimulator = new ZppSimulator.impl.ZppSimulator();
+            zppSimulator.StartTestCycle();
         }
     }
 }

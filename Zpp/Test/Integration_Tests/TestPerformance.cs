@@ -1,6 +1,7 @@
 using System;
 using Xunit;
 using Zpp.Mrp;
+using Zpp.ZppSimulator;
 
 namespace Zpp.Test.Integration_Tests
 {
@@ -19,8 +20,8 @@ namespace Zpp.Test.Integration_Tests
         {
             DateTime startTime = DateTime.UtcNow;
 
-            IMrpRun mrpRun = new MrpRun();
-            mrpRun.Start();
+            IZppSimulator zppSimulator = new ZppSimulator.impl.ZppSimulator();
+            zppSimulator.StartTestCycle();
 
             DateTime endTime = DateTime.UtcNow;
             double neededTime = (endTime - startTime).TotalMilliseconds / 1000;

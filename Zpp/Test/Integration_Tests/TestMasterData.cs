@@ -4,6 +4,7 @@ using System.Linq;
 using Xunit;
 using Zpp.Configuration;
 using Zpp.Mrp;
+using Zpp.ZppSimulator;
 
 namespace Zpp.Test.Integration_Tests
 {
@@ -20,8 +21,8 @@ namespace Zpp.Test.Integration_Tests
         {
             List<int> countsMasterDataBefore = CountMasterData();
 
-            IMrpRun mrpRun = new MrpRun();
-            mrpRun.Start();
+            IZppSimulator zppSimulator = new ZppSimulator.impl.ZppSimulator();
+            zppSimulator.StartTestCycle();
 
             // check certain constraints are not violated
 

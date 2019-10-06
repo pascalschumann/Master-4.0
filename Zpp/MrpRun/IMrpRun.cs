@@ -7,8 +7,6 @@ namespace Zpp.Mrp
 {
     public interface IMrpRun
     {
-        void Start();
-
         void ManufacturingResourcePlanning(IDemands dbDemands);
         
         EntityCollector MaterialRequirementsPlanning(Demand demand, IProviderManager providerManager);

@@ -49,7 +49,7 @@ namespace Zpp.DbCache
 
         DueTime GetEarliestPossibleStartTimeOf(ProductionOrderBom productionOrderBom);
 
-        Demands GetUnsatisfiedCustomerOrders();
+        Demands GetPendingCustomerOrderParts();
 
         DemandOrProviders GetDemandsOrProvidersWhereEndTimeIsWithinInterval(
             SimulationInterval simulationInterval, DemandOrProviders demandOrProviders);

@@ -215,21 +215,20 @@ namespace Zpp.DbCache
             return earliestStartTime;
         }
 
-        public Demands GetUnsatisfiedCustomerOrders()
+        public Demands GetPendingCustomerOrderParts()
         {
             Demands customerOrderParts = ZppConfiguration.CacheManager.GetDbTransactionData()
                 .T_CustomerOrderPartGetAll();
-            Demands unsatisfied = new Demands();
+            Demands pendingCustomerOrderParts = new Demands();
             foreach (var customerOrderPart in customerOrderParts)
             {
-                Providers childs = GetAllChildProvidersOf(customerOrderPart);
-                if (childs == null || childs.Any() == false)
+                if (customerOrderPart.IsDone() == false)
                 {
-                    unsatisfied.Add(customerOrderPart);
+                    pendingCustomerOrderParts.Add(customerOrderPart);
                 }
             }
 
-            return unsatisfied;
+            return pendingCustomerOrderParts;
         }
 
         public DemandOrProviders GetDemandsOrProvidersWhereStartTimeIsWithinInterval(SimulationInterval simulationInterval,

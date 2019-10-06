@@ -35,7 +35,6 @@ namespace Zpp.Mrp
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private readonly JobShopScheduler _jobShopScheduler = new JobShopScheduler();
         private readonly OrderGenerator _orderGenerator;
-        const int _interval = 1430;
 
         public MrpRun()
         {
@@ -43,42 +42,9 @@ namespace Zpp.Mrp
                 ZppConfiguration.CacheManager.GetProductionDomainContext();
 
             _orderGenerator = TestScenario.GetOrderGenerator(productionDomainContext,
-                new MinDeliveryTime(200), new MaxDeliveryTime(_interval),
+                new MinDeliveryTime(200), new MaxDeliveryTime(1430),
                 new OrderArrivalRate(0.025));
         }
-
-        /**
-         * Only at start the demands are customerOrders
-         */
-        public void Start()
-        {
-            int customerOrderPartQuantity = ZppConfiguration.CacheManager.GetTestConfiguration()
-                .CustomerOrderPartQuantity;
-
-            // for (int i = 0; i < customerOrderPartQuantity; i++)
-            for (int i = 0; i < 2; i++)
-            {
-                // init transactionData
-                IDbTransactionData dbTransactionData =
-                    ZppConfiguration.CacheManager.ReloadTransactionData();
-
-                var simulationInterval = new SimulationInterval(i * _interval, _interval * (i + 1));
-                CreateOrders(simulationInterval);
-
-                // execute mrp2
-                Demands unsatisfiedCustomerOrderParts = ZppConfiguration.CacheManager
-                    .GetAggregator().GetUnsatisfiedCustomerOrders();
-                ManufacturingResourcePlanning(unsatisfiedCustomerOrderParts);
-
-                CreateConfirmations(simulationInterval);
-
-                ApplyConfirmations();
-
-                // persisting cached/created data
-                dbTransactionData.PersistDbCache();
-            }
-        }
-
 
         public EntityCollector MaterialRequirementsPlanning(Demand demand,
             IProviderManager providerManager)
@@ -270,7 +236,7 @@ namespace Zpp.Mrp
              */
 
 
-            // _dbTransactionData.PersistDbCache();
+            // TODO
         }
 
         public void CreateOrders(SimulationInterval interval)

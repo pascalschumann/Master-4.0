@@ -5,6 +5,7 @@ using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Mrp;
 using Zpp.Mrp.ProductionManagement.ProductionTypes;
+using Zpp.ZppSimulator;
 
 namespace Zpp.Test.Integration_Tests
 {
@@ -20,8 +21,8 @@ namespace Zpp.Test.Integration_Tests
             }
             else
             {
-                IMrpRun mrpRun = new MrpRun();
-            mrpRun.Start();
+                IZppSimulator zppSimulator = new ZppSimulator.impl.ZppSimulator();
+            zppSimulator.StartTestCycle();
                 IDbMasterDataCache dbMasterDataCache =
                     ZppConfiguration.CacheManager.GetMasterDataCache();
                 IDbTransactionData dbTransactionData =
@@ -50,8 +51,8 @@ namespace Zpp.Test.Integration_Tests
             }
             else
             {
-                IMrpRun mrpRun = new MrpRun();
-            mrpRun.Start();
+                IZppSimulator zppSimulator = new ZppSimulator.impl.ZppSimulator();
+            zppSimulator.StartTestCycle();
                 IDbMasterDataCache dbMasterDataCache =
                     ZppConfiguration.CacheManager.GetMasterDataCache();
                 IDbTransactionData dbTransactionData =

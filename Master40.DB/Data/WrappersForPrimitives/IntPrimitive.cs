@@ -19,6 +19,16 @@ namespace Master40.DB.Data.WrappersForPrimitives
         {
             return _int;
         }
+        
+        public void Increment()
+        {
+            _int++;
+        }
+
+        public void Decrement()
+        {
+            _int--;
+        }
 
         public void IncrementBy(T t)
         {

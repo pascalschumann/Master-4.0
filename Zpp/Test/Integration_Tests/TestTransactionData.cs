@@ -5,6 +5,7 @@ using Master40.DB.Data.Helper;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 using Zpp.Mrp;
+using Zpp.ZppSimulator;
 
 namespace Zpp.Test.Integration_Tests
 {
@@ -18,8 +19,8 @@ namespace Zpp.Test.Integration_Tests
         [Fact(Skip = "disabled, because it doesn't work on linux/travis.'")]
         public void TestEveryCreatedEntityIsPersisted()
         {
-            IMrpRun mrpRun = new MrpRun();
-            mrpRun.Start();
+            IZppSimulator zppSimulator = new ZppSimulator.impl.ZppSimulator();
+            zppSimulator.StartTestCycle();
 
             ValidateNumberOfEntities(ProductionDomainContext.ProductionOrders);
             ValidateNumberOfEntities(ProductionDomainContext.ProductionOrderBoms);

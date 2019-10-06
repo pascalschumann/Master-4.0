@@ -7,6 +7,7 @@ using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Mrp;
 using Zpp.WrappersForCollections;
+using Zpp.ZppSimulator;
 
 namespace Zpp.Test.Integration_Tests
 {
@@ -27,8 +28,8 @@ namespace Zpp.Test.Integration_Tests
         [Fact]
         public void TestAllDemandsAreInDemandToProviderTable()
         {
-            IMrpRun mrpRun = new MrpRun();
-            mrpRun.Start();
+            IZppSimulator zppSimulator = new ZppSimulator.impl.ZppSimulator();
+            zppSimulator.StartTestCycle();
 
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.ReloadTransactionData();
@@ -52,8 +53,8 @@ namespace Zpp.Test.Integration_Tests
         [Fact]
         public void TestAllDemandsAreSatisfiedWithinProviderTable()
         {
-            IMrpRun mrpRun = new MrpRun();
-            mrpRun.Start();
+            IZppSimulator zppSimulator = new ZppSimulator.impl.ZppSimulator();
+            zppSimulator.StartTestCycle();
             
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.ReloadTransactionData();
@@ -71,8 +72,8 @@ namespace Zpp.Test.Integration_Tests
         [Fact]
         public void TestAllDemandsAreSatisfiedByProvidersOfDemandToProviderTable()
         {
-            IMrpRun mrpRun = new MrpRun();
-            mrpRun.Start();
+            IZppSimulator zppSimulator = new ZppSimulator.impl.ZppSimulator();
+            zppSimulator.StartTestCycle();
             
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.ReloadTransactionData();

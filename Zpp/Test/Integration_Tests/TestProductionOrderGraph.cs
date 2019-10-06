@@ -7,6 +7,7 @@ using Zpp.Mrp;
 using Zpp.OrderGraph;
 using Zpp.Test.Configuration;
 using Zpp.Utils;
+using Zpp.ZppSimulator;
 
 namespace Zpp.Test.Integration_Tests
 {
@@ -21,8 +22,8 @@ namespace Zpp.Test.Integration_Tests
         {
             InitTestScenario(testConfiguration);
 
-            IMrpRun mrpRun = new MrpRun();
-            mrpRun.Start();
+            IZppSimulator zppSimulator = new ZppSimulator.impl.ZppSimulator();
+            zppSimulator.StartTestCycle();
         }
         
         /**

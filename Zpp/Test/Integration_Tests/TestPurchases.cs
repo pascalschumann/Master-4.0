@@ -5,6 +5,7 @@ using Xunit;
 using Zpp.Configuration;
 using Zpp.DbCache;
 using Zpp.Mrp;
+using Zpp.ZppSimulator;
 
 namespace Zpp.Test.Integration_Tests
 {
@@ -19,8 +20,8 @@ namespace Zpp.Test.Integration_Tests
         [Fact]
         public void TestPurchaseQuantityIsAMultipleOfPackSize()
         {
-            IMrpRun mrpRun = new MrpRun();
-            mrpRun.Start();
+            IZppSimulator zppSimulator = new ZppSimulator.impl.ZppSimulator();
+            zppSimulator.StartTestCycle();
 
         IDbMasterDataCache dbMasterDataCache =
             ZppConfiguration.CacheManager.GetMasterDataCache();

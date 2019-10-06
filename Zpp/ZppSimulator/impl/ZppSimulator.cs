@@ -46,8 +46,7 @@ namespace Zpp.ZppSimulator.impl
                 .GetTestConfiguration().CustomerOrderPartQuantity);
 
             SimulationInterval simulationInterval = new SimulationInterval(0, _interval);
-            // StartOneCycle(simulationInterval, customerOrderPartQuantity);
-            StartOneCycle(simulationInterval, new Quantity(2));
+            StartOneCycle(simulationInterval, customerOrderPartQuantity);
         }
 
         public void StartPerformanceStudy()

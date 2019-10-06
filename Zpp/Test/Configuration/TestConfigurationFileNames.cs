@@ -8,11 +8,11 @@ namespace Zpp.Test.Configuration
         // since order are generated independent of these config files´(lotsize is still considered)
 
         // desk
-        public const string DESK_COP_5_SEQUENTIALLY_LOTSIZE_2 =
-            _basePath + "tisch_cop_5_sequentially_lotsize_2.json";
-
         public const string DESK_COP_5_LOTSIZE_2 =
-            _basePath + "tisch_cop_5_concurrent_lotsize_2.json";
+            _basePath + "tisch_cop_5_lotsize_2.json";
+        
+        public const string DESK_COP_2_LOTSIZE_2 =
+            _basePath + "tisch_cop_2_lotsize_2.json";
 
         public const string DESK_COP_1_LOT_ORDER_QUANTITY =
             _basePath + "tisch_cop_1_lot_order_quantity.json";

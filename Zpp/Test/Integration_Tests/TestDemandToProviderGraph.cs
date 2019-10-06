@@ -168,9 +168,8 @@ namespace Zpp.Test.Integration_Tests
         
         
         [InlineData(TestConfigurationFileNames.DESK_COP_5_LOTSIZE_2)]
-        
+        [InlineData(TestConfigurationFileNames.DESK_COP_2_LOTSIZE_2)]
         [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
-        
         public void TestDemandToProviderGraphStaysTheSame(string testConfigurationFileName)
         {
             InitThisTest(testConfigurationFileName);

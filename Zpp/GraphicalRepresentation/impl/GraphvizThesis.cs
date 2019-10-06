@@ -11,25 +11,23 @@ using Zpp.Util.Graph;
 
 namespace Zpp.GraphicalRepresentation.impl
 {
-    public class Graphviz : IGraphviz
+    public class GraphvizThesis : IGraphviz
     {
 
         private string ToGraphizString(Demand demand)
         {
-            return $"{demand.GetId()};{demand.GetArticle().Name};\\n{demand.GetQuantity()};" +
-                   $" Start/End/Due: {demand.GetStartTime()}/{demand.GetEndTime()}/{demand.GetDueTime()};";
+            return $"\\n{demand.GetId()}: {demand.GetArticle().Name};\\nMenge: {demand.GetQuantity()};";
         }
 
         private string ToGraphizString(Provider provider)
         {
-            return $"{provider.GetId()};{provider.GetArticle().Name};\\n{provider.GetQuantity()};" +
-                   $" Start/End/Due: {provider.GetStartTime()}/{provider.GetEndTime()}/{provider.GetDueTime()};";
+            return $"\\n{provider.GetId()}: {provider.GetArticle().Name};\\nMenge: {provider.GetQuantity()};";
         }
 
         public string GetGraphizString(CustomerOrderPart customerOrderPart)
         {
             // Demand(CustomerOrder);20;Truck
-            string graphizString = $"D(COP);{ToGraphizString(customerOrderPart)}";
+            string graphizString = $"D(Kundenauftragsposition);{ToGraphizString(customerOrderPart)}";
             return graphizString;
         }
 
@@ -44,10 +42,7 @@ namespace Zpp.GraphicalRepresentation.impl
             {
                 T_ProductionOrderOperation tProductionOrderOperation =
                     productionOrderOperation.GetValue();
-                graphizString = $"D(PrOB);{ToGraphizString(productionOrderBom)};" +
-                                $"bs({tProductionOrderOperation.StartBackward});" +
-                                $"be({tProductionOrderOperation.EndBackward});" +
-                                $"\\nOperationName: {tProductionOrderOperation}";
+                graphizString = $"D(Produktionsauftragsposition);{ToGraphizString(productionOrderBom)}";
             }
             else
             {
@@ -64,7 +59,7 @@ namespace Zpp.GraphicalRepresentation.impl
                 ((T_StockExchange) stockExchangeDemand.ToIDemand()).ExchangeType,
                 typeof(ExchangeType));
             string graphizString =
-                $"D(SE:{exchangeType[0]});{ToGraphizString(stockExchangeDemand)}";
+                $"D(Lagereingang);{ToGraphizString(stockExchangeDemand)}";
             return graphizString;
         }
 
@@ -76,14 +71,14 @@ namespace Zpp.GraphicalRepresentation.impl
         public string GetGraphizString(ProductionOrder productionOrder)
         {
             // Demand(CustomerOrder);20;Truck
-            string graphizString = $"P(PrO);{ToGraphizString(productionOrder)}";
+            string graphizString = $"P(Produktionsauftrag);{ToGraphizString(productionOrder)}";
             return graphizString;
         }
 
         public string GetGraphizString(PurchaseOrderPart purchaseOrderPart)
         {
             // Demand(CustomerOrder);20;Truck
-            string graphizString = $"P(PuOP);{ToGraphizString(purchaseOrderPart)}";
+            string graphizString = $"P(Bestellposition);{ToGraphizString(purchaseOrderPart)}";
             return graphizString;
         }
 
@@ -94,7 +89,7 @@ namespace Zpp.GraphicalRepresentation.impl
                 ((T_StockExchange) stockExchangeProvider.ToIProvider()).ExchangeType,
                 typeof(ExchangeType));
             string graphizString =
-                $"P(SE:{exchangeType[0]});{ToGraphizString(stockExchangeProvider)}";
+                $"P(Lagerausgang);{ToGraphizString(stockExchangeProvider)}";
             return graphizString;
         }
 

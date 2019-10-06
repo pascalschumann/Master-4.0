@@ -14,7 +14,7 @@ namespace Zpp.Util.Graph.impl
         protected Dictionary<INode, List<IEdge>> _adjacencyList =
             new Dictionary<INode, List<IEdge>>();
         
-        private readonly IGraphviz _graphviz = new Graphviz();
+        private readonly IGraphviz _graphviz = new GraphvizThesis();
 
         public DirectedGraph()
         {
@@ -176,8 +176,8 @@ namespace Zpp.Util.Graph.impl
                     _graphviz.GetGraphizString(edge.GetTailNode().GetEntity());
                 string headsGraphvizString =
                     _graphviz.GetGraphizString(edge.GetHeadNode().GetEntity());
-                mystring += $"\"{edge.GetTailNode().GetId()};{tailsGraphvizString}\" -> " +
-                            $"\"{edge.GetHeadNode().GetId()};{headsGraphvizString}\"";
+                mystring += $"\"{tailsGraphvizString}\" -> " +
+                            $"\"{headsGraphvizString}\"";
                 // if (quantity.IsNull() == false)
                 if (quantity != null && quantity.IsNull() == false)
                 {

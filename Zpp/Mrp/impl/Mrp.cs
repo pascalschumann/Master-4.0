@@ -177,8 +177,8 @@ namespace Zpp.Mrp.impl
             }
 
             // customerOrderParts: set done if all childs are done
-            DemandToProviderDirectedGraph demandToProviderGraph =
-                new DemandToProviderDirectedGraph();
+            DemandToProviderGraph demandToProviderGraph =
+                new DemandToProviderGraph();
             INodes rootNodes = demandToProviderGraph.GetRootNodes();
             foreach (var rootNode in rootNodes)
             {
@@ -193,7 +193,7 @@ namespace Zpp.Mrp.impl
         }
 
         private bool processChilds(INodes childs,
-            DemandToProviderDirectedGraph demandToProviderGraph)
+            DemandToProviderGraph demandToProviderGraph)
         {
             if (childs == null)
             {

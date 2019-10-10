@@ -26,7 +26,7 @@ namespace Zpp.Scheduling.impl
             IStackSet<INode> S = new StackSet<INode>();
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.GetDbTransactionData();
-            IDirectedGraph<INode> demandToProviderGraph = new DemandToProviderDirectedGraph();
+            IDirectedGraph<INode> demandToProviderGraph = new DemandToProviderGraph();
 
             // S = {0} (alle einplanbaren "Operation"=Demand/Provider Elemente)
             S.PushAll(demandToProviderGraph.GetLeafNodes());

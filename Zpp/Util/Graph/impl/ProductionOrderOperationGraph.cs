@@ -7,14 +7,14 @@ using Zpp.DataLayer.ProviderDomain.Wrappers;
 
 namespace Zpp.Util.Graph.impl
 {
-    public class ProductionOrderOperationDirectedGraph : ProductionOrderDirectedGraph,
+    public class ProductionOrderOperationGraph : ProductionOrderGraph,
         IDirectedGraph<INode>
     {
         /*private readonly Dictionary<ProductionOrder, IDirectedGraph<INode>>
             _directedProductionOrderOperationGraphs = new Dictionary<ProductionOrder, IDirectedGraph<INode>>();*/
 
 
-        public ProductionOrderOperationDirectedGraph(ProductionOrder productionOrder) : base(false)
+        public ProductionOrderOperationGraph(ProductionOrder productionOrder) : base(false)
         {
             IAggregator aggregator =
                 ZppConfiguration.CacheManager.GetAggregator();

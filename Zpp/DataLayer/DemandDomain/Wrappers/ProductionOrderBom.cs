@@ -146,24 +146,6 @@ namespace Zpp.DataLayer.DemandDomain.Wrappers
             }
         }
 
-        private void SetStartTimeOfOperation(DueTime startTime)
-        {
-            EnsureOperationIsLoadedIfExists();
-
-            T_ProductionOrderOperation productionOrderOperation =
-                _productionOrderBom.ProductionOrderOperation;
-            productionOrderOperation.StartBackward = startTime.GetValue();
-        }
-
-        private void SetEndTimeOfOperation(DueTime endTime)
-        {
-            EnsureOperationIsLoadedIfExists();
-
-            T_ProductionOrderOperation productionOrderOperation =
-                _productionOrderBom.ProductionOrderOperation;
-            productionOrderOperation.EndBackward = endTime.GetValue();
-        }
-
         public void EnsureOperationIsLoadedIfExists()
         {
             // load ProductionOrderOperation if not done yet
@@ -223,15 +205,7 @@ namespace Zpp.DataLayer.DemandDomain.Wrappers
 
         public override void SetStartTime(DueTime startTime)
         {
-            EnsureOperationIsLoadedIfExists();
-            DueTime transitionTime =
-                new DueTime(
-                    OperationBackwardsSchedule.CalculateTransitionTime(GetDurationOfOperation()));
-            // startBackwards
-            DueTime startTimeOfOperation = startTime.Plus(transitionTime);
-            SetStartTimeOfOperation(startTimeOfOperation);
-            // endBackwards
-            SetEndTimeOfOperation(startTimeOfOperation.Plus(new DueTime(GetDurationOfOperation())));
+            throw new NotImplementedException();
         }
 
         public override void SetDone()

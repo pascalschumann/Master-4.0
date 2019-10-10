@@ -14,12 +14,12 @@ namespace Zpp.Util.Graph.impl
 
         public ProductionOrderToOperationGraph() : base()
         {
-            _productionOrderGraph = new ProductionOrderDirectedGraph(false);
+            _productionOrderGraph = new ProductionOrderGraph(false);
 
             foreach (var productionOrderNode in _productionOrderGraph.GetAllUniqueNodes())
             {
                 IDirectedGraph<INode> productionOrderOperationGraph =
-                    new ProductionOrderOperationDirectedGraph((ProductionOrder) productionOrderNode.GetEntity());
+                    new ProductionOrderOperationGraph((ProductionOrder) productionOrderNode.GetEntity());
                 
                 // connect
                 _productionOrderGraph.ReplaceNodeByDirectedGraph(productionOrderNode,

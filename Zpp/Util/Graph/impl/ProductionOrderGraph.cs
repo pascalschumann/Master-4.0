@@ -3,9 +3,9 @@ using Zpp.DataLayer.ProviderDomain.Wrappers;
 
 namespace Zpp.Util.Graph.impl
 {
-    public class ProductionOrderDirectedGraph : DemandToProviderDirectedGraph, IDirectedGraph<INode>
+    public class ProductionOrderGraph : DemandToProviderGraph, IDirectedGraph<INode>
     {
-        public ProductionOrderDirectedGraph(bool includeProductionOrdersWithoutOperations) : base()
+        public ProductionOrderGraph(bool includeProductionOrdersWithoutOperations) : base()
         {
 
             foreach (var uniqueNode in GetAllUniqueNodes())

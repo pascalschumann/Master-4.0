@@ -49,7 +49,7 @@ namespace Zpp.Test.Integration_Tests
             
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.ReloadTransactionData();
-            IDirectedGraph<INode> orderDirectedGraph = new ProductionOrderDirectedGraph(true);
+            IDirectedGraph<INode> orderDirectedGraph = new ProductionOrderGraph(true);
 
             
             string actualOrderGraph = orderDirectedGraph.ToString();

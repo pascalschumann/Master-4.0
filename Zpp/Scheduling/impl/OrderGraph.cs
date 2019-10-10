@@ -2,16 +2,27 @@ using Master40.DB.Data.WrappersForPrimitives;
 using Zpp.Configuration;
 using Zpp.DataLayer;
 using Zpp.DataLayer.DemandDomain;
+using Zpp.DataLayer.DemandDomain.Wrappers;
 using Zpp.DataLayer.ProviderDomain;
+using Zpp.DataLayer.ProviderDomain.Wrappers;
+using Zpp.Util;
+using Zpp.Util.Graph;
+using Zpp.Util.Graph.impl;
 
-namespace Zpp.Util.Graph.impl
+namespace Zpp.Scheduling.impl
 {
-    public class DemandToProviderDirectedGraph : DirectedGraph, IDirectedGraph<INode>
+    /**
+     * The difference to DemandToProviderGraph is that no productionOrderBoms nodes are in it. Because scheduling must be done once for oders and once for operations.
+     * The DemandToProviderGraph mixes orders and operations by having productionOrderBoms
+     * (which are regarding scheduling operations, since productionOrderBoms have no times)
+     */
+    public class OrderGraph : DirectedGraph, IDirectedGraph<INode>
     {
-        public DemandToProviderDirectedGraph() : base()
+        public OrderGraph() : base()
         {
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.GetDbTransactionData();
+            IAggregator aggregator = ZppConfiguration.CacheManager.GetAggregator();
             
             foreach (var demandToProvider in dbTransactionData.DemandToProviderGetAll())
             {
@@ -37,9 +48,25 @@ namespace Zpp.Util.Graph.impl
                 {
                     throw new MrpRunException("Demand/Provider should not be null.");
                 }
+                
+                INode fromNode;
+                INode toNode;
 
-                INode fromNode = new Node(provider, providerToDemand.GetProviderId());
-                INode toNode = new Node(demand, providerToDemand.GetDemandId());
+                if (provider.GetType() == typeof(ProductionOrder))
+                {
+                    ProductionOrderBom productionOrderBom =
+                        ()dbTransactionData.DemandsGetById(providerToDemand.GetDemandId());
+                    aggregator.
+                    fromNode = new Node(provider, providerToDemand.GetProviderId());
+                    toNode = new Node(demand, providerToDemand.GetDemandId());
+                }
+                else
+                {
+                    fromNode = new Node(provider, providerToDemand.GetProviderId());
+                    toNode = new Node(demand, providerToDemand.GetDemandId());
+                }
+
+                
                 AddEdge(fromNode, new Edge(providerToDemand, fromNode, toNode));
             }
         }

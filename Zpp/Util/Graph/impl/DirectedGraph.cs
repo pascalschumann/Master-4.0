@@ -14,7 +14,7 @@ namespace Zpp.Util.Graph.impl
         protected Dictionary<INode, List<IEdge>> _adjacencyList =
             new Dictionary<INode, List<IEdge>>();
         
-        private readonly IGraphviz _graphviz = new GraphvizThesis();
+        private readonly IGraphviz _graphviz = new Graphviz();
 
         public DirectedGraph()
         {

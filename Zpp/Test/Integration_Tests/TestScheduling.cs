@@ -191,9 +191,10 @@ namespace Zpp.Test.Integration_Tests
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.ReloadTransactionData();
 
-            foreach (var productionOrderBom in dbTransactionData
-                .ProductionOrderBomGetAll().GetAllAs<ProductionOrderBom>())
+            foreach (var productionOrderBomAsDemand in dbTransactionData
+                .ProductionOrderBomGetAll())
             {
+                ProductionOrderBom productionOrderBom = (ProductionOrderBom)productionOrderBomAsDemand;
                 int expectedStartBackward =
                     productionOrderBom.GetStartTime().GetValue() +
                     OperationBackwardsSchedule.GetTransitionTimeFactor() *
@@ -296,6 +297,27 @@ namespace Zpp.Test.Integration_Tests
                     throw new MrpRunException(
                         "ProductionOrderToOperationGraph should only contain productionOrders/operations.");
                 }
+            }
+        }
+
+        [Theory]
+
+        [InlineData(TestConfigurationFileNames.DESK_COP_5_LOTSIZE_2)]
+
+        [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
+
+        public void TestEndMinusStartBackwardsEqualsDuration(
+            string testConfigurationFileName)
+        {
+            InitThisTest(testConfigurationFileName);
+            
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.ReloadTransactionData();
+
+            foreach (var productionOrderOperation in dbTransactionData.ProductionOrderOperationGetAll().GetAll())
+            {
+                int EndMinusStartBackwards = productionOrderOperation.GetValue().EndBackward.GetValueOrDefault() - productionOrderOperation.GetValue().StartBackward.GetValueOrDefault(); 
+                Assert.True(EndMinusStartBackwards.Equals(productionOrderOperation.GetValue().Duration),  "EndMinusStartBackwards does not equals the duration.");
             }
         }
     }

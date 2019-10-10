@@ -40,13 +40,33 @@ namespace Zpp.ZppSimulator.impl
             dbTransactionData.PersistDbCache();
         }
 
+        /**
+         * no confirmations are created and applied
+         */
         public void StartTestCycle()
         {
-            Quantity customerOrderPartQuantity = new Quantity(ZppConfiguration.CacheManager
+            Quantity customerOrderQuantity = new Quantity(ZppConfiguration.CacheManager
                 .GetTestConfiguration().CustomerOrderPartQuantity);
 
             SimulationInterval simulationInterval = new SimulationInterval(0, _interval);
-            StartOneCycle(simulationInterval, customerOrderPartQuantity);
+            
+            IMrp mrp = new Mrp.impl.Mrp();
+
+            // init transactionData
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.ReloadTransactionData();
+
+            mrp.CreateOrders(simulationInterval, customerOrderQuantity);
+
+            // execute mrp2
+            Demands unsatisfiedCustomerOrderParts = ZppConfiguration.CacheManager.GetAggregator()
+                .GetPendingCustomerOrderParts();
+            mrp.ManufacturingResourcePlanning(unsatisfiedCustomerOrderParts);
+            
+            // no confirmations
+            
+            // persisting cached/created data
+            dbTransactionData.PersistDbCache();
         }
 
         public void StartPerformanceStudy()

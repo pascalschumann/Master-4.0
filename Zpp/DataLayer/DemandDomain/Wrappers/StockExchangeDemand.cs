@@ -25,10 +25,15 @@ namespace Zpp.DataLayer.DemandDomain.Wrappers
 
         public override M_Article GetArticle( )
         {
+            return _dbMasterDataCache.M_ArticleGetById(GetArticleId());
+        }
+
+        public override Id GetArticleId()
+        {
             Id stockId = new Id(((T_StockExchange) _demand).StockId);
             M_Stock stock = _dbMasterDataCache.M_StockGetById(stockId);
             Id articleId = new Id(stock.ArticleForeignKey);
-            return _dbMasterDataCache.M_ArticleGetById(articleId);
+            return articleId;
         }
 
         public override DueTime GetDueTime()

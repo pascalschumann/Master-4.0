@@ -1,3 +1,4 @@
+using System;
 using Master40.DB.Data.WrappersForPrimitives;
 using Zpp.Configuration;
 using Zpp.DataLayer;
@@ -42,6 +43,38 @@ namespace Zpp.Util.Graph.impl
                 INode toNode = new Node(demand, providerToDemand.GetDemandId());
                 AddEdge(new Edge(providerToDemand, fromNode, toNode));
             }
+        }
+        
+        public override string ToString()
+        {
+            string mystring = "";
+            foreach (var edge in GetAllEdges())
+            {
+                // foreach (var edge in GetAllEdgesFromTailNode(fromNode))
+                // {
+                // <Type>, <Menge>, <ItemName> and on edges: <Menge>
+                Quantity quantity = null;
+                if (edge.GetLinkDemandAndProvider() != null)
+                {
+                    quantity = edge.GetLinkDemandAndProvider().GetQuantity();
+                }
+
+                string tailsGraphvizString =
+                    Graphviz.GetGraphizString(edge.GetTailNode().GetEntity());
+                string headsGraphvizString =
+                    Graphviz.GetGraphizString(edge.GetHeadNode().GetEntity());
+                mystring += $"\"{tailsGraphvizString}\" -> " + $"\"{headsGraphvizString}\"";
+                // if (quantity.IsNull() == false)
+                if (quantity != null && quantity.IsNull() == false)
+                {
+                    mystring += $" [ label=\" {quantity}\" ]";
+                }
+
+                mystring += ";" + Environment.NewLine;
+                // }
+            }
+
+            return mystring;
         }
     }
 }

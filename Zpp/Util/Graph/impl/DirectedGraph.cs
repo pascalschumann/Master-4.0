@@ -14,7 +14,7 @@ namespace Zpp.Util.Graph.impl
     {
         protected IStackSet<IEdge> Edges = new StackSet<IEdge>();
 
-        private readonly IGraphviz _graphviz = new Graphviz();
+        protected readonly IGraphviz Graphviz = new Graphviz();
 
         public DirectedGraph()
         {
@@ -120,25 +120,11 @@ namespace Zpp.Util.Graph.impl
             string mystring = "";
             foreach (var edge in GetAllEdges())
             {
-                // foreach (var edge in GetAllEdgesFromTailNode(fromNode))
-                // {
-                // <Type>, <Menge>, <ItemName> and on edges: <Menge>
-                Quantity quantity = null;
-                if (edge.GetLinkDemandAndProvider() != null)
-                {
-                    quantity = edge.GetLinkDemandAndProvider().GetQuantity();
-                }
-
                 string tailsGraphvizString =
-                    _graphviz.GetGraphizString(edge.GetTailNode().GetEntity());
+                    Graphviz.GetGraphizString(edge.GetTailNode().GetEntity());
                 string headsGraphvizString =
-                    _graphviz.GetGraphizString(edge.GetHeadNode().GetEntity());
+                    Graphviz.GetGraphizString(edge.GetHeadNode().GetEntity());
                 mystring += $"\"{tailsGraphvizString}\" -> " + $"\"{headsGraphvizString}\"";
-                // if (quantity.IsNull() == false)
-                if (quantity != null && quantity.IsNull() == false)
-                {
-                    mystring += $" [ label=\" {quantity}\" ]";
-                }
 
                 mystring += ";" + Environment.NewLine;
                 // }

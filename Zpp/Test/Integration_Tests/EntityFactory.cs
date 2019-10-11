@@ -9,8 +9,9 @@ using Zpp.DataLayer;
 using Zpp.DataLayer.DemandDomain;
 using Zpp.DataLayer.DemandDomain.Wrappers;
 using Zpp.DataLayer.ProviderDomain.Wrappers;
+using Zpp.Util.Graph;
 
-namespace Zpp.Test
+namespace Zpp.Test.Integration_Tests
 {
     public class EntityFactory
     {

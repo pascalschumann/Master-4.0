@@ -73,10 +73,7 @@ namespace Zpp.DataLayer.DemandDomain
             return new Id(_demand.Id);
         }
 
-        public Id GetArticleId()
-        {
-            return GetArticle().GetId();
-        }
+        public abstract Id GetArticleId();
         
         public NodeType GetNodeType()
         {

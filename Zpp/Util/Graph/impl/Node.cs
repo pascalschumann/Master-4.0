@@ -2,11 +2,18 @@ using Master40.DB.Data.WrappersForPrimitives;
 
 namespace Zpp.Util.Graph.impl
 {
+    /**
+     * Just a wrapper around an entity inheriting INode (but NOT "Node" (this class)),
+     * do not try to use it without an real entity.
+     */
     public class Node : INode
     {
         private Id _id;
         private INode _entity;
 
+        /**
+         * put one of the other classes inheriting INode in it like ProductionOrder...
+         */
         public Node(INode entity, Id id)
         {
             _entity = entity;

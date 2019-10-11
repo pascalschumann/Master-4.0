@@ -22,8 +22,12 @@ namespace Zpp.DataLayer.DemandDomain.Wrappers
 
         public override M_Article GetArticle()
         {
-            Id articleId = new Id(((T_CustomerOrderPart) _demand).ArticleId);
-            return _dbMasterDataCache.M_ArticleGetById(articleId);
+            return _dbMasterDataCache.M_ArticleGetById(GetArticleId());
+        }
+
+        public override Id GetArticleId()
+        {
+            return new Id(_customerOrderPart.ArticleId);
         }
 
         public override DueTime GetDueTime()

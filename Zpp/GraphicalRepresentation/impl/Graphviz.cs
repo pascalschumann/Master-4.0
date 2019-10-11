@@ -8,6 +8,7 @@ using Zpp.DataLayer.ProviderDomain;
 using Zpp.DataLayer.ProviderDomain.Wrappers;
 using Zpp.Util;
 using Zpp.Util.Graph;
+using Zpp.Util.Graph.impl;
 
 namespace Zpp.GraphicalRepresentation.impl
 {
@@ -16,13 +17,25 @@ namespace Zpp.GraphicalRepresentation.impl
 
         private string ToGraphizString(Demand demand)
         {
-            return $"{demand.GetId()};{demand.GetArticle().Name};\\n{demand.GetQuantity()};" +
+            string articleName = "";
+            if (demand.GetArticleId() != null && demand.GetArticleId().GetValue() != 0)
+            {
+                articleName = demand.GetArticle().Name;
+            }
+
+            return $"{demand.GetId()};{articleName};\\n{demand.GetQuantity()};" +
                    $" Start/End/Due: {demand.GetStartTime()}/{demand.GetEndTime()}/{demand.GetDueTime()};";
         }
 
         private string ToGraphizString(Provider provider)
         {
-            return $"{provider.GetId()};{provider.GetArticle().Name};\\n{provider.GetQuantity()};" +
+            string articleName = "";
+            if (provider.GetArticleId() != null)
+            {
+                articleName = provider.GetArticle().Name;
+            }
+            
+            return $"{provider.GetId()};{articleName};\\n{provider.GetQuantity()};" +
                    $" Start/End/Due: {provider.GetStartTime()}/{provider.GetEndTime()}/{provider.GetDueTime()};";
         }
 
@@ -117,7 +130,9 @@ namespace Zpp.GraphicalRepresentation.impl
                     return GetGraphizString(t6);
                 case CustomerOrderPart t7:
                     return GetGraphizString(t7);
-                default: throw new MrpRunException("Call getEntity() before calling this method.");
+                case Node t8:
+                    throw new MrpRunException("Call getEntity() before calling this method.");
+                default: return entity.ToString();
             }
         }
     }

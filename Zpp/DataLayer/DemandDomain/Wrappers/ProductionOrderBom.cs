@@ -75,8 +75,12 @@ namespace Zpp.DataLayer.DemandDomain.Wrappers
 
         public override M_Article GetArticle()
         {
-            Id articleId = new Id(_productionOrderBom.ArticleChildId);
-            return _dbMasterDataCache.M_ArticleGetById(articleId);
+            return _dbMasterDataCache.M_ArticleGetById(GetArticleId());
+        }
+
+        public override Id GetArticleId()
+        {
+            return new Id(_productionOrderBom.ArticleChildId);
         }
 
         /**

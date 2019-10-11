@@ -25,7 +25,7 @@ namespace Zpp.Util.Graph.impl
 
                 INode fromNode = new Node(demand, demandToProvider.GetDemandId());
                 INode toNode = new Node(provider, demandToProvider.GetProviderId());
-                AddEdge(fromNode, new Edge(demandToProvider, fromNode, toNode));
+                AddEdge(new Edge(demandToProvider, fromNode, toNode));
             }
 
             foreach (var providerToDemand in dbTransactionData.ProviderToDemandGetAll())
@@ -40,7 +40,7 @@ namespace Zpp.Util.Graph.impl
 
                 INode fromNode = new Node(provider, providerToDemand.GetProviderId());
                 INode toNode = new Node(demand, providerToDemand.GetDemandId());
-                AddEdge(fromNode, new Edge(providerToDemand, fromNode, toNode));
+                AddEdge(new Edge(providerToDemand, fromNode, toNode));
             }
         }
     }

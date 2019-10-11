@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Zpp.DataLayer.DemandDomain.Wrappers;
+using Zpp.Util.StackSet;
 
 namespace Zpp.Util.Graph
 {
@@ -27,11 +28,11 @@ namespace Zpp.Util.Graph
 
         INodes GetPredecessorNodes(INode headNode);
 
-        void AddEdges(TNode fromNode, List<IEdge> edges);
+        void AddEdges(List<IEdge> edges);
         
         void AddEdges(TNode fromNode, INodes nodes);
         
-        void AddEdge(TNode fromNode, IEdge edge);
+        void AddEdge(IEdge edge);
 
         int CountEdges();
 
@@ -67,7 +68,7 @@ namespace Zpp.Util.Graph
 
         List<IEdge> GetAllEdges();
 
-        Dictionary<TNode, List<IEdge>> GetAdjacencyList();
+        IStackSet<IEdge> GetEdges();
 
         void Clear();
     }

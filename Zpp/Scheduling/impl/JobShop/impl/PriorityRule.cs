@@ -36,7 +36,7 @@ namespace Zpp.Scheduling.impl.JobShop.impl
             return productionOrderOperations.OrderBy(x => x.GetPriority().GetValue()).ToList()[0];
         }
 
-        public Priority GetPriorityOfProductionOrderOperation(DueTime now,
+        private Priority GetPriorityOfProductionOrderOperation(DueTime now,
             ProductionOrderOperation givenProductionOrderOperation,
             DueTime minStartNextOfParentProvider)
         {

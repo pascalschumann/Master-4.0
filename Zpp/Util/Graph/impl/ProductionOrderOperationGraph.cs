@@ -7,8 +7,7 @@ using Zpp.DataLayer.ProviderDomain.Wrappers;
 
 namespace Zpp.Util.Graph.impl
 {
-    public class ProductionOrderOperationGraph : ProductionOrderGraph,
-        IDirectedGraph<INode>
+    public class ProductionOrderOperationGraph : ProductionOrderGraph, IDirectedGraph<INode>
     {
         /*private readonly Dictionary<ProductionOrder, IDirectedGraph<INode>>
             _directedProductionOrderOperationGraphs = new Dictionary<ProductionOrder, IDirectedGraph<INode>>();*/
@@ -16,24 +15,25 @@ namespace Zpp.Util.Graph.impl
 
         public ProductionOrderOperationGraph(ProductionOrder productionOrder) : base(false)
         {
-            IAggregator aggregator =
-                ZppConfiguration.CacheManager.GetAggregator();
-            
+            IAggregator aggregator = ZppConfiguration.CacheManager.GetAggregator();
+
             Dictionary<HierarchyNumber, List<ProductionOrderOperation>>
                 hierarchyToProductionOrderOperation =
                     new Dictionary<HierarchyNumber, List<ProductionOrderOperation>>();
 
             IDirectedGraph<INode> directedGraph = new DirectedGraph();
 
-            List<ProductionOrderOperation> productionOrderOperations = aggregator.GetProductionOrderOperationsOfProductionOrder(productionOrder);
+            List<ProductionOrderOperation> productionOrderOperations =
+                aggregator.GetProductionOrderOperationsOfProductionOrder(productionOrder);
             if (productionOrderOperations == null)
             {
                 /*directedGraph.AddEdge(productionOrder,
                     new Edge(productionOrder, productionOrder));
                 _adjacencyList = directedGraph.GetAdjacencyList();*/
-                _adjacencyList = null;
+                Edges = null;
                 return;
             }
+
             foreach (var productionOrderOperation in productionOrderOperations)
             {
                 HierarchyNumber hierarchyNumber = productionOrderOperation.GetHierarchyNumber();
@@ -56,16 +56,15 @@ namespace Zpp.Util.Graph.impl
                 {
                     if (i.Equals(0))
                     {
-                        directedGraph.AddEdge(productionOrder,
-                            new Edge(productionOrder, productionOrderOperation));
+                        directedGraph.AddEdge(new Edge(productionOrder, productionOrderOperation));
                     }
                     else
                     {
                         foreach (var productionOrderOperationBefore in
                             hierarchyToProductionOrderOperation[hierarchyNumbers[i - 1]])
                         {
-                            directedGraph.AddEdge(productionOrderOperationBefore,
-                                new Edge(productionOrderOperationBefore, productionOrderOperation));
+                            directedGraph.AddEdge(new Edge(productionOrderOperationBefore,
+                                productionOrderOperation));
                         }
                     }
                 }
@@ -73,15 +72,14 @@ namespace Zpp.Util.Graph.impl
                 i++;
             }
 
-            _adjacencyList = directedGraph.GetAdjacencyList();
+            Edges = directedGraph.GetEdges();
         }
 
         public bool RemoveProductionOrdersWithNoProductionOrderOperations(
             IDirectedGraph<INode> productionOrderGraph, ProductionOrder productionOrder)
         {
-            var productionOrderOperationLeafsOfProductionOrder =
-                GetLeafNodes();
-            
+            var productionOrderOperationLeafsOfProductionOrder = GetLeafNodes();
+
             // if only productionOrder as node is left, delete it from productionOrderGraph
             if (productionOrderOperationLeafsOfProductionOrder == null ||
                 productionOrderOperationLeafsOfProductionOrder.Any() == false)
@@ -90,15 +88,15 @@ namespace Zpp.Util.Graph.impl
                 // clear myself
                 Clear();
                 return true;
-
             }
+
             IEnumerable<INode> leafsWithTypeProductionOrder =
                 productionOrderOperationLeafsOfProductionOrder.Where(x =>
                     x.GetEntity().GetType() == typeof(ProductionOrder));
             int productionOrderCount = leafsWithTypeProductionOrder.Count();
             if (productionOrderCount > 0)
             {
-                if ( productionOrderCount != 1)
+                if (productionOrderCount != 1)
                 {
                     throw new MrpRunException(
                         "There can only be one root node as ProductionOrder, others must be productionOrderOperations.");
@@ -112,7 +110,5 @@ namespace Zpp.Util.Graph.impl
 
             return false;
         }
-        
-        
     }
 }

@@ -26,7 +26,7 @@ namespace Zpp.Util.Graph.impl
                     productionOrderOperationGraph);
             }
 
-            _adjacencyList = _productionOrderGraph.GetAdjacencyList();
+            Edges = _productionOrderGraph.GetEdges();
             
             // _productionOrderGraph = new ProductionOrderDirectedGraph(_dbTransactionData, false);
         }

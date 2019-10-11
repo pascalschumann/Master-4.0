@@ -212,7 +212,7 @@ namespace Zpp.Test.Integration_Tests
             }
         }
 
-        public static string removeIdsFromDemandToProviderGraph(string demandToProviderGraph)
+        public static string RemoveIdsFromDemandToProviderGraph(string demandToProviderGraph)
         {
             string[] demandToProviderGraphLines = demandToProviderGraph.Split("\r\n");
             // to have reproducible result

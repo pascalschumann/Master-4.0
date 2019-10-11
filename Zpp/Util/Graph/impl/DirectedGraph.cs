@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
+using Master40.DB.Interfaces;
 using Zpp.DataLayer.DemandDomain.Wrappers;
 using Zpp.GraphicalRepresentation;
 using Zpp.GraphicalRepresentation.impl;
@@ -11,24 +12,18 @@ namespace Zpp.Util.Graph.impl
 {
     public class DirectedGraph : IDirectedGraph<INode>
     {
-        protected Dictionary<INode, List<IEdge>> _adjacencyList =
-            new Dictionary<INode, List<IEdge>>();
-        
+        protected IStackSet<IEdge> Edges = new StackSet<IEdge>();
+
         private readonly IGraphviz _graphviz = new Graphviz();
 
         public DirectedGraph()
         {
-
         }
 
         public INodes GetSuccessorNodes(INode tailNode)
         {
-            if (!_adjacencyList.ContainsKey(tailNode) || _adjacencyList[tailNode].Any() == false)
-            {
-                return null;
-            }
-
-            return new Nodes(_adjacencyList[tailNode].Select(x => x.GetHeadNode()).ToList());
+            return new Nodes(Edges.Where(x => x.GetTailNode().Equals(tailNode))
+                .Select(x => x.GetHeadNode()).ToList());
         }
 
         public void GetPredecessorNodesRecursively(INodes predecessorNodes, INodes newNodes,
@@ -87,38 +82,22 @@ namespace Zpp.Util.Graph.impl
             return predecessorNodes;
         }
 
-        public void AddEdges(INode fromNode, List<IEdge> edges)
+        public void AddEdges(List<IEdge> edges)
         {
-            if (!_adjacencyList.ContainsKey(fromNode))
-            {
-                _adjacencyList.Add(fromNode, edges);
-                return;
-            }
-
-            _adjacencyList[fromNode].AddRange(edges);
+            Edges.PushAll(edges);
         }
 
         public void AddEdges(INode fromNode, INodes nodes)
         {
-            if (!_adjacencyList.ContainsKey(fromNode))
+            foreach (var toNode in nodes)
             {
-                _adjacencyList.Add(fromNode, new List<IEdge>());
-            }
-
-            foreach (var node in nodes)
-            {
-                _adjacencyList[fromNode].Add(new Edge(fromNode, node));
+                AddEdge(new Edge(fromNode, toNode));
             }
         }
 
-        public void AddEdge(INode fromNode, IEdge edge)
+        public void AddEdge(IEdge edge)
         {
-            if (!_adjacencyList.ContainsKey(fromNode))
-            {
-                _adjacencyList.Add(fromNode, new List<IEdge>());
-            }
-
-            _adjacencyList[fromNode].Add(edge);
+            Edges.Push(edge);
         }
 
         public int CountEdges()
@@ -128,34 +107,12 @@ namespace Zpp.Util.Graph.impl
 
         public List<IEdge> GetAllEdgesFromTailNode(INode tailNode)
         {
-            if (_adjacencyList.ContainsKey(tailNode) == false)
-            {
-                return null;
-            }
-
-            return _adjacencyList[tailNode];
+            return Edges.Where(x => x.GetTailNode().Equals(tailNode)).ToList();
         }
 
         public List<IEdge> GetAllEdgesTowardsHeadNode(INode headNode)
         {
-            List<IEdge> edgesTowardsHeadNode = new List<IEdge>();
-            foreach (var tailNode in GetAllTailNodes())
-            {
-                foreach (var edge in _adjacencyList[tailNode])
-                {
-                    if (edge.GetHeadNode().Equals(headNode))
-                    {
-                        edgesTowardsHeadNode.Add(edge);
-                    }
-                }
-            }
-
-            if (edgesTowardsHeadNode.Any() == false)
-            {
-                return null;
-            }
-
-            return edgesTowardsHeadNode;
+            return Edges.Where(x => x.GetHeadNode().Equals(headNode)).ToList();
         }
 
         public override string ToString()
@@ -176,8 +133,7 @@ namespace Zpp.Util.Graph.impl
                     _graphviz.GetGraphizString(edge.GetTailNode().GetEntity());
                 string headsGraphvizString =
                     _graphviz.GetGraphizString(edge.GetHeadNode().GetEntity());
-                mystring += $"\"{tailsGraphvizString}\" -> " +
-                            $"\"{headsGraphvizString}\"";
+                mystring += $"\"{tailsGraphvizString}\" -> " + $"\"{headsGraphvizString}\"";
                 // if (quantity.IsNull() == false)
                 if (quantity != null && quantity.IsNull() == false)
                 {
@@ -193,17 +149,7 @@ namespace Zpp.Util.Graph.impl
 
         public INodes GetAllHeadNodes()
         {
-            List<INode> toNodes = new List<INode>();
-
-            foreach (var edges in _adjacencyList.Values.ToList())
-            {
-                foreach (var edge in edges)
-                {
-                    toNodes.Add(edge.GetHeadNode());
-                }
-            }
-
-            return new Nodes(toNodes);
+            return new Nodes(Edges.Select(x=>x.GetHeadNode()));
         }
 
         /// 
@@ -258,7 +204,7 @@ namespace Zpp.Util.Graph.impl
 
         public INodes GetAllTailNodes()
         {
-            return new Nodes(_adjacencyList.Keys.ToList());
+            return new Nodes(Edges.Select(x=>x.GetTailNode()));
         }
 
         public INodes GetAllUniqueNodes()
@@ -287,37 +233,26 @@ namespace Zpp.Util.Graph.impl
                 {
                     foreach (var edgeFromNode in edgesFromNode)
                     {
-                        AddEdge(edgeTowardsNode.GetTailNode(),
-                            new Edge(edgeTowardsNode.GetTailNode(), edgeFromNode.GetHeadNode()));
+                        AddEdge(new Edge(edgeTowardsNode.GetTailNode(), edgeFromNode.GetHeadNode()));
                     }
                 }
             }
-
-            _adjacencyList.Remove(node);
         }
 
         public void RemoveAllEdgesFromTailNode(INode tailNode)
         {
-            _adjacencyList.Remove(tailNode);
+            foreach (var edge in Edges.Where(x=>x.GetTailNode().Equals(tailNode)))
+            {
+                Edges.Remove(edge);    
+            }
+            
         }
 
         public void RemoveAllEdgesTowardsHeadNode(INode headNode)
         {
-            foreach (var tailNode in GetAllTailNodes())
+            foreach (var edge in Edges.Where(x=>x.GetHeadNode().Equals(headNode)))
             {
-                List<IEdge> edgesToDelete = new List<IEdge>();
-                foreach (var edge in _adjacencyList[tailNode])
-                {
-                    if (edge.GetHeadNode().Equals(headNode))
-                    {
-                        edgesToDelete.Add(edge);
-                    }
-                }
-
-                foreach (var edgeToDelete in edgesToDelete)
-                {
-                    _adjacencyList[tailNode].Remove(edgeToDelete);
-                }
+                Edges.Remove(edge);    
             }
         }
 
@@ -373,7 +308,7 @@ namespace Zpp.Util.Graph.impl
                 {
                     foreach (var rootNode in graphToInsert.GetRootNodes())
                     {
-                        AddEdge(predecessor, new Edge(predecessor, rootNode));
+                        AddEdge(new Edge(predecessor, rootNode));
                     }
                 }
             }
@@ -385,16 +320,13 @@ namespace Zpp.Util.Graph.impl
                 {
                     foreach (var successor in successors)
                     {
-                        AddEdge(leaf, new Edge(leaf, successor));
+                        AddEdge(new Edge(leaf, successor));
                     }
                 }
             }
 
             // add all edges from graphToInsert
-            foreach (var loopNode in graphToInsert.GetAdjacencyList().Keys)
-            {
-                AddEdges(loopNode, graphToInsert.GetAdjacencyList()[loopNode]);
-            }
+            AddEdges(graphToInsert.GetEdges().GetAll());
         }
 
         public static IDirectedGraph<INode> MergeDirectedGraphs(
@@ -405,7 +337,7 @@ namespace Zpp.Util.Graph.impl
             {
                 foreach (var edge in directedGraph.GetAllEdges())
                 {
-                    mergedDirectedGraph.AddEdge(edge.GetTailNode(), edge);
+                    mergedDirectedGraph.AddEdge(edge);
                 }
             }
 
@@ -414,23 +346,17 @@ namespace Zpp.Util.Graph.impl
 
         public List<IEdge> GetAllEdges()
         {
-            List<IEdge> allEdges = new List<IEdge>();
-            foreach (var edgeList in _adjacencyList.Values)
-            {
-                allEdges.AddRange(edgeList);
-            }
-
-            return allEdges;
+            return Edges.GetAll();
         }
 
-        public Dictionary<INode, List<IEdge>> GetAdjacencyList()
+        public IStackSet<IEdge> GetEdges()
         {
-            return _adjacencyList;
+            return Edges;
         }
 
         public void Clear()
         {
-            _adjacencyList = new Dictionary<INode, List<IEdge>>();
+            Edges.Clear();
         }
     }
 }

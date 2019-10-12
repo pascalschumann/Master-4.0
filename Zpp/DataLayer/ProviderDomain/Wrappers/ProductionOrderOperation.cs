@@ -12,10 +12,9 @@ using Zpp.Util.Graph.impl;
 
 namespace Zpp.DataLayer.ProviderDomain.Wrappers
 {
-    public class ProductionOrderOperation : INode
+    public class ProductionOrderOperation : IScheduleNode
     {
         private readonly T_ProductionOrderOperation _productionOrderOperation;
-        private readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
         private Priority _priority = null;
 
         public ProductionOrderOperation(T_ProductionOrderOperation productionOrderOperation
@@ -121,9 +120,9 @@ namespace Zpp.DataLayer.ProviderDomain.Wrappers
             return _productionOrderOperation.GetHierarchyNumber();
         }
 
-        public DueTime GetDuration()
+        public Duration GetDuration()
         {
-            return new DueTime(_productionOrderOperation.Duration);
+            return new Duration(_productionOrderOperation.Duration);
         }
 
         public Id GetId()
@@ -218,6 +217,28 @@ namespace Zpp.DataLayer.ProviderDomain.Wrappers
                 throw new MrpRunException("Cannot request startTime before operation is scheduled.");
             }
             return new DueTime(_productionOrderOperation.StartBackward.GetValueOrDefault());
+        }
+
+        public void SetStartTime(DueTime startTime)
+        {
+            DueTime transitionTime =
+                new DueTime(
+                    OperationBackwardsSchedule.CalculateTransitionTime(GetDuration()));
+            // startBackwards
+            DueTime startTimeOfOperation = startTime.Plus(transitionTime);
+            _productionOrderOperation.StartBackward = startTimeOfOperation.GetValue();
+            // endBackwards
+            _productionOrderOperation.EndBackward = startTimeOfOperation.GetValue() + GetDuration().GetValue();
+        }
+
+        Duration IScheduleNode.GetDuration()
+        {
+            return _productionOrderOperation.GetDuration();
+        }
+
+        public bool IsDone()
+        {
+            return _productionOrderOperation.ProducingState.Equals(ProducingState.Finished);
         }
     }
 }

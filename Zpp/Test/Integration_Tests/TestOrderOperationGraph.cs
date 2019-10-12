@@ -24,8 +24,7 @@ namespace Zpp.Test.Integration_Tests
             InitThisTest(testConfigurationFileName);
             
             OrderOperationGraph orderOperationGraph = new OrderOperationGraph();
-            ProductionOrderToOperationGraph productionOrderToOperationGraph = new ProductionOrderToOperationGraph();
-            Assert.True(productionOrderToOperationGraph != null);
+            // ProductionOrderToOperationGraph productionOrderToOperationGraph = new ProductionOrderToOperationGraph();
             Assert.True(orderOperationGraph != null);
         }
     }

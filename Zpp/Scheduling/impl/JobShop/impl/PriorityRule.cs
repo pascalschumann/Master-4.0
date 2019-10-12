@@ -64,17 +64,17 @@ namespace Zpp.Scheduling.impl.JobShop.impl
                     DueTime alreadySummedHierarchyNumber =
                         alreadySummedHierarchyNumbers[
                             productionOrderOperation.GetHierarchyNumber()];
-                    if (productionOrderOperation.GetDuration()
+                    if (productionOrderOperation.GetDuration().ToDueTime()
                         .IsGreaterThan(alreadySummedHierarchyNumber))
                     {
-                        sumDurationsOfOperations.IncrementBy(productionOrderOperation.GetDuration()
+                        sumDurationsOfOperations.IncrementBy(productionOrderOperation.GetDuration().ToDueTime()
                             .Minus(alreadySummedHierarchyNumber));
                     }
                 }
                 else
                 {
                     alreadySummedHierarchyNumbers.Add(productionOrderOperation.GetHierarchyNumber(),
-                        productionOrderOperation.GetDuration());
+                        productionOrderOperation.GetDuration().ToDueTime());
                 }
             }
 

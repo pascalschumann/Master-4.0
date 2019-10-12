@@ -26,20 +26,20 @@ namespace Zpp.Scheduling.impl
             IStackSet<INode> S = new StackSet<INode>();
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.GetDbTransactionData();
-            IDirectedGraph<INode> demandToProviderGraph = new OrderOperationGraph();
+            IDirectedGraph<INode> orderOperationGraph = new OrderOperationGraph();
 
             // S = {0} (alle einplanbaren "Operation"=Demand/Provider Elemente)
-            S.PushAll(demandToProviderGraph.GetLeafNodes());
+            S.PushAll(orderOperationGraph.GetLeafNodes());
 
             // d_0 = 0
             IStackSet<INode> newS = new StackSet<INode>();
             foreach (var node in S)
             {
-                IDemandOrProvider demandOrProvider = (IDemandOrProvider) node.GetEntity();
-                if (demandOrProvider.GetStartTime().IsNegative())
+                IScheduleNode scheduleNode = (IScheduleNode) node.GetEntity();
+                if (scheduleNode.GetStartTime().IsNegative())
                 {
                     // implicitly the due/endTime will also be set accordingly
-                    demandOrProvider.SetStartTime(DueTime.Null());
+                    scheduleNode.SetStartTime(DueTime.Null());
                     newS.Push(node);
                 }
                 else // no forward scheduling is needed
@@ -54,29 +54,29 @@ namespace Zpp.Scheduling.impl
             {
                 // Entnehme Operation i aus S (beliebig)
                 INode i = S.PopAny();
-                IDemandOrProvider iAsDemandOrProvider = (IDemandOrProvider) i.GetEntity();
+                IScheduleNode iAsScheduleNode = (IScheduleNode) i.GetEntity();
 
 
                 // t_i = max{ d_j | j aus V(i) }
                 // predecessors in d2pGraph must start later (exact the other way around)
-                INodes predecessors = demandToProviderGraph.GetPredecessorNodes(i);
+                INodes predecessors = orderOperationGraph.GetPredecessorNodes(i);
                 // if i != 0 then --> node has predecessor
                 if (predecessors != null && predecessors.Any())
                 {
                     foreach (var predecessor in predecessors)
                     {
-                        IDemandOrProvider predecessorDemandOrProvider =
-                            (IDemandOrProvider) predecessor.GetEntity();
+                        IScheduleNode predecessorScheduleNode =
+                            (IScheduleNode) predecessor.GetEntity();
                         // if predecessor starts before endTime of current d/p --> change that
-                        if (predecessorDemandOrProvider.GetStartTime()
-                                .IsSmallerThan(iAsDemandOrProvider.GetEndTime()))
+                        if (predecessorScheduleNode.GetStartTime()
+                                .IsSmallerThan(iAsScheduleNode.GetEndTime()))
                         {
                             // COPs are not allowed to change
-                            if (predecessorDemandOrProvider.GetType() != typeof(CustomerOrderPart))
+                            if (predecessorScheduleNode.GetType() != typeof(CustomerOrderPart))
                             {
                                 // don't take getDueTime() since in case of a demand,
                                 // this will be the startTime, which is to early
-                                predecessorDemandOrProvider.SetStartTime(iAsDemandOrProvider.GetEndTime());    
+                                predecessorScheduleNode.SetStartTime(iAsScheduleNode.GetEndTime());    
                             }
                             
                         }

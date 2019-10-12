@@ -64,6 +64,8 @@ namespace Zpp.Scheduling.impl
 
                 if (provider.GetType() == typeof(ProductionOrder))
                 {
+                    // insert it like it is in ProductionOrderToOperationGraph
+                    
                     List<ProductionOrderOperation> productionOrderOperations =
                         aggregator.GetProductionOrderOperationsOfProductionOrder(
                             providerToDemand.GetProviderId());

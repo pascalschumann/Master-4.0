@@ -1,14 +1,18 @@
 using System.Collections.Generic;
+using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Zpp.Configuration;
 using Zpp.DataLayer;
 using Zpp.DataLayer.DemandDomain;
 using Zpp.DataLayer.DemandDomain.Wrappers;
+using Zpp.DataLayer.DemandDomain.WrappersForCollections;
 using Zpp.DataLayer.ProviderDomain;
 using Zpp.DataLayer.ProviderDomain.Wrappers;
+using Zpp.DataLayer.ProviderDomain.WrappersForCollections;
 using Zpp.Util;
 using Zpp.Util.Graph;
 using Zpp.Util.Graph.impl;
+using Zpp.Util.StackSet;
 
 namespace Zpp.Scheduling.impl
 {
@@ -57,24 +61,47 @@ namespace Zpp.Scheduling.impl
                     throw new MrpRunException("Demand/Provider should not be null.");
                 }
 
-                
 
                 if (provider.GetType() == typeof(ProductionOrder))
                 {
                     List<ProductionOrderOperation> productionOrderOperations =
                         aggregator.GetProductionOrderOperationsOfProductionOrder(
                             providerToDemand.GetProviderId());
-                    INode fromNode = new Node(provider, providerToDemand.GetProviderId());
+
+                    INode productionOrderNode =
+                        new Node(provider, providerToDemand.GetProviderId());
+
+                    IDirectedGraph<INode> productionOrderOperationGraph =
+                        new ProductionOrderOperationGraph(
+                            (ProductionOrder) productionOrderNode.GetEntity());
+                    if (productionOrderOperations.Count.Equals(productionOrderOperationGraph
+                            .GetAllHeadNodes().ToStackSet().Count()) == false)
+                    {
+                        throw new MrpRunException(
+                            "One of the compared collections do not have all operations.");
+                    }
+
+                    AddEdges(productionOrderOperationGraph.GetEdges());
+                    // connect
                     foreach (var operation in productionOrderOperations)
                     {
-                     
-                        INode toNode = new Node(demand, operation.GetId());
-                        
-                        AddEdge(new Edge(providerToDemand, fromNode, toNode));
-                        
-                        // TODO: now all edges from its PrBoms must be point from operation instead of from PrBom
+                        ProductionOrderBoms productionOrderBoms =
+                            aggregator.GetAllProductionOrderBomsBy(operation);
+                        foreach (var productionOrderBom in productionOrderBoms)
+                        {
+                            IProviders childProviders =
+                                aggregator.GetAllChildProvidersOf(productionOrderBom);
+                            if (childProviders.Count() != 1)
+                            {
+                                throw new MrpRunException(
+                                    "Every ProductionOrderBom must have exact one provider.");
+                            }
+
+                            Provider childProvider = childProviders.GetAll()[0];
+                            AddEdge(new Edge(new Node(operation, operation.GetId()),
+                                new Node(childProvider, childProvider.GetId())));
+                        }
                     }
-                    
                 }
                 else
                 {
@@ -82,9 +109,6 @@ namespace Zpp.Scheduling.impl
                     INode toNode = new Node(demand, providerToDemand.GetDemandId());
                     AddEdge(new Edge(providerToDemand, fromNode, toNode));
                 }
-
-
-                
             }
         }
     }

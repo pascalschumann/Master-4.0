@@ -10,6 +10,10 @@ using Zpp.Util.StackSet;
 
 namespace Zpp.Util.Graph.impl
 {
+    /**
+     * An impl for a directed graph. It's important to always return null if aggregation is empty
+     * (simplify error detecting, since no empty collections should pass through the program).
+     */
     public class DirectedGraph : IDirectedGraph<INode>
     {
         protected IStackSet<IEdge> Edges = new StackSet<IEdge>();
@@ -22,8 +26,13 @@ namespace Zpp.Util.Graph.impl
 
         public INodes GetSuccessorNodes(INode tailNode)
         {
-            return new Nodes(Edges.Where(x => x.GetTailNode().Equals(tailNode))
+            INodes successors = new Nodes(Edges.Where(x => x.GetTailNode().Equals(tailNode))
                 .Select(x => x.GetHeadNode()).ToList());
+            if (successors.Any() == false)
+            {
+                return null;
+            }
+            return successors;
         }
 
         public void GetPredecessorNodesRecursively(INodes predecessorNodes, INodes newNodes,
@@ -82,7 +91,7 @@ namespace Zpp.Util.Graph.impl
             return predecessorNodes;
         }
 
-        public void AddEdges(List<IEdge> edges)
+        public void AddEdges(IEnumerable<IEdge> edges)
         {
             Edges.PushAll(edges);
         }
@@ -107,12 +116,22 @@ namespace Zpp.Util.Graph.impl
 
         public List<IEdge> GetAllEdgesFromTailNode(INode tailNode)
         {
-            return Edges.Where(x => x.GetTailNode().Equals(tailNode)).ToList();
+            List<IEdge> edges = Edges.Where(x => x.GetTailNode().Equals(tailNode)).ToList();
+            if (edges.Any() == false)
+            {
+                return null;
+            }
+            return edges;
         }
 
         public List<IEdge> GetAllEdgesTowardsHeadNode(INode headNode)
         {
-            return Edges.Where(x => x.GetHeadNode().Equals(headNode)).ToList();
+            List<IEdge> edges = Edges.Where(x => x.GetHeadNode().Equals(headNode)).ToList();
+            if (edges.Any() == false)
+            {
+                return null;
+            }
+            return edges;
         }
 
         public override string ToString()
@@ -135,7 +154,12 @@ namespace Zpp.Util.Graph.impl
 
         public INodes GetAllHeadNodes()
         {
-            return new Nodes(Edges.Select(x=>x.GetHeadNode()));
+            INodes headNodes = new Nodes(Edges.Select(x => x.GetHeadNode()));
+            if (headNodes.Any() == false)
+            {
+                return null;
+            }
+            return headNodes;
         }
 
         /// 
@@ -190,7 +214,12 @@ namespace Zpp.Util.Graph.impl
 
         public INodes GetAllTailNodes()
         {
-            return new Nodes(Edges.Select(x=>x.GetTailNode()));
+            INodes tailNodes = new Nodes(Edges.Select(x=>x.GetTailNode()));
+            if (tailNodes.Any() == false)
+            {
+                return null;
+            }
+            return tailNodes;
         }
 
         public INodes GetAllUniqueNodes()
@@ -200,8 +229,12 @@ namespace Zpp.Util.Graph.impl
             IStackSet<INode> uniqueNodes = new StackSet<INode>();
             uniqueNodes.PushAll(fromNodes);
             uniqueNodes.PushAll(toNodes);
-
-            return new Nodes(uniqueNodes);
+            INodes uniqueNodesAsINodes = new Nodes(uniqueNodes);
+            if (uniqueNodesAsINodes.Any() == false)
+            {
+                return null;
+            }
+            return uniqueNodesAsINodes;
         }
 
         public void RemoveNode(INode node)
@@ -227,7 +260,8 @@ namespace Zpp.Util.Graph.impl
 
         public void RemoveAllEdgesFromTailNode(INode tailNode)
         {
-            foreach (var edge in Edges.Where(x=>x.GetTailNode().Equals(tailNode)))
+            List<IEdge> edges = Edges.Where(x => x.GetTailNode().Equals(tailNode)).ToList();
+            foreach (var edge in edges)
             {
                 Edges.Remove(edge);    
             }
@@ -236,7 +270,8 @@ namespace Zpp.Util.Graph.impl
 
         public void RemoveAllEdgesTowardsHeadNode(INode headNode)
         {
-            foreach (var edge in Edges.Where(x=>x.GetHeadNode().Equals(headNode)))
+            List<IEdge> edges = Edges.Where(x => x.GetHeadNode().Equals(headNode)).ToList();
+            foreach (var edge in edges)
             {
                 Edges.Remove(edge);    
             }
@@ -332,17 +367,30 @@ namespace Zpp.Util.Graph.impl
 
         public List<IEdge> GetAllEdges()
         {
+            if (Edges.Any() == false)
+            {
+                return null;
+            }
             return Edges.GetAll();
         }
 
         public IStackSet<IEdge> GetEdges()
         {
+            if (Edges.Any() == false)
+            {
+                return null;
+            }
             return Edges;
         }
 
         public void Clear()
         {
             Edges.Clear();
+        }
+
+        public bool Exists(IEdge edge)
+        {
+            return Edges.Any(x=>x.Equals(edge));
         }
     }
 }

@@ -83,7 +83,7 @@ namespace Zpp.GraphicalRepresentation.impl
 
         public string GetGraphizString(ProductionOrderOperation productionOrderOperation)
         {
-            return $"{productionOrderOperation.GetValue().Name}";
+            return $"PrOO;{productionOrderOperation.GetId()};{productionOrderOperation.GetValue().Name}";
         }
 
         public string GetGraphizString(ProductionOrder productionOrder)

@@ -40,5 +40,16 @@ namespace Zpp.Util.Graph.impl
         {
             return $"{_tailNode} --> {_headNode}";
         }
+
+        public override bool Equals(object obj)
+        {
+            Edge other = (Edge) obj;
+            return _headNode.Equals(other._headNode) && _tailNode.Equals(other._tailNode);
+        }
+        
+        public override int GetHashCode()
+        {
+            return _headNode.GetHashCode() + _tailNode.GetHashCode();
+        }
     }
 }

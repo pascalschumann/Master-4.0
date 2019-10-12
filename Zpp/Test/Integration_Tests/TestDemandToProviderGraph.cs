@@ -40,10 +40,7 @@ namespace Zpp.Test.Integration_Tests
          * - has all demandToProvider and providerToDemand edges
          */
         [Theory]
-        
-        
         [InlineData(TestConfigurationFileNames.DESK_COP_5_LOTSIZE_2)]
-        
         [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
         public void TestAllEdgesAreInDemandToProviderGraph(string testConfigurationFileName)
         {
@@ -91,10 +88,7 @@ namespace Zpp.Test.Integration_Tests
          * (e.g. after a PrO MUST come another Demand )
          */
         [Theory]
-        
-        
         [InlineData(TestConfigurationFileNames.DESK_COP_5_LOTSIZE_2)]
-        
         [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
         public void TestEdgeTypes(string testConfigurationFileName)
         {

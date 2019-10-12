@@ -28,7 +28,7 @@ namespace Zpp.Util.Graph
 
         INodes GetPredecessorNodes(INode headNode);
 
-        void AddEdges(List<IEdge> edges);
+        void AddEdges(IEnumerable<IEdge> edges);
         
         void AddEdges(TNode fromNode, INodes nodes);
         
@@ -71,5 +71,7 @@ namespace Zpp.Util.Graph
         IStackSet<IEdge> GetEdges();
 
         void Clear();
+
+        bool Exists(IEdge edge);
     }
 }

@@ -104,9 +104,7 @@ namespace Zpp.Test.Integration_Tests
         }
 
         [Theory]
-        
         [InlineData(TestConfigurationFileNames.DESK_COP_5_LOTSIZE_2)]
-        
         [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
         public void TestJobShopScheduling(string testConfigurationFileName)
         {
@@ -131,11 +129,8 @@ namespace Zpp.Test.Integration_Tests
         }
 
         [Theory]
-        
         [InlineData(TestConfigurationFileNames.DESK_COP_5_LOTSIZE_2)]
-        
         [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
-        
         public void TestParentsDueTimeIsGreaterThanOrEqualToChildsDueTime(
             string testConfigurationFileName)
         {
@@ -215,11 +210,8 @@ namespace Zpp.Test.Integration_Tests
         }
 
         [Theory]
-        
         [InlineData(TestConfigurationFileNames.DESK_COP_5_LOTSIZE_2)]
-        
         [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
-        
         public void TestBackwardSchedulingTransitionTimeBetweenOperationsIsCorrect(
             string testConfigurationFileName)
         {
@@ -301,11 +293,8 @@ namespace Zpp.Test.Integration_Tests
         }
 
         [Theory]
-
         [InlineData(TestConfigurationFileNames.DESK_COP_5_LOTSIZE_2)]
-
         [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
-
         public void TestEndMinusStartBackwardsEqualsDuration(
             string testConfigurationFileName)
         {

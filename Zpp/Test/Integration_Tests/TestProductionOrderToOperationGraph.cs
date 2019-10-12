@@ -60,17 +60,14 @@ namespace Zpp.Test.Integration_Tests
         }
 
         [Theory]
-        
         [InlineData(TestConfigurationFileNames.DESK_COP_5_LOTSIZE_2)]
-        
         [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
-        
         public void TestAllOperationsGraphStaysTheSame(string testConfigurationFileName)
         {
             InitThisTest(testConfigurationFileName);
 
             string operationGraphFileName =
-                $"../../../Test/Ordergraphs/all_operations_graph_{TestConfiguration.Name}.txt";
+                $"../../../Test/Ordergraphs/productionOrderToOperation_graph_{TestConfiguration.Name}.txt";
 
             // build operationGraph up
             IDirectedGraph<INode> operationDirectedGraph =

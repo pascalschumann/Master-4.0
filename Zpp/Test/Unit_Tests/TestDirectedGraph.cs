@@ -6,7 +6,7 @@ using Zpp.Util.Graph.impl;
 
 namespace Zpp.Test.Unit_Tests
 {
-    public class TestDirectedGraph : AbstractTest
+    public class TestDirectedGraph
     {
         [Fact]
         public void TestToString()
@@ -29,7 +29,7 @@ namespace Zpp.Test.Unit_Tests
             
             for (int i = 3; i < 7; i++)
             {
-                Assert.True(leafs.Contains(nodes[i]), $"Leafs do not contain {nodes[i]}.");
+                Assert.True(leafs.Contains(nodes[i]), $"Leafs do not contain node {nodes[i]}.");
             }
         }
 

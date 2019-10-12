@@ -248,7 +248,7 @@ namespace Zpp.Util.Graph.impl
             foreach (var uniqueNode in GetAllUniqueNodes())
             {
                 INodes successors = GetSuccessorNodes(uniqueNode);
-                if (successors == null)
+                if (successors == null || successors.Any() == false)
                 {
                     leafs.Add(uniqueNode);
                 }

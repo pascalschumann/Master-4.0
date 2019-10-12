@@ -101,7 +101,7 @@ namespace Zpp.Mrp.impl
             // End of MaterialRequirementsPlanning
 
             // forward scheduling
-            // ScheduleForward();
+            ScheduleForward();
 
             // job shop scheduling
             JobShopScheduling();

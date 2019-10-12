@@ -39,7 +39,7 @@ namespace Zpp.Scheduling.impl
                     throw new MrpRunException("Demand/Provider should not be null.");
                 }
 
-                if (provider.GetType() == typeof(ProductionOrderBom))
+                if (demand.GetType() == typeof(ProductionOrderBom))
                 {
                     // pass, no action here, ProductionOrderBoms will be ignored and replaced by operations
                 }

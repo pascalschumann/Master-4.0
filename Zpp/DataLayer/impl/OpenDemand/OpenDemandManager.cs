@@ -83,8 +83,8 @@ namespace Zpp.DataLayer.impl.OpenDemand
                 copyOfOpenDemands.AddRange(_openDemands.GetOpenProvider(provider.GetArticle()));
                 foreach (var openDemand in copyOfOpenDemands)
                 {
-                    if (openDemand != null && provider.GetDueTime()
-                            .IsGreaterThanOrEqualTo(openDemand.GetOpenNode().GetDueTime()))
+                    if (openDemand != null && provider.GetStartTime()
+                            .IsGreaterThanOrEqualTo(openDemand.GetOpenNode().GetStartTime()))
                     {
                         Quantity remainingQuantity =
                             demandedQuantity.Minus(openDemand.GetOpenQuantity());

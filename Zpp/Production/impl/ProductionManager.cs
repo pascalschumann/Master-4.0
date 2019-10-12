@@ -139,7 +139,7 @@ namespace Zpp.Production.impl
                 foreach (var productionOrderOperation in sortedProductionOrderOperations)
                 {
                     lastOperationBackwardsSchedule = productionOrderOperation.ScheduleBackwards(
-                        lastOperationBackwardsSchedule, parentProductionOrder.GetDueTime());
+                        lastOperationBackwardsSchedule, parentProductionOrder.GetStartTime());
                 }
 
 

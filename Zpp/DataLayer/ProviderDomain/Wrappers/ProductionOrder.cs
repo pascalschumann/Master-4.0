@@ -31,11 +31,6 @@ namespace Zpp.DataLayer.ProviderDomain.Wrappers
             return articleId;
         }
 
-        public override DueTime GetDueTime()
-        {
-            return GetEndTime();
-        }
-
         public ProductionOrderBoms GetProductionOrderBoms()
         {
             return ZppConfiguration.CacheManager.GetAggregator().GetProductionOrderBomsOfProductionOrder(this);

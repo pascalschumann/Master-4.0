@@ -7,9 +7,5 @@ namespace Zpp.DataLayer
     {
         Quantity GetQuantity();
         
-        /**
-         * For a demand this is usually the startTime, for a provider it's usually the endTime
-         */
-        DueTime GetDueTime();
     }
 }

@@ -130,8 +130,8 @@ namespace Zpp.DataLayer.impl
         {
             var providers = _dbTransactionData.StockExchangeProvidersGetAll();
             var currentProviders = providers.GetAll().FindAll(x =>
-                x.GetDueTime().GetValue() >= from.GetValue() &&
-                x.GetDueTime().GetValue() <= to.GetValue());
+                x.GetStartTime().GetValue() >= from.GetValue() &&
+                x.GetStartTime().GetValue() <= to.GetValue());
             return currentProviders;
         }
 
@@ -175,9 +175,9 @@ namespace Zpp.DataLayer.impl
 
 
             Provider stockExchangeProvider = providers.GetAny();
-            if (earliestStartTime.IsGreaterThanOrEqualTo(stockExchangeProvider.GetDueTime()))
+            if (earliestStartTime.IsGreaterThanOrEqualTo(stockExchangeProvider.GetStartTime()))
             {
-                earliestStartTime = stockExchangeProvider.GetDueTime();
+                earliestStartTime = stockExchangeProvider.GetStartTime();
             }
             else
             {
@@ -190,7 +190,7 @@ namespace Zpp.DataLayer.impl
                 // StockExchangeProvider has no childs (stockExchangeDemands),
                 // take that from stockExchangeProvider
             {
-                DueTime childDueTime = stockExchangeProvider.GetDueTime();
+                DueTime childDueTime = stockExchangeProvider.GetStartTime();
                 if (childDueTime.IsGreaterThan(earliestStartTime))
                 {
                     earliestStartTime = childDueTime;
@@ -201,7 +201,7 @@ namespace Zpp.DataLayer.impl
             {
                 foreach (var stockExchangeDemand in stockExchangeDemands)
                 {
-                    DueTime stockExchangeDemandDueTime = stockExchangeDemand.GetDueTime();
+                    DueTime stockExchangeDemandDueTime = stockExchangeDemand.GetStartTime();
                     if (stockExchangeDemandDueTime.IsGreaterThan(earliestStartTime))
                     {
                         earliestStartTime = stockExchangeDemandDueTime;

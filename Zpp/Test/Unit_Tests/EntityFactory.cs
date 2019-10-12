@@ -3,6 +3,7 @@ using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Zpp.DataLayer.DemandDomain.Wrappers;
 using Zpp.Util.Graph;
+using Zpp.Util.Graph.impl;
 
 namespace Zpp.Test.Unit_Tests
 {
@@ -13,7 +14,7 @@ namespace Zpp.Test.Unit_Tests
             List<INode> list = new List<INode>();
             for (int i = 0; i < count; i++)
             {
-                INode dummyNode = new DummyNode(new Id(i));
+                INode dummyNode = new Node(new DummyNode(new Id(i)));
                 list.Add(dummyNode);
             }
 

@@ -29,11 +29,6 @@ namespace Zpp.DataLayer.ProviderDomain.Wrappers
             return new Id(stock.ArticleForeignKey);
         }
 
-        public override DueTime GetDueTime()
-        {
-            return GetEndTime();
-        }
-
         public Id GetStockId()
         {
             return new Id(((T_StockExchange) _provider).StockId);

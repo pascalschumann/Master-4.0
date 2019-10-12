@@ -28,7 +28,7 @@ namespace Zpp.Purchase.impl
         {
             EntityCollector entityCollector = new EntityCollector();
             M_Article article = demand.GetArticle();
-            DueTime dueTime = demand.GetDueTime();
+            DueTime dueTime = demand.GetStartTime();
             if (article.ToBuild)
             {
                 throw new MrpRunException(

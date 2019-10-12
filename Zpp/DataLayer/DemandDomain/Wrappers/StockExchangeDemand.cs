@@ -36,11 +36,6 @@ namespace Zpp.DataLayer.DemandDomain.Wrappers
             return articleId;
         }
 
-        public override DueTime GetDueTime()
-        {
-            return GetStartTime();
-        }
-
         public static Demand CreateStockExchangeProductionOrderDemand(M_ArticleBom articleBom, DueTime dueTime)
         {
             IDbMasterDataCache dbMasterDataCache =

@@ -66,8 +66,6 @@ namespace Zpp.DataLayer.DemandDomain
 
         public abstract M_Article GetArticle();
 
-        public abstract DueTime GetDueTime();
-
         public Id GetId()
         {
             return new Id(_demand.Id);

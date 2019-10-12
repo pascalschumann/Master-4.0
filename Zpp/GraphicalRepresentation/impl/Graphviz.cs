@@ -24,7 +24,7 @@ namespace Zpp.GraphicalRepresentation.impl
             }
 
             return $"{demand.GetId()};{articleName};\\n{demand.GetQuantity()};" +
-                   $" Start/End/Due: {demand.GetStartTime()}/{demand.GetEndTime()}/{demand.GetDueTime()};";
+                   $" Start/End: {demand.GetStartTime()}/{demand.GetEndTime()};";
         }
 
         private string ToGraphizString(Provider provider)
@@ -36,7 +36,7 @@ namespace Zpp.GraphicalRepresentation.impl
             }
             
             return $"{provider.GetId()};{articleName};\\n{provider.GetQuantity()};" +
-                   $" Start/End/Due: {provider.GetStartTime()}/{provider.GetEndTime()}/{provider.GetDueTime()};";
+                   $" Start/End: {provider.GetStartTime()}/{provider.GetEndTime()};";
         }
 
         public string GetGraphizString(CustomerOrderPart customerOrderPart)

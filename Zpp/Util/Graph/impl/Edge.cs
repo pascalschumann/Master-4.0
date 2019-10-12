@@ -14,7 +14,7 @@ namespace Zpp.Util.Graph.impl
             _tailNode = tailNode;
             _headNode = toNode;
         }
-        
+
         public Edge(INode tailNode, INode toNode)
         {
             _tailNode = tailNode;
@@ -25,7 +25,7 @@ namespace Zpp.Util.Graph.impl
         {
             return _tailNode;
         }
-        
+
         public INode GetHeadNode()
         {
             return _headNode;
@@ -44,9 +44,18 @@ namespace Zpp.Util.Graph.impl
         public override bool Equals(object obj)
         {
             Edge other = (Edge) obj;
-            return _headNode.Equals(other._headNode) && _tailNode.Equals(other._tailNode);
+            bool headAndTailAreEqual =
+                _headNode.Equals(other._headNode) && _tailNode.Equals(other._tailNode);
+            if (_demandToProvider == null)
+            {
+                return headAndTailAreEqual && _demandToProvider == other._demandToProvider;
+            }
+            else
+            {
+                return headAndTailAreEqual && _demandToProvider.Equals(other._demandToProvider);
+            }
         }
-        
+
         public override int GetHashCode()
         {
             return _headNode.GetHashCode() + _tailNode.GetHashCode();

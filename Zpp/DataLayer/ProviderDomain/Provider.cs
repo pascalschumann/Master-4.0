@@ -28,8 +28,6 @@ namespace Zpp.DataLayer.ProviderDomain
             
         }
 
-        public abstract DueTime GetDueTime();
-
         public abstract IProvider ToIProvider();
         
         public override bool Equals(object obj)

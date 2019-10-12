@@ -95,7 +95,7 @@ namespace Zpp.Stock.impl
             EntityCollector entityCollector = new EntityCollector();
 
             Provider stockProvider = CreateStockExchangeProvider(demand.GetArticle(),
-                demand.GetDueTime(), demandedQuantity);
+                demand.GetStartTime(), demandedQuantity);
             entityCollector.Add(stockProvider);
 
             T_DemandToProvider demandToProvider =
@@ -181,7 +181,7 @@ namespace Zpp.Stock.impl
 
                     Demand stockExchangeDemand =
                         StockExchangeDemand.CreateStockExchangeStockDemand(provider.GetArticle(),
-                            provider.GetDueTime(), lotSize);
+                            provider.GetStartTime(), lotSize);
                     entityCollector.Add(stockExchangeDemand);
 
                     // quantityToReserve can be calculated as following

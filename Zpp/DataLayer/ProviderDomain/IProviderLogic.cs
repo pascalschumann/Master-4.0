@@ -17,8 +17,6 @@ namespace Zpp.DataLayer.ProviderDomain
         M_Article GetArticle();
 
         bool ProvidesMoreThan(Quantity quantity);
-        
-        DueTime GetDueTime();
 
         Id GetId();
         

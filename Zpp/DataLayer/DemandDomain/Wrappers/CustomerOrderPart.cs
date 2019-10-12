@@ -30,11 +30,6 @@ namespace Zpp.DataLayer.DemandDomain.Wrappers
             return new Id(_customerOrderPart.ArticleId);
         }
 
-        public override DueTime GetDueTime()
-        {
-            return GetStartTime();
-        }
-
         public T_CustomerOrderPart GetValue()
         {
             return (T_CustomerOrderPart)_demand;

@@ -34,8 +34,6 @@ namespace Zpp.Test.Integration_Tests
          * delete corresponding production_order_operation_graph_cop_*.txt files ind Folder Test/OrderGraphs
          */
         [Theory]
-        
-        [InlineData(TestConfigurationFileNames.DESK_COP_1_LOT_ORDER_QUANTITY)]
         [InlineData(TestConfigurationFileNames.DESK_COP_5_LOTSIZE_2)]
         
         [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]

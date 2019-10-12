@@ -16,8 +16,6 @@ namespace Zpp.DataLayer.DemandDomain
         
         Id GetArticleId();
 
-        DueTime GetDueTime();
-
         Id GetId();
 
         DueTime GetStartTime();

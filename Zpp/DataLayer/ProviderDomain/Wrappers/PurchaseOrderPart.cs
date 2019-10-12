@@ -30,11 +30,6 @@ namespace Zpp.DataLayer.ProviderDomain.Wrappers
             return articleId;
         }
 
-        public override DueTime GetDueTime()
-        {
-            return GetEndTime();
-        }
-
         public override DueTime GetEndTime()
         {
             EnsurePurchaseOrderIsLoaded();

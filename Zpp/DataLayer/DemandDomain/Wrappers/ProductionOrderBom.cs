@@ -83,16 +83,6 @@ namespace Zpp.DataLayer.DemandDomain.Wrappers
             return new Id(_productionOrderBom.ArticleChildId);
         }
 
-        /**
-         * @return:
-         *   if ProductionOrderOperation is backwardsScheduled --> EndBackward
-         *   else ProductionOrderParent.dueTime
-         */
-        public override DueTime GetDueTime()
-        {
-            return GetStartTime();
-        }
-
         public bool HasOperation()
         {
             return _productionOrderBom.ProductionOrderOperationId != null;

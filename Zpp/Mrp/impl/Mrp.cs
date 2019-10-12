@@ -73,7 +73,8 @@ namespace Zpp.Mrp.impl
 
             foreach (var demand in dbDemands)
             {
-                demandQueue.Enqueue(new DemandQueueNode(demand), demand.GetDueTime().GetValue());
+                // TODO: EnqueueAll()
+                demandQueue.Enqueue(new DemandQueueNode(demand), demand.GetStartTime().GetValue());
             }
 
             // MaterialRequirementsPlanning
@@ -90,7 +91,7 @@ namespace Zpp.Mrp.impl
                 foreach (var demand in response.GetDemands())
                 {
                     demandQueue.Enqueue(new DemandQueueNode(demand),
-                        demand.GetDueTime().GetValue());
+                        demand.GetStartTime().GetValue());
                 }
             }
 

@@ -24,7 +24,7 @@ namespace Zpp.Production.impl.ProductionTypes
         {
             T_ProductionOrder tProductionOrder = new T_ProductionOrder();
             // [ArticleId],[Quantity],[Name],[DueTime],[ProviderId]
-            tProductionOrder.DueTime = demand.GetDueTime().GetValue();
+            tProductionOrder.DueTime = demand.GetStartTime().GetValue();
             tProductionOrder.Article = demand.GetArticle();
             tProductionOrder.ArticleId = demand.GetArticle().Id;
             tProductionOrder.Name = $"ProductionOrder for Demand {demand.GetArticle()}";

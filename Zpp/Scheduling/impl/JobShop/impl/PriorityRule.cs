@@ -26,7 +26,7 @@ namespace Zpp.Scheduling.impl.JobShop.impl
                         .GetProductionOrderId());
                 // TODO: This is different from specification
                 DueTime minStartNextOfParentProvider =
-                    productionOrder.GetDueTime();
+                    productionOrder.GetStartTime();
                 
                 Priority priority = GetPriorityOfProductionOrderOperation(now,
                     productionOrderOperation, minStartNextOfParentProvider);

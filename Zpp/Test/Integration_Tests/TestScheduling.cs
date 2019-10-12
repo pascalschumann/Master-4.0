@@ -90,15 +90,15 @@ namespace Zpp.Test.Integration_Tests
             List<DueTime> dueTimes = new List<DueTime>();
             foreach (var demand in dbTransactionData.DemandsGetAll())
             {
-                dueTimes.Add(demand.GetDueTime());
-                Assert.True(demand.GetDueTime().GetValue() >= 0,
+                dueTimes.Add(demand.GetStartTime());
+                Assert.True(demand.GetStartTime().GetValue() >= 0,
                     $"DueTime of demand ({demand}) is negative.");
             }
 
             foreach (var provider in dbTransactionData.ProvidersGetAll())
             {
-                dueTimes.Add(provider.GetDueTime());
-                Assert.True(provider.GetDueTime().GetValue() >= 0,
+                dueTimes.Add(provider.GetStartTime());
+                Assert.True(provider.GetStartTime().GetValue() >= 0,
                     $"DueTime of provider ({provider}) is negative.");
             }
         }
@@ -153,8 +153,8 @@ namespace Zpp.Test.Integration_Tests
                     dbTransactionData.ProvidersGetById(demandToProvider.GetProviderId());
 
 
-                DueTime parentDueTime = parentDemand.GetDueTime();
-                DueTime childDueTime = childProvider.GetDueTime();
+                DueTime parentDueTime = parentDemand.GetStartTime();
+                DueTime childDueTime = childProvider.GetEndTime();
 
                 Assert.True(parentDueTime.IsGreaterThanOrEqualTo(childDueTime),
                     "ParentDemand's dueTime cannot be smaller than childProvider's dueTime.");
@@ -167,8 +167,8 @@ namespace Zpp.Test.Integration_Tests
                 Demand childDemand =
                     dbTransactionData.DemandsGetById(providerToDemand.GetDemandId());
 
-                DueTime parentDueTime = parentProvider.GetDueTime();
-                DueTime childDueTime = childDemand.GetDueTime();
+                DueTime parentDueTime = parentProvider.GetStartTime();
+                DueTime childDueTime = childDemand.GetEndTime();
 
                 Assert.True(parentDueTime.IsGreaterThanOrEqualTo(childDueTime),
                     "ParentProvider's dueTime cannot be smaller than childDemand's dueTime.");

@@ -12,7 +12,7 @@ namespace Zpp.DataLayer.ProviderDomain
     /**
      * Provides default implementations for interface methods, can be moved to interface once C# 8.0 is released
      */
-    public abstract class Provider : IProviderLogic, INode, IDemandOrProvider
+    public abstract class Provider : IProviderLogic, IDemandOrProvider
     {
         protected readonly IProvider _provider;
         protected readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
@@ -98,11 +98,6 @@ namespace Zpp.DataLayer.ProviderDomain
         public NodeType GetNodeType()
         {
             return NodeType.Provider;
-        }
-
-        public INode GetEntity()
-        {
-            return this;
         }
 
         public DueTime GetStartTime()

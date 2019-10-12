@@ -93,10 +93,9 @@ namespace Zpp.GraphicalRepresentation.impl
             return graphizString;
         }
 
-        public string GetGraphizString(INode node)
+        public string GetGraphizString(IScheduleNode node)
         {
-            INode entity = node.GetEntity();
-            switch (entity)
+            switch (node)
             {
                 case StockExchangeProvider t1:
                     return GetGraphizString(t1);

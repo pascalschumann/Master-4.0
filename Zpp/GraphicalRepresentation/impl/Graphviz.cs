@@ -113,10 +113,9 @@ namespace Zpp.GraphicalRepresentation.impl
             return graphizString;
         }
 
-        public string GetGraphizString(INode node)
+        public string GetGraphizString(IScheduleNode node)
         {
-            INode entity = node.GetEntity();
-            switch (entity)
+            switch (node)
             {
                 case StockExchangeProvider t1:
                     return GetGraphizString(t1);
@@ -134,7 +133,7 @@ namespace Zpp.GraphicalRepresentation.impl
                     return GetGraphizString(t7);
                 case Node t8:
                     throw new MrpRunException("Call getEntity() before calling this method.");
-                default: return entity.ToString();
+                default: return node.ToString();
             }
         }
     }

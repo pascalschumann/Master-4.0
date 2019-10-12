@@ -1,3 +1,4 @@
+using Zpp.DataLayer.ProviderDomain.Wrappers;
 using Zpp.DataLayer.ProviderDomain.WrappersForCollections;
 using Zpp.Util.StackSet;
 
@@ -9,13 +10,13 @@ namespace Zpp.Util.Graph
         /// 
         /// </summary>
         /// <param name="predeccessors">empty StackSet, that will contain the result</param>
-        void GetPredecessorOperations(IStackSet<TNode> predecessorOperations, TNode node);
+        void GetPredecessorOperations(IStackSet<ProductionOrderOperation> predecessorOperations, TNode node);
         
         /// <summary>
         /// 
         /// </summary>
         /// <param name="leafOperations">empty StackSet, that will contain the result</param>
-        void GetLeafOperations(IStackSet<TNode> leafOperations);
+        void GetLeafOperations(IStackSet<ProductionOrderOperation> leafOperations);
         ProductionOrderOperations GetAllOperations();
 
         ProductionOrders GetAllProductionOrders();

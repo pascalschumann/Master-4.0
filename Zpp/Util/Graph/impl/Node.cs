@@ -9,15 +9,15 @@ namespace Zpp.Util.Graph.impl
     public class Node : INode
     {
         private Id _id;
-        private INode _entity;
+        private IScheduleNode _entity;
 
         /**
          * put one of the other classes inheriting INode in it like ProductionOrder...
          */
-        public Node(INode entity, Id id)
+        public Node(IScheduleNode entity)
         {
             _entity = entity;
-            _id = id;
+            _id = entity.GetId();
         }
 
         public Id GetId()
@@ -30,7 +30,7 @@ namespace Zpp.Util.Graph.impl
             return _entity.GetNodeType();
         }
 
-        public INode GetEntity()
+        public IScheduleNode GetEntity()
         {
             return _entity;
         }

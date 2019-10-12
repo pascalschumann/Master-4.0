@@ -56,15 +56,16 @@ namespace Zpp.Util.Graph.impl
                 {
                     if (i.Equals(0))
                     {
-                        directedGraph.AddEdge(new Edge(productionOrder, productionOrderOperation));
+                        directedGraph.AddEdge(new Edge(new Node(productionOrder),
+                            new Node(productionOrderOperation)));
                     }
                     else
                     {
                         foreach (var productionOrderOperationBefore in
                             hierarchyToProductionOrderOperation[hierarchyNumbers[i - 1]])
                         {
-                            directedGraph.AddEdge(new Edge(productionOrderOperationBefore,
-                                productionOrderOperation));
+                            directedGraph.AddEdge(new Edge(new Node(productionOrderOperationBefore),
+                                new Node(productionOrderOperation)));
                         }
                     }
                 }
@@ -73,42 +74,6 @@ namespace Zpp.Util.Graph.impl
             }
 
             Edges = directedGraph.GetEdges();
-        }
-
-        public bool RemoveProductionOrdersWithNoProductionOrderOperations(
-            IDirectedGraph<INode> productionOrderGraph, ProductionOrder productionOrder)
-        {
-            var productionOrderOperationLeafsOfProductionOrder = GetLeafNodes();
-
-            // if only productionOrder as node is left, delete it from productionOrderGraph
-            if (productionOrderOperationLeafsOfProductionOrder == null ||
-                productionOrderOperationLeafsOfProductionOrder.Any() == false)
-            {
-                productionOrderGraph.RemoveNode(productionOrder);
-                // clear myself
-                Clear();
-                return true;
-            }
-
-            IEnumerable<INode> leafsWithTypeProductionOrder =
-                productionOrderOperationLeafsOfProductionOrder.Where(x =>
-                    x.GetEntity().GetType() == typeof(ProductionOrder));
-            int productionOrderCount = leafsWithTypeProductionOrder.Count();
-            if (productionOrderCount > 0)
-            {
-                if (productionOrderCount != 1)
-                {
-                    throw new MrpRunException(
-                        "There can only be one root node as ProductionOrder, others must be productionOrderOperations.");
-                }
-
-                productionOrderGraph.RemoveNode(productionOrder);
-                // clear myself
-                Clear();
-                return true;
-            }
-
-            return false;
         }
     }
 }

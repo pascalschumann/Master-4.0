@@ -114,24 +114,24 @@ namespace Zpp.Util.Graph.impl
             return GetAllHeadNodes().Count();
         }
 
-        public List<IEdge> GetAllEdgesFromTailNode(INode tailNode)
+        public IStackSet<IEdge> GetAllEdgesFromTailNode(INode tailNode)
         {
             List<IEdge> edges = Edges.Where(x => x.GetTailNode().Equals(tailNode)).ToList();
             if (edges.Any() == false)
             {
                 return null;
             }
-            return edges;
+            return new StackSet<IEdge>(edges);
         }
 
-        public List<IEdge> GetAllEdgesTowardsHeadNode(INode headNode)
+        public IStackSet<IEdge> GetAllEdgesTowardsHeadNode(INode headNode)
         {
             List<IEdge> edges = Edges.Where(x => x.GetHeadNode().Equals(headNode)).ToList();
             if (edges.Any() == false)
             {
                 return null;
             }
-            return edges;
+            return new StackSet<IEdge>(edges);
         }
 
         public override string ToString()
@@ -152,14 +152,14 @@ namespace Zpp.Util.Graph.impl
             return mystring;
         }
 
-        public INodes GetAllHeadNodes()
+        public IStackSet<INode> GetAllHeadNodes()
         {
             INodes headNodes = new Nodes(Edges.Select(x => x.GetHeadNode()));
             if (headNodes.Any() == false)
             {
                 return null;
             }
-            return headNodes;
+            return new StackSet<INode>(headNodes);
         }
 
         /// 
@@ -178,7 +178,7 @@ namespace Zpp.Util.Graph.impl
             Dictionary<INode, bool> discovered = new Dictionary<INode, bool>();
             INodes traversed = new Nodes();
 
-            stack.Push(startNode);
+            stack.Push(new Node(startNode));
             INode parentNode;
 
             while (stack.Any())
@@ -212,35 +212,35 @@ namespace Zpp.Util.Graph.impl
             return traversed;
         }
 
-        public INodes GetAllTailNodes()
+        public IStackSet<INode> GetAllTailNodes()
         {
             INodes tailNodes = new Nodes(Edges.Select(x=>x.GetTailNode()));
             if (tailNodes.Any() == false)
             {
                 return null;
             }
-            return tailNodes;
+            return new StackSet<INode>(tailNodes);
         }
 
-        public INodes GetAllUniqueNodes()
+        public IStackSet<INode> GetAllUniqueNodes()
         {
-            INodes fromNodes = GetAllTailNodes();
-            INodes toNodes = GetAllHeadNodes();
+            IStackSet<INode> fromNodes = GetAllTailNodes();
+            IStackSet<INode> toNodes = GetAllHeadNodes();
             IStackSet<INode> uniqueNodes = new StackSet<INode>();
             uniqueNodes.PushAll(fromNodes);
             uniqueNodes.PushAll(toNodes);
-            INodes uniqueNodesAsINodes = new Nodes(uniqueNodes);
-            if (uniqueNodesAsINodes.Any() == false)
+
+            if (uniqueNodes.Any() == false)
             {
                 return null;
             }
-            return uniqueNodesAsINodes;
+            return uniqueNodes;
         }
 
         public void RemoveNode(INode node)
         {
-            List<IEdge> edgesTowardsNode = GetAllEdgesTowardsHeadNode(node);
-            List<IEdge> edgesFromNode = GetAllEdgesFromTailNode(node);
+            IStackSet<IEdge> edgesTowardsNode = GetAllEdgesTowardsHeadNode(node);
+            IStackSet<IEdge> edgesFromNode = GetAllEdgesFromTailNode(node);
             RemoveAllEdgesFromTailNode(node);
             RemoveAllEdgesTowardsHeadNode(node);
 
@@ -280,12 +280,12 @@ namespace Zpp.Util.Graph.impl
         public INodes GetLeafNodes()
         {
             List<INode> leafs = new List<INode>();
-            foreach (var uniqueNode in GetAllUniqueNodes())
+            foreach (var headNode in GetAllHeadNodes())
             {
-                INodes successors = GetSuccessorNodes(uniqueNode);
+                INodes successors = GetSuccessorNodes(headNode);
                 if (successors == null || successors.Any() == false)
                 {
-                    leafs.Add(uniqueNode);
+                    leafs.Add(headNode);
                 }
             }
 

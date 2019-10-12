@@ -9,6 +9,6 @@ namespace Zpp.Util.Graph
         
         NodeType GetNodeType();
 
-        INode GetEntity();
+        IScheduleNode GetEntity();
     }
 }

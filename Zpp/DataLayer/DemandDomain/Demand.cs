@@ -12,7 +12,7 @@ namespace Zpp.DataLayer.DemandDomain
     /**
      * Provides default implementations for interface methods, can be moved to interface once C# 8.0 is released
      */
-    public abstract class Demand : IDemandLogic, INode, IDemandOrProvider
+    public abstract class Demand : IDemandLogic, IDemandOrProvider
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         protected readonly IDemand _demand;
@@ -78,11 +78,6 @@ namespace Zpp.DataLayer.DemandDomain
         public NodeType GetNodeType()
         {
             return NodeType.Demand;
-        }
-
-        public INode GetEntity()
-        {
-            return this;
         }
 
         public DueTime GetStartTime()

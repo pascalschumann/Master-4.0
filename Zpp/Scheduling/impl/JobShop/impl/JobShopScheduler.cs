@@ -144,11 +144,12 @@ namespace Zpp.Scheduling.impl.JobShop.impl
                      */
                     foreach (var o1 in allO1)
                     {
+                        INode o1AsNode = new Node(o1);
                         ProductionOrder productionOrder = o1.GetProductionOrder();
 
-                        IStackSet<INode> predecessorOperations = new StackSet<INode>();
+                        IStackSet<ProductionOrderOperation> predecessorOperations = new StackSet<ProductionOrderOperation>();
                         productionOrderToOperationGraph.GetPredecessorOperations(
-                            predecessorOperations, o1);
+                            predecessorOperations, o1AsNode);
 
                         IStackSet<ProductionOrderOperation> N = predecessorOperations
                             .As<ProductionOrderOperation>();
@@ -169,7 +170,7 @@ namespace Zpp.Scheduling.impl.JobShop.impl
                         }
 
                         // prepare for next round
-                        productionOrderToOperationGraph.RemoveNode(o1);
+                        productionOrderToOperationGraph.RemoveNode(o1AsNode);
                         /*productionOrderOperationGraph
                             .RemoveProductionOrdersWithNoProductionOrderOperations(
                                 productionOrderGraph, productionOrder);*/
@@ -186,10 +187,10 @@ namespace Zpp.Scheduling.impl.JobShop.impl
         private IStackSet<ProductionOrderOperation> CreateS(
             IProductionOrderToOperationGraph<INode> productionOrderToOperationGraph)
         {
-            IStackSet<INode> S = new StackSet<INode>();
+            IStackSet<ProductionOrderOperation> S = new StackSet<ProductionOrderOperation>();
             productionOrderToOperationGraph.GetLeafOperations(S);
 
-            return S.As<ProductionOrderOperation>();
+            return S;
         }
     }
 }

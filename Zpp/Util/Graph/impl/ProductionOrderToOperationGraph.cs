@@ -36,7 +36,7 @@ namespace Zpp.Util.Graph.impl
             ProductionOrderOperations productionOrderOperations = new ProductionOrderOperations();
             foreach (var uniqueNode in GetAllUniqueNodes())
             {
-                INode entity = uniqueNode.GetEntity();
+                IScheduleNode entity = uniqueNode.GetEntity();
                 if (entity.GetType() == typeof(ProductionOrderOperation))
                 {
                     productionOrderOperations.Add((ProductionOrderOperation) entity);
@@ -52,7 +52,7 @@ namespace Zpp.Util.Graph.impl
 
                 foreach (var uniqueNode in GetAllUniqueNodes())
                 {
-                    INode entity = uniqueNode.GetEntity();
+                    IScheduleNode entity = uniqueNode.GetEntity();
                     if (entity.GetType() == typeof(ProductionOrder))
                     {
                         productionOrders.Add(((ProductionOrder) entity));
@@ -62,7 +62,7 @@ namespace Zpp.Util.Graph.impl
             return productionOrders;
         }
 
-        public void GetPredecessorOperations(IStackSet<INode> predecessorOperations, INode node)
+        public void GetPredecessorOperations(IStackSet<ProductionOrderOperation> predecessorOperations, INode node)
         {
             INodes predecessors = GetPredecessorNodes(node);
             if (predecessors == null)
@@ -71,10 +71,10 @@ namespace Zpp.Util.Graph.impl
             }
             foreach (var predecessor in predecessors)
             {
-                INode entity = predecessor.GetEntity();
+                IScheduleNode entity = predecessor.GetEntity();
                 if (entity.GetType() == typeof(ProductionOrderOperation))
                 {
-                    predecessorOperations.Push(entity);
+                    predecessorOperations.Push((ProductionOrderOperation)entity);
                 }
                 else
                 {
@@ -83,7 +83,7 @@ namespace Zpp.Util.Graph.impl
             }
         }
 
-        public void GetLeafOperations(IStackSet<INode> leafOperations)
+        public void GetLeafOperations(IStackSet<ProductionOrderOperation> leafOperations)
         {
             INodes leafs = GetLeafNodes();
 
@@ -93,10 +93,10 @@ namespace Zpp.Util.Graph.impl
             }
             foreach (var leaf in leafs)
             {
-                INode entity = leaf.GetEntity();
+                IScheduleNode entity = leaf.GetEntity();
                 if (entity.GetType() == typeof(ProductionOrderOperation))
                 {
-                    leafOperations.Push(entity);
+                    leafOperations.Push((ProductionOrderOperation)entity);
                 }
                 else
                 {

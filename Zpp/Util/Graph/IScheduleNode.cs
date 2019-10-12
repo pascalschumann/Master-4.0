@@ -1,8 +1,9 @@
 using Master40.DB.Data.WrappersForPrimitives;
+using Zpp.Util.Graph.impl;
 
 namespace Zpp.Util.Graph
 {
-    public interface IScheduleNode: INode
+    public interface IScheduleNode
     {
         DueTime GetEndTime();
 
@@ -23,5 +24,9 @@ namespace Zpp.Util.Graph
         void SetInProgress();
 
         bool IsDone();
+        
+        NodeType GetNodeType();
+        
+        Id GetId();
     }
 }

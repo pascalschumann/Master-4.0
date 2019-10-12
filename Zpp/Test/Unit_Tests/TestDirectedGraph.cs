@@ -33,6 +33,27 @@ namespace Zpp.Test.Unit_Tests
             }
         }
 
+        [Fact]
+        public void TestGetSuccessorNodes()
+        {
+            INode[] nodes = EntityFactory.CreateDummyNodes(7);
+            IDirectedGraph<INode> directedGraph = CreateBinaryDirectedGraph(nodes);
+            INodes leafs = directedGraph.GetLeafNodes();
+            foreach (var node in nodes)
+            {
+                INodes successors = directedGraph.GetSuccessorNodes(node);
+                bool isLeaf = leafs.Contains(node);
+                if (isLeaf)
+                {
+                    Assert.True(successors == null, "A leaf cannot have successors.");
+                }
+                else
+                {
+                    Assert.True(successors != null, "A non-leaf MUST have successors.");
+                }
+            }
+        }
+
         private IDirectedGraph<INode> CreateBinaryDirectedGraph(INode[] nodes)
         {
             IDirectedGraph<INode> directedGraph = new DirectedGraph();

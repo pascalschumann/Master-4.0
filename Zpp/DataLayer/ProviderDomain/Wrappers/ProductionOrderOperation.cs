@@ -135,11 +135,6 @@ namespace Zpp.DataLayer.ProviderDomain.Wrappers
             return NodeType.Operation;
         }
 
-        public INode GetEntity()
-        {
-            return this;
-        }
-
         public Id GetProductionOrderId()
         {
             return new Id(_productionOrderOperation.ProductionOrderId);

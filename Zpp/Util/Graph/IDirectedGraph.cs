@@ -36,18 +36,18 @@ namespace Zpp.Util.Graph
 
         int CountEdges();
 
-        INodes GetAllHeadNodes();
+        IStackSet<INode> GetAllHeadNodes();
         
-        INodes GetAllTailNodes();
+        IStackSet<INode> GetAllTailNodes();
 
         /**
          * No duplicates should be contained
          */
-        INodes GetAllUniqueNodes();
+        IStackSet<INode> GetAllUniqueNodes();
 
-        List<IEdge> GetAllEdgesFromTailNode(TNode tailNode);
+        IStackSet<IEdge> GetAllEdgesFromTailNode(TNode tailNode);
         
-        List<IEdge> GetAllEdgesTowardsHeadNode(TNode headNode);
+        IStackSet<IEdge> GetAllEdgesTowardsHeadNode(TNode headNode);
         
         INodes TraverseDepthFirst(Action<TNode, INodes, INodes> action, CustomerOrderPart startNode);
      

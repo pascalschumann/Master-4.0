@@ -17,17 +17,17 @@ namespace Zpp.Test.Unit_Tests
 
         public Id GetId()
         {
+            return _id;
+        }
+
+        public IScheduleNode GetEntity()
+        {
             throw new System.NotImplementedException();
         }
 
         public NodeType GetNodeType()
         {
             return NodeType.Operation;
-        }
-
-        public INode GetEntity()
-        {
-            return this;
         }
 
         public override string ToString()

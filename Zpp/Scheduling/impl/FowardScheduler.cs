@@ -13,6 +13,66 @@ namespace Zpp.Scheduling.impl
     {
         public void ScheduleForward()
         {
+            IStackSet<INode> S = new StackSet<INode>();
+
+            IDirectedGraph<INode> orderOperationGraph = new OrderOperationGraph();
+
+            // S = {0} (alle einplanbaren "Operation"=Demand/Provider Elemente)
+            S.PushAll(orderOperationGraph.GetLeafNodes());
+
+            // d_0 = 0
+            IStackSet<INode> newS = new StackSet<INode>();
+            foreach (var node in S)
+            {
+                IScheduleNode scheduleNode = (IScheduleNode) node.GetEntity();
+                if (scheduleNode.GetStartTime().IsNegative())
+                {
+                    // implicitly the due/endTime will also be set accordingly
+                    scheduleNode.SetStartTime(DueTime.Null());
+                    newS.Push(node);
+                }
+                else // no forward scheduling is needed
+                {
+                }
+            }
+            S = newS;
+
+
+            // while S nor empty do
+            while (S.Any())
+            {
+                INode i = S.PopAny();
+                IScheduleNode iAsScheduleNode = (IScheduleNode) i.GetEntity();
+                
+                INodes predecessors = orderOperationGraph.GetPredecessorNodes(i);
+                if (predecessors != null && predecessors.Any())
+                {
+                    foreach (var predecessor in predecessors)
+                    {
+                        IScheduleNode predecessorScheduleNode =
+                            (IScheduleNode) predecessor.GetEntity();
+                        // if predecessor starts before endTime of current d/p --> change that
+                        if (predecessorScheduleNode.GetStartTime()
+                            .IsSmallerThan(iAsScheduleNode.GetEndTime()))
+                        {
+                            // COPs are not allowed to change
+                            if (predecessorScheduleNode.GetType() != typeof(CustomerOrderPart))
+                            {
+                                // don't take getDueTime() since in case of a demand,
+                                // this will be the startTime, which is to early
+                                predecessorScheduleNode.SetStartTime(iAsScheduleNode.GetEndTime());
+                            }
+
+                        }
+
+                        S.Push(predecessor);
+                    }
+                }
+            }
+        }
+        
+        public void ScheduleForwardAsZaepfel()
+        {
             /*
             S: Menge der einplanbaren Arbeitsoperationen
             p_i: Dauer der Arbeitsoperation i

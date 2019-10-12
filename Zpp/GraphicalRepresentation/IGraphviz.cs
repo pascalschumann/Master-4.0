@@ -20,6 +20,6 @@ namespace Zpp.GraphicalRepresentation
 
         string GetGraphizString(StockExchangeProvider stockExchangeProvider);
 
-        string GetGraphizString(INode node);
+        string GetGraphizString(IScheduleNode node);
     }
 }

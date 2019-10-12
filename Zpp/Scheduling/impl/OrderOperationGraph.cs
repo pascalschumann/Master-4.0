@@ -45,8 +45,8 @@ namespace Zpp.Scheduling.impl
                 }
                 else
                 {
-                    INode fromNode = new Node(demand, demandToProvider.GetDemandId());
-                    INode toNode = new Node(provider, demandToProvider.GetProviderId());
+                    INode fromNode = new Node(demand);
+                    INode toNode = new Node(provider);
                     AddEdge(new Edge(demandToProvider, fromNode, toNode));
                 }
             }
@@ -71,13 +71,13 @@ namespace Zpp.Scheduling.impl
                             providerToDemand.GetProviderId());
 
                     INode productionOrderNode =
-                        new Node(provider, providerToDemand.GetProviderId());
+                        new Node(provider);
 
                     IDirectedGraph<INode> productionOrderOperationGraph =
                         new ProductionOrderOperationGraph(
                             (ProductionOrder) productionOrderNode.GetEntity());
                     if (productionOrderOperations.Count.Equals(productionOrderOperationGraph
-                            .GetAllHeadNodes().ToStackSet().Count()) == false)
+                            .GetAllHeadNodes().Count()) == false)
                     {
                         throw new MrpRunException(
                             "One of the compared collections do not have all operations.");
@@ -100,15 +100,15 @@ namespace Zpp.Scheduling.impl
                             }
 
                             Provider childProvider = childProviders.GetAll()[0];
-                            AddEdge(new Edge(new Node(operation, operation.GetId()),
-                                new Node(childProvider, childProvider.GetId())));
+                            AddEdge(new Edge(new Node(operation),
+                                new Node(childProvider)));
                         }
                     }
                 }
                 else
                 {
-                    INode fromNode = new Node(provider, providerToDemand.GetProviderId());
-                    INode toNode = new Node(demand, providerToDemand.GetDemandId());
+                    INode fromNode = new Node(provider);
+                    INode toNode = new Node(demand);
                     AddEdge(new Edge(providerToDemand, fromNode, toNode));
                 }
             }

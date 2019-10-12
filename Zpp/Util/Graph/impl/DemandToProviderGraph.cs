@@ -24,8 +24,8 @@ namespace Zpp.Util.Graph.impl
                     throw new MrpRunException("Demand/Provider should not be null.");
                 }
 
-                INode fromNode = new Node(demand, demandToProvider.GetDemandId());
-                INode toNode = new Node(provider, demandToProvider.GetProviderId());
+                INode fromNode = new Node(demand);
+                INode toNode = new Node(provider);
                 AddEdge(new Edge(demandToProvider, fromNode, toNode));
             }
 
@@ -39,8 +39,8 @@ namespace Zpp.Util.Graph.impl
                     throw new MrpRunException("Demand/Provider should not be null.");
                 }
 
-                INode fromNode = new Node(provider, providerToDemand.GetProviderId());
-                INode toNode = new Node(demand, providerToDemand.GetDemandId());
+                INode fromNode = new Node(provider);
+                INode toNode = new Node(demand);
                 AddEdge(new Edge(providerToDemand, fromNode, toNode));
             }
         }

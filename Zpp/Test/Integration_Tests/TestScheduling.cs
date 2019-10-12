@@ -228,13 +228,13 @@ namespace Zpp.Test.Integration_Tests
             IStackSet<INode> traversedNodes = new StackSet<INode>();
             foreach (var leaf in innerLeafs)
             {
-                IStackSet<INode> newPredecessorNodes = new StackSet<INode>();
+                IStackSet<ProductionOrderOperation> newPredecessorNodes = new StackSet<ProductionOrderOperation>();
                 productionOrderToOperationGraph.GetPredecessorOperations(newPredecessorNodes, leaf);
-                ProductionOrderOperation lastOperation = (ProductionOrderOperation) leaf;
+                ProductionOrderOperation lastOperation = (ProductionOrderOperation) leaf.GetEntity();
                 ValidatePredecessorOperationsTransitionTimeIsCorrect(newPredecessorNodes,
                     lastOperation, productionOrderToOperationGraph,
                     traversedNodes);
-                traversedNodes.Push(leaf.GetEntity());
+                traversedNodes.Push(leaf);
             }
 
             int expectedTraversedOperationCount =
@@ -248,7 +248,7 @@ namespace Zpp.Test.Integration_Tests
         }
 
         private void ValidatePredecessorOperationsTransitionTimeIsCorrect(
-            IStackSet<INode> predecessorOperations, ProductionOrderOperation lastOperation,
+            IStackSet<ProductionOrderOperation> predecessorOperations, ProductionOrderOperation lastOperation,
             
             ProductionOrderToOperationGraph productionOrderToOperationGraph,
             IStackSet<INode> traversedOperations)
@@ -260,11 +260,11 @@ namespace Zpp.Test.Integration_Tests
 
             foreach (var currentPredecessor in predecessorOperations)
             {
-                if (currentPredecessor.GetEntity().GetType() == typeof(ProductionOrderOperation))
+                if (currentPredecessor.GetType() == typeof(ProductionOrderOperation))
                 {
                     ProductionOrderOperation currentOperation =
-                        (ProductionOrderOperation) currentPredecessor.GetEntity();
-                    traversedOperations.Push(currentPredecessor.GetEntity());
+                        currentPredecessor;
+                    traversedOperations.Push(new Node(currentPredecessor));
 
                     // transition time MUST be before the start of Operation
                     int expectedStartBackward =
@@ -277,9 +277,9 @@ namespace Zpp.Test.Integration_Tests
                         $"The transition time between the operations is not correct: " +
                         $"expectedStartBackward: {expectedStartBackward}, actualStartBackward {actualStartBackward}");
 
-                    IStackSet<INode> newPredecessorNodes = new StackSet<INode>();
+                    IStackSet<ProductionOrderOperation> newPredecessorNodes = new StackSet<ProductionOrderOperation>();
                     productionOrderToOperationGraph.GetPredecessorOperations(newPredecessorNodes,
-                        currentPredecessor);
+                        new Node(currentPredecessor));
                     ValidatePredecessorOperationsTransitionTimeIsCorrect(newPredecessorNodes,
                         currentOperation, productionOrderToOperationGraph,
                         traversedOperations);

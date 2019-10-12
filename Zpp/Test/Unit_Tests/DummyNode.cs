@@ -69,5 +69,20 @@ namespace Zpp.Test.Unit_Tests
         {
             throw new System.NotImplementedException();
         }
+
+        public void SetEndTime(DueTime endTime)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void ClearStartTime()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void ClearEndTime()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

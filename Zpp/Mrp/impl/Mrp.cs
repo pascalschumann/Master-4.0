@@ -101,8 +101,11 @@ namespace Zpp.Mrp.impl
             dbTransactionData.AddAll(allCreatedEntities);
             // End of MaterialRequirementsPlanning
 
-            // forward scheduling
+            ScheduleBackward(true);
+            
             ScheduleForward();
+            
+            ScheduleBackward(false);
 
             // job shop scheduling
             JobShopScheduling();
@@ -110,9 +113,10 @@ namespace Zpp.Mrp.impl
             Logger.Info("MrpRun done.");
         }
 
-        public void ScheduleBackward()
+        public void ScheduleBackward(bool clearOldTimes)
         {
-            throw new NotImplementedException();
+            IBackwardsScheduler backwardsScheduler = new BackwardScheduler();
+            backwardsScheduler.ScheduleBackward(clearOldTimes);
         }
 
         public void ScheduleForward()

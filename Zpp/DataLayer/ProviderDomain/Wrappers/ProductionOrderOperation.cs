@@ -235,5 +235,7 @@ namespace Zpp.DataLayer.ProviderDomain.Wrappers
         {
             return _productionOrderOperation.ProducingState.Equals(ProducingState.Finished);
         }
+        
+        
     }
 }

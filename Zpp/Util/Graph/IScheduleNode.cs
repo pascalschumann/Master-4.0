@@ -10,9 +10,14 @@ namespace Zpp.Util.Graph
         DueTime GetStartTime();
 
         /**
-         * Adapts the startTime and also adapts the dueTime/endTime accordingly (if exists)
+         * Adapts the startTime and also adapts the endTime accordingly (if exists)
          */
         void SetStartTime(DueTime startTime);
+
+        /**
+         * Adapts the endTime and also adapts the startTime accordingly (if exists)
+         */
+        void SetEndTime(DueTime endTime);
 
         /**
          * Contains transition time if exits
@@ -24,9 +29,13 @@ namespace Zpp.Util.Graph
         void SetInProgress();
 
         bool IsDone();
-        
+
         NodeType GetNodeType();
-        
+
         Id GetId();
+
+        void ClearStartTime();
+
+        void ClearEndTime();
     }
 }

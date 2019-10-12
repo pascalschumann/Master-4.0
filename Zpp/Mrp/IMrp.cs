@@ -12,7 +12,7 @@ namespace Zpp.Mrp
         
         EntityCollector MaterialRequirementsPlanning(Demand demand, IProviderManager providerManager);
 
-        void ScheduleBackward();
+        void ScheduleBackward(bool clearOldTimes);
         
         void ScheduleForward();
 

@@ -55,6 +55,7 @@ namespace Zpp.DataLayer.ProviderDomain.Wrappers
 
         public override void SetStartTime(DueTime startTime)
         {
+            EnsurePurchaseOrderIsLoaded();
             _tPurchaseOrderPart.PurchaseOrder.DueTime =
                 startTime.GetValue() + GetDuration().GetValue();
         }
@@ -82,6 +83,29 @@ namespace Zpp.DataLayer.ProviderDomain.Wrappers
         public override bool IsDone()
         {
             return _tPurchaseOrderPart.State.Equals(State.Finished);
+        }
+
+        public override void SetEndTime(DueTime endTime)
+        {
+            EnsurePurchaseOrderIsLoaded();
+            _tPurchaseOrderPart.PurchaseOrder.DueTime =
+                endTime.GetValue();
+        }
+
+        public override void ClearStartTime()
+        {
+            EnsurePurchaseOrderIsLoaded();
+            _tPurchaseOrderPart.PurchaseOrder.DueTime =
+                DueTime.INVALID_DUETIME;
+
+        }
+
+        public override void ClearEndTime()
+        {
+            EnsurePurchaseOrderIsLoaded();
+            _tPurchaseOrderPart.PurchaseOrder.DueTime =
+                DueTime.INVALID_DUETIME;
+
         }
     }
 }

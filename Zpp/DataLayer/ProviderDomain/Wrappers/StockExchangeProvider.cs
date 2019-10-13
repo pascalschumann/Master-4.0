@@ -69,5 +69,20 @@ namespace Zpp.DataLayer.ProviderDomain.Wrappers
         {
             return _stockExchange.State.Equals(State.Finished);
         }
+
+        public override void SetEndTime(DueTime endTime)
+        {
+            _stockExchange.RequiredOnTime = endTime.GetValue();
+        }
+
+        public override void ClearStartTime()
+        {
+            _stockExchange.RequiredOnTime = DueTime.INVALID_DUETIME;
+        }
+
+        public override void ClearEndTime()
+        {
+            _stockExchange.RequiredOnTime = DueTime.INVALID_DUETIME;
+        }
     }
 }

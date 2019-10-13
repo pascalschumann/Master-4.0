@@ -100,6 +100,10 @@ namespace Zpp.DataLayer.ProviderDomain
 
         public DueTime GetStartTime()
         {
+            if (GetEndTime().IsInvalid())
+            {
+                return null;
+            }
             return GetEndTime().Minus(new DueTime(GetDuration()));
         }
 
@@ -137,5 +141,11 @@ namespace Zpp.DataLayer.ProviderDomain
         public abstract void SetInProgress();
 
         public abstract bool IsDone();
+
+        public  abstract void SetEndTime(DueTime endTime);
+
+        public abstract void ClearStartTime();
+
+        public abstract void ClearEndTime();
     }
 }

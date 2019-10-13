@@ -209,9 +209,15 @@ namespace Zpp.DataLayer.ProviderDomain.Wrappers
         {
             if (_productionOrderOperation.StartBackward == null)
             {
-                throw new MrpRunException("Cannot request startTime before operation is scheduled.");
+                return null;
             }
-            return new DueTime(_productionOrderOperation.StartBackward.GetValueOrDefault());
+            DueTime transitionTime =
+                new DueTime(
+                    OperationBackwardsSchedule.CalculateTransitionTime(GetDuration()));
+            DueTime startTimeOfOperation =
+                new DueTime(_productionOrderOperation.StartBackward.GetValueOrDefault());
+            DueTime startTime = startTimeOfOperation.Minus(transitionTime);
+            return startTime;
         }
 
         public void SetStartTime(DueTime startTime)
@@ -235,7 +241,27 @@ namespace Zpp.DataLayer.ProviderDomain.Wrappers
         {
             return _productionOrderOperation.ProducingState.Equals(ProducingState.Finished);
         }
-        
-        
+
+        public void SetEndTime(DueTime endTime)
+        {
+            DueTime transitionTime =
+                new DueTime(
+                    OperationBackwardsSchedule.CalculateTransitionTime(GetDuration()));
+            // endBackwards
+            _productionOrderOperation.EndBackward = endTime.GetValue();
+            // startBackwards
+            DueTime startTimeOfOperation = endTime.Minus(GetDuration().ToDueTime());
+            _productionOrderOperation.StartBackward = startTimeOfOperation.GetValue();
+        }
+
+        public void ClearStartTime()
+        {
+            _productionOrderOperation.StartBackward = null;
+        }
+
+        public void ClearEndTime()
+        {
+            _productionOrderOperation.EndBackward = null;
+        }
     }
 }

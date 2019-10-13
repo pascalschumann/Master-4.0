@@ -77,5 +77,20 @@ namespace Zpp.DataLayer.DemandDomain.Wrappers
         {
             return _customerOrderPart.State.Equals(State.Finished);
         }
+
+        public override void SetEndTime(DueTime endTime)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void ClearStartTime()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void ClearEndTime()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

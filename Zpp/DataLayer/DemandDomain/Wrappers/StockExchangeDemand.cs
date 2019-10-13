@@ -114,5 +114,20 @@ namespace Zpp.DataLayer.DemandDomain.Wrappers
         {
             return _tStockExchangeDemand.State.Equals(State.Finished);
         }
+
+        public override void SetEndTime(DueTime endTime)
+        {
+            _tStockExchangeDemand.RequiredOnTime = endTime.GetValue();
+        }
+
+        public override void ClearStartTime()
+        {
+            _tStockExchangeDemand.RequiredOnTime = DueTime.INVALID_DUETIME;
+        }
+
+        public override void ClearEndTime()
+        {
+            _tStockExchangeDemand.RequiredOnTime = DueTime.INVALID_DUETIME;
+        }
     }
 }

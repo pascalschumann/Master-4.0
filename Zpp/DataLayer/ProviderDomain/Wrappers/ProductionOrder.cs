@@ -86,5 +86,20 @@ namespace Zpp.DataLayer.ProviderDomain.Wrappers
             // has no state --> always true
             return true;
         }
+
+        public override void SetEndTime(DueTime endTime)
+        {
+            _productionOrder.DueTime = endTime.GetValue();
+        }
+
+        public override void ClearStartTime()
+        {
+            _productionOrder.DueTime = DueTime.INVALID_DUETIME;
+        }
+
+        public override void ClearEndTime()
+        {
+            _productionOrder.DueTime = DueTime.INVALID_DUETIME;
+        }
     }
 }

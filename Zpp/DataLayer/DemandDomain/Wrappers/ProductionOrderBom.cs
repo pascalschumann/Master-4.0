@@ -223,5 +223,20 @@ namespace Zpp.DataLayer.DemandDomain.Wrappers
             return _productionOrderBom.ProductionOrderOperation.ProducingState.Equals(ProducingState
                 .Finished);
         }
+
+        public override void SetEndTime(DueTime endTime)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void ClearStartTime()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void ClearEndTime()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

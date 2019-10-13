@@ -1,9 +1,12 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Zpp.DataLayer.DemandDomain;
 using Zpp.DataLayer.DemandDomain.WrappersForCollections;
 using Zpp.DataLayer.WrappersForCollections;
+using Zpp.Util.Graph;
+using Zpp.Util.Graph.impl;
 
 namespace Zpp.DataLayer.ProviderDomain.WrappersForCollections
 {
@@ -145,6 +148,17 @@ namespace Zpp.DataLayer.ProviderDomain.WrappersForCollections
             }
 
             return providers;
+        }
+
+        public INodes ToNodes()
+        {
+            INodes nodes = new Nodes();
+            foreach (var item in StackSet)
+            {
+                nodes.Add(new Node(item));
+            }
+
+            return nodes;
         }
     }
 }

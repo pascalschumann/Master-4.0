@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Master40.DB.Data.WrappersForPrimitives;
 using Zpp.DataLayer.DemandDomain.WrappersForCollections;
 using Zpp.DataLayer.WrappersForCollections;
+using Zpp.Util.Graph;
 
 namespace Zpp.DataLayer.ProviderDomain.WrappersForCollections
 {
@@ -28,5 +29,7 @@ namespace Zpp.DataLayer.ProviderDomain.WrappersForCollections
         Provider GetProviderById(Id id);
 
         List<Provider> GetAllByArticleId(Id id);
+
+        INodes ToNodes();
     }
 }

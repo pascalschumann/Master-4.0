@@ -10,6 +10,7 @@ using Zpp.DataLayer;
 using Zpp.DataLayer.DemandDomain;
 using Zpp.DataLayer.DemandDomain.Wrappers;
 using Zpp.DataLayer.DemandDomain.WrappersForCollections;
+using Zpp.DataLayer.ProviderDomain.WrappersForCollections;
 using Zpp.DataLayer.WrappersForCollections;
 using Zpp.Scheduling;
 using Zpp.Scheduling.impl;
@@ -20,6 +21,7 @@ using Zpp.Util;
 using Zpp.Util.Graph;
 using Zpp.Util.Graph.impl;
 using Zpp.Util.Queue;
+using Zpp.Util.StackSet;
 
 namespace Zpp.Mrp.impl
 {
@@ -101,11 +103,27 @@ namespace Zpp.Mrp.impl
             dbTransactionData.AddAll(allCreatedEntities);
             // End of MaterialRequirementsPlanning
 
-            ScheduleBackward(true);
+            OrderOperationGraph orderOperationGraph = new OrderOperationGraph();
+            
+            ScheduleBackward(orderOperationGraph.GetRootNodes().ToStackSet(), orderOperationGraph, true);
             
             ScheduleForward();
-            
-            ScheduleBackward(false);
+
+            IStackSet<INode> childRootNodes = new StackSet<INode>();
+            foreach (var rootNode in orderOperationGraph.GetRootNodes().ToStackSet())
+            {
+                IProviders childProviders = ZppConfiguration.CacheManager.GetAggregator()
+                    .GetAllChildProvidersOf((Demand) rootNode.GetEntity());
+                if (childProviders.Count() != 1)
+                {
+                    throw new MrpRunException(
+                        "A CustomerOrderPart is only allowed to have exact one provider.");
+                }
+
+                childRootNodes.PushAll(childProviders.ToNodes());
+            }
+
+            ScheduleBackward(childRootNodes, orderOperationGraph, false);
 
             // job shop scheduling
             JobShopScheduling();
@@ -113,10 +131,12 @@ namespace Zpp.Mrp.impl
             Logger.Info("MrpRun done.");
         }
 
-        public void ScheduleBackward(bool clearOldTimes)
+        private void ScheduleBackward(IStackSet<INode> S, IDirectedGraph<INode> orderOperationGraph,
+            bool clearOldTimes)
         {
-            IBackwardsScheduler backwardsScheduler = new BackwardScheduler();
-            backwardsScheduler.ScheduleBackward(clearOldTimes);
+            IBackwardsScheduler backwardsScheduler =
+                new BackwardScheduler(S, orderOperationGraph, clearOldTimes);
+            backwardsScheduler.ScheduleBackward();
         }
 
         public void ScheduleForward()
@@ -182,8 +202,7 @@ namespace Zpp.Mrp.impl
             }
 
             // customerOrderParts: set done if all childs are done
-            DemandToProviderGraph demandToProviderGraph =
-                new DemandToProviderGraph();
+            DemandToProviderGraph demandToProviderGraph = new DemandToProviderGraph();
             INodes rootNodes = demandToProviderGraph.GetRootNodes();
             foreach (var rootNode in rootNodes)
             {
@@ -197,8 +216,7 @@ namespace Zpp.Mrp.impl
             }
         }
 
-        private bool processChilds(INodes childs,
-            DemandToProviderGraph demandToProviderGraph)
+        private bool processChilds(INodes childs, DemandToProviderGraph demandToProviderGraph)
         {
             if (childs == null)
             {
@@ -246,8 +264,7 @@ namespace Zpp.Mrp.impl
             OrderArrivalRate orderArrivalRate;
             if (customerOrderQuantity == null)
             {
-                orderArrivalRate =
-                    new OrderArrivalRate(0.025);
+                orderArrivalRate = new OrderArrivalRate(0.025);
             }
             else
             {

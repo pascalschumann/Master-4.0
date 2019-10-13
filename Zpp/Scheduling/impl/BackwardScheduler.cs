@@ -8,38 +8,53 @@ namespace Zpp.Scheduling.impl
 {
     public class BackwardScheduler : IBackwardsScheduler
     {
-        public void ScheduleBackward(bool clearOldTimes)
+        private readonly IStackSet<INode> _S;
+        private readonly IDirectedGraph<INode> _orderOperationGraph;
+        private readonly bool _clearOldTimes;
+
+        public BackwardScheduler(IStackSet<INode> S, IDirectedGraph<INode> orderOperationGraph,
+            bool clearOldTimes)
         {
-            IStackSet<INode> S = new StackSet<INode>();
+            _S = S;
+            _orderOperationGraph = orderOperationGraph;
+            _clearOldTimes = clearOldTimes;
+        }
 
-            IDirectedGraph<INode> orderOperationGraph = new OrderOperationGraph();
-
+        public void ScheduleBackward()
+        {
             // S = {0} (alle einplanbaren "Operation"=Demand/Provider Elemente)
-            S.PushAll(orderOperationGraph.GetRootNodes());
 
-            if (clearOldTimes)
+            if (_clearOldTimes)
             {
                 // d_0 = 0
-                foreach (var uniqueNode in orderOperationGraph.GetAllUniqueNodes())
+                foreach (var uniqueNode in _orderOperationGraph.GetAllUniqueNodes())
                 {
-                    uniqueNode.GetEntity().ClearStartTime();
-                    uniqueNode.GetEntity().ClearEndTime();
+                    if (uniqueNode.GetEntity().GetType() != typeof(CustomerOrderPart))
+                    {
+                        uniqueNode.GetEntity().ClearStartTime();
+                        uniqueNode.GetEntity().ClearEndTime();
+                    }
                 }
             }
 
 
             // while S nor empty do
-            while (S.Any())
+            while (_S.Any())
             {
-                INode i = S.PopAny();
+                INode i = _S.PopAny();
                 IScheduleNode iAsScheduleNode = i.GetEntity();
 
-                INodes successorNodes = orderOperationGraph.GetSuccessorNodes(i);
+                INodes successorNodes = _orderOperationGraph.GetSuccessorNodes(i);
                 if (successorNodes != null && successorNodes.Any())
                 {
                     foreach (var successor in successorNodes)
                     {
                         IScheduleNode successorScheduleNode = successor.GetEntity();
+                        
+                        // TODO: Konservativ vorwärtsterminieren ist korrekt,
+                        // aber rückwärts muss wenn immer möglich terminiert werden
+                        // (prüfe parents und ermittle minStart und setze das)
+                        
                         // if successor starts before endTime of current d/p --> change that
                         if (successorScheduleNode.GetStartTime() == null || successorScheduleNode
                                 .GetEndTime().IsGreaterThan(iAsScheduleNode.GetStartTime()))
@@ -53,7 +68,7 @@ namespace Zpp.Scheduling.impl
                             successorScheduleNode.SetEndTime(iAsScheduleNode.GetStartTime());
                         }
 
-                        S.Push(successor);
+                        _S.Push(successor);
                     }
                 }
             }

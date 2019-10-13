@@ -60,6 +60,8 @@ namespace Zpp.Scheduling.impl
                             {
                                 // don't take getDueTime() since in case of a demand,
                                 // this will be the startTime, which is to early
+                                
+                                // TODO this must be the maximum endTime of all childs !!!
                                 predecessorScheduleNode.SetStartTime(iAsScheduleNode.GetEndTime());
                             }
 

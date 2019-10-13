@@ -1,4 +1,5 @@
 using System.Linq;
+using Master40.DB.Data.WrappersForPrimitives;
 using Zpp.DataLayer.DemandDomain.Wrappers;
 using Zpp.Util;
 using Zpp.Util.Graph;
@@ -50,23 +51,31 @@ namespace Zpp.Scheduling.impl
                     foreach (var successor in successorNodes)
                     {
                         IScheduleNode successorScheduleNode = successor.GetEntity();
-                        
-                        // TODO: Konservativ vorwärtsterminieren ist korrekt,
+
+                        // Konservativ vorwärtsterminieren ist korrekt,
                         // aber rückwärts muss wenn immer möglich terminiert werden
                         // (prüfe parents und ermittle minStart und setze das)
-                        
-                        // if successor starts before endTime of current d/p --> change that
-                        if (successorScheduleNode.GetStartTime() == null || successorScheduleNode
-                                .GetEndTime().IsGreaterThan(iAsScheduleNode.GetStartTime()))
+                        INodes predecessorNodes =
+                            _orderOperationGraph.GetPredecessorNodes(successor);
+                        DueTime minStartTime = iAsScheduleNode.GetStartTime();
+                        foreach (var predecessorNode in predecessorNodes)
                         {
-                            if (successorScheduleNode.GetType() == typeof(CustomerOrderPart))
+                            DueTime predecessorsStartTime =
+                                predecessorNode.GetEntity().GetStartTime();
+                            if (predecessorsStartTime != null &&
+                                predecessorsStartTime.IsSmallerThan(minStartTime))
                             {
-                                throw new MrpRunException(
-                                    "Only a root node can be a CustomerOrderPart.");
+                                minStartTime = predecessorsStartTime;
                             }
-
-                            successorScheduleNode.SetEndTime(iAsScheduleNode.GetStartTime());
                         }
+
+                        if (successorScheduleNode.GetType() == typeof(CustomerOrderPart))
+                        {
+                            throw new MrpRunException(
+                                "Only a root node can be a CustomerOrderPart.");
+                        }
+
+                        successorScheduleNode.SetEndTime(minStartTime);
 
                         _S.Push(successor);
                     }

@@ -246,7 +246,9 @@ namespace Zpp.Test.Integration_Tests
                 $"expectedTraversedOperationCount {expectedTraversedOperationCount} " +
                 $"doesn't equal actualTraversedOperationCount {actualTraversedOperationCount}'");
         }
-
+        /**
+         * Bottom-Up-Traversal
+         */
         private void ValidatePredecessorOperationsTransitionTimeIsCorrect(
             IStackSet<ProductionOrderOperation> predecessorOperations, ProductionOrderOperation lastOperation,
             

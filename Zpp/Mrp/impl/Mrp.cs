@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.Context;
 using Master40.DB.Data.WrappersForPrimitives;
@@ -105,11 +106,11 @@ namespace Zpp.Mrp.impl
 
             OrderOperationGraph orderOperationGraph = new OrderOperationGraph();
             
-            ScheduleBackward(orderOperationGraph.GetRootNodes().ToStackSet(), orderOperationGraph, true);
+            ScheduleBackward(orderOperationGraph.GetRootNodes().ToStack(), orderOperationGraph, true);
             
             ScheduleForward();
 
-            IStackSet<INode> childRootNodes = new StackSet<INode>();
+            INodes childRootNodes = new Nodes();
             foreach (var rootNode in orderOperationGraph.GetRootNodes().ToStackSet())
             {
                 IProviders childProviders = ZppConfiguration.CacheManager.GetAggregator()
@@ -120,10 +121,10 @@ namespace Zpp.Mrp.impl
                         "A CustomerOrderPart is only allowed to have exact one provider.");
                 }
 
-                childRootNodes.PushAll(childProviders.ToNodes());
+                childRootNodes.AddAll(childProviders.ToNodes());
             }
 
-            ScheduleBackward(childRootNodes, orderOperationGraph, false);
+            ScheduleBackward(childRootNodes.ToStack(), orderOperationGraph, false);
 
             // job shop scheduling
             JobShopScheduling();
@@ -131,7 +132,7 @@ namespace Zpp.Mrp.impl
             Logger.Info("MrpRun done.");
         }
 
-        private void ScheduleBackward(IStackSet<INode> S, IDirectedGraph<INode> orderOperationGraph,
+        private void ScheduleBackward(Stack<INode> S, IDirectedGraph<INode> orderOperationGraph,
             bool clearOldTimes)
         {
             IBackwardsScheduler backwardsScheduler =

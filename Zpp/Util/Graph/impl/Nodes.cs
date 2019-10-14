@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Zpp.DataLayer.WrappersForCollections;
 
@@ -26,6 +27,17 @@ namespace Zpp.Util.Graph.impl
             }
 
             return newList;
+        }
+
+        public Stack<INode> ToStack()
+        {
+            Stack<INode> stack = new Stack<INode>();
+            foreach (var item in StackSet)
+            {
+                stack.Push(item);
+            }
+
+            return stack;
         }
     }
 }

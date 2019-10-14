@@ -53,6 +53,27 @@ namespace Zpp.Test.Unit_Tests
                 }
             }
         }
+        
+        [Fact]
+        public void TestGetPredecessorNodes()
+        {
+            INode[] nodes = EntityFactory.CreateDummyNodes(7);
+            IDirectedGraph<INode> directedGraph = CreateBinaryDirectedGraph(nodes);
+            INodes roots = directedGraph.GetRootNodes();
+            foreach (var node in nodes)
+            {
+                INodes predecessors = directedGraph.GetPredecessorNodes(node);
+                bool isRoot = roots.Contains(node);
+                if (isRoot)
+                {
+                    Assert.True(predecessors == null, "A root cannot have predecessors.");
+                }
+                else
+                {
+                    Assert.True(predecessors != null, "A non-root MUST have predecessors.");
+                }
+            }
+        }
 
         private IDirectedGraph<INode> CreateBinaryDirectedGraph(INode[] nodes)
         {

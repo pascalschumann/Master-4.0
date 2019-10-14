@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Zpp.Configuration;
@@ -13,35 +14,29 @@ namespace Zpp.Scheduling.impl
     {
         public void ScheduleForward()
         {
-            IStackSet<INode> S = new StackSet<INode>();
-
+            Stack<INode> S = new Stack<INode>();
             IDirectedGraph<INode> orderOperationGraph = new OrderOperationGraph();
 
-            // S = {0} (alle einplanbaren "Operation"=Demand/Provider Elemente)
-            S.PushAll(orderOperationGraph.GetLeafNodes());
-
             // d_0 = 0
-            IStackSet<INode> newS = new StackSet<INode>();
-            foreach (var node in S)
+            foreach (var node in orderOperationGraph.GetLeafNodes())
             {
                 IScheduleNode scheduleNode = (IScheduleNode) node.GetEntity();
                 if (scheduleNode.GetStartTime().IsNegative())
                 {
                     // implicitly the due/endTime will also be set accordingly
                     scheduleNode.SetStartTime(DueTime.Null());
-                    newS.Push(node);
+                    S.Push(node);
                 }
                 else // no forward scheduling is needed
                 {
                 }
             }
-            S = newS;
 
 
             // while S nor empty do
             while (S.Any())
             {
-                INode i = S.PopAny();
+                INode i = S.Pop();
                 IScheduleNode iAsScheduleNode = (IScheduleNode) i.GetEntity();
                 
                 INodes predecessors = orderOperationGraph.GetPredecessorNodes(i);
@@ -85,16 +80,19 @@ namespace Zpp.Scheduling.impl
             z_i: Anzahl der noch nicht eingeplanten direkten Vorgänger von Operation i
             0: DummyOperation, von der zu allen ersten Operationen eine Verbindung vorhanden ist
         */
-            IStackSet<INode> S = new StackSet<INode>();
+            Stack<INode> S = new Stack<INode>();
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.GetDbTransactionData();
             IDirectedGraph<INode> orderOperationGraph = new OrderOperationGraph();
 
             // S = {0} (alle einplanbaren "Operation"=Demand/Provider Elemente)
-            S.PushAll(orderOperationGraph.GetLeafNodes());
+            foreach (var leaf in orderOperationGraph.GetLeafNodes())
+            {
+                S.Push(leaf);
+            }
 
             // d_0 = 0
-            IStackSet<INode> newS = new StackSet<INode>();
+            Stack<INode> newS = new Stack<INode>();
             foreach (var node in S)
             {
                 IScheduleNode scheduleNode = (IScheduleNode) node.GetEntity();
@@ -115,7 +113,7 @@ namespace Zpp.Scheduling.impl
             while (S.Any())
             {
                 // Entnehme Operation i aus S (beliebig)
-                INode i = S.PopAny();
+                INode i = S.Pop();
                 IScheduleNode iAsScheduleNode = (IScheduleNode) i.GetEntity();
 
 

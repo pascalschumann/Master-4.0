@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Zpp.DataLayer.DemandDomain.Wrappers;
@@ -9,11 +10,11 @@ namespace Zpp.Scheduling.impl
 {
     public class BackwardScheduler : IBackwardsScheduler
     {
-        private readonly IStackSet<INode> _S;
+        private readonly Stack<INode> _S;
         private readonly IDirectedGraph<INode> _orderOperationGraph;
         private readonly bool _clearOldTimes;
 
-        public BackwardScheduler(IStackSet<INode> S, IDirectedGraph<INode> orderOperationGraph,
+        public BackwardScheduler(Stack<INode> S, IDirectedGraph<INode> orderOperationGraph,
             bool clearOldTimes)
         {
             _S = S;
@@ -42,7 +43,7 @@ namespace Zpp.Scheduling.impl
             // while S nor empty do
             while (_S.Any())
             {
-                INode i = _S.PopAny();
+                INode i = _S.Pop();
                 IScheduleNode iAsScheduleNode = i.GetEntity();
 
                 INodes successorNodes = _orderOperationGraph.GetSuccessorNodes(i);

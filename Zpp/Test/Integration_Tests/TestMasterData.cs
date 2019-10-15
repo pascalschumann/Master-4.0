@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
-using Zpp.Configuration;
-using Zpp.Mrp;
 using Zpp.ZppSimulator;
 
 namespace Zpp.Test.Integration_Tests

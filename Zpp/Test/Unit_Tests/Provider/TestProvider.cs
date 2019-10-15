@@ -1,6 +1,6 @@
 using Xunit;
-using Zpp.Configuration;
 using Zpp.DataLayer;
+using Zpp.Test.Integration_Tests;
 
 namespace Zpp.Test.Unit_Tests.Provider
 {

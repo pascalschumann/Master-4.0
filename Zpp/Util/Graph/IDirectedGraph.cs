@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Zpp.DataLayer.DemandDomain.Wrappers;
+using Zpp.DataLayer.impl.DemandDomain.Wrappers;
 using Zpp.Util.StackSet;
 
 namespace Zpp.Util.Graph

@@ -2,12 +2,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
-using Zpp.Configuration;
-using Zpp.DataLayer.DemandDomain;
-using Zpp.DataLayer.DemandDomain.Wrappers;
-using Zpp.DataLayer.DemandDomain.WrappersForCollections;
-using Zpp.DataLayer.ProviderDomain;
-using Zpp.Mrp.impl;
+using Zpp.DataLayer.impl.DemandDomain;
+using Zpp.DataLayer.impl.DemandDomain.Wrappers;
+using Zpp.DataLayer.impl.DemandDomain.WrappersForCollections;
+using Zpp.DataLayer.impl.ProviderDomain;
+using Zpp.DataLayer.impl.WrapperForEntities;
 using Zpp.Util;
 
 namespace Zpp.DataLayer.impl.OpenDemand

@@ -1,10 +1,8 @@
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Xunit;
-using Zpp.Configuration;
 using Zpp.DataLayer;
-using Zpp.Mrp;
-using Zpp.Production.impl.ProductionTypes;
+using Zpp.Mrp2.impl.Mrp1.impl.Production.impl.ProductionTypes;
 using Zpp.ZppSimulator;
 
 namespace Zpp.Test.Integration_Tests
@@ -14,7 +12,7 @@ namespace Zpp.Test.Integration_Tests
         [Fact]
         public void TestProductionOrderBomIsACopyOfArticleBom()
         {
-            if (Zpp.Configuration.ZppConfiguration.ProductionType.Equals(ProductionType
+            if (ZppConfiguration.ProductionType.Equals(ProductionType
                 .WorkshopProductionClassic))
             {
                 Assert.True(true);
@@ -44,7 +42,7 @@ namespace Zpp.Test.Integration_Tests
         [Fact]
         public void TestProductionOrderOperationIsACopyOfM_Operation()
         {
-            if (Zpp.Configuration.ZppConfiguration.ProductionType.Equals(ProductionType
+            if (ZppConfiguration.ProductionType.Equals(ProductionType
                 .WorkshopProductionClassic))
             {
                 Assert.True(true);

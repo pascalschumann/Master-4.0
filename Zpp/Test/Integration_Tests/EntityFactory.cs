@@ -4,11 +4,10 @@ using Master40.DB.Data.Helper;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Master40.DB.Enums;
-using Zpp.Configuration;
 using Zpp.DataLayer;
-using Zpp.DataLayer.DemandDomain;
-using Zpp.DataLayer.DemandDomain.Wrappers;
-using Zpp.DataLayer.ProviderDomain.Wrappers;
+using Zpp.DataLayer.impl.DemandDomain;
+using Zpp.DataLayer.impl.DemandDomain.Wrappers;
+using Zpp.DataLayer.impl.ProviderDomain.Wrappers;
 using Zpp.Util.Graph;
 
 namespace Zpp.Test.Integration_Tests

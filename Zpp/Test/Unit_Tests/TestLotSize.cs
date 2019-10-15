@@ -1,7 +1,8 @@
 using Master40.DB.Data.WrappersForPrimitives;
 using Xunit;
-using Zpp.Configuration;
 using Zpp.DataLayer;
+using Zpp.Mrp2.impl.Mrp1.impl.LotSize.Impl;
+using Zpp.Test.Integration_Tests;
 
 namespace Zpp.Test.Unit_Tests
 {
@@ -13,7 +14,7 @@ namespace Zpp.Test.Unit_Tests
             IDbMasterDataCache dbMasterDataCache =
             ZppConfiguration.CacheManager.GetMasterDataCache();
 
-            LotSize.Impl.LotSize lotSize = new LotSize.Impl.LotSize(new Quantity(6),
+            LotSize lotSize = new LotSize(new Quantity(6),
                 dbMasterDataCache.M_ArticleGetAll()[0].GetId());
             foreach (var quantity in lotSize.GetLotSizes())
             {

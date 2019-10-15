@@ -1,9 +1,8 @@
 using System;
 using Master40.DB.Data.WrappersForPrimitives;
-using Zpp.Configuration;
 using Zpp.DataLayer;
-using Zpp.DataLayer.DemandDomain;
-using Zpp.DataLayer.ProviderDomain;
+using Zpp.DataLayer.impl.DemandDomain;
+using Zpp.DataLayer.impl.ProviderDomain;
 
 namespace Zpp.Util.Graph.impl
 {

@@ -1,5 +1,5 @@
 using Xunit;
-using Zpp.Scheduling.impl;
+using Zpp.Mrp2.impl.Scheduling.impl;
 using Zpp.Test.Configuration;
 using Zpp.Util.Graph;
 using Zpp.Util.Graph.impl;

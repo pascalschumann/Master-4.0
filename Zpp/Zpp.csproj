@@ -27,7 +27,6 @@
     <ItemGroup>
       <Folder Include="DataLayer\" />
       <Folder Include="GraphicalRepresentation\" />
-      <Folder Include="LotSize\" />
       <Folder Include="Properties\" />
       <Folder Include="Test\Configuration\Scenarios\" />
       <Folder Include="Test\Integration_Tests\" />

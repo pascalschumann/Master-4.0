@@ -1,7 +1,7 @@
 using Master40.DB.Data.WrappersForPrimitives;
-using Zpp.DataLayer.DemandDomain;
-using Zpp.DataLayer.ProviderDomain;
-using Zpp.Mrp.impl;
+using Zpp.DataLayer.impl.DemandDomain;
+using Zpp.DataLayer.impl.ProviderDomain;
+using Zpp.DataLayer.impl.WrapperForEntities;
 
 namespace Zpp.DataLayer
 {

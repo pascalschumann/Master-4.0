@@ -1,5 +1,5 @@
-using Zpp.DataLayer.ProviderDomain.Wrappers;
-using Zpp.DataLayer.ProviderDomain.WrappersForCollections;
+using Zpp.DataLayer.impl.ProviderDomain.Wrappers;
+using Zpp.DataLayer.impl.ProviderDomain.WrappersForCollections;
 using Zpp.Util.StackSet;
 
 namespace Zpp.Util.Graph

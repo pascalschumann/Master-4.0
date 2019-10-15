@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
-using Zpp.DataLayer.DemandDomain.Wrappers;
 using Zpp.Util.Graph;
 using Zpp.Util.Graph.impl;
 

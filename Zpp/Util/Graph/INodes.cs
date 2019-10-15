@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Zpp.DataLayer.WrappersForCollections;
+using Zpp.DataLayer.impl.WrappersForCollections;
 
 namespace Zpp.Util.Graph
 {

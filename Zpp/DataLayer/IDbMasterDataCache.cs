@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
-using Zpp.DataLayer.WrappersForCollections;
-using Zpp.Scheduling.impl.JobShop.impl;
+using Zpp.DataLayer.impl.WrappersForCollections;
+using Zpp.Mrp2.impl.Scheduling.impl.JobShop.impl;
 
 namespace Zpp.DataLayer
 {

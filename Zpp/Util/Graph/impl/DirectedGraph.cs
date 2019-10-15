@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.Interfaces;
-using Zpp.DataLayer.DemandDomain.Wrappers;
+using Zpp.DataLayer.impl.DemandDomain.Wrappers;
 using Zpp.GraphicalRepresentation;
 using Zpp.GraphicalRepresentation.impl;
 using Zpp.Util.StackSet;

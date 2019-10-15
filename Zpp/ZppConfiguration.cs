@@ -1,9 +1,8 @@
-using EntityFrameworkCore.Cacheable;
 using Zpp.DataLayer;
 using Zpp.DataLayer.impl;
-using Zpp.Production.impl.ProductionTypes;
+using Zpp.Mrp2.impl.Mrp1.impl.Production.impl.ProductionTypes;
 
-namespace Zpp.Configuration
+namespace Zpp
 {
     public static class ZppConfiguration
     {

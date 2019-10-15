@@ -1,9 +1,7 @@
 using System.IO;
 using System.Text;
 using Xunit;
-using Zpp.Configuration;
 using Zpp.DataLayer;
-using Zpp.Mrp;
 using Zpp.Test.Configuration;
 using Zpp.Util;
 using Zpp.Util.Graph;

@@ -1,5 +1,4 @@
-using Zpp.Configuration;
-using Zpp.DataLayer.ProviderDomain.Wrappers;
+using Zpp.DataLayer.impl.ProviderDomain.Wrappers;
 
 namespace Zpp.Util.Graph.impl
 {

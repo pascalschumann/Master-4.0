@@ -2,9 +2,8 @@ using System.Collections.Generic;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Newtonsoft.Json;
-using Zpp.Configuration;
 using Zpp.DataLayer;
-using Zpp.DataLayer.ProviderDomain.Wrappers;
+using Zpp.DataLayer.impl.ProviderDomain.Wrappers;
 
 namespace Zpp.GraphicalRepresentation.impl
 {

@@ -4,7 +4,6 @@ using Master40.DB;
 using Master40.DB.Data.Helper;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
-using Zpp.Mrp;
 using Zpp.ZppSimulator;
 
 namespace Zpp.Test.Integration_Tests

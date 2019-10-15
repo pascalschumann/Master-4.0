@@ -5,6 +5,7 @@ using Master40.DB.Data.WrappersForPrimitives;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Zpp.DataLayer.impl.OpenDemand;
+using Zpp.Mrp2.impl.Mrp1.impl.LotSize.Impl;
 using Zpp.Test.Configuration;
 using Zpp.Util;
 
@@ -87,8 +88,8 @@ namespace Zpp.DataLayer.impl
                 _productionDomainContext
             });
 
-            LotSize.Impl.LotSize.SetDefaultLotSize(new Quantity(_testConfiguration.LotSize));
-            LotSize.Impl.LotSize.SetLotSizeType(_testConfiguration.LotSizeType);
+            LotSize.SetDefaultLotSize(new Quantity(_testConfiguration.LotSize));
+            LotSize.SetLotSizeType(_testConfiguration.LotSizeType);
         }
         
         private static TestConfiguration ReadTestConfiguration(string testConfigurationFileNames)

@@ -1,15 +1,9 @@
-using Master40.DB.Data.Context;
-using Master40.DB.Data.WrappersForPrimitives;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using System;
-using System.IO;
-using Zpp.Configuration;
+using Master40.DB.Data.Context;
 using Zpp.DataLayer;
 using Zpp.Test.Configuration;
-using Zpp.Test.Configuration.Scenarios;
 
-namespace Zpp.Test
+namespace Zpp.Test.Integration_Tests
 {
     /**
      * A test can be initialized via base() constructor on three ways:

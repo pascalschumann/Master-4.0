@@ -1,5 +1,5 @@
-using Zpp.DataLayer.DemandDomain.Wrappers;
-using Zpp.DataLayer.ProviderDomain.Wrappers;
+using Zpp.DataLayer.impl.DemandDomain.Wrappers;
+using Zpp.DataLayer.impl.ProviderDomain.Wrappers;
 using Zpp.Util.Graph;
 
 namespace Zpp.GraphicalRepresentation

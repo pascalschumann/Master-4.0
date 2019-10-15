@@ -1,13 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using Zpp.Test.WrappersForPrimitives;
 using Xunit;
+using Zpp.Test.WrappersForPrimitives;
 
-namespace Zpp.Test
+namespace Zpp.Test.Unit_Tests
 {
     /**
      * Tests testable rules that ensures a good structure e.g. ObjectCalisthenics

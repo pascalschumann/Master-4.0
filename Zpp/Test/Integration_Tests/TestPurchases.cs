@@ -2,9 +2,7 @@ using System.Collections.Generic;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Xunit;
-using Zpp.Configuration;
 using Zpp.DataLayer;
-using Zpp.Mrp;
 using Zpp.ZppSimulator;
 
 namespace Zpp.Test.Integration_Tests

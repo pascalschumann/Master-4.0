@@ -132,11 +132,11 @@ namespace Zpp.Mrp.impl
             Logger.Info("MrpRun done.");
         }
 
-        private void ScheduleBackward(Stack<INode> S, IDirectedGraph<INode> orderOperationGraph,
+        private void ScheduleBackward(Stack<INode> rootNodes, IDirectedGraph<INode> orderOperationGraph,
             bool clearOldTimes)
         {
             IBackwardsScheduler backwardsScheduler =
-                new BackwardScheduler(S, orderOperationGraph, clearOldTimes);
+                new BackwardScheduler(rootNodes, orderOperationGraph, clearOldTimes);
             backwardsScheduler.ScheduleBackward();
         }
 

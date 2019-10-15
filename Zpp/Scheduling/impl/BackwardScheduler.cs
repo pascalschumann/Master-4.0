@@ -14,17 +14,17 @@ namespace Zpp.Scheduling.impl
         private readonly IDirectedGraph<INode> _orderOperationGraph;
         private readonly bool _clearOldTimes;
 
-        public BackwardScheduler(Stack<INode> S, IDirectedGraph<INode> orderOperationGraph,
+        public BackwardScheduler(Stack<INode> rootNodes, IDirectedGraph<INode> orderOperationGraph,
             bool clearOldTimes)
         {
-            _S = S;
+            _S = rootNodes;
             _orderOperationGraph = orderOperationGraph;
             _clearOldTimes = clearOldTimes;
         }
 
         public void ScheduleBackward()
         {
-            // S = {0} (alle einplanbaren "Operation"=Demand/Provider Elemente)
+            // S = {0} (alle einplanbaren Operations/Demands/Providers)
 
             if (_clearOldTimes)
             {
@@ -38,8 +38,7 @@ namespace Zpp.Scheduling.impl
                     }
                 }
             }
-
-
+            
             // while S nor empty do
             while (_S.Any())
             {

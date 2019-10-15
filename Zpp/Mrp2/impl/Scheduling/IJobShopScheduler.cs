@@ -1,4 +1,4 @@
-using Zpp.Mrp2.impl.Scheduling.impl.JobShop;
+using Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler;
 
 namespace Zpp.Mrp2.impl.Scheduling
 {

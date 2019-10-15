@@ -4,19 +4,18 @@ using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Zpp.DataLayer;
 using Zpp.DataLayer.impl.ProviderDomain.Wrappers;
+using Zpp.DataLayer.impl.WrapperForEntities;
 using Zpp.Util;
 using Zpp.Util.Graph;
 using Zpp.Util.Graph.impl;
 using Zpp.Util.StackSet;
 
-namespace Zpp.Mrp2.impl.Scheduling.impl.JobShop.impl
+namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
 {
     public class JobShopScheduler : IJobShopScheduler
     {
         private readonly IDbMasterDataCache _dbMasterDataCache =
             ZppConfiguration.CacheManager.GetMasterDataCache();
-
-        private readonly ICacheManager _cacheManager = ZppConfiguration.CacheManager;
 
         public void ScheduleWithGifflerThompsonAsZaepfel(IPriorityRule priorityRule)
         {

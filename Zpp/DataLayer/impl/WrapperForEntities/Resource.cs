@@ -1,7 +1,7 @@
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 
-namespace Zpp.Mrp2.impl.Scheduling.impl.JobShop.impl
+namespace Zpp.DataLayer.impl.WrapperForEntities
 {
     public class Resource : IResource
     {

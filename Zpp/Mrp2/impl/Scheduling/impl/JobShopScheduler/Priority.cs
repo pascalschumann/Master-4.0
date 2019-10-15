@@ -1,6 +1,6 @@
 using Master40.DB.Data.WrappersForPrimitives;
 
-namespace Zpp.Mrp2.impl.Scheduling.impl.JobShop
+namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
 {
     public class Priority: IntPrimitive<Priority>
     {

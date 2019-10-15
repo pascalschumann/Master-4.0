@@ -6,8 +6,9 @@ using Zpp.DataLayer.impl.DemandDomain.WrappersForCollections;
 using Zpp.DataLayer.impl.ProviderDomain;
 using Zpp.DataLayer.impl.ProviderDomain.Wrappers;
 using Zpp.DataLayer.impl.ProviderDomain.WrappersForCollections;
+using Zpp.DataLayer.impl.WrapperForEntities;
 using Zpp.DataLayer.impl.WrappersForCollections;
-using Zpp.Mrp2.impl.Scheduling.impl.JobShop.impl;
+using Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler;
 using Zpp.ZppSimulator.impl;
 
 namespace Zpp.DataLayer

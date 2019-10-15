@@ -6,11 +6,11 @@ using Zpp.DataLayer.impl.DemandDomain.Wrappers;
 using Zpp.DataLayer.impl.DemandDomain.WrappersForCollections;
 using Zpp.DataLayer.impl.WrappersForCollections;
 using Zpp.Mrp2;
-using Zpp.Mrp2.impl.Confirmation;
-using Zpp.Mrp2.impl.Confirmation.impl;
 using Zpp.Test.Configuration.Scenarios;
 using Zpp.Util.Graph;
 using Zpp.Util.Graph.impl;
+using Zpp.ZppSimulator.impl.Confirmation;
+using Zpp.ZppSimulator.impl.Confirmation.impl;
 using Zpp.ZppSimulator.impl.CustomerOrder;
 using Zpp.ZppSimulator.impl.CustomerOrder.impl;
 
@@ -26,7 +26,7 @@ namespace Zpp.ZppSimulator.impl
 
         public void StartOneCycle(SimulationInterval simulationInterval)
         {
-            StartOneCycle(simulationInterval, null);
+            StartOneCycle(simulationInterval);
         }
 
         public void StartOneCycle(SimulationInterval simulationInterval,
@@ -37,7 +37,6 @@ namespace Zpp.ZppSimulator.impl
                 ZppConfiguration.CacheManager.ReloadTransactionData();
 
             _customerOrderCreator.CreateCustomerOrders(simulationInterval, customerOrderQuantity);
-            
             
             _mrp2.StartMrp2();
             

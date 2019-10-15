@@ -7,8 +7,8 @@ using Master40.DB.Data.Initializer.Tables;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Microsoft.EntityFrameworkCore;
+using Zpp.DataLayer.impl.WrapperForEntities;
 using Zpp.DataLayer.impl.WrappersForCollections;
-using Zpp.Mrp2.impl.Scheduling.impl.JobShop.impl;
 
 namespace Zpp.DataLayer.impl
 {

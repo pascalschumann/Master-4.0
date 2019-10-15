@@ -1,4 +1,4 @@
-namespace Zpp.Mrp2.impl.Scheduling.impl.JobShop
+namespace Zpp.DataLayer.impl.WrapperForEntities
 {
     /**
      * Wrapper around M_Machine

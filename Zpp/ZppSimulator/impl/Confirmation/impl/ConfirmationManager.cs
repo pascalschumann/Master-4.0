@@ -3,9 +3,8 @@ using Zpp.DataLayer.impl.DemandDomain.Wrappers;
 using Zpp.DataLayer.impl.WrappersForCollections;
 using Zpp.Util.Graph;
 using Zpp.Util.Graph.impl;
-using Zpp.ZppSimulator.impl;
 
-namespace Zpp.Mrp2.impl.Confirmation.impl
+namespace Zpp.ZppSimulator.impl.Confirmation.impl
 {
     public class ConfirmationManager : IConfirmationManager
     {

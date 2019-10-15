@@ -1,6 +1,4 @@
-using Zpp.ZppSimulator.impl;
-
-namespace Zpp.Mrp2.impl.Confirmation
+namespace Zpp.ZppSimulator.impl.Confirmation
 {
     public interface IConfirmationManager
     {

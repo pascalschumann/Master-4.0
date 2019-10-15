@@ -7,7 +7,7 @@ using Zpp.DataLayer.impl.ProviderDomain.WrappersForCollections;
 using Zpp.Mrp2.impl.Mrp1;
 using Zpp.Mrp2.impl.Scheduling;
 using Zpp.Mrp2.impl.Scheduling.impl;
-using Zpp.Mrp2.impl.Scheduling.impl.JobShop.impl;
+using Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler;
 using Zpp.Util;
 using Zpp.Util.Graph;
 using Zpp.Util.Graph.impl;

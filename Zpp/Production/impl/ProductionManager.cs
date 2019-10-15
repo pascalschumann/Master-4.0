@@ -128,21 +128,7 @@ namespace Zpp.Production.impl
                         productionOrderBomCreator.CreateProductionOrderBomsForArticleBom(articleBom,
                             quantity, (ProductionOrder) parentProductionOrder));
                 }
-
-                // backwards scheduling
-                OperationBackwardsSchedule lastOperationBackwardsSchedule = null;
-
-                IEnumerable<ProductionOrderOperation> sortedProductionOrderOperations = newDemands
-                    .Select(x => ((ProductionOrderBom) x).GetProductionOrderOperation())
-                    .OrderByDescending(x => x.GetValue().HierarchyNumber);
-
-                foreach (var productionOrderOperation in sortedProductionOrderOperations)
-                {
-                    lastOperationBackwardsSchedule = productionOrderOperation.ScheduleBackwards(
-                        lastOperationBackwardsSchedule, parentProductionOrder.GetStartTime());
-                }
-
-
+                
                 return new ProductionOrderBoms(newDemands);
             }
 

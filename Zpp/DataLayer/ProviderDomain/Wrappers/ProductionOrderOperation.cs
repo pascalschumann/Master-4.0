@@ -24,54 +24,6 @@ namespace Zpp.DataLayer.ProviderDomain.Wrappers
             
         }
 
-        public OperationBackwardsSchedule ScheduleBackwards(
-            OperationBackwardsSchedule lastOperationBackwardsSchedule,
-            DueTime dueTimeOfProductionOrder)
-        {
-            OperationBackwardsSchedule newOperationBackwardsSchedule;
-
-            // case: first run
-            if (lastOperationBackwardsSchedule == null)
-            {
-                newOperationBackwardsSchedule = new OperationBackwardsSchedule(
-                    dueTimeOfProductionOrder, _productionOrderOperation.GetDuration(),
-                    _productionOrderOperation.GetHierarchyNumber());
-            }
-            // case: equal hierarchyNumber --> PrOO runs in parallel
-            else if (_productionOrderOperation.GetHierarchyNumber()
-                .Equals(lastOperationBackwardsSchedule.GetHierarchyNumber()))
-            {
-                newOperationBackwardsSchedule = new OperationBackwardsSchedule(
-                    lastOperationBackwardsSchedule.GetEndOfOperation(),
-                    _productionOrderOperation.GetDuration(),
-                    _productionOrderOperation.GetHierarchyNumber());
-            }
-            // case: greaterHierarchyNumber --> PrOO runs after the last PrOO
-            else
-            {
-                if (lastOperationBackwardsSchedule.GetHierarchyNumber()
-                    .IsSmallerThan(_productionOrderOperation.GetHierarchyNumber()))
-                {
-                    throw new MrpRunException(
-                        "This is not allowed: hierarchyNumber of lastBackwardsSchedule " +
-                        "is smaller than hierarchyNumber of current PrOO (wasn't sorted ?').");
-                }
-
-                newOperationBackwardsSchedule = new OperationBackwardsSchedule(
-                    lastOperationBackwardsSchedule.GetStartOfOperation(),
-                    _productionOrderOperation.GetDuration(),
-                    _productionOrderOperation.GetHierarchyNumber());
-            }
-
-            // apply schedule on operation
-            _productionOrderOperation.EndBackward =
-                newOperationBackwardsSchedule.GetEndBackwards().GetValue();
-            _productionOrderOperation.StartBackward =
-                newOperationBackwardsSchedule.GetStartBackwards().GetValue();
-
-            return newOperationBackwardsSchedule;
-        }
-
         public T_ProductionOrderOperation GetValue()
         {
             return _productionOrderOperation;
@@ -213,7 +165,7 @@ namespace Zpp.DataLayer.ProviderDomain.Wrappers
             }
             DueTime transitionTime =
                 new DueTime(
-                    OperationBackwardsSchedule.CalculateTransitionTime(GetDuration()));
+                    TransitionTimer.CalculateTransitionTime(GetDuration()));
             DueTime startTimeOfOperation =
                 new DueTime(_productionOrderOperation.StartBackward.GetValueOrDefault());
             DueTime startTime = startTimeOfOperation.Minus(transitionTime);
@@ -224,7 +176,7 @@ namespace Zpp.DataLayer.ProviderDomain.Wrappers
         {
             DueTime transitionTime =
                 new DueTime(
-                    OperationBackwardsSchedule.CalculateTransitionTime(GetDuration()));
+                    TransitionTimer.CalculateTransitionTime(GetDuration()));
             // startBackwards
             DueTime startTimeOfOperation = startTime.Plus(transitionTime);
             _productionOrderOperation.StartBackward = startTimeOfOperation.GetValue();
@@ -246,7 +198,7 @@ namespace Zpp.DataLayer.ProviderDomain.Wrappers
         {
             DueTime transitionTime =
                 new DueTime(
-                    OperationBackwardsSchedule.CalculateTransitionTime(GetDuration()));
+                    TransitionTimer.CalculateTransitionTime(GetDuration()));
             // endBackwards
             _productionOrderOperation.EndBackward = endTime.GetValue();
             // startBackwards

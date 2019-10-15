@@ -15,6 +15,7 @@ using Zpp.DataLayer.ProviderDomain.WrappersForCollections;
 using Zpp.DataLayer.WrappersForCollections;
 using Zpp.Scheduling;
 using Zpp.Scheduling.impl;
+using Zpp.Scheduling.impl.JobShop;
 using Zpp.Scheduling.impl.JobShop.impl;
 using Zpp.Simulation.impl.Types;
 using Zpp.Test.Configuration.Scenarios;
@@ -29,7 +30,7 @@ namespace Zpp.Mrp.impl
     public class Mrp : IMrp
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        private readonly JobShopScheduler _jobShopScheduler = new JobShopScheduler();
+        private readonly IJobShopScheduler _jobShopScheduler = new JobShopScheduler();
         private IOrderGenerator _orderGenerator = null;
 
         public Mrp()

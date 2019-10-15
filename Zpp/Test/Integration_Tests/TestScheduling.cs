@@ -192,7 +192,7 @@ namespace Zpp.Test.Integration_Tests
                 ProductionOrderBom productionOrderBom = (ProductionOrderBom)productionOrderBomAsDemand;
                 int expectedStartBackward =
                     productionOrderBom.GetStartTime().GetValue() +
-                    OperationBackwardsSchedule.GetTransitionTimeFactor() *
+                    TransitionTimer.GetTransitionTimeFactor() *
                     productionOrderBom.GetDurationOfOperation().GetValue();
                 int actualStartBackward = productionOrderBom.GetStartTimeOfOperation().GetValue();
                 Assert.True(expectedStartBackward.Equals(actualStartBackward),
@@ -271,7 +271,7 @@ namespace Zpp.Test.Integration_Tests
                     // transition time MUST be before the start of Operation
                     int expectedStartBackward =
                         lastOperation.GetValue().EndBackward.GetValueOrDefault() +
-                        OperationBackwardsSchedule.GetTransitionTimeFactor() *
+                        TransitionTimer.GetTransitionTimeFactor() *
                         currentOperation.GetValue().Duration;
                     int actualStartBackward = currentOperation.GetValue().StartBackward
                         .GetValueOrDefault();

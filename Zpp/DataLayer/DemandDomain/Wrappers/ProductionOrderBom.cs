@@ -187,7 +187,7 @@ namespace Zpp.DataLayer.DemandDomain.Wrappers
             EnsureOperationIsLoadedIfExists();
             Duration operationDuration = GetDurationOfOperation();
             Duration transitionTime =
-                new Duration(OperationBackwardsSchedule.CalculateTransitionTime(operationDuration));
+                new Duration(TransitionTimer.CalculateTransitionTime(operationDuration));
             return transitionTime.Plus(operationDuration);
         }
 

@@ -6,6 +6,7 @@ using Zpp.DataLayer.impl.DemandDomain.Wrappers;
 using Zpp.DataLayer.impl.WrapperForEntities;
 using Zpp.Mrp2.impl.Scheduling.impl;
 using Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler;
+using Zpp.Scheduling.impl;
 using Zpp.Util;
 using Zpp.Util.Graph;
 using Zpp.Util.Graph.impl;
@@ -214,6 +215,57 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
         public void ClearEndTime()
         {
             _productionOrderOperation.EndBackward = null;
+        }
+        
+        /**
+         * This is only for initial scheduling within mrp1
+         */
+        public OperationBackwardsSchedule ScheduleBackwards(
+            OperationBackwardsSchedule lastOperationBackwardsSchedule,
+            DueTime dueTimeOfProductionOrder)
+        {
+            OperationBackwardsSchedule newOperationBackwardsSchedule;
+
+            // case: first run
+            if (lastOperationBackwardsSchedule == null)
+            {
+                newOperationBackwardsSchedule = new OperationBackwardsSchedule(
+                    dueTimeOfProductionOrder, _productionOrderOperation.GetDuration(),
+                    _productionOrderOperation.GetHierarchyNumber());
+            }
+            // case: equal hierarchyNumber --> PrOO runs in parallel
+            else if (_productionOrderOperation.GetHierarchyNumber()
+                .Equals(lastOperationBackwardsSchedule.GetHierarchyNumber()))
+            {
+                newOperationBackwardsSchedule = new OperationBackwardsSchedule(
+                    lastOperationBackwardsSchedule.GetEndOfOperation(),
+                    _productionOrderOperation.GetDuration(),
+                    _productionOrderOperation.GetHierarchyNumber());
+            }
+            // case: greaterHierarchyNumber --> PrOO runs after the last PrOO
+            else
+            {
+                if (lastOperationBackwardsSchedule.GetHierarchyNumber()
+                    .IsSmallerThan(_productionOrderOperation.GetHierarchyNumber()))
+                {
+                    throw new MrpRunException(
+                        "This is not allowed: hierarchyNumber of lastBackwardsSchedule " +
+                        "is smaller than hierarchyNumber of current PrOO (wasn't sorted ?').");
+                }
+
+                newOperationBackwardsSchedule = new OperationBackwardsSchedule(
+                    lastOperationBackwardsSchedule.GetStartOfOperation(),
+                    _productionOrderOperation.GetDuration(),
+                    _productionOrderOperation.GetHierarchyNumber());
+            }
+
+            // apply schedule on operation
+            _productionOrderOperation.EndBackward =
+                newOperationBackwardsSchedule.GetEndBackwards().GetValue();
+            _productionOrderOperation.StartBackward =
+                newOperationBackwardsSchedule.GetStartBackwards().GetValue();
+
+            return newOperationBackwardsSchedule;
         }
     }
 }

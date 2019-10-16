@@ -5,11 +5,13 @@ using Master40.DB.DataModel;
 using Master40.DB.Enums;
 using Zpp.DataLayer;
 using Zpp.DataLayer.impl.DemandDomain;
+using Zpp.DataLayer.impl.DemandDomain.Wrappers;
 using Zpp.DataLayer.impl.DemandDomain.WrappersForCollections;
 using Zpp.DataLayer.impl.ProviderDomain;
 using Zpp.DataLayer.impl.ProviderDomain.Wrappers;
 using Zpp.DataLayer.impl.WrapperForEntities;
 using Zpp.Mrp2.impl.Mrp1.impl.Production.impl.ProductionTypes;
+using Zpp.Scheduling.impl;
 using Zpp.Util;
 
 namespace Zpp.Mrp2.impl.Mrp1.impl.Production.impl
@@ -129,6 +131,19 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Production.impl
                 return new ProductionOrderBoms(newDemands);
             }
 
+            // backwards scheduling
+            OperationBackwardsSchedule lastOperationBackwardsSchedule = null;
+
+            IEnumerable<ProductionOrderOperation> sortedProductionOrderOperations = newDemands
+                .Select(x => ((ProductionOrderBom) x).GetProductionOrderOperation())
+                .OrderByDescending(x => x.GetValue().HierarchyNumber);
+
+            foreach (var productionOrderOperation in sortedProductionOrderOperations)
+            {
+                lastOperationBackwardsSchedule = productionOrderOperation.ScheduleBackwards(
+                    lastOperationBackwardsSchedule, parentProductionOrder.GetStartTime());
+            }
+            
             return null;
         }
 

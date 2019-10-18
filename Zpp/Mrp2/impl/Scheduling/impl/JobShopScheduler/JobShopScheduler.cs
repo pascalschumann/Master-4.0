@@ -143,7 +143,6 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
                     foreach (var o1 in allO1)
                     {
                         INode o1AsNode = new Node(o1);
-                        ProductionOrder productionOrder = o1.GetProductionOrder();
 
                         IStackSet<ProductionOrderOperation> predecessorOperations = new StackSet<ProductionOrderOperation>();
                         productionOrderToOperationGraph.GetPredecessorOperations(
@@ -157,21 +156,12 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
                         {
                             foreach (var n in N)
                             {
-                                /*AdaptPredecessorNodes(N, o1, productionOrderGraph,
-                                    productionOrderOperationGraphs);*/
-                                // adapt only if o1's end is later than currentOperation else scheduled time from backwards-scheduling will be ignored
-                                /*if (o1.GetValue().End > productionOrderOperation.GetValue().Start)
-                                {*/
                                 n.GetValue().Start = o1.GetValue().End;
-                                //}
                             }
                         }
 
                         // prepare for next round
                         productionOrderToOperationGraph.RemoveNode(o1AsNode);
-                        /*productionOrderOperationGraph
-                            .RemoveProductionOrdersWithNoProductionOrderOperations(
-                                productionOrderGraph, productionOrder);*/
                     }
 
                     S = CreateS(productionOrderToOperationGraph);

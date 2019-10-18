@@ -227,7 +227,7 @@ namespace Zpp.Test.Integration_Tests
             foreach (var leaf in innerLeafs)
             {
                 IStackSet<ProductionOrderOperation> newPredecessorNodes = new StackSet<ProductionOrderOperation>();
-                productionOrderToOperationGraph.GetPredecessorOperations(newPredecessorNodes, leaf);
+                productionOrderToOperationGraph.DeterminePredecessorOperations(newPredecessorNodes, leaf);
                 ProductionOrderOperation lastOperation = (ProductionOrderOperation) leaf.GetEntity();
                 ValidatePredecessorOperationsTransitionTimeIsCorrect(newPredecessorNodes,
                     lastOperation, productionOrderToOperationGraph,
@@ -278,7 +278,7 @@ namespace Zpp.Test.Integration_Tests
                         $"expectedStartBackward: {expectedStartBackward}, actualStartBackward {actualStartBackward}");
 
                     IStackSet<ProductionOrderOperation> newPredecessorNodes = new StackSet<ProductionOrderOperation>();
-                    productionOrderToOperationGraph.GetPredecessorOperations(newPredecessorNodes,
+                    productionOrderToOperationGraph.DeterminePredecessorOperations(newPredecessorNodes,
                         new Node(currentPredecessor));
                     ValidatePredecessorOperationsTransitionTimeIsCorrect(newPredecessorNodes,
                         currentOperation, productionOrderToOperationGraph,

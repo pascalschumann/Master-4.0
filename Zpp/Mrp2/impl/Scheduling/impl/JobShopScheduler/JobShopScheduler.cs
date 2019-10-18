@@ -145,7 +145,7 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
                         INode o1AsNode = new Node(o1);
 
                         IStackSet<ProductionOrderOperation> predecessorOperations = new StackSet<ProductionOrderOperation>();
-                        productionOrderToOperationGraph.GetPredecessorOperations(
+                        productionOrderToOperationGraph.DeterminePredecessorOperations(
                             predecessorOperations, o1AsNode);
 
                         IStackSet<ProductionOrderOperation> N = predecessorOperations

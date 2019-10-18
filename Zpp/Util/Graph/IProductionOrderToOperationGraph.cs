@@ -10,7 +10,7 @@ namespace Zpp.Util.Graph
         /// 
         /// </summary>
         /// <param name="predeccessors">empty StackSet, that will contain the result</param>
-        void GetPredecessorOperations(IStackSet<ProductionOrderOperation> predecessorOperations, TNode node);
+        void DeterminePredecessorOperations(IStackSet<ProductionOrderOperation> predecessorOperations, TNode node);
         
         /// <summary>
         /// 

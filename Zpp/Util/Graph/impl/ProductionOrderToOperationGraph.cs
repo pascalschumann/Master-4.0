@@ -61,7 +61,7 @@ namespace Zpp.Util.Graph.impl
             return productionOrders;
         }
 
-        public void GetPredecessorOperations(IStackSet<ProductionOrderOperation> predecessorOperations, INode node)
+        public void DeterminePredecessorOperations(IStackSet<ProductionOrderOperation> predecessorOperations, INode node)
         {
             INodes predecessors = GetPredecessorNodes(node);
             if (predecessors == null)
@@ -77,7 +77,7 @@ namespace Zpp.Util.Graph.impl
                 }
                 else
                 {
-                    GetPredecessorOperations(predecessorOperations, predecessor);
+                    DeterminePredecessorOperations(predecessorOperations, predecessor);
                 }
             }
         }
@@ -99,7 +99,7 @@ namespace Zpp.Util.Graph.impl
                 }
                 else
                 {
-                    GetPredecessorOperations(leafOperations, leaf);
+                    DeterminePredecessorOperations(leafOperations, leaf);
                 }
             }
         }

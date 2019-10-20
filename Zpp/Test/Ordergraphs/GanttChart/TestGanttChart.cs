@@ -20,6 +20,7 @@ namespace Zpp.Test.Ordergraphs.GanttChart
 
         [Theory]
         [InlineData(TestConfigurationFileNames.DESK_COP_5_LOTSIZE_2)]
+        [InlineData(TestConfigurationFileNames.DESK_COP_2_LOTSIZE_2)]
         [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
         [InlineData(TestConfigurationFileNames.TRUCK_COP_1_LOTSIZE_1)]
         public void TestGanttChartBar(string testConfigurationFileName)

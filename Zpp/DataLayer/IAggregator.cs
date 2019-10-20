@@ -46,6 +46,9 @@ namespace Zpp.DataLayer
 
         List<Provider> GetProvidersForInterval(DueTime from, DueTime to);
 
+        /**
+         * Traverse down till including StockExchangeDemands and calculate max endTime of the children
+         */
         DueTime GetEarliestPossibleStartTimeOf(ProductionOrderBom productionOrderBom);
 
         Demands GetPendingCustomerOrderParts();

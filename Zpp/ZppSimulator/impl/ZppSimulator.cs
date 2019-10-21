@@ -4,6 +4,7 @@ using Master40.DB.Data.WrappersForPrimitives;
 using Zpp.DataLayer;
 using Zpp.DataLayer.impl.DemandDomain.WrappersForCollections;
 using Zpp.Mrp2;
+using Zpp.Util.Graph.impl;
 using Zpp.ZppSimulator.impl.Confirmation;
 using Zpp.ZppSimulator.impl.Confirmation.impl;
 using Zpp.ZppSimulator.impl.CustomerOrder;
@@ -36,9 +37,15 @@ namespace Zpp.ZppSimulator.impl
             
             _mrp2.StartMrp2();
             
+            // TODO: remove this
+            DemandToProviderGraph demandToProviderGraph = new DemandToProviderGraph();
+            
             _confirmationManager.CreateConfirmations(simulationInterval);
 
             _confirmationManager.ApplyConfirmations();
+            
+            // TODO: remove this
+            demandToProviderGraph = new DemandToProviderGraph();
 
             // persisting cached/created data
             dbTransactionData.PersistDbCache();
@@ -64,9 +71,7 @@ namespace Zpp.ZppSimulator.impl
             _customerOrderCreator.CreateCustomerOrders(simulationInterval, customerOrderQuantity);
 
             // execute mrp2
-            Demands unsatisfiedCustomerOrderParts = ZppConfiguration.CacheManager.GetAggregator()
-                .GetPendingCustomerOrderParts();
-            mrp2.ManufacturingResourcePlanning(unsatisfiedCustomerOrderParts);
+            mrp2.StartMrp2();
             
             // no confirmations
             
@@ -88,7 +93,7 @@ namespace Zpp.ZppSimulator.impl
                 Logger.Info($"CurrentMemoryUsage: {currentMemoryUsage}");
                 SimulationInterval simulationInterval =
                     new SimulationInterval(i * _interval, _interval * (i + 1));
-                StartOneCycle(simulationInterval);
+                StartOneCycle(simulationInterval, new Quantity(5));
                 
                 // TODO: Tickzaehlung nur um die Planung innerhalb StartOneCycle und über return zurück
             }

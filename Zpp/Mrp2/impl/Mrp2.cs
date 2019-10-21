@@ -28,7 +28,7 @@ namespace Zpp.Mrp2.impl
                 ZppConfiguration.CacheManager.GetProductionDomainContext();
         }
 
-        public void ManufacturingResourcePlanning(IDemands dbDemands)
+        private void ManufacturingResourcePlanning(IDemands dbDemands)
         {
             if (dbDemands == null || dbDemands.Any() == false)
             {

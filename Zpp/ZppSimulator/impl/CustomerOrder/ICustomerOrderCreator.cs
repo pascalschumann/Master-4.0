@@ -9,9 +9,6 @@ namespace Zpp.ZppSimulator.impl.CustomerOrder
          */
         void CreateCustomerOrders(SimulationInterval interval, Quantity customerOrderQuantity);
 
-        /**
-         * Uses default delta 0.025
-         */
         void CreateCustomerOrders(SimulationInterval interval);
     }
 }

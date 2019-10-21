@@ -48,7 +48,7 @@ namespace Zpp.ZppSimulator.impl.CustomerOrder.impl
             var startOrderCreation = interval.StartAt;
             var endOrderCreation = interval.EndAt;
             var defaultMaxOrdersPerInterval = 10;
-
+            int createdCustomerOrders = 0;
 
             // Generate exact given quantity of customerOrders
             while (true)
@@ -65,13 +65,16 @@ namespace Zpp.ZppSimulator.impl.CustomerOrder.impl
                 }
 
                 dbTransactionData.CustomerOrderAdd(order);
-
-                int countOfCustomerOrders = dbTransactionData.T_CustomerOrderGetAll().Count;
-                if (countOfCustomerOrders >= defaultMaxOrdersPerInterval || (customerOrderQuantity != null &&
-                                                    countOfCustomerOrders >=
-                                                    customerOrderQuantity.GetValue()))
+                createdCustomerOrders++;
+                
+                if (customerOrderQuantity != null &&
+                    createdCustomerOrders >= customerOrderQuantity.GetValue())
                 {
                     break;
+                }
+                else if (customerOrderQuantity == null &&
+                         createdCustomerOrders >= defaultMaxOrdersPerInterval)
+                {
                 }
             }
         }

@@ -144,6 +144,7 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Stock.impl
                 throw new MrpRunException("This can only be called for StockExchangeProviders");
             }
             
+            // check stock if dependingDemands are needed
             Stock stock = _stocks[provider.GetArticleId()];
             Quantity currentQuantity = stock.GetQuantity();
             if (currentQuantity.IsGreaterThanOrEqualTo(stock.GetMinStockLevel()))
@@ -152,18 +153,14 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Stock.impl
                 return null;
             }
 
-            // try to provider by existing demand
+            // try to provide by existing demand
+            
             // collects stockExchangeDemands, providerToDemands
             EntityCollector entityCollector =
                 _openDemandManager.SatisfyProviderByOpenDemand(provider, provider.GetQuantity());
             if (entityCollector == null)
             {
                 entityCollector = new EntityCollector();
-            }
-
-            if (entityCollector.GetDemands().Count() > 1)
-            {
-                throw new MrpRunException("Only one demand should be reservable.");
             }
 
             Quantity remainingQuantity = entityCollector.GetRemainingQuantity(provider);

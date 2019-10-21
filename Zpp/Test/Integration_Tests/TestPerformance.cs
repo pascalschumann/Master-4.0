@@ -17,9 +17,6 @@ namespace Zpp.Test.Integration_Tests
         private void InitThisTest(string testConfiguration)
         {
             InitTestScenario(testConfiguration);
-
-            IZppSimulator zppSimulator = new ZppSimulator.impl.ZppSimulator();
-            zppSimulator.StartTestCycle();
         }
 
     

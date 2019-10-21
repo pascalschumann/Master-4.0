@@ -44,12 +44,15 @@ namespace Zpp.ZppSimulator.impl.CustomerOrder.impl
 
             var creationTime = interval.StartAt;
             var endOrderCreation = interval.EndAt;
-
-            // Generate exact given quantity of customerOrders
-            while (creationTime < endOrderCreation &&
-                   dbTransactionData.T_CustomerOrderGetAll().Count <
-                   customerOrderQuantity.GetValue())
+            
+            while (creationTime < endOrderCreation)
             {
+                // Generate exact given quantity of customerOrders
+                if (customerOrderQuantity != null && dbTransactionData.T_CustomerOrderGetAll().Count >=
+                    customerOrderQuantity.GetValue())
+                {
+                    break;
+                }
                 var order = _orderGenerator.GetNewRandomOrder(time: creationTime);
                 foreach (var orderPart in order.CustomerOrderParts)
                 {

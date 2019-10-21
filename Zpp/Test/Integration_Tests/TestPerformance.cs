@@ -1,5 +1,6 @@
 using System;
 using Xunit;
+using Zpp.Test.Configuration;
 using Zpp.ZppSimulator;
 
 namespace Zpp.Test.Integration_Tests
@@ -7,16 +8,29 @@ namespace Zpp.Test.Integration_Tests
     public class TestPerformance : AbstractTest
     {
         
-        private const int MAX_TIME_FOR_MRP_RUN = 90;
-
-        public TestPerformance() : base(initDefaultTestConfig: true)
+        
+        public TestPerformance() : base(initDefaultTestConfig: false)
         {
 
         }
-    
-        [Fact]
-        public void TestMaxTimeForMrpRunIsNotExceeded()
+        
+        private void InitThisTest(string testConfiguration)
         {
+            InitTestScenario(testConfiguration);
+
+            IZppSimulator zppSimulator = new ZppSimulator.impl.ZppSimulator();
+            zppSimulator.StartTestCycle();
+        }
+
+    
+        [Theory]
+        [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
+        public void TestMaxTimeForMrpRunIsNotExceeded(string testConfigurationFileName)
+        {
+            const int MAX_TIME_FOR_MRP_RUN = 90;
+            
+            InitThisTest(testConfigurationFileName);
+            
             DateTime startTime = DateTime.UtcNow;
 
             IZppSimulator zppSimulator = new ZppSimulator.impl.ZppSimulator();
@@ -27,6 +41,16 @@ namespace Zpp.Test.Integration_Tests
             Assert.True( neededTime < MAX_TIME_FOR_MRP_RUN,
                 $"MrpRun for example use case ({TestConfiguration.Name}) " +
                 $"takes longer than {MAX_TIME_FOR_MRP_RUN} seconds: {neededTime}");
+        }
+
+        [Theory]
+        [InlineData(TestConfigurationFileNames.DESK_COP_5_LOTSIZE_2)]
+        public void TestPerformanceStudy(string testConfigurationFileName)
+        {
+            InitThisTest(testConfigurationFileName);
+            
+            IZppSimulator zppSimulator = new ZppSimulator.impl.ZppSimulator();
+            zppSimulator.StartPerformanceStudy();
         }
     }
 }

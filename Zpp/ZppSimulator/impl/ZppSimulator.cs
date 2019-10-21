@@ -1,3 +1,5 @@
+using System;
+using System.Diagnostics;
 using Master40.DB.Data.WrappersForPrimitives;
 using Zpp.DataLayer;
 using Zpp.DataLayer.impl.DemandDomain.WrappersForCollections;
@@ -12,6 +14,7 @@ namespace Zpp.ZppSimulator.impl
     public class ZppSimulator : IZppSimulator
     {
         const int _interval = 1440;
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         
         private readonly IMrp2 _mrp2 = new Mrp2.impl.Mrp2();
         private readonly IConfirmationManager _confirmationManager = new ConfirmationManager();
@@ -19,7 +22,7 @@ namespace Zpp.ZppSimulator.impl
 
         public void StartOneCycle(SimulationInterval simulationInterval)
         {
-            StartOneCycle(simulationInterval);
+            StartOneCycle(simulationInterval, null);
         }
 
         public void StartOneCycle(SimulationInterval simulationInterval,
@@ -74,13 +77,20 @@ namespace Zpp.ZppSimulator.impl
         public void StartPerformanceStudy()
         {
             const int maxSimulatingTime = 20160;
-
-            for (int i = 0; i * _interval < maxSimulatingTime; i++)
+            long currentMemoryUsage = GC.GetTotalMemory(false);
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            
+            // for (int i = 0; i * _interval < maxSimulatingTime; i++)
+            for (int i = 0; i * _interval < 5000; i++)
             {
+                Logger.Info($"CurrentMemoryUsage: {currentMemoryUsage}");
                 SimulationInterval simulationInterval =
                     new SimulationInterval(i * _interval, _interval * (i + 1));
                 StartOneCycle(simulationInterval);
             }
+            stopwatch.Stop();
+            Logger.Info($"Elapsed cpu ticks: {stopwatch.Elapsed.Ticks}");
         }
         
         

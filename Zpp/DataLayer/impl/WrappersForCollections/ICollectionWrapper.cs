@@ -13,8 +13,13 @@ namespace Zpp.DataLayer.impl.WrappersForCollections
 
         T GetAny();
 
+        /**
+         * returns a copy of inner collection as stackSet
+         */
         IStackSet<T> ToStackSet();
 
         void Clear();
+
+        void Remove(T t);
     }
 }

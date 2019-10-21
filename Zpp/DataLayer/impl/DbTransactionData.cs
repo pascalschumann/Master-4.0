@@ -515,5 +515,36 @@ namespace Zpp.DataLayer.impl
                 _providerToDemandTable.AddAll(otherEntityCollector.GetProviderToDemandTable());
             }
         }
+
+        public void DeleteStockExchangeProvider(StockExchangeProvider stockExchangeProvider)
+        {
+            _stockExchangeProviders.Remove(stockExchangeProvider);
+        }
+
+        public void DeleteDemandToProvider(T_DemandToProvider demandToProvider)
+        {
+            _demandToProviderTable.Remove(demandToProvider);
+        }
+
+        public void DeleteProviderToDemand(T_ProviderToDemand providerToDemand)
+        {
+            _providerToDemandTable.Remove(providerToDemand);
+        }
+
+        public void DeleteAllDemandToProvider(IEnumerable<T_DemandToProvider> demandToProviders)
+        {
+            foreach (var demandToProvider in demandToProviders)
+            {
+                DeleteDemandToProvider(demandToProvider);
+            }
+        }
+
+        public void DeleteAllProviderToDemand(IEnumerable<T_ProviderToDemand> providerToDemands)
+        {
+            foreach (var providerToDemand in providerToDemands)
+            {
+                DeleteProviderToDemand(providerToDemand);
+            }
+        }
     }
 }

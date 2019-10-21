@@ -67,5 +67,10 @@ namespace Zpp.DataLayer.impl.WrappersForCollections
         {
             List.Clear();
         }
+
+        public void Remove(T t)
+        {
+            List.Remove(t);
+        }
     }
 }

@@ -91,5 +91,15 @@ namespace Zpp.DataLayer
         void AddAll(EntityCollector entityCollector);
 
         void ProductionOrderOperationAdd(T_ProductionOrderOperation productionOrderOperation);
+
+        void DeleteStockExchangeProvider(StockExchangeProvider stockExchangeProvider);
+
+        void DeleteDemandToProvider(T_DemandToProvider demandToProvider);
+        
+        void DeleteProviderToDemand(T_ProviderToDemand providerToDemand);
+        
+        void DeleteAllDemandToProvider(IEnumerable<T_DemandToProvider> demandToProviders);
+        
+        void DeleteAllProviderToDemand(IEnumerable<T_ProviderToDemand> providerToDemands);
     }
 }

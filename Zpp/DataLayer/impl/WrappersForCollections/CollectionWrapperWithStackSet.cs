@@ -67,5 +67,10 @@ namespace Zpp.DataLayer.impl.WrappersForCollections
         {
             StackSet.Clear();
         }
+
+        public void Remove(T t)
+        {
+            StackSet.Remove(t);
+        }
     }
 }

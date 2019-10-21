@@ -84,6 +84,7 @@ namespace Zpp.ZppSimulator.impl
             // for (int i = 0; i * _interval < maxSimulatingTime; i++)
             for (int i = 0; i * _interval < 5000; i++)
             {
+                currentMemoryUsage = GC.GetTotalMemory(false);
                 Logger.Info($"CurrentMemoryUsage: {currentMemoryUsage}");
                 SimulationInterval simulationInterval =
                     new SimulationInterval(i * _interval, _interval * (i + 1));

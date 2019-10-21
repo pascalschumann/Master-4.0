@@ -1,6 +1,12 @@
+using System.Collections.Generic;
+using System.Linq;
+using Master40.DB.DataModel;
 using Zpp.DataLayer;
 using Zpp.DataLayer.impl.DemandDomain.Wrappers;
+using Zpp.DataLayer.impl.ProviderDomain.Wrappers;
+using Zpp.DataLayer.impl.ProviderDomain.WrappersForCollections;
 using Zpp.DataLayer.impl.WrappersForCollections;
+using Zpp.Util;
 using Zpp.Util.Graph;
 using Zpp.Util.Graph.impl;
 
@@ -98,15 +104,42 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             return true;
         }
 
+        /**
+         * TODO: move this describtion to interface
+         * - Lösche alle children der COPs (StockExchangeProvider) inclusive Pfeile auf und weg
+         * - Wenn keine Op einer PrO angefangen ist: lösche alle von parent des PrO (StockExchangeDemand)
+         *   bis nach unten zu den StockExchangeProvidern
+         * 
+         */
         public void ApplyConfirmations()
         {
-            /**
-             * - löschen aller Verbindungen zwischen P(SE:W) und D(SE:I)
-             * - PrO: D(SE:I) bis P(SE:W) erhalten wenn eine der Ops angefangen
-             */
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
+            IAggregator aggregator = ZppConfiguration.CacheManager.GetAggregator();
+            
+            // Lösche alle children der COPs (StockExchangeProvider) inclusive Pfeile auf und weg
+            foreach (var customerOrderPart in dbTransactionData.T_CustomerOrderPartGetAll())
+            {
+                IProviders providers = aggregator.GetAllChildProvidersOf(customerOrderPart);
+                if (providers.Count() > 1)
+                {
+                    throw new MrpRunException("A customerOrderPart can only have one provider.");
+                }
 
-
-            // TODO
+                foreach (var provider in providers)
+                {
+                    IEnumerable<T_DemandToProvider> demandToProviders = dbTransactionData.DemandToProviderGetAll().GetAll().Where(x=>x.GetProviderId().Equals(provider.GetId()));
+                    IEnumerable<T_ProviderToDemand> providerToDemands = dbTransactionData.ProviderToDemandGetAll().GetAll().Where(x=>x.GetProviderId().Equals(provider.GetId()));
+                    dbTransactionData.DeleteAllDemandToProvider(demandToProviders);
+                    dbTransactionData.DeleteAllProviderToDemand(providerToDemands);
+                    dbTransactionData.DeleteStockExchangeProvider((StockExchangeProvider)provider);
+                }
+            }
+            
+            // Wenn keine Op einer PrO angefangen ist: lösche alle von parent des PrO (StockExchangeDemand)
+            //   bis nach unten zu den StockExchangeProvidern
+            
+            
         }
     }
 }

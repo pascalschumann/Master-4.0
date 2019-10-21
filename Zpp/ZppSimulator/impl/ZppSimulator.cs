@@ -89,6 +89,8 @@ namespace Zpp.ZppSimulator.impl
                 SimulationInterval simulationInterval =
                     new SimulationInterval(i * _interval, _interval * (i + 1));
                 StartOneCycle(simulationInterval);
+                
+                // TODO: Tickzaehlung nur um die Planung innerhalb StartOneCycle und über return zurück
             }
             stopwatch.Stop();
             Logger.Info($"Elapsed cpu ticks: {stopwatch.Elapsed.Ticks}");

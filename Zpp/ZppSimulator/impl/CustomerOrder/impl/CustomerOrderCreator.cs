@@ -1,3 +1,4 @@
+using System;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.SimulationCore.DistributionProvider;
 using Master40.SimulationCore.Environment.Options;
@@ -6,16 +7,17 @@ using Zpp.Test.Configuration.Scenarios;
 
 namespace Zpp.ZppSimulator.impl.CustomerOrder.impl
 {
-    public class CustomerOrderCreator: ICustomerOrderCreator
+    public class CustomerOrderCreator : ICustomerOrderCreator
     {
         private IOrderGenerator _orderGenerator = null;
-        
+
         public void CreateCustomerOrders(SimulationInterval interval)
         {
             CreateCustomerOrders(interval, null);
         }
 
-        public void CreateCustomerOrders(SimulationInterval interval, Quantity customerOrderQuantity)
+        public void CreateCustomerOrders(SimulationInterval interval,
+            Quantity customerOrderQuantity)
         {
             IDbMasterDataCache masterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
             IDbTransactionData dbTransactionData =
@@ -42,17 +44,18 @@ namespace Zpp.ZppSimulator.impl.CustomerOrder.impl
                     masterDataCache.M_BusinessPartnerGetAll());
             }
 
-            var creationTime = interval.StartAt;
+            var random = new Random();
+            var startOrderCreation = interval.StartAt;
             var endOrderCreation = interval.EndAt;
-            
-            while (creationTime < endOrderCreation)
+            var defaultMaxOrdersPerInterval = 10;
+
+
+            // Generate exact given quantity of customerOrders
+            while (true)
             {
-                // Generate exact given quantity of customerOrders
-                if (customerOrderQuantity != null && dbTransactionData.T_CustomerOrderGetAll().Count >=
-                    customerOrderQuantity.GetValue())
-                {
-                    break;
-                }
+                long creationTime = startOrderCreation +
+                                    (long) random.NextDouble() *
+                                    (endOrderCreation - startOrderCreation);
                 var order = _orderGenerator.GetNewRandomOrder(time: creationTime);
                 foreach (var orderPart in order.CustomerOrderParts)
                 {
@@ -63,8 +66,13 @@ namespace Zpp.ZppSimulator.impl.CustomerOrder.impl
 
                 dbTransactionData.CustomerOrderAdd(order);
 
-                // TODO : Handle this another way (Why Martin ?)
-                creationTime += order.CreationTime;
+                int countOfCustomerOrders = dbTransactionData.T_CustomerOrderGetAll().Count;
+                if (countOfCustomerOrders >= defaultMaxOrdersPerInterval || (customerOrderQuantity != null &&
+                                                    countOfCustomerOrders >=
+                                                    customerOrderQuantity.GetValue()))
+                {
+                    break;
+                }
             }
         }
     }

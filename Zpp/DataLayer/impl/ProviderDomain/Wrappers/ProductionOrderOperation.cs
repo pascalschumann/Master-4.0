@@ -195,6 +195,11 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             return _productionOrderOperation.ProducingState.Equals(ProducingState.Finished);
         }
 
+        public bool IsInProgress()
+        {
+            return _productionOrderOperation.ProducingState.Equals(ProducingState.Producing);
+        }
+
         public void SetEndTime(DueTime endTime)
         {
             DueTime transitionTime =

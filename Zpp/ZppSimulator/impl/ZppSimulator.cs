@@ -1,5 +1,7 @@
 using System;
 using System.Diagnostics;
+using System.IO;
+using System.Text;
 using Master40.DB.Data.WrappersForPrimitives;
 using Zpp.DataLayer;
 using Zpp.DataLayer.impl.DemandDomain.WrappersForCollections;
@@ -16,6 +18,9 @@ namespace Zpp.ZppSimulator.impl
     {
         const int _interval = 1440;
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
+        private static readonly string filePattern =
+            $"../../../Test/Ordergraphs/Simulation/simulation_";
         
         private readonly IMrp2 _mrp2 = new Mrp2.impl.Mrp2();
         private readonly IConfirmationManager _confirmationManager = new ConfirmationManager();
@@ -39,13 +44,12 @@ namespace Zpp.ZppSimulator.impl
             
             // TODO: remove this
             DemandToProviderGraph demandToProviderGraph = new DemandToProviderGraph();
+            File.WriteAllText($"{filePattern}_{simulationInterval.StartAt}.txt", demandToProviderGraph.ToString(),
+                Encoding.UTF8);
             
             _confirmationManager.CreateConfirmations(simulationInterval);
 
             _confirmationManager.ApplyConfirmations();
-            
-            // TODO: remove this
-            demandToProviderGraph = new DemandToProviderGraph();
 
             // persisting cached/created data
             dbTransactionData.PersistDbCache();

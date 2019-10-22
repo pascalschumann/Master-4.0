@@ -108,6 +108,11 @@ namespace Zpp.DataLayer.impl.OpenDemand
                         };
 
                         entityCollector.Add(providerToDemand);
+                        
+                        if(remainingQuantity.IsNull())
+                        {
+                            break;
+                        }
                     }
                 }
 

@@ -7,6 +7,9 @@ namespace Zpp.ZppSimulator.impl.Confirmation
          */
         void CreateConfirmations(SimulationInterval simulationInterval);
         
+        /**
+         * Consult the documentation in diploma thesis of Pascal Schumann
+         */
         void ApplyConfirmations();
     }
 }

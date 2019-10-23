@@ -715,18 +715,37 @@ namespace Zpp.DataLayer.impl
         {
             string result = "";
 
-            result += "_customerOrders:" + Environment.NewLine + _customerOrders.ToString() + Environment.NewLine;
-            result += "_customerOrderParts:" + Environment.NewLine + _customerOrderParts.ToString() + Environment.NewLine;
-            result += "_demandToProviderTable:" + Environment.NewLine + _demandToProviderTable.ToString() + Environment.NewLine;
-            result += "_productionOrderBoms:" + Environment.NewLine + _productionOrderBoms.ToString() + Environment.NewLine;
-            result += "_productionOrderOperations:" + Environment.NewLine + _productionOrderOperations.ToString() + Environment.NewLine;
-            result += "_productionOrders:" + Environment.NewLine + _productionOrders.ToString() + Environment.NewLine;
-            result += "_providerToDemandTable:" + Environment.NewLine + _providerToDemandTable.ToString() + Environment.NewLine;
-            result += "_purchaseOrderParts:" + Environment.NewLine + _purchaseOrderParts.ToString() + Environment.NewLine;
-            result += "_purchaseOrders:" + Environment.NewLine + _purchaseOrders.ToString() + Environment.NewLine;
-            result += "_stockExchangeDemands:" + Environment.NewLine + _stockExchangeDemands.ToString() + Environment.NewLine;
-            result += "_stockExchangeProviders:" + Environment.NewLine + _stockExchangeProviders.ToString() + Environment.NewLine;
-            
+            result += "_customerOrders:" + Environment.NewLine + _customerOrders.ToString() +
+                      Environment.NewLine + Environment.NewLine + Environment.NewLine;
+            result += "_customerOrderParts:" + Environment.NewLine +
+                      _customerOrderParts.ToString() + Environment.NewLine + Environment.NewLine +
+                      Environment.NewLine;
+            result += "_demandToProviderTable:" + Environment.NewLine +
+                      _demandToProviderTable.ToString() + Environment.NewLine +
+                      Environment.NewLine + Environment.NewLine;
+            result += "_productionOrderBoms:" + Environment.NewLine +
+                      _productionOrderBoms.ToString() + Environment.NewLine + Environment.NewLine +
+                      Environment.NewLine;
+            result += "_productionOrderOperations:" + Environment.NewLine +
+                      _productionOrderOperations.ToString() + Environment.NewLine +
+                      Environment.NewLine + Environment.NewLine;
+            result += "_productionOrders:" + Environment.NewLine + _productionOrders.ToString() +
+                      Environment.NewLine + Environment.NewLine + Environment.NewLine;
+            result += "_providerToDemandTable:" + Environment.NewLine +
+                      _providerToDemandTable.ToString() + Environment.NewLine +
+                      Environment.NewLine + Environment.NewLine;
+            result += "_purchaseOrderParts:" + Environment.NewLine +
+                      _purchaseOrderParts.ToString() + Environment.NewLine + Environment.NewLine +
+                      Environment.NewLine;
+            result += "_purchaseOrders:" + Environment.NewLine + _purchaseOrders.ToString() +
+                      Environment.NewLine + Environment.NewLine + Environment.NewLine;
+            result += "_stockExchangeDemands:" + Environment.NewLine +
+                      _stockExchangeDemands.ToString() + Environment.NewLine + Environment.NewLine +
+                      Environment.NewLine;
+            result += "_stockExchangeProviders:" + Environment.NewLine +
+                      _stockExchangeProviders.ToString() + Environment.NewLine +
+                      Environment.NewLine + Environment.NewLine;
+
             return result;
         }
     }

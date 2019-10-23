@@ -48,7 +48,15 @@ namespace Zpp.ZppSimulator.impl
             
             _confirmationManager.CreateConfirmations(simulationInterval);
 
+            // TODO: remove this
+            File.WriteAllText($"{filePattern}_dbTransactionData1_{simulationInterval.StartAt}.txt", dbTransactionData.ToString(),
+                Encoding.UTF8);
+            
             _confirmationManager.ApplyConfirmations();
+            
+            // TODO: remove this
+            File.WriteAllText($"{filePattern}_dbTransactionData2_{simulationInterval.StartAt}.txt", dbTransactionData.ToString(),
+                Encoding.UTF8);
             
             // TODO: remove this
             demandToProviderGraph = new DemandToProviderGraph();

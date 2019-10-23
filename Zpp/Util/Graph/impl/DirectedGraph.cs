@@ -392,5 +392,19 @@ namespace Zpp.Util.Graph.impl
         {
             return Edges.Any(x=>x.Equals(edge));
         }
+        
+        public void RemoveTopDown(INode node)
+        {
+            INodes successors = GetSuccessorNodes(node);
+            RemoveNode(node);
+            if (successors == null)
+            {
+                return;
+            }
+            foreach (var successor in successors)
+            {
+                RemoveTopDown(successor);
+            }
+        }
     }
 }

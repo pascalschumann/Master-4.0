@@ -13,9 +13,11 @@ namespace Zpp.DataLayer.impl
 {
     public class CacheManager: ICacheManager
     {
-        private IDbTransactionData _dbTransactionData;
+        private DbTransactionData _dbTransactionData;
+        private DbTransactionData _dbTransactionDataArchive;
         private IDbMasterDataCache _dbMasterDataCache;
         private ProductionDomainContext _productionDomainContext;
+        private ProductionDomainContext _productionDomainContextArchive;
         private IOpenDemandManager _openDemandManager;
         private TestConfiguration _testConfiguration;
         private IAggregator _aggregator;
@@ -23,10 +25,17 @@ namespace Zpp.DataLayer.impl
         
         public void InitByReadingFromDatabase(string testConfiguration)
         {
-            _productionDomainContext = Dbms.GetDbContext();
-            InitDb(testConfiguration);
+            ProductionDomainContexts productionDomainContexts = Dbms.GetDbContext();
+            _productionDomainContext = productionDomainContexts.ProductionDomainContext;
+            
+            _productionDomainContextArchive = productionDomainContexts.ProductionDomainContextArchive;
+            
+            InitDb(testConfiguration, _productionDomainContext);
+            InitDb(testConfiguration, _productionDomainContextArchive);
+            
             _dbMasterDataCache = new DbMasterDataCache(_productionDomainContext);
             _dbTransactionData = new DbTransactionData(_productionDomainContext);
+            _dbTransactionDataArchive = new DbTransactionData(_productionDomainContextArchive);
             _aggregator = new Aggregator(_dbTransactionData);
             _openDemandManager = new OpenDemandManager(true);
         }
@@ -34,6 +43,7 @@ namespace Zpp.DataLayer.impl
         public IDbTransactionData ReloadTransactionData()
         {
             _dbTransactionData = new DbTransactionData(_productionDomainContext);
+            _dbTransactionDataArchive = new DbTransactionData(_productionDomainContextArchive);
             _openDemandManager = new OpenDemandManager(false);
             _aggregator = new Aggregator(_dbTransactionData);
             return _dbTransactionData;
@@ -49,6 +59,11 @@ namespace Zpp.DataLayer.impl
             return _dbTransactionData;
         }
 
+        public IDbTransactionData GetDbTransactionDataArchive()
+        {
+            return _dbTransactionDataArchive;
+        }
+
         public IOpenDemandManager GetOpenDemandManager()
         {
             return _openDemandManager;
@@ -59,12 +74,12 @@ namespace Zpp.DataLayer.impl
          * - deletes current
          * - creates db according to given configuration
          */
-        private void InitDb(string testConfiguration)
+        private void InitDb(string testConfiguration, ProductionDomainContext productionDomainContext)
         {
             _testConfiguration = ReadTestConfiguration(testConfiguration);
             if (Constants.IsLocalDb)
             {
-                bool isDeleted = _productionDomainContext.Database.EnsureDeleted();
+                bool isDeleted = productionDomainContext.Database.EnsureDeleted();
                 if (!isDeleted)
                 {
                     _logger.Error("Database could not be deleted.");
@@ -75,7 +90,7 @@ namespace Zpp.DataLayer.impl
             {
                 bool wasDropped = Dbms.DropDatabase(
                     Constants.GetDbName(),
-                    Constants.GetConnectionString());
+                    Constants.GetConnectionString(Constants.DefaultDbName));
                 if (wasDropped == false)
                 {
                     _logger.Warn($"Database {Constants.GetDbName()} could not be dropped.");
@@ -85,7 +100,7 @@ namespace Zpp.DataLayer.impl
             Type dbSetInitializer = Type.GetType(_testConfiguration.DbSetInitializer);
             dbSetInitializer.GetMethod("DbInitialize").Invoke(null, new[]
             {
-                _productionDomainContext
+                productionDomainContext
             });
 
             LotSize.SetDefaultLotSize(new Quantity(_testConfiguration.LotSize));
@@ -110,19 +125,34 @@ namespace Zpp.DataLayer.impl
 
         public void Dispose()
         {
-            _productionDomainContext.Database.CloseConnection();
-            _dbTransactionData.Dispose();
             _openDemandManager.Dispose();
-            _dbTransactionData = null;
             _openDemandManager = null;
             _dbMasterDataCache = null;
             _testConfiguration = null;
+            
+            _productionDomainContext.Database.CloseConnection();
+            _dbTransactionData.Dispose();
+            
+            _productionDomainContextArchive.Database.CloseConnection();
+            _dbTransactionDataArchive.Dispose();
+            
             _productionDomainContext = null;
+            _productionDomainContextArchive = null;
+            
+            _dbTransactionData = null;
+            _dbTransactionDataArchive = null;
+
         }
         
         public IAggregator GetAggregator()
         {
             return _aggregator;
+        }
+
+        public void Persist()
+        {
+            _dbTransactionData.PersistDbCache();
+            _dbTransactionDataArchive.PersistDbCache();
         }
     }
 }

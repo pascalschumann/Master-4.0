@@ -10,6 +10,8 @@ namespace Zpp.Util
         public static bool IsLocalDb = false;
         // TODO: the random/dateTime is a workaround, remove this if drop database query in Dispose() in TestClasses is added
 
+        public static readonly string DefaultDbName = "zpp"; 
+        
         public static string GetDbName()
         {
             /*
@@ -37,25 +39,27 @@ namespace Zpp.Util
             // the last 9 decimal places of ticks are enough
             return DateTime.Now.ToString("MM-dd_HH:mm") + $"__{ticks.Substring(10, ticks.Length-10)}";
         }
-        
-        private static String DbConnectionZppLocalDb { get; } =
-            $"Server=(localdb)\\mssqllocaldb;Database=UnitTestDB;Trusted_Connection=True;MultipleActiveResultSets=true";
 
-        private static String DbConnectionZppSqlServer()
+        private static string DbConnectionZppLocalDb(string dbName)
         {
-            return $"Server=localhost,1433;Database={GetDbName()};" +
+            return $"Server=(localdb)\\mssqllocaldb;Database={dbName};Trusted_Connection=True;MultipleActiveResultSets=true";
+        }
+        
+        private static String DbConnectionZppSqlServer(string dbName)
+        {
+            return $"Server=localhost,1433;Database={dbName};" +
                    $"MultipleActiveResultSets=true;User ID=SA;Password=123*Start#";
         }
 
-        public static string GetConnectionString()
+        public static string GetConnectionString(string dbName)
         {
             if (UseLocalDb() && Constants.IsWindows)
             {
-                return Constants.DbConnectionZppLocalDb;
+                return DbConnectionZppLocalDb(dbName);
             }
             else
             {
-                return DbConnectionZppSqlServer();
+                return DbConnectionZppSqlServer(GetDbName() + dbName);
             }
         }
 

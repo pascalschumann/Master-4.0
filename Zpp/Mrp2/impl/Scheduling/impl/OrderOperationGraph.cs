@@ -39,16 +39,6 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
             }
         }
 
-        private void RemoveTopDown(INode node)
-        {
-            INodes successors = GetSuccessorNodes(node);
-            RemoveNode(node);
-            foreach (var successor in successors)
-            {
-                RemoveTopDown(successor);
-            }
-        }
-
         private void CreateGraph(IDbTransactionData dbTransactionData, IAggregator aggregator)
         {
             foreach (var demandToProvider in dbTransactionData.DemandToProviderGetAll())

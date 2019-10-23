@@ -54,7 +54,7 @@ namespace Zpp.Test.Integration_Tests
         }
 
         /**
-         * init db and customerOrders
+         * init db
          */
         protected void InitTestScenario(string testConfiguration)
         {

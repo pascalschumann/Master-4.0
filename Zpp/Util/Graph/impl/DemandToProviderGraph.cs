@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using Master40.DB.Data.WrappersForPrimitives;
 using Zpp.DataLayer;
 using Zpp.DataLayer.impl.DemandDomain;
+using Zpp.DataLayer.impl.DemandDomain.Wrappers;
 using Zpp.DataLayer.impl.ProviderDomain;
 
 namespace Zpp.Util.Graph.impl
@@ -12,7 +14,21 @@ namespace Zpp.Util.Graph.impl
         {
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.GetDbTransactionData();
+
+            CreateGraph(dbTransactionData);
             
+            // remove subgraphs that has roots != customerOrderPart
+            foreach (var root in GetRootNodes())
+            {
+                if (root.GetEntity().GetType() != typeof(CustomerOrderPart))
+                {
+                    RemoveTopDown(root);
+                }
+            }
+        }
+
+        private void CreateGraph(IDbTransactionData dbTransactionData)
+        {
             foreach (var demandToProvider in dbTransactionData.DemandToProviderGetAll())
             {
                 Demand demand = dbTransactionData.DemandsGetById(new Id(demandToProvider.DemandId));
@@ -47,7 +63,9 @@ namespace Zpp.Util.Graph.impl
         public override string ToString()
         {
             string mystring = "";
-            foreach (var edge in GetAllEdges())
+            List<IEdge> edges = GetAllEdges();
+
+            foreach (var edge in edges)
             {
                 // foreach (var edge in GetAllEdgesFromTailNode(fromNode))
                 // {

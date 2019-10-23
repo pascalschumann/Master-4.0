@@ -20,6 +20,16 @@ namespace Zpp.DataLayer
         IDbTransactionData GetDbTransactionData();
 
         /**
+         * persists dbTransactionData, dbTransactionDataArchive
+         */
+        void Persist();
+        
+        /**
+         * Don't store the returned reference, since it becomes invalid on ReloadTransactionData() call
+         */
+        IDbTransactionData GetDbTransactionDataArchive();
+
+        /**
          * Don't store the returned reference, since it becomes invalid on ReloadTransactionData() call
          */
         IOpenDemandManager GetOpenDemandManager();

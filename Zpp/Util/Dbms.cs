@@ -14,41 +14,35 @@ namespace Zpp.Util
 
         public static readonly LoggerFactory MyLoggerFactory = new LoggerFactory();
 
-
-    public static ProductionDomainContext GetDbContext()
+        
+        
+    public static ProductionDomainContexts GetDbContext()
         {
-            ProductionDomainContext productionDomainContext;
-
-            // EF inMemory
-            // MasterDBContext _inMemmoryContext = new MasterDBContext(new DbContextOptionsBuilder<MasterDBContext>()
-            /*_productionDomainContext = new ProductionDomainContext(new DbContextOptionsBuilder<MasterDBContext>()
-                .UseInMemoryDatabase(databaseName: "InMemoryDB")
-                .Options);*/
-
+            ProductionDomainContexts productionDomainContexts = new ProductionDomainContexts();
+            
+            ProductionDomainContext productionDomainContext = new ProductionDomainContext(
+                new DbContextOptionsBuilder<MasterDBContext>().UseLoggerFactory(MyLoggerFactory)
+                    .UseSqlServer(Constants.GetConnectionString(Constants.DefaultDbName)).Options);
+            productionDomainContexts.ProductionDomainContext = productionDomainContext;
+            
+            ProductionDomainContext productionDomainContextArchive = new ProductionDomainContext(
+                new DbContextOptionsBuilder<MasterDBContext>().UseLoggerFactory(MyLoggerFactory)
+                    .UseSqlServer(Constants.GetConnectionString(Constants.DefaultDbName + "_archive")).Options);
+            productionDomainContexts.ProductionDomainContextArchive =
+                productionDomainContextArchive;
+            
             if (Constants.UseLocalDb() && Constants.IsWindows)
             {
-                productionDomainContext = new ProductionDomainContext(
-                    new DbContextOptionsBuilder<MasterDBContext>().UseLoggerFactory(MyLoggerFactory)
-                        .UseSqlServer(
-                            // Constants.DbConnectionZppLocalDb)
-                            Constants.GetConnectionString()).Options);
-                    Constants.IsLocalDb = true;
-            } else if (Constants.IsWindows)
+                Constants.IsLocalDb = true;
+            } else if (Constants.UseLocalDb() == false && Constants.IsWindows)
             {
-                // Windows
-                productionDomainContext = new ProductionDomainContext(
-                    new DbContextOptionsBuilder<MasterDBContext>().UseLoggerFactory(MyLoggerFactory)
-                        .UseSqlServer(
-                            // Constants.DbConnectionZppLocalDb)
-                            Constants.GetConnectionString()).Options);
+                
                 Constants.IsLocalDb = false;
             }
             else
             {
                 // With Sql Server for Mac/Linux
-                productionDomainContext = new ProductionDomainContext(
-                    new DbContextOptionsBuilder<MasterDBContext>().UseLoggerFactory(MyLoggerFactory)
-                        .UseSqlServer(Constants.GetConnectionString()).Options);
+
             }
 
             MyLoggerFactory.AddNLog();
@@ -56,8 +50,10 @@ namespace Zpp.Util
             // disable tracking (https://docs.microsoft.com/en-us/ef/core/querying/tracking)
             productionDomainContext.ChangeTracker.QueryTrackingBehavior =
                 QueryTrackingBehavior.NoTracking;
+            productionDomainContextArchive.ChangeTracker.QueryTrackingBehavior =
+                QueryTrackingBehavior.NoTracking;
 
-            return productionDomainContext;
+            return productionDomainContexts;
         }
 
         public static bool CanConnect(string connectionString)
@@ -83,7 +79,7 @@ namespace Zpp.Util
          */
         public static bool DropDatabase(string dbName, string connectionString)
         {
-            if (CanConnect(Constants.GetConnectionString()) == false)
+            if (CanConnect(Constants.GetConnectionString(Constants.DefaultDbName)) == false)
             {
                 return false;
             }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.DataModel;
+using Master40.DB.Interfaces;
 using Zpp.DataLayer;
 using Zpp.DataLayer.impl.DemandDomain;
 using Zpp.DataLayer.impl.DemandDomain.Wrappers;
@@ -132,7 +133,8 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                         .Where(x => x.GetProviderId().Equals(provider.GetId()));
                     dbTransactionData.DemandToProviderDeleteAll(demandToProviders);
                     dbTransactionData.ProviderToDemandDeleteAll(providerToDemands);
-                    dbTransactionData.StockExchangeProvidersDelete((StockExchangeProvider) provider);
+                    dbTransactionData.StockExchangeProvidersDelete(
+                        (StockExchangeProvider) provider);
                 }
             }
 
@@ -151,7 +153,8 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                         ApplyProductionOrderIsInProgress();
                         break;
                     case ProductionOrderState.Done:
-                        ApplyProductionOrderIsDone();
+                        ApplyProductionOrderIsDone((ProductionOrder) productionOrder, aggregator,
+                            dbTransactionData);
                         break;
                     default: throw new MrpRunException("This state is not expected.");
                 }
@@ -165,19 +168,24 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
          * - childs of childs (StockExchangeProvider)
          */
         private List<IDemandOrProvider> GetDemandOrProvidersOfProductionOrderSubGraph(
-            ProductionOrder productionOrder, IAggregator aggregator)
+            bool IncludeParentStockExchangeDemand, ProductionOrder productionOrder,
+            IAggregator aggregator)
         {
             List<IDemandOrProvider> demandOrProvidersOfProductionOrderSubGraph =
                 new List<IDemandOrProvider>();
 
-            IDemands stockExchangeDemands = aggregator.GetAllParentDemandsOf(productionOrder);
-            if (stockExchangeDemands.Count() > 1)
+            if (IncludeParentStockExchangeDemand)
             {
-                throw new MrpRunException(
-                    "A productionOrder can only have one parentDemand (stockExchangeDemand).");
+                IDemands stockExchangeDemands = aggregator.GetAllParentDemandsOf(productionOrder);
+                if (stockExchangeDemands.Count() > 1)
+                {
+                    throw new MrpRunException(
+                        "A productionOrder can only have one parentDemand (stockExchangeDemand).");
+                }
+
+                demandOrProvidersOfProductionOrderSubGraph.AddRange(stockExchangeDemands);
             }
 
-            demandOrProvidersOfProductionOrderSubGraph.AddRange(stockExchangeDemands);
             IDemands productionOrderBoms = aggregator.GetAllChildDemandsOf(productionOrder);
             demandOrProvidersOfProductionOrderSubGraph.AddRange(productionOrderBoms);
             foreach (var productionOrderBom in productionOrderBoms)
@@ -200,19 +208,22 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             IAggregator aggregator, IDbTransactionData dbTransactionData)
         {
             // delete all operations
-            List<ProductionOrderOperation> operations = aggregator.GetProductionOrderOperationsOfProductionOrder(productionOrder);
+            List<ProductionOrderOperation> operations =
+                aggregator.GetProductionOrderOperationsOfProductionOrder(productionOrder);
             dbTransactionData.ProductionOrderOperationDeleteAll(operations);
-            
+
             // collect entities and demandToProviders/providerToDemands to delete
             List<IDemandOrProvider> demandOrProvidersToDelete =
-                GetDemandOrProvidersOfProductionOrderSubGraph(productionOrder, aggregator);
+                GetDemandOrProvidersOfProductionOrderSubGraph(true, productionOrder, aggregator);
 
             // delete all collected entities
             foreach (var demandOrProvider in demandOrProvidersToDelete)
             {
-                aggregator.DeleteArrowsToAndFrom(demandOrProvider);
+                List<ILinkDemandAndProvider> demandAndProviders =
+                    aggregator.GetArrowsToAndFrom(demandOrProvider);
+                dbTransactionData.DeleteAllFrom(demandAndProviders);
 
-                dbTransactionData.DeleteDemandOrProvider(demandOrProvider);
+                dbTransactionData.DeleteA(demandOrProvider);
             }
         }
 
@@ -222,10 +233,34 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             return;
         }
 
-        private void ApplyProductionOrderIsDone()
+        private void ApplyProductionOrderIsDone(ProductionOrder productionOrder,
+            IAggregator aggregator, IDbTransactionData dbTransactionData)
         {
-            // nothing to do here
-            return;
+            IDbTransactionData dbTransactionDataArchive =
+                ZppConfiguration.CacheManager.GetDbTransactionDataArchive();
+
+            // archive operations
+            List<ProductionOrderOperation> operations =
+                aggregator.GetProductionOrderOperationsOfProductionOrder(productionOrder);
+            dbTransactionDataArchive.ProductionOrderOperationAddAll(operations);
+            dbTransactionData.ProductionOrderOperationDeleteAll(operations);
+
+            // archive demands Or providers
+            List<IDemandOrProvider> demandOrProvidersToArchive =
+                GetDemandOrProvidersOfProductionOrderSubGraph(false, productionOrder, aggregator);
+
+
+            // delete all collected entities
+            foreach (var demandOrProvider in demandOrProvidersToArchive)
+            {
+                List<ILinkDemandAndProvider> demandAndProviderLinks =
+                    aggregator.GetArrowsToAndFrom(demandOrProvider);
+                dbTransactionDataArchive.AddAllFrom(demandAndProviderLinks);
+                dbTransactionData.DeleteAllFrom(demandAndProviderLinks);
+
+                dbTransactionDataArchive.AddA(demandOrProvider);
+                dbTransactionData.DeleteA(demandOrProvider);
+            }
         }
 
         private ProductionOrderState DetermineProductionOrderState(ProductionOrder productionOrder,
@@ -234,8 +269,9 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             bool atLeastOneIsInProgress = false;
             bool atLeastOneIsDone = false;
             bool atLeastOneIsInStateCreated = false;
-            foreach (var productionOrderOperation in aggregator
-                .GetProductionOrderOperationsOfProductionOrder(productionOrder))
+            var productionOrderOperations =
+                aggregator.GetProductionOrderOperationsOfProductionOrder(productionOrder);
+            foreach (var productionOrderOperation in productionOrderOperations)
             {
                 if (productionOrderOperation.IsInProgress())
                 {

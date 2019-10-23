@@ -6,6 +6,7 @@ using Master40.DB.Data.Context;
 using Master40.DB.Data.Helper;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
+using Master40.DB.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Zpp.DataLayer.impl.DemandDomain;
 using Zpp.DataLayer.impl.DemandDomain.Wrappers;
@@ -133,7 +134,7 @@ namespace Zpp.DataLayer.impl
                 .DemandToProviders);
         }
 
-        public void PersistDbCache()
+        internal void PersistDbCache()
         {
             // TODO: performance issue: Batch insert, since those T_* didn't exist before anyways, update is useless
             // TODO: SaveChanges at the end only once
@@ -494,7 +495,7 @@ namespace Zpp.DataLayer.impl
             _providerToDemandTable.Clear();
         }
 
-        public void AddAll(EntityCollector otherEntityCollector)
+        public void AddAllFrom(EntityCollector otherEntityCollector)
         {
             if (otherEntityCollector.GetDemands().Any())
             {
@@ -548,7 +549,7 @@ namespace Zpp.DataLayer.impl
             }
         }
 
-        public void DeleteDemandOrProvider(IDemandOrProvider demandOrProvider)
+        public void DeleteA(IDemandOrProvider demandOrProvider)
         {
             if (demandOrProvider is Demand)
             {
@@ -616,6 +617,96 @@ namespace Zpp.DataLayer.impl
         public void ProductionOrderOperationDelete(ProductionOrderOperation productionOrderOperation)
         {
             _productionOrderOperations.Remove(productionOrderOperation);
+        }
+
+        public void ProductionOrderOperationAddAll(List<ProductionOrderOperation> productionOrderOperations)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DeleteAllFrom(List<IDemandOrProvider> demandOrProviders)
+        {
+            foreach (var demandOrProvider in demandOrProviders)
+            {
+                DeleteA(demandOrProvider);
+            }
+        }
+
+        public void DeleteAllFrom(List<ILinkDemandAndProvider> demandAndProviderLinks)
+        {
+            foreach (var demandAndProviderLink in demandAndProviderLinks)
+            {
+                DeleteA(demandAndProviderLink);
+            }
+        }
+
+        public void AddAllFrom(List<IDemandOrProvider> demandOrProviders)
+        {
+            foreach (var demandOrProvider in demandOrProviders)
+            {
+                AddA(demandOrProvider);
+            }
+        }
+
+        public void AddA(IDemandOrProvider demandOrProvider)
+        {
+            if (demandOrProvider is Demand)
+            {
+                DemandsAdd((Demand)demandOrProvider);
+            }
+            else if (demandOrProvider is Provider)
+            {
+                ProvidersAdd((Provider)demandOrProvider);
+            }
+            else
+            {
+                throw new MrpRunException("This type is not expected.");
+            }
+        }
+
+        public void AddAllFrom(List<ILinkDemandAndProvider> demandOrProviders)
+        {
+            foreach (var demandOrProvider in demandOrProviders)
+            {
+                AddA(demandOrProvider);
+            }
+        }
+
+        public void AddA(ILinkDemandAndProvider demandAndProviderLink)
+        {
+            if (demandAndProviderLink.GetType() == typeof(T_DemandToProvider))
+            {
+                DemandToProviderAdd((T_DemandToProvider)demandAndProviderLink);
+            }
+            else if (demandAndProviderLink.GetType() == typeof(T_ProviderToDemand))
+            {
+                ProviderToDemandAdd((T_ProviderToDemand)demandAndProviderLink);
+            }
+            else
+            {
+                throw new MrpRunException("This type is not expected.");
+            }
+        }
+
+        public void DeleteA(ILinkDemandAndProvider demandAndProviderLink)
+        {
+            if (demandAndProviderLink.GetType() == typeof(T_DemandToProvider))
+            {
+                DemandToProviderDelete((T_DemandToProvider)demandAndProviderLink);
+            }
+            else if (demandAndProviderLink.GetType() == typeof(T_ProviderToDemand))
+            {
+                ProviderToDemandDelete((T_ProviderToDemand)demandAndProviderLink);
+            }
+            else
+            {
+                throw new MrpRunException("This type is not expected.");
+            }
+        }
+
+        public void ProviderToDemandAdd(T_ProviderToDemand providerToDemand)
+        {
+            _providerToDemandTable.Add(providerToDemand);
         }
     }
 }

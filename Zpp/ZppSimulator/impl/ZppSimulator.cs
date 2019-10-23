@@ -56,7 +56,7 @@ namespace Zpp.ZppSimulator.impl
                 Encoding.UTF8);
 
             // persisting cached/created data
-            dbTransactionData.PersistDbCache();
+            ZppConfiguration.CacheManager.Persist();
             
         }
 
@@ -84,7 +84,7 @@ namespace Zpp.ZppSimulator.impl
             // no confirmations
             
             // persisting cached/created data
-            dbTransactionData.PersistDbCache();
+            ZppConfiguration.CacheManager.Persist();
         }
 
         public void StartPerformanceStudy()

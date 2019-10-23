@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Master40.DB.Data.WrappersForPrimitives;
+using Master40.DB.Interfaces;
 using Zpp.DataLayer.impl.DemandDomain;
 using Zpp.DataLayer.impl.DemandDomain.Wrappers;
 using Zpp.DataLayer.impl.DemandDomain.WrappersForCollections;
@@ -59,10 +60,19 @@ namespace Zpp.DataLayer
         DemandOrProviders GetDemandsOrProvidersWhereStartTimeIsWithinInterval(
             SimulationInterval simulationInterval, DemandOrProviders demandOrProviders);
 
-        void DeleteArrowsToAndFrom(Provider provider);
+        /**
+         * Arrow equals DemandToProvider and ProviderToDemand
+         */
+        List<ILinkDemandAndProvider> GetArrowsToAndFrom(Provider provider);
 
-        void DeleteArrowsToAndFrom(Demand demand);
+        /**
+         * Arrow equals DemandToProvider and ProviderToDemand
+         */
+        List<ILinkDemandAndProvider> GetArrowsToAndFrom(Demand demand);
         
-        void DeleteArrowsToAndFrom(IDemandOrProvider demandOrProvider);
+        /**
+         * Arrow equals DemandToProvider and ProviderToDemand
+         */
+        List<ILinkDemandAndProvider> GetArrowsToAndFrom(IDemandOrProvider demandOrProvider);
     }
 }

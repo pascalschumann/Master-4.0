@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
+using Master40.DB.Interfaces;
 using Zpp.DataLayer.impl.DemandDomain;
 using Zpp.DataLayer.impl.DemandDomain.Wrappers;
 using Zpp.DataLayer.impl.DemandDomain.WrappersForCollections;
@@ -26,12 +27,6 @@ namespace Zpp.DataLayer
         List<M_BusinessPartner> M_BusinessPartnerGetAll();
         
         void DemandToProvidersRemoveAll();
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="demandToProvidersMap">is used to generate T_Demand and T_Provider tables</param>
-        void PersistDbCache();
 
         void DemandsAdd(Demand demand);
         
@@ -87,15 +82,25 @@ namespace Zpp.DataLayer
 
         void ProviderToDemandAddAll(ProviderToDemandTable providerToDemandTable);
         
+        void ProviderToDemandAdd(T_ProviderToDemand providerToDemand);
+        
         void Dispose();
 
-        void AddAll(EntityCollector entityCollector);
+        void AddAllFrom(EntityCollector entityCollector);
 
         void ProductionOrderOperationAdd(T_ProductionOrderOperation productionOrderOperation);
+        
+        void ProductionOrderOperationAddAll(List<ProductionOrderOperation> productionOrderOperations);
 
         void StockExchangeProvidersDelete(StockExchangeProvider stockExchangeProvider);
 
-        void DeleteDemandOrProvider(IDemandOrProvider demandOrProvider);
+        void DeleteA(IDemandOrProvider demandOrProvider);
+        
+        void DeleteA(ILinkDemandAndProvider demandAndProviderLink);
+        
+        void DeleteAllFrom(List<IDemandOrProvider> demandOrProviders);
+        
+        void DeleteAllFrom(List<ILinkDemandAndProvider> demandAndProviderLinks);
         
         void DemandsDelete(Demand demand);
 
@@ -112,5 +117,15 @@ namespace Zpp.DataLayer
         void ProductionOrderOperationDeleteAll(List<ProductionOrderOperation> productionOrderOperations);
         
         void ProductionOrderOperationDelete(ProductionOrderOperation productionOrderOperation);
+
+        void AddAllFrom(List<IDemandOrProvider> demandOrProviders);
+        
+        void AddA(IDemandOrProvider demandOrProvider);
+        
+        void AddAllFrom(List<ILinkDemandAndProvider> demandOrProviders);
+        
+        void AddA(ILinkDemandAndProvider demandAndProviderLink);
+        
+        
     }
 }

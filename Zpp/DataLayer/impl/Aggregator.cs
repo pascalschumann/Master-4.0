@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
+using Master40.DB.Interfaces;
 using Zpp.DataLayer.impl.DemandDomain;
 using Zpp.DataLayer.impl.DemandDomain.Wrappers;
 using Zpp.DataLayer.impl.DemandDomain.WrappersForCollections;
@@ -247,42 +248,51 @@ namespace Zpp.DataLayer.impl
         /**
          * Arrow equals DemandToProvider and ProviderToDemand
          */
-        public void DeleteArrowsToAndFrom(Provider provider)
+        public List<ILinkDemandAndProvider> GetArrowsToAndFrom(Provider provider)
         {
+            List<ILinkDemandAndProvider> demandAndProviderLinks = new List<ILinkDemandAndProvider>();
+            
             IEnumerable<T_DemandToProvider> demandToProviders = _dbTransactionData
                 .DemandToProviderGetAll().GetAll()
                 .Where(x => x.GetProviderId().Equals(provider.GetId()));
             IEnumerable<T_ProviderToDemand> providerToDemands = _dbTransactionData
                 .ProviderToDemandGetAll().GetAll()
                 .Where(x => x.GetProviderId().Equals(provider.GetId()));
-            _dbTransactionData.DemandToProviderDeleteAll(demandToProviders);
-            _dbTransactionData.ProviderToDemandDeleteAll(providerToDemands);
+            
+            demandAndProviderLinks.AddRange(demandToProviders);
+            demandAndProviderLinks.AddRange(providerToDemands);
+
+            return demandAndProviderLinks;
         }
         
         /**
          * Arrow equals DemandToProvider and ProviderToDemand
          */
-        public void DeleteArrowsToAndFrom(Demand demand)
+        public List<ILinkDemandAndProvider> GetArrowsToAndFrom(Demand demand)
         {
+            List<ILinkDemandAndProvider> demandAndProviderLinks = new List<ILinkDemandAndProvider>();
+            
             IEnumerable<T_DemandToProvider> demandToProviders = _dbTransactionData
                 .DemandToProviderGetAll().GetAll()
                 .Where(x => x.GetDemandId().Equals(demand.GetId()));
             IEnumerable<T_ProviderToDemand> providerToDemands = _dbTransactionData
                 .ProviderToDemandGetAll().GetAll()
                 .Where(x => x.GetDemandId().Equals(demand.GetId()));
-            _dbTransactionData.DemandToProviderDeleteAll(demandToProviders);
-            _dbTransactionData.ProviderToDemandDeleteAll(providerToDemands);
+            demandAndProviderLinks.AddRange(demandToProviders);
+            demandAndProviderLinks.AddRange(providerToDemands);
+
+            return demandAndProviderLinks;
         }
 
-        public void DeleteArrowsToAndFrom(IDemandOrProvider demandOrProvider)
+        public List<ILinkDemandAndProvider> GetArrowsToAndFrom(IDemandOrProvider demandOrProvider)
         {
             if (demandOrProvider is Demand)
             {
-                DeleteArrowsToAndFrom((Demand)demandOrProvider);
+                return GetArrowsToAndFrom((Demand)demandOrProvider);
             }
             else if (demandOrProvider is Provider)
             {
-                DeleteArrowsToAndFrom((Provider)demandOrProvider);
+                return GetArrowsToAndFrom((Provider)demandOrProvider);
             }
             else
             {

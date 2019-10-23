@@ -53,7 +53,7 @@ namespace Zpp.Mrp2.impl.Mrp1.impl
             // write data to _dbTransactionData
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.GetDbTransactionData();
-            dbTransactionData.AddAll(allCreatedEntities);
+            dbTransactionData.AddAllFrom(allCreatedEntities);
             // End of MaterialRequirementsPlanning
         }
         

@@ -23,6 +23,9 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Purchase.impl
             
         }
 
+        /**
+         * SE:I --> satisfy by orders PuOP
+         */
         public EntityCollector Satisfy(Demand demand, Quantity demandedQuantity)
         {
             EntityCollector entityCollector = new EntityCollector();

@@ -2,7 +2,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.DataModel;
 using Zpp.DataLayer;
+using Zpp.DataLayer.impl.DemandDomain;
 using Zpp.DataLayer.impl.DemandDomain.Wrappers;
+using Zpp.DataLayer.impl.DemandDomain.WrappersForCollections;
+using Zpp.DataLayer.impl.ProviderDomain;
 using Zpp.DataLayer.impl.ProviderDomain.Wrappers;
 using Zpp.DataLayer.impl.ProviderDomain.WrappersForCollections;
 using Zpp.DataLayer.impl.WrappersForCollections;
@@ -141,29 +144,104 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                 switch (state)
                 {
                     case ProductionOrderState.Created:
-                        ApplyProductionOrderIsInStateCreated(); break;
+                        ApplyProductionOrderIsInStateCreated((ProductionOrder) productionOrder,
+                            aggregator, dbTransactionData);
+                        break;
                     case ProductionOrderState.InProgress:
-                        ApplyProductionOrderIsInProgress(); break;
+                        ApplyProductionOrderIsInProgress();
+                        break;
                     case ProductionOrderState.Done:
-                        ApplyProductionOrderIsDone(); break;
-                    default:  throw new MrpRunException("This state is not expected.");
+                        ApplyProductionOrderIsDone();
+                        break;
+                    default: throw new MrpRunException("This state is not expected.");
                 }
             }
         }
 
-        private void ApplyProductionOrderIsInStateCreated()
+        /**
+         * Subgraph of a productionOrder includes:
+         * - parent (StockExchangeDemand)
+         * - childs (ProductionOrderBoms)
+         * - childs of childs (StockExchangeProvider)
+         */
+        private List<IDemandOrProvider> GetDemandOrProvidersOfProductionOrderSubGraph(
+            ProductionOrder productionOrder, IAggregator aggregator)
         {
-            // TODO
+            List<IDemandOrProvider> demandOrProvidersOfProductionOrderSubGraph =
+                new List<IDemandOrProvider>();
+
+            IDemands stockExchangeDemands = aggregator.GetAllParentDemandsOf(productionOrder);
+            if (stockExchangeDemands.Count() > 1)
+            {
+                throw new MrpRunException(
+                    "A productionOrder can only have one parentDemand (stockExchangeDemand).");
+            }
+
+            demandOrProvidersOfProductionOrderSubGraph.AddRange(stockExchangeDemands);
+            IDemands productionOrderBoms = aggregator.GetAllChildDemandsOf(productionOrder);
+            demandOrProvidersOfProductionOrderSubGraph.AddRange(productionOrderBoms);
+            foreach (var productionOrderBom in productionOrderBoms)
+            {
+                IProviders stockExchangeProvider =
+                    aggregator.GetAllChildProvidersOf(productionOrderBom);
+                if (stockExchangeProvider.Count() > 1)
+                {
+                    throw new MrpRunException(
+                        "A ProductionOrderBom can only have one childProvider (stockExchangeProvider).");
+                }
+
+                demandOrProvidersOfProductionOrderSubGraph.AddRange(stockExchangeProvider);
+            }
+
+            return demandOrProvidersOfProductionOrderSubGraph;
         }
-        
+
+        private void ApplyProductionOrderIsInStateCreated(ProductionOrder productionOrder,
+            IAggregator aggregator, IDbTransactionData dbTransactionData)
+        {
+            // collect entities and demandToProviders/providerToDemands to delete
+            List<IDemandOrProvider> demandOrProvidersToDelete =
+                GetDemandOrProvidersOfProductionOrderSubGraph(productionOrder, aggregator);
+
+            // delete all collected entities
+            foreach (var demandOrProvider in demandOrProvidersToDelete)
+            {
+                aggregator.DeleteArrowsToAndFrom(demandOrProvider);
+
+                dbTransactionData.DeleteDemandOrProvider(demandOrProvider);
+            }
+        }
+
         private void ApplyProductionOrderIsInProgress()
         {
-            // TODO
+            // nothing to do here
+            return;
         }
-        
-        private void ApplyProductionOrderIsDone()
+
+        private void ApplyProductionOrderIsDone(ProductionOrder productionOrder,
+            IAggregator aggregator, IDbTransactionData dbTransactionData)
         {
-            // TODO
+            IDemands stockExchangeDemands = aggregator.GetAllParentDemandsOf(productionOrder);
+            if (stockExchangeDemands.Count() > 1)
+            {
+                throw new MrpRunException(
+                    "A productionOrder can only have one parentDemand (stockExchangeDemand).");
+            }
+
+            foreach (var stockExchangeDemand in stockExchangeDemands)
+            {
+                
+            }
+            
+            // collect entities and demandToProviders/providerToDemands to delete
+            List<IDemandOrProvider> demandOrProvidersToDelete =
+                GetDemandOrProvidersOfProductionOrderSubGraph(productionOrder, aggregator);
+
+            // delete all collected demandToProvider/providerToDemand
+            foreach (var demandOrProvider in demandOrProvidersToDelete)
+            {
+                aggregator.DeleteArrowsToAndFrom(demandOrProvider);
+            }
         }
 
         private ProductionOrderState DetermineProductionOrderState(ProductionOrder productionOrder,

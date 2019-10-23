@@ -88,6 +88,9 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Stock.impl
             return _stocks[id];
         }
 
+        /**
+         * COP or PrOB --> satisfy by SE:W
+         */
         public EntityCollector Satisfy(Demand demand, Quantity demandedQuantity)
         {
             Stock stock = _stocks[demand.GetArticleId()];

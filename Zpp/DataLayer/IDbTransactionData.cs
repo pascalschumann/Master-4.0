@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Zpp.DataLayer.impl.DemandDomain;
+using Zpp.DataLayer.impl.DemandDomain.Wrappers;
 using Zpp.DataLayer.impl.DemandDomain.WrappersForCollections;
 using Zpp.DataLayer.impl.ProviderDomain;
 using Zpp.DataLayer.impl.ProviderDomain.Wrappers;
@@ -93,6 +94,10 @@ namespace Zpp.DataLayer
         void ProductionOrderOperationAdd(T_ProductionOrderOperation productionOrderOperation);
 
         void DeleteStockExchangeProvider(StockExchangeProvider stockExchangeProvider);
+        
+        void DeleteStockExchangeDemand(StockExchangeDemand stockExchangeDemand);
+
+        void DeleteDemandOrProvider(IDemandOrProvider demandOrProvider);
 
         void DeleteDemandToProvider(T_DemandToProvider demandToProvider);
         

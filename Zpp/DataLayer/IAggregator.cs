@@ -59,5 +59,10 @@ namespace Zpp.DataLayer
         DemandOrProviders GetDemandsOrProvidersWhereStartTimeIsWithinInterval(
             SimulationInterval simulationInterval, DemandOrProviders demandOrProviders);
 
+        void DeleteArrowsToAndFrom(Provider provider);
+
+        void DeleteArrowsToAndFrom(Demand demand);
+        
+        void DeleteArrowsToAndFrom(IDemandOrProvider demandOrProvider);
     }
 }

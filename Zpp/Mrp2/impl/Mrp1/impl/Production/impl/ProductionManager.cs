@@ -29,6 +29,9 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Production.impl
         {
         }
 
+        /**
+         * SE:I --> satisfy by orders PrOBom
+         */
         public EntityCollector Satisfy(Demand demand, Quantity demandedQuantity)
         {
             if (demand.GetArticle().ToBuild == false)

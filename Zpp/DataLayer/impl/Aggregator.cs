@@ -243,5 +243,51 @@ namespace Zpp.DataLayer.impl
             return new DemandOrProviders(demandOrProviders.GetAll()
                 .Where(x => simulationInterval.IsWithinInterval(x.GetEndTime())));
         }
+        
+        /**
+         * Arrow equals DemandToProvider and ProviderToDemand
+         */
+        public void DeleteArrowsToAndFrom(Provider provider)
+        {
+            IEnumerable<T_DemandToProvider> demandToProviders = _dbTransactionData
+                .DemandToProviderGetAll().GetAll()
+                .Where(x => x.GetProviderId().Equals(provider.GetId()));
+            IEnumerable<T_ProviderToDemand> providerToDemands = _dbTransactionData
+                .ProviderToDemandGetAll().GetAll()
+                .Where(x => x.GetProviderId().Equals(provider.GetId()));
+            _dbTransactionData.DeleteAllDemandToProvider(demandToProviders);
+            _dbTransactionData.DeleteAllProviderToDemand(providerToDemands);
+        }
+        
+        /**
+         * Arrow equals DemandToProvider and ProviderToDemand
+         */
+        public void DeleteArrowsToAndFrom(Demand demand)
+        {
+            IEnumerable<T_DemandToProvider> demandToProviders = _dbTransactionData
+                .DemandToProviderGetAll().GetAll()
+                .Where(x => x.GetDemandId().Equals(demand.GetId()));
+            IEnumerable<T_ProviderToDemand> providerToDemands = _dbTransactionData
+                .ProviderToDemandGetAll().GetAll()
+                .Where(x => x.GetDemandId().Equals(demand.GetId()));
+            _dbTransactionData.DeleteAllDemandToProvider(demandToProviders);
+            _dbTransactionData.DeleteAllProviderToDemand(providerToDemands);
+        }
+
+        public void DeleteArrowsToAndFrom(IDemandOrProvider demandOrProvider)
+        {
+            if (demandOrProvider.GetType() == typeof(Demand))
+            {
+                DeleteArrowsToAndFrom((Demand)demandOrProvider);
+            }
+            else if (demandOrProvider.GetType() == typeof(Provider))
+            {
+                DeleteArrowsToAndFrom((Provider)demandOrProvider);
+            }
+            else
+            {
+                throw new MrpRunException("This type is not expected.");
+            }
+        }
     }
 }

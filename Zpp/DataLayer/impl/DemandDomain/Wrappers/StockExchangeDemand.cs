@@ -55,7 +55,7 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
             return stockExchangeDemand;
         }
         
-        public static Demand CreateStockExchangeStockDemand(M_Article article, DueTime dueTime, Quantity quantity)
+        public static Demand CreateStockExchangeStockDemand(Id articleId, DueTime dueTime, Quantity quantity)
         {
             IDbMasterDataCache dbMasterDataCache =
                 ZppConfiguration.CacheManager.GetMasterDataCache();
@@ -63,7 +63,7 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
             stockExchange.StockExchangeType = StockExchangeType.Demand;
             stockExchange.Quantity = quantity.GetValue();
             stockExchange.State = State.Created;
-            M_Stock stock = dbMasterDataCache.M_StockGetByArticleId(article.GetId());
+            M_Stock stock = dbMasterDataCache.M_StockGetByArticleId(articleId);
             stockExchange.Stock = stock;
             stockExchange.StockId = stock.Id;
             stockExchange.RequiredOnTime = dueTime.GetValue();

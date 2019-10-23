@@ -10,6 +10,6 @@ namespace Zpp
         // public static ProductionType ProductionType = ProductionType.WorkshopProduction;
         public static ProductionType ProductionType = ProductionType.WorkshopProductionClassic;
         
-        public static ICacheManager CacheManager = new CacheManager();
+        public static readonly ICacheManager CacheManager = new CacheManager();
     }
 }

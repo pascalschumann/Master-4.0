@@ -245,10 +245,11 @@ namespace Zpp.DataLayer.impl
             }
             else if (demand.GetType() == typeof(CustomerOrderPart))
             {
+                throw new MrpRunException("It's not allowed to add a CustomerOrderPart.");
             }
             else
             {
-                Logger.Error("Unknown type implementing Demand");
+                throw new MrpRunException("This type is unkown.");
             }
         }
 
@@ -268,7 +269,7 @@ namespace Zpp.DataLayer.impl
             }
             else
             {
-                Logger.Error("Unknown type implementing IProvider");
+                throw new MrpRunException("This type is not known.");
             }
         }
 
@@ -516,35 +517,105 @@ namespace Zpp.DataLayer.impl
             }
         }
 
-        public void DeleteStockExchangeProvider(StockExchangeProvider stockExchangeProvider)
+        public void StockExchangeProvidersDelete(StockExchangeProvider stockExchangeProvider)
         {
             _stockExchangeProviders.Remove(stockExchangeProvider);
         }
 
-        public void DeleteDemandToProvider(T_DemandToProvider demandToProvider)
+        public void DemandToProviderDelete(T_DemandToProvider demandToProvider)
         {
             _demandToProviderTable.Remove(demandToProvider);
         }
 
-        public void DeleteProviderToDemand(T_ProviderToDemand providerToDemand)
+        public void ProviderToDemandDelete(T_ProviderToDemand providerToDemand)
         {
             _providerToDemandTable.Remove(providerToDemand);
         }
 
-        public void DeleteAllDemandToProvider(IEnumerable<T_DemandToProvider> demandToProviders)
+        public void DemandToProviderDeleteAll(IEnumerable<T_DemandToProvider> demandToProviders)
         {
             foreach (var demandToProvider in demandToProviders)
             {
-                DeleteDemandToProvider(demandToProvider);
+                DemandToProviderDelete(demandToProvider);
             }
         }
 
-        public void DeleteAllProviderToDemand(IEnumerable<T_ProviderToDemand> providerToDemands)
+        public void ProviderToDemandDeleteAll(IEnumerable<T_ProviderToDemand> providerToDemands)
         {
             foreach (var providerToDemand in providerToDemands)
             {
-                DeleteProviderToDemand(providerToDemand);
+                ProviderToDemandDelete(providerToDemand);
             }
+        }
+
+        public void DeleteDemandOrProvider(IDemandOrProvider demandOrProvider)
+        {
+            if (demandOrProvider is Demand)
+            {
+                DemandsDelete((Demand)demandOrProvider);
+            }
+            else if (demandOrProvider is Provider)
+            {
+                ProvidersDelete((Provider)demandOrProvider);
+            }
+            else
+            {
+                throw new MrpRunException("This type is unknown.");
+            }
+        }
+
+        public void DemandsDelete(Demand demand)
+        {
+            if (demand.GetType() == typeof(ProductionOrderBom))
+            {
+                _productionOrderBoms.Remove((ProductionOrderBom) demand);
+            }
+            else if (demand.GetType() == typeof(StockExchangeDemand))
+            {
+                _stockExchangeDemands.Remove((StockExchangeDemand) demand);
+            }
+            else if (demand.GetType() == typeof(CustomerOrderPart))
+            {
+                throw new MrpRunException("It's not allowed to delete a CustomerOrderPart.");
+            }
+            else
+            {
+                throw new MrpRunException("This type is unknown.");
+            }
+        }
+
+        public void ProvidersDelete(Provider provider)
+        {
+            if (provider.GetType() == typeof(ProductionOrder))
+            {
+                _productionOrders.Remove((ProductionOrder) provider);
+            }
+            else if (provider.GetType() == typeof(PurchaseOrderPart))
+            {
+                _purchaseOrderParts.Remove((PurchaseOrderPart) provider);
+            }
+            else if (provider.GetType() == typeof(StockExchangeProvider))
+            {
+                _stockExchangeProviders.Remove((StockExchangeProvider) provider);
+            }
+            else
+            {
+                throw new MrpRunException("This type is unknown.");
+            }
+        }
+
+        public void ProductionOrderOperationDeleteAll(List<ProductionOrderOperation> productionOrderOperations)
+        {
+
+            foreach (var productionOrderOperation in productionOrderOperations)
+            {
+                _productionOrderOperations.Remove(productionOrderOperation);
+            }
+        }
+
+        public void ProductionOrderOperationDelete(ProductionOrderOperation productionOrderOperation)
+        {
+            _productionOrderOperations.Remove(productionOrderOperation);
         }
     }
 }

@@ -4,7 +4,6 @@ using System.IO;
 using System.Text;
 using Master40.DB.Data.WrappersForPrimitives;
 using Zpp.DataLayer;
-using Zpp.DataLayer.impl.DemandDomain.WrappersForCollections;
 using Zpp.Mrp2;
 using Zpp.Util.Graph.impl;
 using Zpp.ZppSimulator.impl.Confirmation;
@@ -50,6 +49,11 @@ namespace Zpp.ZppSimulator.impl
             _confirmationManager.CreateConfirmations(simulationInterval);
 
             _confirmationManager.ApplyConfirmations();
+            
+            // TODO: remove this
+            demandToProviderGraph = new DemandToProviderGraph();
+            File.WriteAllText($"{filePattern}_{simulationInterval.StartAt}_2.txt", demandToProviderGraph.ToString(),
+                Encoding.UTF8);
 
             // persisting cached/created data
             dbTransactionData.PersistDbCache();
@@ -104,8 +108,5 @@ namespace Zpp.ZppSimulator.impl
             stopwatch.Stop();
             Logger.Info($"Elapsed cpu ticks: {stopwatch.Elapsed.Ticks}");
         }
-        
-        
-        
     }
 }

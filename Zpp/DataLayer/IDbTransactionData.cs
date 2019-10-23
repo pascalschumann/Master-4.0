@@ -93,18 +93,24 @@ namespace Zpp.DataLayer
 
         void ProductionOrderOperationAdd(T_ProductionOrderOperation productionOrderOperation);
 
-        void DeleteStockExchangeProvider(StockExchangeProvider stockExchangeProvider);
-        
-        void DeleteStockExchangeDemand(StockExchangeDemand stockExchangeDemand);
+        void StockExchangeProvidersDelete(StockExchangeProvider stockExchangeProvider);
 
         void DeleteDemandOrProvider(IDemandOrProvider demandOrProvider);
+        
+        void DemandsDelete(Demand demand);
 
-        void DeleteDemandToProvider(T_DemandToProvider demandToProvider);
+        void ProvidersDelete(Provider provider);
+
+        void DemandToProviderDelete(T_DemandToProvider demandToProvider);
         
-        void DeleteProviderToDemand(T_ProviderToDemand providerToDemand);
+        void ProviderToDemandDelete(T_ProviderToDemand providerToDemand);
         
-        void DeleteAllDemandToProvider(IEnumerable<T_DemandToProvider> demandToProviders);
+        void DemandToProviderDeleteAll(IEnumerable<T_DemandToProvider> demandToProviders);
         
-        void DeleteAllProviderToDemand(IEnumerable<T_ProviderToDemand> providerToDemands);
+        void ProviderToDemandDeleteAll(IEnumerable<T_ProviderToDemand> providerToDemands);
+
+        void ProductionOrderOperationDeleteAll(List<ProductionOrderOperation> productionOrderOperations);
+        
+        void ProductionOrderOperationDelete(ProductionOrderOperation productionOrderOperation);
     }
 }

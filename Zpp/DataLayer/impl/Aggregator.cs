@@ -255,8 +255,8 @@ namespace Zpp.DataLayer.impl
             IEnumerable<T_ProviderToDemand> providerToDemands = _dbTransactionData
                 .ProviderToDemandGetAll().GetAll()
                 .Where(x => x.GetProviderId().Equals(provider.GetId()));
-            _dbTransactionData.DeleteAllDemandToProvider(demandToProviders);
-            _dbTransactionData.DeleteAllProviderToDemand(providerToDemands);
+            _dbTransactionData.DemandToProviderDeleteAll(demandToProviders);
+            _dbTransactionData.ProviderToDemandDeleteAll(providerToDemands);
         }
         
         /**
@@ -270,17 +270,17 @@ namespace Zpp.DataLayer.impl
             IEnumerable<T_ProviderToDemand> providerToDemands = _dbTransactionData
                 .ProviderToDemandGetAll().GetAll()
                 .Where(x => x.GetDemandId().Equals(demand.GetId()));
-            _dbTransactionData.DeleteAllDemandToProvider(demandToProviders);
-            _dbTransactionData.DeleteAllProviderToDemand(providerToDemands);
+            _dbTransactionData.DemandToProviderDeleteAll(demandToProviders);
+            _dbTransactionData.ProviderToDemandDeleteAll(providerToDemands);
         }
 
         public void DeleteArrowsToAndFrom(IDemandOrProvider demandOrProvider)
         {
-            if (demandOrProvider.GetType() == typeof(Demand))
+            if (demandOrProvider is Demand)
             {
                 DeleteArrowsToAndFrom((Demand)demandOrProvider);
             }
-            else if (demandOrProvider.GetType() == typeof(Provider))
+            else if (demandOrProvider is Provider)
             {
                 DeleteArrowsToAndFrom((Provider)demandOrProvider);
             }

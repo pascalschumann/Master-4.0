@@ -64,7 +64,6 @@ namespace Zpp.Mrp2.impl.Mrp1.impl
 
             EntityCollector response = providerManager.Satisfy(demand, demand.GetQuantity());
             entityCollector.AddAll(response);
-            providerManager.AdaptStock(response.GetProviders());
             response = providerManager.CreateDependingDemands(entityCollector.GetProviders());
             entityCollector.AddAll(response);
 

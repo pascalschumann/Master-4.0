@@ -70,10 +70,5 @@ namespace Zpp.Mrp2.impl.Mrp1.impl
 
             return entityCollector;
         }
-
-        public void AdaptStock(Providers providers)
-        {
-            _stockManager.AdaptStock(providers);
-        }
     }
 }

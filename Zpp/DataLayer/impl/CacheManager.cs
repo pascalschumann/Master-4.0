@@ -28,13 +28,13 @@ namespace Zpp.DataLayer.impl
             _dbMasterDataCache = new DbMasterDataCache(_productionDomainContext);
             _dbTransactionData = new DbTransactionData(_productionDomainContext);
             _aggregator = new Aggregator(_dbTransactionData);
-            _openDemandManager = new OpenDemandManager();
+            _openDemandManager = new OpenDemandManager(true);
         }
 
         public IDbTransactionData ReloadTransactionData()
         {
             _dbTransactionData = new DbTransactionData(_productionDomainContext);
-            _openDemandManager = new OpenDemandManager();
+            _openDemandManager = new OpenDemandManager(false);
             _aggregator = new Aggregator(_dbTransactionData);
             return _dbTransactionData;
         }

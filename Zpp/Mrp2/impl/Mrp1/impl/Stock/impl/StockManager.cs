@@ -18,8 +18,7 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Stock.impl
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
-        private readonly Dictionary<Id, Stock> _stocks = new Dictionary<Id, Stock>();
-        private HashSet<Provider> _alreadyConsideredProviders = new HashSet<Provider>();
+        private readonly HashSet<Provider> _alreadyConsideredProviders = new HashSet<Provider>();
 
         private readonly IDbMasterDataCache _dbMasterDataCache =
             ZppConfiguration.CacheManager.GetMasterDataCache();
@@ -29,71 +28,16 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Stock.impl
         private readonly IOpenDemandManager _openDemandManager =
             ZppConfiguration.CacheManager.GetOpenDemandManager();
 
-        // for duplicating it
-        public StockManager(IStockManager stockManager)
-        {
-            foreach (var stock in GetStocks())
-            {
-                _stocks.Add(stock.GetArticleId(),
-                    new Stock(stock.GetQuantity(), stock.GetArticleId(), stock.GetMinStockLevel()));
-            }
-        }
-
         public StockManager()
         {
-            foreach (var stock in _dbMasterDataCache.M_StockGetAll())
-            {
-                Id articleId = new Id(stock.ArticleForeignKey);
-                Stock myStock = new Stock(new Quantity(stock.Current), articleId,
-                    new Quantity(stock.Min));
-                _stocks.Add(articleId, myStock);
-            }
+            
         }
-
-        public void AdaptStock(Providers providers)
-        {
-            foreach (var provider in providers)
-            {
-                // a provider can influence the stock only once
-                if (_alreadyConsideredProviders.Contains(provider))
-                {
-                    continue;
-                }
-
-                _alreadyConsideredProviders.Add(provider);
-
-                // SE:W decrements stock
-                if (provider.GetType() == typeof(StockExchangeProvider))
-                {
-                    Stock stock = _stocks[provider.GetArticleId()];
-                    stock.DecrementBy(provider.GetQuantity());
-                    
-                }
-            }
-        }
-
-        private List<Stock> GetStocks()
-        {
-            return _stocks.Values.ToList();
-        }
-
-        public static void CalculateCurrent(M_Stock stock, Quantity startQuantity)
-        {
-            Quantity currentQuantity = new Quantity(startQuantity);
-            // TODO
-        }
-
-        public Stock GetStockById(Id id)
-        {
-            return _stocks[id];
-        }
-
+        
         /**
          * COP or PrOB --> satisfy by SE:W
          */
         public EntityCollector Satisfy(Demand demand, Quantity demandedQuantity)
         {
-            Stock stock = _stocks[demand.GetArticleId()];
             EntityCollector entityCollector = new EntityCollector();
 
             Provider stockProvider = CreateStockExchangeProvider(demand.GetArticle(),
@@ -112,7 +56,7 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Stock.impl
          * returns a provider, which can be a stockExchangeProvider, if article can be fulfilled by stock, else
          * a productionOrder/purchaseOrderPart
          */
-        public Provider CreateStockExchangeProvider(M_Article article, DueTime dueTime,
+        private Provider CreateStockExchangeProvider(M_Article article, DueTime dueTime,
             Quantity demandedQuantity)
         {
             M_Stock stock = _dbMasterDataCache.M_StockGetByArticleId(article.GetId());
@@ -146,15 +90,6 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Stock.impl
             {
                 throw new MrpRunException("This can only be called for StockExchangeProviders");
             }
-            
-            // check stock if dependingDemands are needed
-            Stock stock = _stocks[provider.GetArticleId()];
-            Quantity currentQuantity = stock.GetQuantity();
-            if (currentQuantity.IsGreaterThanOrEqualTo(stock.GetMinStockLevel()))
-            {
-                // no dependingDemands are needed
-                return null;
-            }
 
             // try to provide by existing demand
             
@@ -179,7 +114,7 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Stock.impl
 
 
                     Demand stockExchangeDemand =
-                        StockExchangeDemand.CreateStockExchangeStockDemand(provider.GetArticle(),
+                        StockExchangeDemand.CreateStockExchangeStockDemand(provider.GetArticleId(),
                             provider.GetStartTime(), lotSize);
                     entityCollector.Add(stockExchangeDemand);
 

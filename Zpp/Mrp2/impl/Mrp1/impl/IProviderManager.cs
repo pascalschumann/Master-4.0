@@ -14,6 +14,5 @@ namespace Zpp.Mrp2.impl.Mrp1.impl
 
         EntityCollector CreateDependingDemands(Providers providers);
         
-        void AdaptStock(Providers providers);
     }
 }

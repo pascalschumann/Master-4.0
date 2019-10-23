@@ -19,7 +19,7 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
      * instead it has all operations of parent productionOrder.
      * Because scheduling must be done once for orders AND for operations.
      */
-    public class OrderOperationGraph : DirectedGraph, IDirectedGraph<INode>
+    public class OrderOperationGraph : DirectedGraph, IOrderOperationGraph
     {
         public OrderOperationGraph() : base()
         {
@@ -27,6 +27,30 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
                 ZppConfiguration.CacheManager.GetDbTransactionData();
             IAggregator aggregator = ZppConfiguration.CacheManager.GetAggregator();
 
+            CreateGraph(dbTransactionData, aggregator);
+            
+            // remove subgraphs that has roots != customerOrderPart
+            foreach (var root in GetRootNodes())
+            {
+                if (root.GetEntity().GetType() != typeof(CustomerOrderPart))
+                {
+                    RemoveTopDown(root);
+                }
+            }
+        }
+
+        private void RemoveTopDown(INode node)
+        {
+            INodes successors = GetSuccessorNodes(node);
+            RemoveNode(node);
+            foreach (var successor in successors)
+            {
+                RemoveTopDown(successor);
+            }
+        }
+
+        private void CreateGraph(IDbTransactionData dbTransactionData, IAggregator aggregator)
+        {
             foreach (var demandToProvider in dbTransactionData.DemandToProviderGetAll())
             {
                 Demand demand = dbTransactionData.DemandsGetById(new Id(demandToProvider.DemandId));

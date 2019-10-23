@@ -20,14 +20,38 @@ namespace Zpp.DataLayer.impl.OpenDemand
 
         private readonly ICacheManager _cacheManager = ZppConfiguration.CacheManager;
 
-        public OpenDemandManager()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="considerInitialStockLevel">for every initial stock:
+        /// a stockExchangeDemand will be created with time -100000,
+        /// quantity: initialStockLevel=M_Stock.current</param>
+        public OpenDemandManager(bool considerInitialStockLevel)
         {
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.GetDbTransactionData();
+            if (considerInitialStockLevel)
+            {
+                ConsiderInitialStockLevel(dbTransactionData);
+            }
+            
             foreach (var stockExchangeDemand in dbTransactionData.StockExchangeDemandsGetAll())
             {
                 Quantity reservedQuantity = CalculateReservedQuantity(stockExchangeDemand);
                 AddDemand(stockExchangeDemand, reservedQuantity);
+            }
+        }
+        
+        private void ConsiderInitialStockLevel(IDbTransactionData dbTransactionData)
+        {
+            foreach (var stock in ZppConfiguration.CacheManager.GetMasterDataCache().M_StockGetAll())
+            {
+                Id articleId = new Id(stock.ArticleForeignKey);
+                
+                Demand stockExchangeDemand =
+                    StockExchangeDemand.CreateStockExchangeStockDemand(articleId,
+                        new DueTime(-100000), new Quantity(stock.Current));
+                dbTransactionData.DemandsAdd(stockExchangeDemand);
             }
         }
 
@@ -108,8 +132,8 @@ namespace Zpp.DataLayer.impl.OpenDemand
                         };
 
                         entityCollector.Add(providerToDemand);
-                        
-                        if(remainingQuantity.IsNull())
+
+                        if (remainingQuantity.IsNull())
                         {
                             break;
                         }

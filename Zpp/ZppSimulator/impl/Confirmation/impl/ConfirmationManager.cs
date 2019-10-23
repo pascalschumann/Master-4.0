@@ -130,9 +130,9 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                     IEnumerable<T_ProviderToDemand> providerToDemands = dbTransactionData
                         .ProviderToDemandGetAll().GetAll()
                         .Where(x => x.GetProviderId().Equals(provider.GetId()));
-                    dbTransactionData.DeleteAllDemandToProvider(demandToProviders);
-                    dbTransactionData.DeleteAllProviderToDemand(providerToDemands);
-                    dbTransactionData.DeleteStockExchangeProvider((StockExchangeProvider) provider);
+                    dbTransactionData.DemandToProviderDeleteAll(demandToProviders);
+                    dbTransactionData.ProviderToDemandDeleteAll(providerToDemands);
+                    dbTransactionData.StockExchangeProvidersDelete((StockExchangeProvider) provider);
                 }
             }
 
@@ -199,6 +199,10 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
         private void ApplyProductionOrderIsInStateCreated(ProductionOrder productionOrder,
             IAggregator aggregator, IDbTransactionData dbTransactionData)
         {
+            // delete all operations
+            List<ProductionOrderOperation> operations = aggregator.GetProductionOrderOperationsOfProductionOrder(productionOrder);
+            dbTransactionData.ProductionOrderOperationDeleteAll(operations);
+            
             // collect entities and demandToProviders/providerToDemands to delete
             List<IDemandOrProvider> demandOrProvidersToDelete =
                 GetDemandOrProvidersOfProductionOrderSubGraph(productionOrder, aggregator);
@@ -218,30 +222,10 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             return;
         }
 
-        private void ApplyProductionOrderIsDone(ProductionOrder productionOrder,
-            IAggregator aggregator, IDbTransactionData dbTransactionData)
+        private void ApplyProductionOrderIsDone()
         {
-            IDemands stockExchangeDemands = aggregator.GetAllParentDemandsOf(productionOrder);
-            if (stockExchangeDemands.Count() > 1)
-            {
-                throw new MrpRunException(
-                    "A productionOrder can only have one parentDemand (stockExchangeDemand).");
-            }
-
-            foreach (var stockExchangeDemand in stockExchangeDemands)
-            {
-                
-            }
-            
-            // collect entities and demandToProviders/providerToDemands to delete
-            List<IDemandOrProvider> demandOrProvidersToDelete =
-                GetDemandOrProvidersOfProductionOrderSubGraph(productionOrder, aggregator);
-
-            // delete all collected demandToProvider/providerToDemand
-            foreach (var demandOrProvider in demandOrProvidersToDelete)
-            {
-                aggregator.DeleteArrowsToAndFrom(demandOrProvider);
-            }
+            // nothing to do here
+            return;
         }
 
         private ProductionOrderState DetermineProductionOrderState(ProductionOrder productionOrder,

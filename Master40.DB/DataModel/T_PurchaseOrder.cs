@@ -12,5 +12,10 @@ namespace Master40.DB.DataModel
         public M_BusinessPartner BusinessPartner { get; set; }
         [JsonIgnore]
         public virtual ICollection<T_PurchaseOrderPart> PurchaseOrderParts { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Id}: {Name}; {DueTime}";
+        }
     }
 }

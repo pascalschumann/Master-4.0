@@ -341,7 +341,7 @@ namespace Zpp.DataLayer.impl
                     (T_ProductionOrderBom) productionOrderBom.ToIDemand();
                 if (tProductionOrderBom != null)
                 {
-                    ((ProductionOrderBom)productionOrderBom).EnsureOperationIsLoadedIfExists();
+                    ((ProductionOrderBom) productionOrderBom).EnsureOperationIsLoadedIfExists();
                     if (tProductionOrderBom.ProductionOrderOperation == null)
                     {
                         throw new MrpRunException(
@@ -553,11 +553,11 @@ namespace Zpp.DataLayer.impl
         {
             if (demandOrProvider is Demand)
             {
-                DemandsDelete((Demand)demandOrProvider);
+                DemandsDelete((Demand) demandOrProvider);
             }
             else if (demandOrProvider is Provider)
             {
-                ProvidersDelete((Provider)demandOrProvider);
+                ProvidersDelete((Provider) demandOrProvider);
             }
             else
             {
@@ -605,21 +605,23 @@ namespace Zpp.DataLayer.impl
             }
         }
 
-        public void ProductionOrderOperationDeleteAll(List<ProductionOrderOperation> productionOrderOperations)
+        public void ProductionOrderOperationDeleteAll(
+            List<ProductionOrderOperation> productionOrderOperations)
         {
-
             foreach (var productionOrderOperation in productionOrderOperations)
             {
                 _productionOrderOperations.Remove(productionOrderOperation);
             }
         }
 
-        public void ProductionOrderOperationDelete(ProductionOrderOperation productionOrderOperation)
+        public void ProductionOrderOperationDelete(
+            ProductionOrderOperation productionOrderOperation)
         {
             _productionOrderOperations.Remove(productionOrderOperation);
         }
 
-        public void ProductionOrderOperationAddAll(List<ProductionOrderOperation> productionOrderOperations)
+        public void ProductionOrderOperationAddAll(
+            List<ProductionOrderOperation> productionOrderOperations)
         {
             throw new NotImplementedException();
         }
@@ -652,11 +654,11 @@ namespace Zpp.DataLayer.impl
         {
             if (demandOrProvider is Demand)
             {
-                DemandsAdd((Demand)demandOrProvider);
+                DemandsAdd((Demand) demandOrProvider);
             }
             else if (demandOrProvider is Provider)
             {
-                ProvidersAdd((Provider)demandOrProvider);
+                ProvidersAdd((Provider) demandOrProvider);
             }
             else
             {
@@ -676,11 +678,11 @@ namespace Zpp.DataLayer.impl
         {
             if (demandAndProviderLink.GetType() == typeof(T_DemandToProvider))
             {
-                DemandToProviderAdd((T_DemandToProvider)demandAndProviderLink);
+                DemandToProviderAdd((T_DemandToProvider) demandAndProviderLink);
             }
             else if (demandAndProviderLink.GetType() == typeof(T_ProviderToDemand))
             {
-                ProviderToDemandAdd((T_ProviderToDemand)demandAndProviderLink);
+                ProviderToDemandAdd((T_ProviderToDemand) demandAndProviderLink);
             }
             else
             {
@@ -692,11 +694,11 @@ namespace Zpp.DataLayer.impl
         {
             if (demandAndProviderLink.GetType() == typeof(T_DemandToProvider))
             {
-                DemandToProviderDelete((T_DemandToProvider)demandAndProviderLink);
+                DemandToProviderDelete((T_DemandToProvider) demandAndProviderLink);
             }
             else if (demandAndProviderLink.GetType() == typeof(T_ProviderToDemand))
             {
-                ProviderToDemandDelete((T_ProviderToDemand)demandAndProviderLink);
+                ProviderToDemandDelete((T_ProviderToDemand) demandAndProviderLink);
             }
             else
             {
@@ -707,6 +709,25 @@ namespace Zpp.DataLayer.impl
         public void ProviderToDemandAdd(T_ProviderToDemand providerToDemand)
         {
             _providerToDemandTable.Add(providerToDemand);
+        }
+
+        public override string ToString()
+        {
+            string result = "";
+
+            result += "_customerOrders:" + Environment.NewLine + _customerOrders.ToString() + Environment.NewLine;
+            result += "_customerOrderParts:" + Environment.NewLine + _customerOrderParts.ToString() + Environment.NewLine;
+            result += "_demandToProviderTable:" + Environment.NewLine + _demandToProviderTable.ToString() + Environment.NewLine;
+            result += "_productionOrderBoms:" + Environment.NewLine + _productionOrderBoms.ToString() + Environment.NewLine;
+            result += "_productionOrderOperations:" + Environment.NewLine + _productionOrderOperations.ToString() + Environment.NewLine;
+            result += "_productionOrders:" + Environment.NewLine + _productionOrders.ToString() + Environment.NewLine;
+            result += "_providerToDemandTable:" + Environment.NewLine + _providerToDemandTable.ToString() + Environment.NewLine;
+            result += "_purchaseOrderParts:" + Environment.NewLine + _purchaseOrderParts.ToString() + Environment.NewLine;
+            result += "_purchaseOrders:" + Environment.NewLine + _purchaseOrders.ToString() + Environment.NewLine;
+            result += "_stockExchangeDemands:" + Environment.NewLine + _stockExchangeDemands.ToString() + Environment.NewLine;
+            result += "_stockExchangeProviders:" + Environment.NewLine + _stockExchangeProviders.ToString() + Environment.NewLine;
+            
+            return result;
         }
     }
 }

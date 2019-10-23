@@ -72,5 +72,10 @@ namespace Zpp.DataLayer.impl.WrappersForCollections
         {
             StackSet.Remove(t);
         }
+
+        public override string ToString()
+        {
+            return StackSet.ToString();
+        }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -126,6 +127,18 @@ namespace Zpp.Util.StackSet
             _list = new List<T>();
             _count = 0;
             _indices = new Dictionary<T, int>();
+        }
+
+        public override string ToString()
+        {
+            string result = "";
+            
+            foreach (var item in _list)
+            {
+                result += item.ToString() + Environment.NewLine;
+            }
+
+            return result;
         }
     }
 }

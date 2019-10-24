@@ -64,6 +64,9 @@ namespace Zpp.Util.Graph.impl
             }
         }
 
+        /**
+         * overriden, because we need the quantity on the arrows
+         */
         public override string ToString()
         {
             string mystring = "";

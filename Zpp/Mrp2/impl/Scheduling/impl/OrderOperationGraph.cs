@@ -28,6 +28,10 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
             IAggregator aggregator = ZppConfiguration.CacheManager.GetAggregator();
 
             CreateGraph(dbTransactionData, aggregator);
+            if (IsEmpty())
+            {
+                return;
+            }
             
             // remove subgraphs that has roots != customerOrderPart
             foreach (var root in GetRootNodes())

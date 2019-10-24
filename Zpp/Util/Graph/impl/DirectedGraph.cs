@@ -137,7 +137,14 @@ namespace Zpp.Util.Graph.impl
         public override string ToString()
         {
             string mystring = "";
-            foreach (var edge in GetAllEdges())
+            List<IEdge> edges = GetAllEdges();
+
+            if (edges == null)
+            {
+                return mystring;
+            }
+
+            foreach (var edge in edges)
             {
                 string tailsGraphvizString =
                     Graphviz.GetGraphizString(edge.GetTailNode().GetEntity());

@@ -17,7 +17,7 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
             // d_0 = 0
             foreach (var node in orderOperationGraph.GetLeafNodes())
             {
-                IScheduleNode scheduleNode = (IScheduleNode) node.GetEntity();
+                IScheduleNode scheduleNode = node.GetEntity();
                 if (scheduleNode.GetStartTime().IsNegative())
                 {
                     // implicitly the due/endTime will also be set accordingly

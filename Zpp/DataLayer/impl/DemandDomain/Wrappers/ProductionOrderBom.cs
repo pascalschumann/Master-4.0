@@ -141,13 +141,17 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
 
         public void EnsureOperationIsLoadedIfExists()
         {
+            EnsureOperationIsLoadedIfExists(ZppConfiguration.CacheManager.GetDbTransactionData());
+        }
+
+        private void EnsureOperationIsLoadedIfExists(IDbTransactionData dbTransactionData)
+        {
             // load ProductionOrderOperation if not done yet
             if (_productionOrderBom.ProductionOrderOperation == null)
             {
-                IDbTransactionData dbTransactionData =
-                    ZppConfiguration.CacheManager.GetDbTransactionData();
                 Id productionOrderOperationId =
                     new Id(_productionOrderBom.ProductionOrderOperationId.GetValueOrDefault());
+
                 _productionOrderBom.ProductionOrderOperation = dbTransactionData
                     .ProductionOrderOperationGetById(productionOrderOperationId).GetValue();
             }
@@ -212,6 +216,7 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
             {
                 throw new MrpRunException("A readOnly entity cannot be changed anymore.");
             }
+
             _productionOrderBom.ProductionOrderOperation.State = State.InProgress;
         }
 
@@ -223,8 +228,7 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
         public override bool IsFinished()
         {
             EnsureOperationIsLoadedIfExists();
-            return _productionOrderBom.ProductionOrderOperation.State.Equals(State
-                .Finished);
+            return _productionOrderBom.ProductionOrderOperation.State.Equals(State.Finished);
         }
 
         public override void SetEndTime(DueTime endTime)
@@ -244,8 +248,18 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
 
         public override State? GetState()
         {
-            EnsureOperationIsLoadedIfExists();
-            return _productionOrderBom.ProductionOrderOperation.State;
+            try
+            {
+                EnsureOperationIsLoadedIfExists();
+                return _productionOrderBom.ProductionOrderOperation.State;
+            }
+            catch (NullReferenceException e)
+            {
+                // the archive is the requester
+                EnsureOperationIsLoadedIfExists(ZppConfiguration.CacheManager
+                    .GetDbTransactionDataArchive());
+                return _productionOrderBom.ProductionOrderOperation.State;
+            }
         }
     }
 }

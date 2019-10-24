@@ -103,11 +103,19 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
 
         public override void ClearStartTime()
         {
+            if (_productionOrder.IsReadOnly)
+            {
+                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+            }
             _productionOrder.DueTime = DueTime.INVALID_DUETIME;
         }
 
         public override void ClearEndTime()
         {
+            if (_productionOrder.IsReadOnly)
+            {
+                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+            }
             _productionOrder.DueTime = DueTime.INVALID_DUETIME;
         }
 

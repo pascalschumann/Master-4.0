@@ -138,11 +138,19 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
 
         public override void ClearStartTime()
         {
+            if (_tStockExchangeDemand.IsReadOnly)
+            {
+                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+            }
             _tStockExchangeDemand.RequiredOnTime = DueTime.INVALID_DUETIME;
         }
 
         public override void ClearEndTime()
         {
+            if (_tStockExchangeDemand.IsReadOnly)
+            {
+                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+            }
             _tStockExchangeDemand.RequiredOnTime = DueTime.INVALID_DUETIME;
         }
 

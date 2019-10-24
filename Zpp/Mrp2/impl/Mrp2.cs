@@ -98,7 +98,8 @@ namespace Zpp.Mrp2.impl
 
             if (dbTransactionData.ProductionOrderGetAll().Any() == false)
             {
-                throw new MrpRunException("How could it happen, that no productionOrders exists ?");
+                // no JobShopScheduling needed, all Demands were satisfied without the need for a productionOrder
+                return;
             }
 
             foreach (var productionOrder in dbTransactionData.ProductionOrderGetAll())

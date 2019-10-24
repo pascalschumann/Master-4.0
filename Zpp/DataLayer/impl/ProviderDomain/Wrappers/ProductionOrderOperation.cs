@@ -237,11 +237,19 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
 
         public void ClearStartTime()
         {
+            if (_productionOrderOperation.IsReadOnly)
+            {
+                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+            }
             _productionOrderOperation.StartBackward = null;
         }
 
         public void ClearEndTime()
         {
+            if (_productionOrderOperation.IsReadOnly)
+            {
+                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+            }
             _productionOrderOperation.EndBackward = null;
         }
         

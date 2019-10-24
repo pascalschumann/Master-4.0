@@ -33,14 +33,16 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
                 // d_0 = 0
                 foreach (var uniqueNode in _orderOperationGraph.GetAllUniqueNodes())
                 {
-                    if (uniqueNode.GetEntity().GetType() != typeof(CustomerOrderPart))
+                    IScheduleNode uniqueScheduleNode = uniqueNode.GetEntity();
+                    if (uniqueScheduleNode.IsReadOnly() == false &&
+                        uniqueScheduleNode.GetType() != typeof(CustomerOrderPart))
                     {
-                        uniqueNode.GetEntity().ClearStartTime();
-                        uniqueNode.GetEntity().ClearEndTime();
+                        uniqueScheduleNode.ClearStartTime();
+                        uniqueScheduleNode.ClearEndTime();
                     }
                 }
             }
-            
+
             // while S nor empty do
             while (_S.Any())
             {
@@ -76,11 +78,12 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
                             throw new MrpRunException(
                                 "Only a root node can be a CustomerOrderPart.");
                         }
-                        
+
                         if (successorScheduleNode.IsReadOnly() == false)
                         {
                             successorScheduleNode.SetEndTime(minStartTime);
                         }
+
                         _S.Push(successor);
                     }
                 }

@@ -64,6 +64,7 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Purchase.impl
 
             // [PurchaseOrderId],[ArticleId],[Quantity],[State],[ProviderId]
             tPurchaseOrderPart.PurchaseOrder = purchaseOrder;
+            tPurchaseOrderPart.PurchaseOrderId = purchaseOrder.Id;
             tPurchaseOrderPart.Article = article;
             tPurchaseOrderPart.ArticleId = article.Id;
             tPurchaseOrderPart.Quantity =

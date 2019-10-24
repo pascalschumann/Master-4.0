@@ -35,28 +35,37 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
             {
                 INode i = S.Pop();
                 IScheduleNode iAsScheduleNode = (IScheduleNode) i.GetEntity();
-                
+
                 INodes predecessors = orderOperationGraph.GetPredecessorNodes(i);
                 if (predecessors != null && predecessors.Any())
                 {
                     foreach (var predecessor in predecessors)
                     {
-                        IScheduleNode predecessorScheduleNode =
-                            (IScheduleNode) predecessor.GetEntity();
+                        IScheduleNode predecessorScheduleNode = predecessor.GetEntity();
                         // if predecessor starts before endTime of current d/p --> change that
-                        if (predecessorScheduleNode.GetStartTime()
-                            .IsSmallerThan(iAsScheduleNode.GetEndTime()))
+                        if (predecessorScheduleNode.IsReadOnly() == false && predecessorScheduleNode
+                                .GetStartTime().IsSmallerThan(iAsScheduleNode.GetEndTime()))
                         {
                             // COPs are not allowed to change
                             if (predecessorScheduleNode.GetType() != typeof(CustomerOrderPart))
                             {
                                 // don't take getDueTime() since in case of a demand,
                                 // this will be the startTime, which is to early
-                                
-                                // TODO this must be the maximum endTime of all childs !!!
-                                predecessorScheduleNode.SetStartTime(iAsScheduleNode.GetEndTime());
-                            }
 
+                                // This must be the maximum endTime of all childs !!!
+                                DueTime maxEndTime = iAsScheduleNode.GetEndTime();
+                                foreach (var successor in orderOperationGraph.GetSuccessorNodes(
+                                    predecessor))
+                                {
+                                    DueTime successorsEndTime = successor.GetEntity().GetEndTime();
+                                    if (successorsEndTime.IsGreaterThan(maxEndTime))
+                                    {
+                                        maxEndTime = successorsEndTime;
+                                    }
+                                }
+
+                                predecessorScheduleNode.SetStartTime(maxEndTime);
+                            }
                         }
 
                         S.Push(predecessor);
@@ -64,7 +73,7 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
                 }
             }
         }
-        
+
         public void ScheduleForwardAsZaepfel()
         {
             /*
@@ -103,6 +112,7 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
                 {
                 }
             }
+
             S = newS;
 
 
@@ -126,17 +136,17 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
                             (IScheduleNode) predecessor.GetEntity();
                         // if predecessor starts before endTime of current d/p --> change that
                         if (predecessorScheduleNode.GetStartTime()
-                                .IsSmallerThan(iAsScheduleNode.GetEndTime()))
+                            .IsSmallerThan(iAsScheduleNode.GetEndTime()))
                         {
                             // COPs are not allowed to change
                             if (predecessorScheduleNode.GetType() != typeof(CustomerOrderPart))
                             {
                                 // don't take getDueTime() since in case of a demand,
                                 // this will be the startTime, which is to early
-                                predecessorScheduleNode.SetStartTime(iAsScheduleNode.GetEndTime());    
+                                predecessorScheduleNode.SetStartTime(iAsScheduleNode.GetEndTime());
                             }
-                            
                         }
+
                         S.Push(predecessor);
                     }
                     // Done: t_i = max{ d_j | j aus V(i) }
@@ -145,7 +155,7 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
                     // --> is implicitly done by SetStartTime
                 }
                 // end if
-                
+
                 // for all j aus N(i) do
                 /*INodes successors = demandToProviderGraph.GetSuccessorNodes(i);
                 if (successors != null)

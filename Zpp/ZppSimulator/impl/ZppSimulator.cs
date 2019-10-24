@@ -5,6 +5,7 @@ using System.Text;
 using Master40.DB.Data.WrappersForPrimitives;
 using Zpp.DataLayer;
 using Zpp.Mrp2;
+using Zpp.Mrp2.impl.Scheduling.impl;
 using Zpp.Util.Graph.impl;
 using Zpp.ZppSimulator.impl.Confirmation;
 using Zpp.ZppSimulator.impl.Confirmation.impl;
@@ -41,10 +42,13 @@ namespace Zpp.ZppSimulator.impl
             _mrp2.StartMrp2();
 
             // TODO: remove this
-            DirectoryInfo di = new DirectoryInfo(SimulationFolder);
-            foreach (FileInfo file in di.GetFiles())
+            if (simulationInterval.StartAt.Equals(0))
             {
-                file.Delete();
+                DirectoryInfo di = new DirectoryInfo(SimulationFolder);
+                foreach (FileInfo file in di.GetFiles())
+                {
+                    file.Delete();
+                }
             }
             // TODO: remove this
             PrintStateToFiles(simulationInterval, dbTransactionData, 0);
@@ -79,6 +83,11 @@ namespace Zpp.ZppSimulator.impl
             File.WriteAllText(
                 $"{SimulationFolder}demandToProviderGraph_interval_{simulationInterval.StartAt}_{countOfPrintsInOneCycle}.txt",
                 demandToProviderGraph.ToString(), Encoding.UTF8);
+            OrderOperationGraph orderOperationGraph = new OrderOperationGraph();
+            File.WriteAllText(
+                $"{SimulationFolder}orderOperationGraph_interval_{simulationInterval.StartAt}_{countOfPrintsInOneCycle}.txt",
+                orderOperationGraph.ToString(), Encoding.UTF8);
+            
         }
 
         /**

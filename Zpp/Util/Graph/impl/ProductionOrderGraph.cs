@@ -6,6 +6,11 @@ namespace Zpp.Util.Graph.impl
     {
         public ProductionOrderGraph(bool includeProductionOrdersWithoutOperations) : base()
         {
+            if (IsEmpty())
+            {
+                throw new MrpRunException(
+                    "How could it happen, that no nodes are in the DemandToProviderGraph ?");
+            }
 
             foreach (var uniqueNode in GetAllUniqueNodes())
             {
@@ -21,9 +26,10 @@ namespace Zpp.Util.Graph.impl
                     {
                         ProductionOrder productionOrder = (ProductionOrder) uniqueNode.GetEntity();
                         if (ZppConfiguration.CacheManager.GetAggregator()
-                            .GetProductionOrderOperationsOfProductionOrder(productionOrder) == null)
+                                .GetProductionOrderOperationsOfProductionOrder(productionOrder) ==
+                            null)
                         {
-                            RemoveNode(uniqueNode);        
+                            RemoveNode(uniqueNode);
                         }
                     }
                 }

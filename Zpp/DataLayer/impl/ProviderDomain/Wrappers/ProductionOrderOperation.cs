@@ -101,7 +101,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
         public override string ToString()
         {
             string state = Enum.GetName(typeof(State), GetState());
-            return $"{_productionOrderOperation.GetId()}: {_productionOrderOperation.Name}; {state}";
+            return $"{_productionOrderOperation.GetId()}: {_productionOrderOperation.Name}; {state}; IsReadOnly: {IsReadOnly()}";
         }
 
         public void SetPriority(Priority priority)
@@ -304,6 +304,11 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
         public void SetReadOnly()
         {
             _productionOrderOperation.IsReadOnly = true;
+        }
+
+        public bool IsReadOnly()
+        {
+            return _productionOrderOperation.IsReadOnly;
         }
     }
 }

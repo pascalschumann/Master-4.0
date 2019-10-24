@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.Context;
+using Zpp.DataLayer;
+using Zpp.DataLayer.impl;
 using Zpp.DataLayer.impl.DemandDomain;
 using Zpp.DataLayer.impl.DemandDomain.WrappersForCollections;
+using Zpp.DataLayer.impl.ProviderDomain.Wrappers;
 using Zpp.DataLayer.impl.ProviderDomain.WrappersForCollections;
 using Zpp.Mrp2.impl.Mrp1;
 using Zpp.Mrp2.impl.Scheduling;
@@ -18,31 +21,37 @@ namespace Zpp.Mrp2.impl
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private readonly IJobShopScheduler _jobShopScheduler = new JobShopScheduler();
-        
 
-        
 
         public Mrp2()
         {
-            ProductionDomainContext productionDomainContext =
-                ZppConfiguration.CacheManager.GetProductionDomainContext();
         }
 
         private void ManufacturingResourcePlanning(IDemands dbDemands)
         {
             if (dbDemands == null || dbDemands.Any() == false)
             {
-                return;
+                throw new MrpRunException(
+                    "How could it happen, that no dbDemands are given to plan ?");
             }
 
             // MaterialRequirementsPlanning
             IMrp1 mrp1 = new Mrp1.impl.Mrp1(dbDemands);
             mrp1.StartMrp1();
-
+            DemandToProviderGraph demandToProviderGraph = new DemandToProviderGraph();
+            if (demandToProviderGraph.IsEmpty())
+            {
+                throw new MrpRunException("How could the demandToProviderGraph be empty ?");
+            }
             OrderOperationGraph orderOperationGraph = new OrderOperationGraph();
-            
-            ScheduleBackward(orderOperationGraph.GetRootNodes().ToStack(), orderOperationGraph, true);
-            
+            if (orderOperationGraph.IsEmpty())
+            {
+                throw new MrpRunException("How could the orderOperationGraph be empty ?");
+            }
+
+            ScheduleBackward(orderOperationGraph.GetRootNodes().ToStack(), orderOperationGraph,
+                true);
+
             ScheduleForward();
 
             INodes childRootNodes = new Nodes();
@@ -67,8 +76,8 @@ namespace Zpp.Mrp2.impl
             Logger.Info("MrpRun finished.");
         }
 
-        private void ScheduleBackward(Stack<INode> rootNodes, IDirectedGraph<INode> orderOperationGraph,
-            bool clearOldTimes)
+        private void ScheduleBackward(Stack<INode> rootNodes,
+            IDirectedGraph<INode> orderOperationGraph, bool clearOldTimes)
         {
             IBackwardsScheduler backwardsScheduler =
                 new BackwardScheduler(rootNodes, orderOperationGraph, clearOldTimes);
@@ -81,8 +90,29 @@ namespace Zpp.Mrp2.impl
             forwardScheduler.ScheduleForward();
         }
 
-        public void JobShopScheduling()
+        private void JobShopScheduling()
         {
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
+            IAggregator aggregator = ZppConfiguration.CacheManager.GetAggregator();
+
+            if (dbTransactionData.ProductionOrderGetAll().Any() == false)
+            {
+                throw new MrpRunException("How could it happen, that no productionOrders exists ?");
+            }
+
+            foreach (var productionOrder in dbTransactionData.ProductionOrderGetAll())
+            {
+                List<ProductionOrderOperation> operations =
+                    aggregator.GetProductionOrderOperationsOfProductionOrder(
+                        (ProductionOrder) productionOrder);
+                if (operations == null || operations.Any() == false)
+                {
+                    throw new MrpRunException(
+                        "How could it happen, that a productionOrder without operations exists ?");
+                }
+            }
+
             _jobShopScheduler.ScheduleWithGifflerThompsonAsZaepfel(new PriorityRule());
         }
 
@@ -92,8 +122,6 @@ namespace Zpp.Mrp2.impl
             Demands unsatisfiedCustomerOrderParts = ZppConfiguration.CacheManager.GetAggregator()
                 .GetPendingCustomerOrderParts();
             ManufacturingResourcePlanning(unsatisfiedCustomerOrderParts);
-
-            
         }
     }
 }

@@ -75,5 +75,7 @@ namespace Zpp.Util.Graph
         bool Exists(IEdge edge);
 
         void RemoveTopDown(INode node);
+
+        bool IsEmpty();
     }
 }

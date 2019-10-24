@@ -47,5 +47,7 @@ namespace Zpp.Util.Graph
          * OR an initial StockExchangeDemand that simulates the initial stock is not allowed to change in time
          */
         void SetReadOnly();
+
+        bool IsReadOnly();
     }
 }

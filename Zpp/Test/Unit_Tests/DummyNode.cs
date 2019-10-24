@@ -6,6 +6,9 @@ using Zpp.Util.Graph.impl;
 
 namespace Zpp.Test.Unit_Tests
 {
+    /**
+     * DummyNode for unit tests
+     */
     public class DummyNode:IScheduleNode
     {
         
@@ -92,6 +95,11 @@ namespace Zpp.Test.Unit_Tests
         }
 
         public void SetReadOnly()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public bool IsReadOnly()
         {
             throw new System.NotImplementedException();
         }

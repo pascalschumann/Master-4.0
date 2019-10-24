@@ -99,7 +99,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain
                 state = Enum.GetName(typeof(State), GetState());
             }
 
-            return $"{GetId()}: {GetArticle().Name};{GetQuantity()}; {state}";
+            return $"{GetId()}: {GetArticle().Name};{GetQuantity()}; {state}; IsReadOnly: {IsReadOnly()}";
         }
 
         public NodeType GetNodeType()
@@ -162,6 +162,11 @@ namespace Zpp.DataLayer.impl.ProviderDomain
         public void SetReadOnly()
         {
             _provider.IsReadOnly = true;
+        }
+
+        public bool IsReadOnly()
+        {
+            return _provider.IsReadOnly;
         }
     }
 }

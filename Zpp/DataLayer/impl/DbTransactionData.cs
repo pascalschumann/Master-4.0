@@ -30,9 +30,6 @@ namespace Zpp.DataLayer.impl
 
         private readonly ProductionDomainContext _productionDomainContext;
 
-        private readonly IDbMasterDataCache _dbMasterDataCache =
-            ZppConfiguration.CacheManager.GetMasterDataCache();
-
         // TODO: These 3 lines should be removed
         private readonly List<M_Article> _articles;
         private readonly List<M_ArticleBom> _articleBoms;
@@ -56,7 +53,7 @@ namespace Zpp.DataLayer.impl
         private readonly ProductionOrders _productionOrders;
 
         // others
-        private IStackSet<T_PurchaseOrder> _purchaseOrders = new StackSet<T_PurchaseOrder>();
+        private readonly IStackSet<T_PurchaseOrder> _purchaseOrders = new StackSet<T_PurchaseOrder>();
         private readonly ProductionOrderOperations _productionOrderOperations;
 
         private readonly CustomerOrderParts _customerOrderParts;
@@ -398,8 +395,18 @@ namespace Zpp.DataLayer.impl
             // T_PurchaseOrders
             foreach (var tPurchaseOrderPart in _purchaseOrderParts.GetAllAs<T_PurchaseOrderPart>())
             {
-                _purchaseOrders.Push(tPurchaseOrderPart.PurchaseOrder);
+                PurchaseOrderAdd(tPurchaseOrderPart.PurchaseOrder);
             }
+        }
+
+        public void PurchaseOrderAdd(T_PurchaseOrder purchaseOrder)
+        {
+            _purchaseOrders.Push(purchaseOrder);
+        }
+
+        public void PurchaseOrderDelete(T_PurchaseOrder purchaseOrder)
+        {
+            _purchaseOrders.Remove(purchaseOrder);
         }
 
         public IDemandToProviderTable DemandToProviderGetAll()
@@ -424,7 +431,15 @@ namespace Zpp.DataLayer.impl
 
         public T_PurchaseOrder PurchaseOrderGetById(Id id)
         {
-            return _purchaseOrders.Single(x => x.Id.Equals(id.GetValue()));
+            try
+            {
+                return _purchaseOrders.Single(x => x.Id.Equals(id.GetValue()));
+            }
+            catch (InvalidOperationException e)
+            {
+                return null;
+            }
+            
         }
 
         public List<T_PurchaseOrder> PurchaseOrderGetAll()
@@ -462,12 +477,12 @@ namespace Zpp.DataLayer.impl
                 .Single(x => x.GetId().Equals(id)));
         }
 
-        public T_CustomerOrder T_CustomerOrderGetById(Id id)
+        public T_CustomerOrder CustomerOrderGetById(Id id)
         {
             return _customerOrders.Single(x => x.Id.Equals(id.GetValue()));
         }
 
-        public List<T_CustomerOrder> T_CustomerOrderGetAll()
+        public List<T_CustomerOrder> CustomerOrderGetAll()
         {
             return _customerOrders.GetAll();
         }

@@ -7,9 +7,11 @@ using Master40.DB.Interfaces;
 using Zpp.DataLayer;
 using Zpp.DataLayer.impl.DemandDomain.Wrappers;
 using Zpp.DataLayer.impl.DemandDomain.WrappersForCollections;
+using Zpp.DataLayer.impl.ProviderDomain;
 using Zpp.DataLayer.impl.ProviderDomain.Wrappers;
 using Zpp.DataLayer.impl.ProviderDomain.WrappersForCollections;
 using Zpp.Util;
+using Zpp.Util.Graph;
 
 namespace Zpp.ZppSimulator.impl.Confirmation.impl
 {
@@ -24,7 +26,10 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             IAggregator aggregator = ZppConfiguration.CacheManager.GetAggregator();
 
             // ProductionOrder: 3 Zustände siehe DA
-            foreach (var productionOrder in dbTransactionData.ProductionOrderGetAll())
+            IProviders copyOfProductionOrders = new Providers();
+            copyOfProductionOrders.AddAll(dbTransactionData.ProductionOrderGetAll());
+
+            foreach (var productionOrder in copyOfProductionOrders)
             {
                 State state =
                     DetermineProductionOrderState((ProductionOrder) productionOrder, aggregator);
@@ -45,13 +50,24 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                 }
             }
 
-            // Lösche alle children der COPs (StockExchangeProvider) inclusive Pfeile auf und weg
-            RemoveChildsOfCustomerOrderPartsIncludingArrows(dbTransactionData, aggregator);
-
             RemoveAllArrowsOnFinishedPurchaseOrderParts(dbTransactionData, aggregator);
 
+            // Lösche alle children der COPs (StockExchangeProvider) inclusive Pfeile auf und weg
+            RemoveChildsOfCustomerOrderPartsIncludingArrows(dbTransactionData, aggregator);
+            
+            SetReadOnly(dbTransactionData.StockExchangeProvidersGetAll());
+            SetReadOnly(dbTransactionData.StockExchangeDemandsGetAll());
+            
             ArchiveFinishedCustomerOrderParts(dbTransactionData, dbTransactionDataArchive);
             ArchiveFinishedPurchaseOrderParts(dbTransactionData, dbTransactionDataArchive);
+        }
+
+        private static void SetReadOnly(IEnumerable<IDemandOrProvider> demandOrProviders)
+        {
+            foreach (var demandOrProvider in demandOrProviders)
+            {
+                demandOrProvider.SetReadOnly();
+            }
         }
 
         /**
@@ -60,12 +76,13 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
          * - childs (ProductionOrderBoms)
          * - childs of childs (StockExchangeProvider)
          */
-        private static List<IDemandOrProvider> GetDemandOrProvidersOfProductionOrderSubGraph(
+        private static List<IDemandOrProvider> CreateProductionOrderSubGraph(
             bool IncludeParentStockExchangeDemand, ProductionOrder productionOrder,
             IAggregator aggregator)
         {
             List<IDemandOrProvider> demandOrProvidersOfProductionOrderSubGraph =
                 new List<IDemandOrProvider>();
+            demandOrProvidersOfProductionOrderSubGraph.Add(productionOrder);
 
             if (IncludeParentStockExchangeDemand)
             {
@@ -81,7 +98,9 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
 
             IDemands productionOrderBoms = aggregator.GetAllChildDemandsOf(productionOrder);
             demandOrProvidersOfProductionOrderSubGraph.AddRange(productionOrderBoms);
-            foreach (var productionOrderBom in productionOrderBoms)
+            /*
+             stockExchangeProvider doesn't belong to subgraph anymore
+             foreach (var productionOrderBom in productionOrderBoms)
             {
                 IProviders stockExchangeProvider =
                     aggregator.GetAllChildProvidersOf(productionOrderBom);
@@ -92,7 +111,7 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                 }
 
                 demandOrProvidersOfProductionOrderSubGraph.AddRange(stockExchangeProvider);
-            }
+            }*/
 
             return demandOrProvidersOfProductionOrderSubGraph;
         }
@@ -107,7 +126,7 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
 
             // collect entities and demandToProviders/providerToDemands to delete
             List<IDemandOrProvider> demandOrProvidersToDelete =
-                GetDemandOrProvidersOfProductionOrderSubGraph(true, productionOrder, aggregator);
+                CreateProductionOrderSubGraph(true, productionOrder, aggregator);
 
             // delete all collected entities
             foreach (var demandOrProvider in demandOrProvidersToDelete)
@@ -123,7 +142,6 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
         private static void HandleProductionOrderIsInProgress()
         {
             // nothing to do here
-            return;
         }
 
         private static void HandleProductionOrderIsFinished(ProductionOrder productionOrder,
@@ -135,15 +153,17 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             // archive operations
             List<ProductionOrderOperation> operations =
                 aggregator.GetProductionOrderOperationsOfProductionOrder(productionOrder);
+            SetReadOnlyIfFinished(operations);
             dbTransactionDataArchive.ProductionOrderOperationAddAll(operations);
             dbTransactionData.ProductionOrderOperationDeleteAll(operations);
 
-            // archive demands Or providers
+            // collect demands Or providers
             List<IDemandOrProvider> demandOrProvidersToArchive =
-                GetDemandOrProvidersOfProductionOrderSubGraph(false, productionOrder, aggregator);
+                CreateProductionOrderSubGraph(false, productionOrder, aggregator);
+            // set readOnly
+            SetReadOnlyIfFinished(demandOrProvidersToArchive);
 
-
-            // delete all collected entities
+            // delete archive all collected entities
             foreach (var demandOrProvider in demandOrProvidersToArchive)
             {
                 List<ILinkDemandAndProvider> demandAndProviderLinks =
@@ -205,11 +225,14 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             List<Id> purchaseOrderIds = new List<Id>();
             IProviders purchaseOrderPartsCopy = new Providers();
             purchaseOrderPartsCopy.AddAll(dbTransactionData.PurchaseOrderPartGetAll());
-            
+
             foreach (var purchaseOrderPart in purchaseOrderPartsCopy)
             {
                 if (purchaseOrderPart.IsFinished())
                 {
+                    SetReadOnlyIfFinished(purchaseOrderPart);
+                    
+                    // archive it
                     Id purchaseOrderId = new Id(((PurchaseOrderPart) purchaseOrderPart).GetValue()
                         .PurchaseOrderId);
                     purchaseOrderIds.Add(purchaseOrderId);
@@ -218,14 +241,32 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                 }
             }
 
-            /*foreach (var purchaseOrderId in purchaseOrderIds)
+            foreach (var purchaseOrderId in purchaseOrderIds)
             {
-                T_PurchaseOrder customerOrder = dbTransactionData.PurchaseOrderGetById(purchaseOrderId);
-                dbTransactionDataArchive.Pur(customerOrder);
-                dbTransactionData.T_CustomerOrderDelete(customerOrder);
-                ...
-            }*/
+                T_PurchaseOrder purchaseOrder =
+                    dbTransactionData.PurchaseOrderGetById(purchaseOrderId);
+                dbTransactionDataArchive.PurchaseOrderAdd(purchaseOrder);
+                dbTransactionData.PurchaseOrderDelete(purchaseOrder);
+            }
         }
+
+        private static void SetReadOnlyIfFinished(IScheduleNode scheduleNode)
+        {
+            if (scheduleNode.IsFinished())
+            {
+                scheduleNode.SetReadOnly();
+            }
+        }
+        
+        private static void SetReadOnlyIfFinished(IEnumerable<IScheduleNode> scheduleNodes)
+        {
+            foreach (var scheduleNode in scheduleNodes)
+            {
+                SetReadOnlyIfFinished(scheduleNode);
+            }
+        }
+
+
 
         private static void ArchiveFinishedCustomerOrderParts(IDbTransactionData dbTransactionData,
             IDbTransactionData dbTransactionDataArchive)
@@ -233,22 +274,26 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             List<Id> idsOfCustomerOrders = new List<Id>();
             IDemands customerOrderParts = new Demands();
             customerOrderParts.AddAll(dbTransactionData.CustomerOrderPartGetAll());
-            
+
             foreach (var customerOrderPart in customerOrderParts)
             {
                 if (customerOrderPart.IsFinished())
                 {
-                    Id customerOrderId = new Id(((CustomerOrderPart)customerOrderPart).GetValue().CustomerOrderId);
+                    SetReadOnlyIfFinished(customerOrderPart);
+                    
+                    // archive it
+                    Id customerOrderId = new Id(((CustomerOrderPart) customerOrderPart).GetValue()
+                        .CustomerOrderId);
                     idsOfCustomerOrders.Add(customerOrderId);
                     dbTransactionDataArchive.DemandsAdd(customerOrderPart);
                     dbTransactionData.DemandsDelete(customerOrderPart);
-                    
                 }
             }
 
             foreach (var idsOfCustomerOrder in idsOfCustomerOrders)
             {
-                T_CustomerOrder customerOrder = dbTransactionData.T_CustomerOrderGetById(idsOfCustomerOrder);
+                T_CustomerOrder customerOrder =
+                    dbTransactionData.CustomerOrderGetById(idsOfCustomerOrder);
                 dbTransactionDataArchive.CustomerOrderAdd(customerOrder);
                 dbTransactionData.T_CustomerOrderDelete(customerOrder);
             }

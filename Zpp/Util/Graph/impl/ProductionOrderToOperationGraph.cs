@@ -14,6 +14,10 @@ namespace Zpp.Util.Graph.impl
         public ProductionOrderToOperationGraph() : base()
         {
             _productionOrderGraph = new ProductionOrderGraph(false);
+            if (_productionOrderGraph.IsEmpty())
+            {
+                throw new MrpRunException("How could it happen, that the _productionOrderGraph is empty ?");
+            }
 
             foreach (var productionOrderNode in _productionOrderGraph.GetAllUniqueNodes())
             {

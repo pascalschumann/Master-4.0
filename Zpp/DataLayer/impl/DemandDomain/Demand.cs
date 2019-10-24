@@ -62,7 +62,12 @@ namespace Zpp.DataLayer.impl.DemandDomain
         public override string ToString()
         {
             string state = Enum.GetName(typeof(State), GetState());
-            return $"{GetId()}: {GetArticle().Name}; {GetQuantity()}; {state}";
+            return $"{GetId()}: {GetArticle().Name}; {GetQuantity()}; {state}; IsReadOnly: {IsReadOnly()}";
+        }
+
+        public bool IsReadOnly()
+        {
+            return _demand.IsReadOnly;
         }
 
         public abstract M_Article GetArticle();

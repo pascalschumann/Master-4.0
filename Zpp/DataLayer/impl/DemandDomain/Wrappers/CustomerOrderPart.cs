@@ -61,7 +61,7 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
                 ZppConfiguration.CacheManager.GetDbTransactionData();
             Id customerOrderId = new Id(_customerOrderPart.CustomerOrderId);
             _customerOrderPart.CustomerOrder =
-                dbTransactionData.T_CustomerOrderGetById(customerOrderId);
+                dbTransactionData.CustomerOrderGetById(customerOrderId);
         }
 
         public override DueTime GetEndTime()

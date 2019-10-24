@@ -21,6 +21,9 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
             _clearOldTimes = clearOldTimes;
         }
 
+        /**
+         * Top-down
+         */
         public void ScheduleBackward()
         {
             // S = {0} (alle einplanbaren Operations/Demands/Providers)
@@ -73,9 +76,11 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
                             throw new MrpRunException(
                                 "Only a root node can be a CustomerOrderPart.");
                         }
-
-                        successorScheduleNode.SetEndTime(minStartTime);
-
+                        
+                        if (successorScheduleNode.IsReadOnly() == false)
+                        {
+                            successorScheduleNode.SetEndTime(minStartTime);
+                        }
                         _S.Push(successor);
                     }
                 }

@@ -227,6 +227,10 @@ namespace Zpp.Util.Graph.impl
             IStackSet<INode> fromNodes = GetAllTailNodes();
             IStackSet<INode> toNodes = GetAllHeadNodes();
             IStackSet<INode> uniqueNodes = new StackSet<INode>();
+            if (fromNodes == null && toNodes == null)
+            {
+                throw new MrpRunException("How could it happen, that no nodes are in this graph ?");
+            }
             uniqueNodes.PushAll(fromNodes);
             uniqueNodes.PushAll(toNodes);
 
@@ -295,6 +299,11 @@ namespace Zpp.Util.Graph.impl
             }
 
             return new Nodes(leafs);
+        }
+
+        public bool IsEmpty()
+        {
+            return GetAllTailNodes() == null && GetAllHeadNodes() == null;
         }
 
         public INodes GetRootNodes()

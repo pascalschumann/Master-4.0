@@ -16,7 +16,11 @@ namespace Zpp.Util.Graph.impl
                 ZppConfiguration.CacheManager.GetDbTransactionData();
 
             CreateGraph(dbTransactionData);
-            
+            if (IsEmpty())
+            {
+                return;
+            }
+
             // remove subgraphs that has roots != customerOrderPart
             foreach (var root in GetRootNodes())
             {
@@ -59,7 +63,7 @@ namespace Zpp.Util.Graph.impl
                 AddEdge(new Edge(providerToDemand, fromNode, toNode));
             }
         }
-        
+
         public override string ToString()
         {
             string mystring = "";
@@ -69,6 +73,7 @@ namespace Zpp.Util.Graph.impl
             {
                 return mystring;
             }
+
             foreach (var edge in edges)
             {
                 // foreach (var edge in GetAllEdgesFromTailNode(fromNode))

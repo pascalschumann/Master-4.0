@@ -307,4 +307,4 @@ bin/
 obj/
 /Master40/wwwroot/lib/
 Zpp/Test/used_ids.txt
-Zpp/Test/Ordergraphs/Simulation/simulation__**.txt
+Zpp/Test/Ordergraphs/Simulation/

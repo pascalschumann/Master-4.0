@@ -216,7 +216,7 @@ namespace Zpp.DataLayer.impl
         public Demands GetPendingCustomerOrderParts()
         {
             Demands customerOrderParts = ZppConfiguration.CacheManager.GetDbTransactionData()
-                .T_CustomerOrderPartGetAll();
+                .CustomerOrderPartGetAll();
             Demands pendingCustomerOrderParts = new Demands();
             foreach (var customerOrderPart in customerOrderParts)
             {

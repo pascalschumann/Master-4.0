@@ -128,5 +128,10 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
         {
             return _tPurchaseOrderPart.State;
         }
+
+        public T_PurchaseOrderPart GetValue()
+        {
+            return _tPurchaseOrderPart;
+        }
     }
 }

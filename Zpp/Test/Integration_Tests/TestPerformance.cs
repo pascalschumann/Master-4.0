@@ -41,7 +41,7 @@ namespace Zpp.Test.Integration_Tests
         }
 
         [Theory]
-        [InlineData(TestConfigurationFileNames.DESK_COP_5_LOTSIZE_2)]
+        [InlineData(TestConfigurationFileNames.DESK_COP_2_LOTSIZE_2)]
         public void TestPerformanceStudy(string testConfigurationFileName)
         {
             InitThisTest(testConfigurationFileName);

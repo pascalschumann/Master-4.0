@@ -70,9 +70,11 @@ namespace Zpp.DataLayer
 
         T_CustomerOrder T_CustomerOrderGetById(Id id);
         
+        void T_CustomerOrderDelete(T_CustomerOrder customerOrder);
+        
         List<T_CustomerOrder> T_CustomerOrderGetAll();
 
-        Demands T_CustomerOrderPartGetAll();
+        Demands CustomerOrderPartGetAll();
 
         void CustomerOrderPartAdd(T_CustomerOrderPart customerOrderPart);
         
@@ -88,7 +90,7 @@ namespace Zpp.DataLayer
 
         void AddAllFrom(EntityCollector entityCollector);
 
-        void ProductionOrderOperationAdd(T_ProductionOrderOperation productionOrderOperation);
+        void ProductionOrderOperationAdd(ProductionOrderOperation productionOrderOperation);
         
         void ProductionOrderOperationAddAll(List<ProductionOrderOperation> productionOrderOperations);
 

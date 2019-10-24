@@ -15,7 +15,7 @@ namespace Zpp.DataLayer.impl
     {
         private DbTransactionData _dbTransactionData;
         private DbTransactionData _dbTransactionDataArchive;
-        private IDbMasterDataCache _dbMasterDataCache;
+        private DbMasterDataCache _dbMasterDataCache;
         private ProductionDomainContext _productionDomainContext;
         private ProductionDomainContext _productionDomainContextArchive;
         private IOpenDemandManager _openDemandManager;
@@ -30,10 +30,13 @@ namespace Zpp.DataLayer.impl
             
             _productionDomainContextArchive = productionDomainContexts.ProductionDomainContextArchive;
             
-            InitDb(testConfiguration, _productionDomainContext);
-            InitDb(testConfiguration, _productionDomainContextArchive);
+            InitDb(testConfiguration, _productionDomainContext, true);
+            InitDb(testConfiguration, _productionDomainContextArchive, false);
             
             _dbMasterDataCache = new DbMasterDataCache(_productionDomainContext);
+            // duplicate masterData for archive
+            _dbMasterDataCache.Clone(_productionDomainContextArchive);
+            
             _dbTransactionData = new DbTransactionData(_productionDomainContext);
             _dbTransactionDataArchive = new DbTransactionData(_productionDomainContextArchive);
             _aggregator = new Aggregator(_dbTransactionData);
@@ -74,7 +77,7 @@ namespace Zpp.DataLayer.impl
          * - deletes current
          * - creates db according to given configuration
          */
-        private void InitDb(string testConfiguration, ProductionDomainContext productionDomainContext)
+        private void InitDb(string testConfiguration, ProductionDomainContext productionDomainContext, bool InitData)
         {
             _testConfiguration = ReadTestConfiguration(testConfiguration);
             if (Constants.IsLocalDb)
@@ -97,12 +100,19 @@ namespace Zpp.DataLayer.impl
                 }
             }
 
-            Type dbSetInitializer = Type.GetType(_testConfiguration.DbSetInitializer);
-            dbSetInitializer.GetMethod("DbInitialize").Invoke(null, new[]
+            if (InitData)
             {
-                productionDomainContext
-            });
-
+                Type dbSetInitializer = Type.GetType(_testConfiguration.DbSetInitializer);
+                dbSetInitializer.GetMethod("DbInitialize").Invoke(null, new[]
+                {
+                    productionDomainContext
+                });
+            }
+            else
+            {
+                productionDomainContext.Database.EnsureCreated();
+            }
+            
             LotSize.SetDefaultLotSize(new Quantity(_testConfiguration.LotSize));
             LotSize.SetLotSizeType(_testConfiguration.LotSizeType);
         }

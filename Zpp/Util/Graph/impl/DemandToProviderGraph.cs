@@ -65,6 +65,10 @@ namespace Zpp.Util.Graph.impl
             string mystring = "";
             List<IEdge> edges = GetAllEdges();
 
+            if (edges == null)
+            {
+                return mystring;
+            }
             foreach (var edge in edges)
             {
                 // foreach (var edge in GetAllEdgesFromTailNode(fromNode))

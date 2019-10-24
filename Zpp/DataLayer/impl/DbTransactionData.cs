@@ -157,26 +157,26 @@ namespace Zpp.DataLayer.impl
             List<T_CustomerOrder> tCustomerOrders = _customerOrders.GetAllAsTCustomerOrders();
 
             // Insert all T_* entities
-            InsertOrUpdateRange(tProductionOrders, _productionDomainContext.ProductionOrders);
+            InsertOrUpdateRange(tProductionOrders, _productionDomainContext.ProductionOrders, _productionDomainContext);
             InsertOrUpdateRange(tProductionOrderOperations,
-                _productionDomainContext.ProductionOrderOperations);
-            InsertOrUpdateRange(tProductionOrderBoms, _productionDomainContext.ProductionOrderBoms);
-            InsertOrUpdateRange(tStockExchangeDemands, _productionDomainContext.StockExchanges);
-            InsertOrUpdateRange(tCustomerOrders, _productionDomainContext.CustomerOrders);
-            InsertOrUpdateRange(tCustomerOrderParts, _productionDomainContext.CustomerOrderParts);
+                _productionDomainContext.ProductionOrderOperations, _productionDomainContext);
+            InsertOrUpdateRange(tProductionOrderBoms, _productionDomainContext.ProductionOrderBoms, _productionDomainContext);
+            InsertOrUpdateRange(tStockExchangeDemands, _productionDomainContext.StockExchanges, _productionDomainContext);
+            InsertOrUpdateRange(tCustomerOrders, _productionDomainContext.CustomerOrders, _productionDomainContext);
+            InsertOrUpdateRange(tCustomerOrderParts, _productionDomainContext.CustomerOrderParts, _productionDomainContext);
 
             // providers
-            InsertOrUpdateRange(tStockExchangesProviders, _productionDomainContext.StockExchanges);
-            InsertOrUpdateRange(tPurchaseOrderParts, _productionDomainContext.PurchaseOrderParts);
-            InsertOrUpdateRange(_purchaseOrders, _productionDomainContext.PurchaseOrders);
+            InsertOrUpdateRange(tStockExchangesProviders, _productionDomainContext.StockExchanges, _productionDomainContext);
+            InsertOrUpdateRange(tPurchaseOrderParts, _productionDomainContext.PurchaseOrderParts, _productionDomainContext);
+            InsertOrUpdateRange(_purchaseOrders, _productionDomainContext.PurchaseOrders, _productionDomainContext);
 
             // at the end: T_DemandToProvider & T_ProviderToDemand
             InsertOrUpdateRange(DemandToProviderGetAll(),
-                _productionDomainContext.DemandToProviders);
+                _productionDomainContext.DemandToProviders, _productionDomainContext);
             if (ProviderToDemandGetAll().Any())
             {
                 InsertOrUpdateRange(ProviderToDemandGetAll(),
-                    _productionDomainContext.ProviderToDemand);
+                    _productionDomainContext.ProviderToDemand, _productionDomainContext);
             }
 
             try
@@ -195,8 +195,22 @@ namespace Zpp.DataLayer.impl
             _customerOrders.Add(customerOrder);
         }
 
-        private void InsertOrUpdateRange<TEntity>(IEnumerable<TEntity> entities,
-            DbSet<TEntity> dbSet) where TEntity : BaseEntity
+        public static void InsertRange<TEntity>(IEnumerable<TEntity> entities,
+            DbSet<TEntity> dbSet, ProductionDomainContext productionDomainContext)
+            where TEntity : BaseEntity
+        {
+            foreach (var entity in entities)
+            {
+                // e.g. if it is a PrBom which is toPurchase
+                if (entity != null)
+                {
+                    Insert(entity, dbSet, productionDomainContext);
+                }
+            }
+        }
+
+        public static void InsertOrUpdateRange<TEntity>(IEnumerable<TEntity> entities,
+            DbSet<TEntity> dbSet, ProductionDomainContext productionDomainContext) where TEntity : BaseEntity
         {
             // dbSet.AddRange(entities);
             foreach (var entity in entities)
@@ -204,12 +218,19 @@ namespace Zpp.DataLayer.impl
                 // e.g. if it is a PrBom which is toPurchase
                 if (entity != null)
                 {
-                    InsertOrUpdate(entity, dbSet);
+                    InsertOrUpdate(entity, dbSet, productionDomainContext);
                 }
             }
         }
 
-        private void InsertOrUpdate<TEntity>(TEntity entity, DbSet<TEntity> dbSet)
+        private static void Insert<TEntity>(TEntity entity, DbSet<TEntity> dbSet,
+            ProductionDomainContext productionDomainContext) where TEntity : BaseEntity
+        {
+            productionDomainContext.Entry(entity).State = EntityState.Added;
+            dbSet.Add(entity);
+        }
+
+        private static void InsertOrUpdate<TEntity>(TEntity entity, DbSet<TEntity> dbSet, ProductionDomainContext productionDomainContext)
             where TEntity : BaseEntity
         {
             TEntity foundEntity = dbSet.Find(entity.Id);
@@ -217,14 +238,14 @@ namespace Zpp.DataLayer.impl
                 ) // TODO: performance issue: a select before every insert is a no go
                 // it's not in DB yet
             {
-                _productionDomainContext.Entry(entity).State = EntityState.Added;
+                productionDomainContext.Entry(entity).State = EntityState.Added;
                 dbSet.Add(entity);
             }
             else
                 // it's already in DB
             {
                 CopyDbPropertiesTo(entity, foundEntity);
-                _productionDomainContext.Entry(foundEntity).State = EntityState.Modified;
+                productionDomainContext.Entry(foundEntity).State = EntityState.Modified;
                 dbSet.Update(foundEntity);
             }
         }
@@ -246,7 +267,7 @@ namespace Zpp.DataLayer.impl
             }
             else if (demand.GetType() == typeof(CustomerOrderPart))
             {
-                throw new MrpRunException("It's not allowed to add a CustomerOrderPart.");
+                _customerOrderParts.Add((CustomerOrderPart)demand);
             }
             else
             {
@@ -357,10 +378,10 @@ namespace Zpp.DataLayer.impl
         }
 
         public void ProductionOrderOperationAdd(
-            T_ProductionOrderOperation tProductionOrderOperation)
+            ProductionOrderOperation productionOrderOperation)
         {
-            ProductionOrderOperation productionOrderOperation =
-                new ProductionOrderOperation(tProductionOrderOperation);
+            // this (productionOrderOperation was already added) can happen,
+            // since an operation can be used multiple times for ProductionorderBoms
             if (_productionOrderOperations.Contains(productionOrderOperation) == false)
             {
                 _productionOrderOperations.Add(productionOrderOperation);
@@ -451,7 +472,7 @@ namespace Zpp.DataLayer.impl
             return _customerOrders.GetAll();
         }
 
-        public Demands T_CustomerOrderPartGetAll()
+        public Demands CustomerOrderPartGetAll()
         {
             List<Demand> demands = new List<Demand>();
             foreach (var demand in _customerOrderParts)
@@ -577,7 +598,7 @@ namespace Zpp.DataLayer.impl
             }
             else if (demand.GetType() == typeof(CustomerOrderPart))
             {
-                throw new MrpRunException("It's not allowed to delete a CustomerOrderPart.");
+                _customerOrderParts.Remove((CustomerOrderPart)demand);
             }
             else
             {
@@ -623,7 +644,10 @@ namespace Zpp.DataLayer.impl
         public void ProductionOrderOperationAddAll(
             List<ProductionOrderOperation> productionOrderOperations)
         {
-            throw new NotImplementedException();
+            foreach (var productionOrderOperation in productionOrderOperations)
+            {
+                ProductionOrderOperationAdd(productionOrderOperation);
+            }
         }
 
         public void DeleteAllFrom(List<IDemandOrProvider> demandOrProviders)
@@ -747,6 +771,11 @@ namespace Zpp.DataLayer.impl
                       Environment.NewLine + Environment.NewLine;
 
             return result;
+        }
+
+        public void T_CustomerOrderDelete(T_CustomerOrder customerOrder)
+        {
+            _customerOrders.Remove(customerOrder);
         }
     }
 }

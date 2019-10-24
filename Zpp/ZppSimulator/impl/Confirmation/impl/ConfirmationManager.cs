@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.DataModel;
+using Master40.DB.Enums;
 using Master40.DB.Interfaces;
 using Zpp.DataLayer;
 using Zpp.DataLayer.impl.DemandDomain;
@@ -84,6 +85,9 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             }
         }
 
+        /**
+         * Top-down traversing demandToProviderGraph
+         */
         private bool processChilds(INodes childs, DemandToProviderGraph demandToProviderGraph)
         {
             if (childs == null)
@@ -141,18 +145,18 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             // ProductionOrder: 3 Zustände siehe DA
             foreach (var productionOrder in dbTransactionData.ProductionOrderGetAll())
             {
-                ProductionOrderState state =
+                State state =
                     DetermineProductionOrderState((ProductionOrder) productionOrder, aggregator);
                 switch (state)
                 {
-                    case ProductionOrderState.Created:
+                    case State.Created:
                         ApplyProductionOrderIsInStateCreated((ProductionOrder) productionOrder,
                             aggregator, dbTransactionData);
                         break;
-                    case ProductionOrderState.InProgress:
+                    case State.InProgress:
                         ApplyProductionOrderIsInProgress();
                         break;
-                    case ProductionOrderState.Done:
+                    case State.Finished:
                         ApplyProductionOrderIsDone((ProductionOrder) productionOrder, aggregator,
                             dbTransactionData);
                         break;
@@ -263,7 +267,7 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             }
         }
 
-        private ProductionOrderState DetermineProductionOrderState(ProductionOrder productionOrder,
+        private State DetermineProductionOrderState(ProductionOrder productionOrder,
             IAggregator aggregator)
         {
             bool atLeastOneIsInProgress = false;
@@ -290,15 +294,15 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
 
             if (atLeastOneIsInProgress || atLeastOneIsInStateCreated && atLeastOneIsDone)
             {
-                return ProductionOrderState.InProgress;
+                return State.InProgress;
             }
             else if (atLeastOneIsInStateCreated && !atLeastOneIsInProgress && !atLeastOneIsDone)
             {
-                return ProductionOrderState.Created;
+                return State.Created;
             }
             else if (atLeastOneIsDone && !atLeastOneIsInProgress && !atLeastOneIsInStateCreated)
             {
-                return ProductionOrderState.Created;
+                return State.Created;
             }
             else
             {

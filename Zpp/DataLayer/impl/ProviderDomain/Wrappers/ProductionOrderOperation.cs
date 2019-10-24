@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
@@ -37,6 +38,10 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
 
         public void SetMachine(Resource resource)
         {
+            if (_productionOrderOperation.IsReadOnly)
+            {
+                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+            }
             _productionOrderOperation.Resource = resource.GetValue();
         }
 
@@ -95,11 +100,16 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
 
         public override string ToString()
         {
-            return $"{_productionOrderOperation.GetId()}: {_productionOrderOperation.Name}";
+            string state = Enum.GetName(typeof(State), GetState());
+            return $"{_productionOrderOperation.GetId()}: {_productionOrderOperation.Name}; {state}";
         }
 
         public void SetPriority(Priority priority)
         {
+            if (_productionOrderOperation.IsReadOnly)
+            {
+                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+            }
             _priority = priority;
         }
 
@@ -141,12 +151,20 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
         
         public void SetDone()
         {
-            _productionOrderOperation.ProducingState = ProducingState.Finished;
+            if (_productionOrderOperation.IsReadOnly)
+            {
+                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+            }
+            _productionOrderOperation.State = State.Finished;
         }
 
         public void SetInProgress()
         {
-            _productionOrderOperation.ProducingState = ProducingState.Producing;
+            if (_productionOrderOperation.IsReadOnly)
+            {
+                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+            }
+            _productionOrderOperation.State = State.InProgress;
         }
         
         public DueTime GetEndTime()
@@ -175,6 +193,10 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
 
         public void SetStartTime(DueTime startTime)
         {
+            if (_productionOrderOperation.IsReadOnly)
+            {
+                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+            }
             DueTime transitionTime =
                 new DueTime(
                     TransitionTimer.CalculateTransitionTime(GetDuration()));
@@ -192,19 +214,20 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
 
         public bool IsDone()
         {
-            return _productionOrderOperation.ProducingState.Equals(ProducingState.Finished);
+            return _productionOrderOperation.State.Equals(State.Finished);
         }
 
         public bool IsInProgress()
         {
-            return _productionOrderOperation.ProducingState.Equals(ProducingState.Producing);
+            return _productionOrderOperation.State.Equals(State.InProgress);
         }
 
         public void SetEndTime(DueTime endTime)
         {
-            DueTime transitionTime =
-                new DueTime(
-                    TransitionTimer.CalculateTransitionTime(GetDuration()));
+            if (_productionOrderOperation.IsReadOnly)
+            {
+                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+            }
             // endBackwards
             _productionOrderOperation.EndBackward = endTime.GetValue();
             // startBackwards
@@ -271,6 +294,16 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
                 newOperationBackwardsSchedule.GetStartBackwards().GetValue();
 
             return newOperationBackwardsSchedule;
+        }
+
+        public State? GetState()
+        {
+            return _productionOrderOperation.State;
+        }
+
+        public void SetReadOnly()
+        {
+            _productionOrderOperation.IsReadOnly = true;
         }
     }
 }

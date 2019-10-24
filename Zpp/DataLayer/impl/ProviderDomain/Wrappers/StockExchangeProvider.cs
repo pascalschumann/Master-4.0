@@ -2,6 +2,7 @@ using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Master40.DB.Enums;
 using Master40.DB.Interfaces;
+using Zpp.Util;
 
 namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
 {
@@ -10,11 +11,11 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
      */
     public class StockExchangeProvider : Provider, IProviderLogic
     {
-        private readonly T_StockExchange _stockExchange;
+        private readonly T_StockExchange _stockExchangeProvider;
         public StockExchangeProvider(IProvider provider) :
             base(provider)
         {
-            _stockExchange = (T_StockExchange) provider;
+            _stockExchangeProvider = (T_StockExchange) provider;
         }
 
         public override IProvider ToIProvider()
@@ -36,23 +37,35 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
 
         public override void SetProvided(DueTime atTime)
         {
-            _stockExchange.State = State.Finished;
-            _stockExchange.Time = atTime.GetValue();
+            if (_stockExchangeProvider.IsReadOnly)
+            {
+                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+            }
+            _stockExchangeProvider.State = State.Finished;
+            _stockExchangeProvider.Time = atTime.GetValue();
         }
 
         public override void SetStartTime(DueTime startTime)
         {
-            _stockExchange.RequiredOnTime = startTime.GetValue();
+            if (_stockExchangeProvider.IsReadOnly)
+            {
+                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+            }
+            _stockExchangeProvider.RequiredOnTime = startTime.GetValue();
         }
         
         public override void SetDone()
         {
-            _stockExchange.State = State.Finished;
+            _stockExchangeProvider.State = State.Finished;
         }
 
         public override void SetInProgress()
         {
-            _stockExchange.State = State.Producing;
+            if (_stockExchangeProvider.IsReadOnly)
+            {
+                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+            }
+            _stockExchangeProvider.State = State.InProgress;
         }
         
         public override Duration GetDuration()
@@ -62,27 +75,36 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
 
         public override DueTime GetEndTime()
         {
-            return new DueTime(_stockExchange.RequiredOnTime);
+            return new DueTime(_stockExchangeProvider.RequiredOnTime);
         }
 
         public override bool IsDone()
         {
-            return _stockExchange.State.Equals(State.Finished);
+            return _stockExchangeProvider.State.Equals(State.Finished);
         }
 
         public override void SetEndTime(DueTime endTime)
         {
-            _stockExchange.RequiredOnTime = endTime.GetValue();
+            if (_stockExchangeProvider.IsReadOnly)
+            {
+                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+            }
+            _stockExchangeProvider.RequiredOnTime = endTime.GetValue();
         }
 
         public override void ClearStartTime()
         {
-            _stockExchange.RequiredOnTime = DueTime.INVALID_DUETIME;
+            _stockExchangeProvider.RequiredOnTime = DueTime.INVALID_DUETIME;
         }
 
         public override void ClearEndTime()
         {
-            _stockExchange.RequiredOnTime = DueTime.INVALID_DUETIME;
+            _stockExchangeProvider.RequiredOnTime = DueTime.INVALID_DUETIME;
+        }
+
+        public override State? GetState()
+        {
+            return _stockExchangeProvider.State;
         }
     }
 }

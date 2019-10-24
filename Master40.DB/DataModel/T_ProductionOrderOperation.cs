@@ -33,7 +33,7 @@ namespace Master40.DB.DataModel
         public decimal ActivitySlack { get; set; }
         public decimal WorkTimeWithParents { get; set; }
         public int DurationSimulation { get; set; }
-        public ProducingState ProducingState { get; set; }
+        public State State { get; set; }
         public ICollection<T_ProductionOrderBom> ProductionOrderBoms { get; set; }
 
         public override string ToString()

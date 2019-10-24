@@ -1,5 +1,7 @@
+using System;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
+using Master40.DB.Enums;
 using Master40.DB.Interfaces;
 using Zpp.DataLayer.impl.ProviderDomain.Wrappers;
 using Zpp.Util;
@@ -88,7 +90,8 @@ namespace Zpp.DataLayer.impl.ProviderDomain
 
         public override string ToString()
         {
-            return $"{GetId()}: {GetArticle().Name};{GetQuantity()}";
+            string state = Enum.GetName(typeof(State), GetState());
+            return $"{GetId()}: {GetArticle().Name};{GetQuantity()}; {state}";
         }
 
         public NodeType GetNodeType()
@@ -145,5 +148,12 @@ namespace Zpp.DataLayer.impl.ProviderDomain
         public abstract void ClearStartTime();
 
         public abstract void ClearEndTime();
+        
+        public abstract State? GetState();
+
+        public void SetReadOnly()
+        {
+            _provider.IsReadOnly = true;
+        }
     }
 }

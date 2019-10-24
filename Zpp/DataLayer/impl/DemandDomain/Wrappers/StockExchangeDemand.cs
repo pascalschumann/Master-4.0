@@ -2,6 +2,7 @@ using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Master40.DB.Enums;
 using Master40.DB.Interfaces;
+using Zpp.Util;
 
 namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
 {
@@ -91,17 +92,29 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
 
         public override void SetStartTime(DueTime startTime)
         {
+            if (_tStockExchangeDemand.IsReadOnly)
+            {
+                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+            }
             _tStockExchangeDemand.RequiredOnTime = startTime.GetValue();
         }
         
         public override void SetDone()
         {
+            if (_tStockExchangeDemand.IsReadOnly)
+            {
+                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+            }
             _tStockExchangeDemand.State = State.Finished;
         }
 
         public override void SetInProgress()
         {
-            _tStockExchangeDemand.State = State.Producing;
+            if (_tStockExchangeDemand.IsReadOnly)
+            {
+                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+            }
+            _tStockExchangeDemand.State = State.InProgress;
         }
 
         public override DueTime GetEndTime()
@@ -116,6 +129,10 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
 
         public override void SetEndTime(DueTime endTime)
         {
+            if (_tStockExchangeDemand.IsReadOnly)
+            {
+                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+            }
             _tStockExchangeDemand.RequiredOnTime = endTime.GetValue();
         }
 
@@ -127,6 +144,11 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
         public override void ClearEndTime()
         {
             _tStockExchangeDemand.RequiredOnTime = DueTime.INVALID_DUETIME;
+        }
+
+        public override State? GetState()
+        {
+            return _tStockExchangeDemand.State;
         }
     }
 }

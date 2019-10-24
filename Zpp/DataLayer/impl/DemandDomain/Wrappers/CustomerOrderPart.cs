@@ -52,7 +52,7 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
 
         public override void SetInProgress()
         {
-            _customerOrderPart.State = State.Producing;
+            _customerOrderPart.State = State.InProgress;
         }
 
         private void EnsureCustomerOrderIsLoaded()
@@ -90,6 +90,11 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
         public override void ClearEndTime()
         {
             throw new System.NotImplementedException();
+        }
+
+        public override State? GetState()
+        {
+            return _customerOrderPart.State;
         }
     }
 }

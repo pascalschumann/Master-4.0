@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
+using Master40.DB.Enums;
 using Master40.DB.Interfaces;
 using Zpp.DataLayer.impl.DemandDomain.WrappersForCollections;
+using Zpp.Util;
 
 namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
 {
@@ -55,6 +57,10 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
 
         public override void SetStartTime(DueTime startTime)
         {
+            if (_productionOrder.IsReadOnly)
+            {
+                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+            }
             _productionOrder.DueTime = startTime.GetValue();
         }
 
@@ -88,6 +94,10 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
 
         public override void SetEndTime(DueTime endTime)
         {
+            if (_productionOrder.IsReadOnly)
+            {
+                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+            }
             _productionOrder.DueTime = endTime.GetValue();
         }
 
@@ -99,6 +109,11 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
         public override void ClearEndTime()
         {
             _productionOrder.DueTime = DueTime.INVALID_DUETIME;
+        }
+
+        public override State? GetState()
+        {
+            return null;
         }
     }
 }

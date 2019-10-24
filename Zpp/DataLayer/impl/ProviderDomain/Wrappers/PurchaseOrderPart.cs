@@ -3,6 +3,7 @@ using Master40.DB.DataModel;
 using Master40.DB.Enums;
 using Master40.DB.Interfaces;
 using Zpp.DataLayer.impl.DemandDomain.WrappersForCollections;
+using Zpp.Util;
 
 namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
 {
@@ -54,6 +55,10 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
 
         public override void SetStartTime(DueTime startTime)
         {
+            if (_tPurchaseOrderPart.IsReadOnly)
+            {
+                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+            }
             EnsurePurchaseOrderIsLoaded();
             _tPurchaseOrderPart.PurchaseOrder.DueTime =
                 startTime.GetValue() + GetDuration().GetValue();
@@ -61,12 +66,20 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
 
         public override void SetDone()
         {
+            if (_tPurchaseOrderPart.IsReadOnly)
+            {
+                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+            }
             _tPurchaseOrderPart.State = State.Finished;
         }
 
         public override void SetInProgress()
         {
-            _tPurchaseOrderPart.State = State.Producing;
+            if (_tPurchaseOrderPart.IsReadOnly)
+            {
+                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+            }
+            _tPurchaseOrderPart.State = State.InProgress;
         }
 
         public override Duration GetDuration()
@@ -86,6 +99,10 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
 
         public override void SetEndTime(DueTime endTime)
         {
+            if (_tPurchaseOrderPart.IsReadOnly)
+            {
+                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+            }
             EnsurePurchaseOrderIsLoaded();
             _tPurchaseOrderPart.PurchaseOrder.DueTime =
                 endTime.GetValue();
@@ -105,6 +122,11 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             _tPurchaseOrderPart.PurchaseOrder.DueTime =
                 DueTime.INVALID_DUETIME;
 
+        }
+
+        public override State? GetState()
+        {
+            return _tPurchaseOrderPart.State;
         }
     }
 }

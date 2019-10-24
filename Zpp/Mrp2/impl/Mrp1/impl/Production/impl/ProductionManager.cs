@@ -164,7 +164,7 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Production.impl
             productionOrderOperation.ResourceTool = articleBom.Operation.ResourceTool;
             productionOrderOperation.ResourceSkill = articleBom.Operation.ResourceSkill;
             productionOrderOperation.ResourceSkillId = articleBom.Operation.ResourceSkillId;
-            productionOrderOperation.ProducingState = ProducingState.Created;
+            productionOrderOperation.State = State.Created;
             productionOrderOperation.ProductionOrder =
                 (T_ProductionOrder) parentProductionOrder.ToIProvider();
             productionOrderOperation.ProductionOrderId =

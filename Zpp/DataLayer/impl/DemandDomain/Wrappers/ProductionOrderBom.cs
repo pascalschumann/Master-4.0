@@ -203,12 +203,16 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
 
         public override void SetDone()
         {
-            _productionOrderBom.ProductionOrderOperation.ProducingState = ProducingState.Finished;
+            _productionOrderBom.ProductionOrderOperation.State = State.Finished;
         }
 
         public override void SetInProgress()
         {
-            _productionOrderBom.ProductionOrderOperation.ProducingState = ProducingState.Producing;
+            if (_productionOrderBom.IsReadOnly)
+            {
+                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+            }
+            _productionOrderBom.ProductionOrderOperation.State = State.InProgress;
         }
 
         public override DueTime GetEndTime()
@@ -219,7 +223,7 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
         public override bool IsDone()
         {
             EnsureOperationIsLoadedIfExists();
-            return _productionOrderBom.ProductionOrderOperation.ProducingState.Equals(ProducingState
+            return _productionOrderBom.ProductionOrderOperation.State.Equals(State
                 .Finished);
         }
 
@@ -236,6 +240,12 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
         public override void ClearEndTime()
         {
             throw new NotImplementedException();
+        }
+
+        public override State? GetState()
+        {
+            EnsureOperationIsLoadedIfExists();
+            return _productionOrderBom.ProductionOrderOperation.State;
         }
     }
 }

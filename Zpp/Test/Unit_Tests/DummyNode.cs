@@ -1,5 +1,6 @@
 using Master40.DB.Data.Helper;
 using Master40.DB.Data.WrappersForPrimitives;
+using Master40.DB.Enums;
 using Zpp.Util.Graph;
 using Zpp.Util.Graph.impl;
 
@@ -81,6 +82,16 @@ namespace Zpp.Test.Unit_Tests
         }
 
         public void ClearEndTime()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public State? GetState()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void SetReadOnly()
         {
             throw new System.NotImplementedException();
         }

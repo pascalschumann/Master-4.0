@@ -3,20 +3,7 @@
     public enum State
     {
         Created,
-        Injected,
-        ProviderExist,
-        BackwardScheduleExists,
-        ForwardScheduleExists,
-        ExistsInCapacityPlan,
-        Producing,
-        Finished // 7
-    }
-
-    public enum ProducingState
-    {
-        Created,
-        Waiting,
-        Producing,
-        Finished // 3
+        InProgress,
+        Finished // 2
     }
 }

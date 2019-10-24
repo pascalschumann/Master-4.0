@@ -50,7 +50,8 @@ namespace Zpp.DataLayer.impl.OpenDemand
                 
                 Demand stockExchangeDemand =
                     StockExchangeDemand.CreateStockExchangeStockDemand(articleId,
-                        new DueTime(-100000), new Quantity(stock.Current));
+                        new DueTime(0), new Quantity(stock.Current));
+                stockExchangeDemand.SetReadOnly();
                 dbTransactionData.DemandsAdd(stockExchangeDemand);
             }
         }

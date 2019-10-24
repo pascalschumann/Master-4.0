@@ -14,6 +14,8 @@ namespace Master40.DB
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
+        public bool IsReadOnly { get; set; } = false;
+
         protected BaseEntity()
         {
             if (Configuration.TrackObjects)

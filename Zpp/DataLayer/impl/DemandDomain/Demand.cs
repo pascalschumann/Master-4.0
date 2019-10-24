@@ -1,5 +1,7 @@
+using System;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
+using Master40.DB.Enums;
 using Master40.DB.Interfaces;
 using Zpp.DataLayer.impl.DemandDomain.Wrappers;
 using Zpp.Util;
@@ -59,7 +61,8 @@ namespace Zpp.DataLayer.impl.DemandDomain
 
         public override string ToString()
         {
-            return $"{GetId()}: {GetArticle().Name};{GetQuantity()}";
+            string state = Enum.GetName(typeof(State), GetState());
+            return $"{GetId()}: {GetArticle().Name}; {GetQuantity()}; {state}";
         }
 
         public abstract M_Article GetArticle();
@@ -122,5 +125,12 @@ namespace Zpp.DataLayer.impl.DemandDomain
         public abstract void ClearStartTime();
 
         public abstract void ClearEndTime();
+
+        public abstract State? GetState();
+
+        public void SetReadOnly()
+        {
+            _demand.IsReadOnly = true;
+        }
     }
 }

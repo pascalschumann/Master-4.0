@@ -45,7 +45,7 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
             throw new System.NotImplementedException();
         }
 
-        public override void SetDone()
+        public override void SetFinished()
         {
             _customerOrderPart.State = State.Finished;
         }
@@ -72,7 +72,7 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
             return dueTime;
         }
 
-        public override bool IsDone()
+        public override bool IsFinished()
         {
             return _customerOrderPart.State.Equals(State.Finished);
         }

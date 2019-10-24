@@ -15,7 +15,10 @@ namespace Zpp.DataLayer.impl.ProviderDomain
     public abstract class Provider : IProviderLogic, IDemandOrProvider
     {
         protected readonly IProvider _provider;
-        protected readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
+
+        protected readonly IDbMasterDataCache _dbMasterDataCache =
+            ZppConfiguration.CacheManager.GetMasterDataCache();
+
         protected static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         public Provider(IProvider provider)
@@ -24,12 +27,12 @@ namespace Zpp.DataLayer.impl.ProviderDomain
             {
                 throw new MrpRunException("Given provider should not be null.");
             }
+
             _provider = provider;
-            
         }
 
         public abstract IProvider ToIProvider();
-        
+
         public override bool Equals(object obj)
         {
             var item = obj as Provider;
@@ -41,7 +44,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain
 
             return _provider.Id.Equals(item._provider.Id);
         }
-        
+
         public override int GetHashCode()
         {
             return _provider.Id.GetHashCode();
@@ -58,7 +61,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain
         {
             return GetQuantity().IsGreaterThanOrEqualTo(quantity);
         }
-        
+
         /**
          * returns Quantity.Null or higher
          */
@@ -90,7 +93,12 @@ namespace Zpp.DataLayer.impl.ProviderDomain
 
         public override string ToString()
         {
-            string state = Enum.GetName(typeof(State), GetState());
+            string state = "";
+            if (GetState() != null)
+            {
+                state = Enum.GetName(typeof(State), GetState());
+            }
+
             return $"{GetId()}: {GetArticle().Name};{GetQuantity()}; {state}";
         }
 
@@ -105,6 +113,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain
             {
                 return null;
             }
+
             return GetEndTime().Minus(new DueTime(GetDuration()));
         }
 
@@ -115,21 +124,20 @@ namespace Zpp.DataLayer.impl.ProviderDomain
         public abstract DueTime GetEndTime();
 
         public abstract void SetStartTime(DueTime startTime);
-        
+
         public static Provider AsProvider(IDemandOrProvider demandOrProvider)
         {
-           
             if (demandOrProvider.GetType() == typeof(ProductionOrder))
             {
-                return (ProductionOrder)demandOrProvider;
+                return (ProductionOrder) demandOrProvider;
             }
             else if (demandOrProvider.GetType() == typeof(PurchaseOrderPart))
             {
-                return (PurchaseOrderPart)demandOrProvider;
+                return (PurchaseOrderPart) demandOrProvider;
             }
             else if (demandOrProvider.GetType() == typeof(StockExchangeProvider))
             {
-                return (StockExchangeProvider)demandOrProvider;
+                return (StockExchangeProvider) demandOrProvider;
             }
             else
             {
@@ -137,18 +145,18 @@ namespace Zpp.DataLayer.impl.ProviderDomain
             }
         }
 
-        public abstract void SetDone();
+        public abstract void SetFinished();
 
         public abstract void SetInProgress();
 
-        public abstract bool IsDone();
+        public abstract bool IsFinished();
 
-        public  abstract void SetEndTime(DueTime endTime);
+        public abstract void SetEndTime(DueTime endTime);
 
         public abstract void ClearStartTime();
 
         public abstract void ClearEndTime();
-        
+
         public abstract State? GetState();
 
         public void SetReadOnly()

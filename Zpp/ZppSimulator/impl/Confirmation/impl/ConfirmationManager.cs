@@ -51,36 +51,36 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             }
 
             // stockExchanges, purchaseOrderParts, operations(use PrBom instead):
-            // set done when endTime is within interval
-            DemandOrProviders demandOrProvidersToSetDone = new DemandOrProviders();
-            demandOrProvidersToSetDone.AddAll(
+            // set finished when endTime is within interval
+            DemandOrProviders demandOrProvidersToSetFinished = new DemandOrProviders();
+            demandOrProvidersToSetFinished.AddAll(
                 aggregator.GetDemandsOrProvidersWhereEndTimeIsWithinInterval(simulationInterval,
                     new DemandOrProviders(dbTransactionData.PurchaseOrderPartGetAll())));
-            demandOrProvidersToSetDone.AddAll(
+            demandOrProvidersToSetFinished.AddAll(
                 aggregator.GetDemandsOrProvidersWhereEndTimeIsWithinInterval(simulationInterval,
                     new DemandOrProviders(dbTransactionData.StockExchangeDemandsGetAll())));
-            demandOrProvidersToSetDone.AddAll(
+            demandOrProvidersToSetFinished.AddAll(
                 aggregator.GetDemandsOrProvidersWhereEndTimeIsWithinInterval(simulationInterval,
                     new DemandOrProviders(dbTransactionData.StockExchangeProvidersGetAll())));
-            demandOrProvidersToSetDone.AddAll(
+            demandOrProvidersToSetFinished.AddAll(
                 aggregator.GetDemandsOrProvidersWhereEndTimeIsWithinInterval(simulationInterval,
                     new DemandOrProviders(dbTransactionData.ProductionOrderBomGetAll())));
-            foreach (var demandOrProvider in demandOrProvidersToSetDone)
+            foreach (var demandOrProvider in demandOrProvidersToSetFinished)
             {
-                demandOrProvider.SetDone();
+                demandOrProvider.SetFinished();
             }
 
-            // customerOrderParts: set done if all childs are done
+            // customerOrderParts: set finished if all childs are finished
             DemandToProviderGraph demandToProviderGraph = new DemandToProviderGraph();
             INodes rootNodes = demandToProviderGraph.GetRootNodes();
             foreach (var rootNode in rootNodes)
             {
-                bool isDone = processChilds(demandToProviderGraph.GetSuccessorNodes(rootNode),
+                bool isFinished = processChilds(demandToProviderGraph.GetSuccessorNodes(rootNode),
                     demandToProviderGraph);
-                if (isDone)
+                if (isFinished)
                 {
                     CustomerOrderPart customerOrderPart = (CustomerOrderPart) rootNode.GetEntity();
-                    customerOrderPart.SetDone();
+                    customerOrderPart.SetFinished();
                 }
             }
         }
@@ -98,7 +98,7 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             foreach (var child in childs)
             {
                 IDemandOrProvider demandOrProvider = (IDemandOrProvider) child.GetEntity();
-                if (demandOrProvider.IsDone())
+                if (demandOrProvider.IsFinished())
                 {
                     return processChilds(demandToProviderGraph.GetSuccessorNodes(child),
                         demandToProviderGraph);
@@ -150,14 +150,14 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                 switch (state)
                 {
                     case State.Created:
-                        ApplyProductionOrderIsInStateCreated((ProductionOrder) productionOrder,
+                        HandleProductionOrderIsInStateCreated((ProductionOrder) productionOrder,
                             aggregator, dbTransactionData);
                         break;
                     case State.InProgress:
-                        ApplyProductionOrderIsInProgress();
+                        HandleProductionOrderIsInProgress();
                         break;
                     case State.Finished:
-                        ApplyProductionOrderIsDone((ProductionOrder) productionOrder, aggregator,
+                        HandleProductionOrderIsFinished((ProductionOrder) productionOrder, aggregator,
                             dbTransactionData);
                         break;
                     default: throw new MrpRunException("This state is not expected.");
@@ -208,7 +208,7 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             return demandOrProvidersOfProductionOrderSubGraph;
         }
 
-        private void ApplyProductionOrderIsInStateCreated(ProductionOrder productionOrder,
+        private void HandleProductionOrderIsInStateCreated(ProductionOrder productionOrder,
             IAggregator aggregator, IDbTransactionData dbTransactionData)
         {
             // delete all operations
@@ -231,13 +231,13 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             }
         }
 
-        private void ApplyProductionOrderIsInProgress()
+        private void HandleProductionOrderIsInProgress()
         {
             // nothing to do here
             return;
         }
 
-        private void ApplyProductionOrderIsDone(ProductionOrder productionOrder,
+        private void HandleProductionOrderIsFinished(ProductionOrder productionOrder,
             IAggregator aggregator, IDbTransactionData dbTransactionData)
         {
             IDbTransactionData dbTransactionDataArchive =
@@ -271,7 +271,7 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             IAggregator aggregator)
         {
             bool atLeastOneIsInProgress = false;
-            bool atLeastOneIsDone = false;
+            bool atLeastOneIsFinished = false;
             bool atLeastOneIsInStateCreated = false;
             var productionOrderOperations =
                 aggregator.GetProductionOrderOperationsOfProductionOrder(productionOrder);
@@ -282,9 +282,9 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                     atLeastOneIsInProgress = true;
                     break;
                 }
-                else if (productionOrderOperation.IsDone())
+                else if (productionOrderOperation.IsFinished())
                 {
-                    atLeastOneIsDone = true;
+                    atLeastOneIsFinished = true;
                 }
                 else
                 {
@@ -292,15 +292,15 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                 }
             }
 
-            if (atLeastOneIsInProgress || atLeastOneIsInStateCreated && atLeastOneIsDone)
+            if (atLeastOneIsInProgress || atLeastOneIsInStateCreated && atLeastOneIsFinished)
             {
                 return State.InProgress;
             }
-            else if (atLeastOneIsInStateCreated && !atLeastOneIsInProgress && !atLeastOneIsDone)
+            else if (atLeastOneIsInStateCreated && !atLeastOneIsInProgress && !atLeastOneIsFinished)
             {
                 return State.Created;
             }
-            else if (atLeastOneIsDone && !atLeastOneIsInProgress && !atLeastOneIsInStateCreated)
+            else if (atLeastOneIsFinished && !atLeastOneIsInProgress && !atLeastOneIsInStateCreated)
             {
                 return State.Created;
             }

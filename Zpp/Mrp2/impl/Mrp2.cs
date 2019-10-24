@@ -64,7 +64,7 @@ namespace Zpp.Mrp2.impl
             // job shop scheduling
             JobShopScheduling();
 
-            Logger.Info("MrpRun done.");
+            Logger.Info("MrpRun finished.");
         }
 
         private void ScheduleBackward(Stack<INode> rootNodes, IDirectedGraph<INode> orderOperationGraph,

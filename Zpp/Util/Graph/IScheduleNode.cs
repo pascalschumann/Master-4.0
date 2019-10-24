@@ -25,11 +25,11 @@ namespace Zpp.Util.Graph
          */
         Duration GetDuration();
 
-        void SetDone();
+        void SetFinished();
 
         void SetInProgress();
 
-        bool IsDone();
+        bool IsFinished();
 
         NodeType GetNodeType();
 

@@ -220,7 +220,7 @@ namespace Zpp.DataLayer.impl
             Demands pendingCustomerOrderParts = new Demands();
             foreach (var customerOrderPart in customerOrderParts)
             {
-                if (customerOrderPart.IsDone() == false)
+                if (customerOrderPart.IsFinished() == false)
                 {
                     pendingCustomerOrderParts.Add(customerOrderPart);
                 }

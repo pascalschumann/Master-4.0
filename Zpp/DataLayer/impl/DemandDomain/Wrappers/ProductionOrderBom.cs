@@ -201,7 +201,7 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
             throw new NotImplementedException();
         }
 
-        public override void SetDone()
+        public override void SetFinished()
         {
             _productionOrderBom.ProductionOrderOperation.State = State.Finished;
         }
@@ -220,7 +220,7 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
             return GetEndTimeOfOperation();
         }
 
-        public override bool IsDone()
+        public override bool IsFinished()
         {
             EnsureOperationIsLoadedIfExists();
             return _productionOrderBom.ProductionOrderOperation.State.Equals(State

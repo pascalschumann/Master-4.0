@@ -114,11 +114,11 @@ namespace Zpp.DataLayer.impl.DemandDomain
             }
         }
 
-        public abstract void SetDone();
+        public abstract void SetFinished();
 
         public abstract void SetInProgress();
 
-        public abstract bool IsDone();
+        public abstract bool IsFinished();
         
         public  abstract void SetEndTime(DueTime endTime);
 

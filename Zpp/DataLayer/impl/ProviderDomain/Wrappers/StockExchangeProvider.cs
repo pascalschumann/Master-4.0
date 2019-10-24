@@ -54,7 +54,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             _stockExchangeProvider.RequiredOnTime = startTime.GetValue();
         }
         
-        public override void SetDone()
+        public override void SetFinished()
         {
             _stockExchangeProvider.State = State.Finished;
         }
@@ -78,7 +78,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             return new DueTime(_stockExchangeProvider.RequiredOnTime);
         }
 
-        public override bool IsDone()
+        public override bool IsFinished()
         {
             return _stockExchangeProvider.State.Equals(State.Finished);
         }

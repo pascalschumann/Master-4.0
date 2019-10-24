@@ -99,7 +99,7 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
             _tStockExchangeDemand.RequiredOnTime = startTime.GetValue();
         }
         
-        public override void SetDone()
+        public override void SetFinished()
         {
             if (_tStockExchangeDemand.IsReadOnly)
             {
@@ -122,7 +122,7 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
             return new DueTime(_tStockExchangeDemand.RequiredOnTime);
         }
 
-        public override bool IsDone()
+        public override bool IsFinished()
         {
             return _tStockExchangeDemand.State.Equals(State.Finished);
         }

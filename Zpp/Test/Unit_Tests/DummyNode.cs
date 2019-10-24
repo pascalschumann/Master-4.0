@@ -56,7 +56,7 @@ namespace Zpp.Test.Unit_Tests
             throw new System.NotImplementedException();
         }
 
-        public void SetDone()
+        public void SetFinished()
         {
             throw new System.NotImplementedException();
         }
@@ -66,7 +66,7 @@ namespace Zpp.Test.Unit_Tests
             throw new System.NotImplementedException();
         }
 
-        public bool IsDone()
+        public bool IsFinished()
         {
             throw new System.NotImplementedException();
         }

@@ -64,7 +64,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             _productionOrder.DueTime = startTime.GetValue();
         }
 
-        public override void SetDone()
+        public override void SetFinished()
         {
             // has no state
             throw new System.NotImplementedException();
@@ -86,7 +86,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             return new DueTime(_productionOrder.DueTime);
         }
 
-        public override bool IsDone()
+        public override bool IsFinished()
         {
             // has no state --> always true
             return true;

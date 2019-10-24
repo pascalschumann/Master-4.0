@@ -149,7 +149,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             return maxDueTime;
         }
         
-        public void SetDone()
+        public void SetFinished()
         {
             if (_productionOrderOperation.IsReadOnly)
             {
@@ -212,7 +212,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             return _productionOrderOperation.GetDuration();
         }
 
-        public bool IsDone()
+        public bool IsFinished()
         {
             return _productionOrderOperation.State.Equals(State.Finished);
         }

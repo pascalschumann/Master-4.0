@@ -64,7 +64,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
                 startTime.GetValue() + GetDuration().GetValue();
         }
 
-        public override void SetDone()
+        public override void SetFinished()
         {
             if (_tPurchaseOrderPart.IsReadOnly)
             {
@@ -92,7 +92,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             return duration;
         }
 
-        public override bool IsDone()
+        public override bool IsFinished()
         {
             return _tPurchaseOrderPart.State.Equals(State.Finished);
         }

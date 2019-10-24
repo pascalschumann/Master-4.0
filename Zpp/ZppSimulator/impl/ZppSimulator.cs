@@ -131,7 +131,7 @@ namespace Zpp.ZppSimulator.impl
                 currentMemoryUsage = GC.GetTotalMemory(false);
                 Logger.Info($"CurrentMemoryUsage: {currentMemoryUsage}");
                 SimulationInterval simulationInterval =
-                    new SimulationInterval(i * _interval, _interval * (i + 1));
+                    new SimulationInterval(i * _interval, _interval);
                 StartOneCycle(simulationInterval, new Quantity(customerOrderQuantity));
 
                 // TODO: Tickzaehlung nur um die Planung innerhalb StartOneCycle und über return zurück

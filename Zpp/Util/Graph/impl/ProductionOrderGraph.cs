@@ -8,8 +8,7 @@ namespace Zpp.Util.Graph.impl
         {
             if (IsEmpty())
             {
-                throw new MrpRunException(
-                    "How could it happen, that no nodes are in the DemandToProviderGraph ?");
+                return;
             }
 
             foreach (var uniqueNode in GetAllUniqueNodes())

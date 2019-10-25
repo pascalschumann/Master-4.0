@@ -19,10 +19,13 @@ namespace Zpp.Util
         {
             if (simulationInterval.StartAt.Equals(0))
             {
-                DirectoryInfo di = new DirectoryInfo(SimulationFolder);
-                foreach (FileInfo file in di.GetFiles())
+                DirectoryInfo directoryInfo = new DirectoryInfo(SimulationFolder);
+                if (directoryInfo.Exists)
                 {
-                    file.Delete();
+                    foreach (FileInfo file in directoryInfo.GetFiles())
+                    {
+                        file.Delete();
+                    }
                 }
             }
             

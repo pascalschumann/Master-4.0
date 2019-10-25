@@ -37,14 +37,7 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
 
             foreach (var demandOrProvider in demandOrProvidersToSetInProgress)
             {
-                try
-                {
-                    demandOrProvider.SetInProgress();
-                }
-                catch (MrpRunException e)
-                {
-                    throw e;
-                }
+                demandOrProvider.SetInProgress();
             }
 
             // stockExchanges, purchaseOrderParts, operations(use PrBom instead):
@@ -81,11 +74,12 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                 }
             }
         }
-        
+
         /**
          * Top-down traversing demandToProviderGraph
          */
-        private static bool ProcessChilds(INodes childs, DemandToProviderGraph demandToProviderGraph)
+        private static bool ProcessChilds(INodes childs,
+            DemandToProviderGraph demandToProviderGraph)
         {
             if (childs == null)
             {

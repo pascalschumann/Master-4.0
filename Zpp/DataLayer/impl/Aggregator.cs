@@ -213,20 +213,26 @@ namespace Zpp.DataLayer.impl
             return earliestStartTime;
         }
 
-        public Demands GetPendingCustomerOrderParts()
+        public Demands GetUnsatisifedCustomerOrderParts()
         {
-            Demands customerOrderParts = ZppConfiguration.CacheManager.GetDbTransactionData()
-                .CustomerOrderPartGetAll();
-            Demands pendingCustomerOrderParts = new Demands();
+            Demands unsatisifedCustomerOrderParts = new Demands();
+
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
+            IAggregator aggregator = ZppConfiguration.CacheManager.GetAggregator();
+            
+            Demands customerOrderParts = 
+                dbTransactionData.CustomerOrderPartGetAll();
+            
             foreach (var customerOrderPart in customerOrderParts)
             {
-                if (customerOrderPart.IsFinished() == false)
+                if (aggregator.GetAllChildProvidersOf(customerOrderPart).Any() == false)
                 {
-                    pendingCustomerOrderParts.Add(customerOrderPart);
+                    unsatisifedCustomerOrderParts.Add(customerOrderPart);
                 }
             }
 
-            return pendingCustomerOrderParts;
+            return unsatisifedCustomerOrderParts;
         }
 
         public DemandOrProviders GetDemandsOrProvidersWhereStartTimeIsWithinInterval(SimulationInterval simulationInterval,

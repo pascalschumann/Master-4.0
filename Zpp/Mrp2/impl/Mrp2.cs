@@ -121,7 +121,7 @@ namespace Zpp.Mrp2.impl
         {
             // execute mrp2
             Demands unsatisfiedCustomerOrderParts = ZppConfiguration.CacheManager.GetAggregator()
-                .GetPendingCustomerOrderParts();
+                .GetUnsatisifedCustomerOrderParts();
             ManufacturingResourcePlanning(unsatisfiedCustomerOrderParts);
         }
     }

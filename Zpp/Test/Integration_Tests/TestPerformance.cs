@@ -49,5 +49,18 @@ namespace Zpp.Test.Integration_Tests
             IZppSimulator zppSimulator = new ZppSimulator.impl.ZppSimulator();
             zppSimulator.StartPerformanceStudy();
         }
+        
+        /**
+         * without confirmations to compare it with performanceStudy (which includes confirmations)
+         */
+        [Theory]
+        [InlineData(TestConfigurationFileNames.DESK_COP_2_LOTSIZE_2)]
+        public void TestMultipleTestCycles(string testConfigurationFileName)
+        {
+            InitThisTest(testConfigurationFileName);
+            
+            IZppSimulator zppSimulator = new ZppSimulator.impl.ZppSimulator();
+            zppSimulator.StartMultipleTestCycles();
+        }
     }
 }

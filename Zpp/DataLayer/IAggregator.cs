@@ -52,7 +52,7 @@ namespace Zpp.DataLayer
          */
         DueTime GetEarliestPossibleStartTimeOf(ProductionOrderBom productionOrderBom);
 
-        Demands GetPendingCustomerOrderParts();
+        Demands GetUnsatisifedCustomerOrderParts();
 
         DemandOrProviders GetDemandsOrProvidersWhereEndTimeIsWithinInterval(
             SimulationInterval simulationInterval, DemandOrProviders demandOrProviders);

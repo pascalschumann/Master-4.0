@@ -51,14 +51,15 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             }
 
             RemoveAllArrowsOnFinishedPurchaseOrderParts(dbTransactionData, aggregator);
-
-            // Lösche alle children der COPs (StockExchangeProvider) inclusive Pfeile auf und weg
-            RemoveChildsOfCustomerOrderPartsIncludingArrows(dbTransactionData, aggregator);
+            
+            RemoveAllArrowsAndStockExchangeProviderOnCustomerOrderParts(dbTransactionData, aggregator);
             
             SetReadOnly(dbTransactionData.StockExchangeProvidersGetAll());
             SetReadOnly(dbTransactionData.StockExchangeDemandsGetAll());
             
-            ArchiveFinishedCustomerOrderParts(dbTransactionData, dbTransactionDataArchive);
+            // ArchiveFinishedCustomerOrderParts(dbTransactionData, dbTransactionDataArchive);
+            SetReadOnly(dbTransactionData.CustomerOrderPartGetAll());
+            SetReadOnlyIfFinished(dbTransactionData.PurchaseOrderPartGetAll());
             ArchiveFinishedPurchaseOrderParts(dbTransactionData, dbTransactionDataArchive);
         }
 
@@ -230,8 +231,6 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             {
                 if (purchaseOrderPart.IsFinished())
                 {
-                    SetReadOnlyIfFinished(purchaseOrderPart);
-                    
                     // archive it
                     Id purchaseOrderId = new Id(((PurchaseOrderPart) purchaseOrderPart).GetValue()
                         .PurchaseOrderId);
@@ -302,29 +301,24 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
         /**
          * inclusive arrows = DemandToProviders/ProviderToDemands
          */
-        private static void RemoveChildsOfCustomerOrderPartsIncludingArrows(
+        private static void RemoveAllArrowsAndStockExchangeProviderOnCustomerOrderParts(
             IDbTransactionData dbTransactionData, IAggregator aggregator)
         {
-            foreach (var customerOrderPart in dbTransactionData.CustomerOrderPartGetAll())
+            IDemands copyOfCustomerOrderParts = new Demands();
+                copyOfCustomerOrderParts.AddAll( dbTransactionData.CustomerOrderPartGetAll());
+            foreach (var customerOrderPart in copyOfCustomerOrderParts)
             {
-                IProviders providers = aggregator.GetAllChildProvidersOf(customerOrderPart);
-                if (providers.Count() > 1)
+                if (customerOrderPart.IsFinished() == false)
                 {
-                    throw new MrpRunException("A customerOrderPart can only have one provider.");
-                }
-
-                foreach (var provider in providers)
-                {
-                    IEnumerable<T_DemandToProvider> demandToProviders = dbTransactionData
-                        .DemandToProviderGetAll().GetAll()
-                        .Where(x => x.GetProviderId().Equals(provider.GetId()));
-                    IEnumerable<T_ProviderToDemand> providerToDemands = dbTransactionData
-                        .ProviderToDemandGetAll().GetAll()
-                        .Where(x => x.GetProviderId().Equals(provider.GetId()));
-                    dbTransactionData.DemandToProviderDeleteAll(demandToProviders);
-                    dbTransactionData.ProviderToDemandDeleteAll(providerToDemands);
-                    dbTransactionData.StockExchangeProvidersDelete(
-                        (StockExchangeProvider) provider);
+                    List<ILinkDemandAndProvider> demandAndProviderLinks =
+                        aggregator.GetArrowsToAndFrom(customerOrderPart);
+                    dbTransactionData.DeleteAllFrom(demandAndProviderLinks);
+                    IProviders stockExchangeProviders = aggregator.GetAllChildProvidersOf(customerOrderPart);
+                    if (stockExchangeProviders.Count() > 1)
+                    {
+                        throw new MrpRunException("A COP can only have one child.");
+                    }
+                    dbTransactionData.DeleteA(customerOrderPart);
                 }
             }
         }

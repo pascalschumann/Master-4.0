@@ -12,5 +12,7 @@ namespace Zpp.ZppSimulator
         void StartPerformanceStudy();
 
         void StartTestCycle();
+
+        void StartMultipleTestCycles();
     }
 }

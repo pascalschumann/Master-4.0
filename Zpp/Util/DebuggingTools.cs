@@ -17,6 +17,11 @@ namespace Zpp.Util
         public static void PrintStateToFiles(SimulationInterval simulationInterval,
             IDbTransactionData dbTransactionData, int countOfPrintsInOneCycle)
         {
+            if (Constants.IsWindows == false)
+            {
+                // skip this in the cloud, results there in DirectoryNotFoundException 
+                return;
+            }
             if (simulationInterval.StartAt.Equals(0))
             {
                 DirectoryInfo directoryInfo = new DirectoryInfo(SimulationFolder);

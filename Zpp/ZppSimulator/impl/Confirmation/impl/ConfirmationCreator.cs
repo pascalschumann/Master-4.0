@@ -67,7 +67,7 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             {
                 bool isFinished = ProcessChilds(demandToProviderGraph.GetSuccessorNodes(rootNode),
                     demandToProviderGraph);
-                if (isFinished)
+                if (isFinished && rootNode.GetEntity().GetType() == typeof(CustomerOrderPart))
                 {
                     CustomerOrderPart customerOrderPart = (CustomerOrderPart) rootNode.GetEntity();
                     customerOrderPart.SetFinished();

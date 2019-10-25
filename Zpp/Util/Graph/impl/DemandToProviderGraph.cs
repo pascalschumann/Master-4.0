@@ -20,15 +20,7 @@ namespace Zpp.Util.Graph.impl
             {
                 return;
             }
-
-            // remove subgraphs that has roots != customerOrderPart
-            foreach (var root in GetRootNodes())
-            {
-                if (root.GetEntity().GetType() != typeof(CustomerOrderPart))
-                {
-                    RemoveTopDown(root);
-                }
-            }
+            
         }
 
         private void CreateGraph(IDbTransactionData dbTransactionData)

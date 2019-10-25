@@ -101,18 +101,14 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
         
         public override void SetFinished()
         {
-            if (_tStockExchangeDemand.IsReadOnly)
-            {
-                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
-            }
             _tStockExchangeDemand.State = State.Finished;
         }
 
         public override void SetInProgress()
         {
-            if (_tStockExchangeDemand.IsReadOnly)
+            if (_tStockExchangeDemand.State.Equals(State.Finished))
             {
-                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+                throw new MrpRunException("Impossible, the operation is already finished.");
             }
             _tStockExchangeDemand.State = State.InProgress;
         }

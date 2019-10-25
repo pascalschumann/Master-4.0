@@ -151,18 +151,14 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
         
         public void SetFinished()
         {
-            if (_productionOrderOperation.IsReadOnly)
-            {
-                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
-            }
             _productionOrderOperation.State = State.Finished;
         }
 
         public void SetInProgress()
         {
-            if (_productionOrderOperation.IsReadOnly)
+            if (_productionOrderOperation.State.Equals(State.Finished))
             {
-                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+                throw new MrpRunException("Impossible, the operation is already finished.");
             }
             _productionOrderOperation.State = State.InProgress;
         }

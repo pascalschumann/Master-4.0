@@ -2,6 +2,7 @@ using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Master40.DB.Enums;
 using Master40.DB.Interfaces;
+using Zpp.Util;
 
 namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
 {
@@ -52,6 +53,10 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
 
         public override void SetInProgress()
         {
+            if (_customerOrderPart.State.Equals(State.Finished))
+            {
+                throw new MrpRunException("Impossible, the operation is already finished.");
+            }
             _customerOrderPart.State = State.InProgress;
         }
 

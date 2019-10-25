@@ -207,14 +207,16 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
 
         public override void SetFinished()
         {
+            EnsureOperationIsLoadedIfExists();
             _productionOrderBom.ProductionOrderOperation.State = State.Finished;
         }
 
         public override void SetInProgress()
         {
-            if (_productionOrderBom.IsReadOnly)
+            EnsureOperationIsLoadedIfExists();
+            if (_productionOrderBom.ProductionOrderOperation.State.Equals(State.Finished))
             {
-                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+                throw new MrpRunException("Impossible, the operation is already finished.");
             }
 
             _productionOrderBom.ProductionOrderOperation.State = State.InProgress;

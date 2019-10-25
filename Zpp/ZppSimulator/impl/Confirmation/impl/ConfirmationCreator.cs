@@ -1,6 +1,7 @@
 using Zpp.DataLayer;
 using Zpp.DataLayer.impl.DemandDomain.Wrappers;
 using Zpp.DataLayer.impl.WrappersForCollections;
+using Zpp.Util;
 using Zpp.Util.Graph;
 using Zpp.Util.Graph.impl;
 
@@ -36,7 +37,14 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
 
             foreach (var demandOrProvider in demandOrProvidersToSetInProgress)
             {
-                demandOrProvider.SetInProgress();
+                try
+                {
+                    demandOrProvider.SetInProgress();
+                }
+                catch (MrpRunException e)
+                {
+                    throw e;
+                }
             }
 
             // stockExchanges, purchaseOrderParts, operations(use PrBom instead):

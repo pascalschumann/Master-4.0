@@ -61,9 +61,9 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
 
         public override void SetInProgress()
         {
-            if (_stockExchangeProvider.IsReadOnly)
+            if (_stockExchangeProvider.State.Equals(State.Finished))
             {
-                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+                throw new MrpRunException("Impossible, the operation is already finished.");
             }
             _stockExchangeProvider.State = State.InProgress;
         }

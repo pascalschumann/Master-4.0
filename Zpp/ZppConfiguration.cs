@@ -11,5 +11,7 @@ namespace Zpp
         public static ProductionType ProductionType = ProductionType.WorkshopProductionClassic;
         
         public static readonly ICacheManager CacheManager = new CacheManager();
+
+        public static bool IsInPerformanceMode = false;
     }
 }

@@ -21,8 +21,6 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
         {
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.GetDbTransactionData();
-            IDbTransactionData dbTransactionDataArchive =
-                ZppConfiguration.CacheManager.GetDbTransactionDataArchive();
             IAggregator aggregator = ZppConfiguration.CacheManager.GetAggregator();
 
             // ProductionOrder: 3 Zustände siehe DA
@@ -50,9 +48,9 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                 }
             }
 
-            RemoveAllArrowsOnFinishedPurchaseOrderParts(dbTransactionData, aggregator);
+            // RemoveAllArrowsOnFinishedPurchaseOrderParts(dbTransactionData, aggregator);
             
-            RemoveAllArrowsAndStockExchangeProviderOnCustomerOrderParts(dbTransactionData, aggregator);
+            RemoveAllArrowsAndStockExchangeProviderOnNotFinishedCustomerOrderParts(dbTransactionData, aggregator);
             
             SetReadOnly(dbTransactionData.StockExchangeProvidersGetAll());
             SetReadOnly(dbTransactionData.StockExchangeDemandsGetAll());
@@ -60,7 +58,8 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             // ArchiveFinishedCustomerOrderParts(dbTransactionData, dbTransactionDataArchive);
             SetReadOnly(dbTransactionData.CustomerOrderPartGetAll());
             SetReadOnlyIfFinished(dbTransactionData.PurchaseOrderPartGetAll());
-            ArchiveFinishedPurchaseOrderParts(dbTransactionData, dbTransactionDataArchive);
+            
+            // ArchiveFinishedPurchaseOrderParts(dbTransactionData, dbTransactionDataArchive);
         }
 
         private static void SetReadOnly(IEnumerable<IDemandOrProvider> demandOrProviders)
@@ -78,14 +77,14 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
          * - childs of childs (StockExchangeProvider)
          */
         private static List<IDemandOrProvider> CreateProductionOrderSubGraph(
-            bool IncludeParentStockExchangeDemand, ProductionOrder productionOrder,
+            bool includeStockExchanges, ProductionOrder productionOrder,
             IAggregator aggregator)
         {
             List<IDemandOrProvider> demandOrProvidersOfProductionOrderSubGraph =
                 new List<IDemandOrProvider>();
             demandOrProvidersOfProductionOrderSubGraph.Add(productionOrder);
 
-            if (IncludeParentStockExchangeDemand)
+            if (includeStockExchanges)
             {
                 IDemands stockExchangeDemands = aggregator.GetAllParentDemandsOf(productionOrder);
                 if (stockExchangeDemands.Count() > 1)
@@ -99,21 +98,22 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
 
             IDemands productionOrderBoms = aggregator.GetAllChildDemandsOf(productionOrder);
             demandOrProvidersOfProductionOrderSubGraph.AddRange(productionOrderBoms);
-            /*
-             stockExchangeProvider doesn't belong to subgraph anymore
-             foreach (var productionOrderBom in productionOrderBoms)
+
+            if (includeStockExchanges)
             {
-                IProviders stockExchangeProvider =
-                    aggregator.GetAllChildProvidersOf(productionOrderBom);
-                if (stockExchangeProvider.Count() > 1)
+                foreach (var productionOrderBom in productionOrderBoms)
                 {
-                    throw new MrpRunException(
-                        "A ProductionOrderBom can only have one childProvider (stockExchangeProvider).");
+                    IProviders stockExchangeProvider =
+                        aggregator.GetAllChildProvidersOf(productionOrderBom);
+                    if (stockExchangeProvider.Count() > 1)
+                    {
+                        throw new MrpRunException(
+                            "A ProductionOrderBom can only have one childProvider (stockExchangeProvider).");
+                    }
+                    demandOrProvidersOfProductionOrderSubGraph.AddRange(stockExchangeProvider);
                 }
-
-                demandOrProvidersOfProductionOrderSubGraph.AddRange(stockExchangeProvider);
-            }*/
-
+            }
+            
             return demandOrProvidersOfProductionOrderSubGraph;
         }
 
@@ -301,7 +301,7 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
         /**
          * inclusive arrows = DemandToProviders/ProviderToDemands
          */
-        private static void RemoveAllArrowsAndStockExchangeProviderOnCustomerOrderParts(
+        private static void RemoveAllArrowsAndStockExchangeProviderOnNotFinishedCustomerOrderParts(
             IDbTransactionData dbTransactionData, IAggregator aggregator)
         {
             IDemands copyOfCustomerOrderParts = new Demands();
@@ -312,13 +312,24 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                 {
                     List<ILinkDemandAndProvider> demandAndProviderLinks =
                         aggregator.GetArrowsToAndFrom(customerOrderPart);
-                    dbTransactionData.DeleteAllFrom(demandAndProviderLinks);
+                    
+                    
+                    // remove child (stockExchangeProvider) on COP
                     IProviders stockExchangeProviders = aggregator.GetAllChildProvidersOf(customerOrderPart);
                     if (stockExchangeProviders.Count() > 1)
                     {
                         throw new MrpRunException("A COP can only have one child.");
                     }
-                    dbTransactionData.DeleteA(customerOrderPart);
+
+                    foreach (var stockExchangeProvider in stockExchangeProviders)
+                    {
+                        demandAndProviderLinks =
+                            aggregator.GetArrowsToAndFrom(stockExchangeProvider);
+                        dbTransactionData.DeleteA(stockExchangeProvider);    
+                    }
+                    
+                    // remove arrows on COP/stockExchangeProvider
+                    dbTransactionData.DeleteAllFrom(demandAndProviderLinks);
                 }
             }
         }

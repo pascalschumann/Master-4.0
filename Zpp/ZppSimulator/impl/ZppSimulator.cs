@@ -39,18 +39,12 @@ namespace Zpp.ZppSimulator.impl
             _customerOrderCreator.CreateCustomerOrders(simulationInterval, customerOrderQuantity);
 
             _mrp2.StartMrp2();
-
-            // TODO: remove this
             DebuggingTools.PrintStateToFiles(simulationInterval, dbTransactionData, 0);
 
             _confirmationManager.CreateConfirmations(simulationInterval);
-
-            // TODO: remove this
             DebuggingTools.PrintStateToFiles(simulationInterval, dbTransactionData, 1);
 
             _confirmationManager.ApplyConfirmations();
-
-            // TODO: remove this
             DebuggingTools.PrintStateToFiles(simulationInterval, dbTransactionData, 2);
 
             // persisting cached/created data
@@ -94,18 +88,23 @@ namespace Zpp.ZppSimulator.impl
 
         public void StartPerformanceStudy()
         {
+            ZppConfiguration.IsInPerformanceMode = true;
+            const int maxSimulatingTime = 20160;
+
             Quantity customerOrderQuantity = new Quantity(ZppConfiguration.CacheManager
                 .GetTestConfiguration().CustomerOrderPartQuantity);
-            const int maxSimulatingTime = 20160;
-            long currentMemoryUsage = GC.GetTotalMemory(false);
+            
+            string performanceLog = "";
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
             // for (int i = 0; i * _interval < maxSimulatingTime; i++)
             for (int i = 0; i * _interval < 5000; i++)
             {
-                currentMemoryUsage = GC.GetTotalMemory(false);
-                Logger.Info($"CurrentMemoryUsage: {currentMemoryUsage}");
+                long currentMemoryUsage = GC.GetTotalMemory(false);
+                performanceLog +=
+                    $"CurrentMemoryUsage: {DebuggingTools.Prettify(currentMemoryUsage)}" +
+                    Environment.NewLine;
                 SimulationInterval simulationInterval =
                     new SimulationInterval(i * _interval, _interval);
                 StartOneCycle(simulationInterval, new Quantity(customerOrderQuantity));
@@ -114,7 +113,10 @@ namespace Zpp.ZppSimulator.impl
             }
 
             stopwatch.Stop();
-            Logger.Info($"Elapsed cpu ticks: {stopwatch.Elapsed.Ticks}");
+            performanceLog +=
+                $"Elapsed cpu ticks: {DebuggingTools.Prettify(stopwatch.Elapsed.Ticks)}" +
+                Environment.NewLine;
+            DebuggingTools.WriteToFile(performanceLog, "performance");
         }
 
         /**

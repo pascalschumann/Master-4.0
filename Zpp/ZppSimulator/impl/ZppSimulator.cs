@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Master40.DB.Data.WrappersForPrimitives;
 using Zpp.DataLayer;
@@ -22,7 +23,7 @@ namespace Zpp.ZppSimulator.impl
 
         private readonly IMrp2 _mrp2 = new Mrp2.impl.Mrp2();
         private readonly IConfirmationManager _confirmationManager = new ConfirmationManager();
-        private readonly ICustomerOrderCreator _customerOrderCreator = new CustomerOrderCreator();
+        private ICustomerOrderCreator _customerOrderCreator = null;
 
         public void StartOneCycle(SimulationInterval simulationInterval)
         {
@@ -90,16 +91,20 @@ namespace Zpp.ZppSimulator.impl
         {
             ZppConfiguration.IsInPerformanceMode = true;
             const int maxSimulatingTime = 20160;
-
             Quantity customerOrderQuantity = new Quantity(ZppConfiguration.CacheManager
                 .GetTestConfiguration().CustomerOrderPartQuantity);
-            
+            var defaultCustomerOrderQuantityPerCycle = new Quantity(10);
+            if (customerOrderQuantity.IsSmallerThan(defaultCustomerOrderQuantityPerCycle))
+            {
+                defaultCustomerOrderQuantityPerCycle = customerOrderQuantity;
+            }
+            _customerOrderCreator = new CustomerOrderCreator(defaultCustomerOrderQuantityPerCycle);
+
             string performanceLog = "";
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            // for (int i = 0; i * _interval < maxSimulatingTime; i++)
-            for (int i = 0; i * _interval < 5000; i++)
+            for (int i = 0; i * _interval < maxSimulatingTime; i++)
             {
                 long currentMemoryUsage = GC.GetTotalMemory(false);
                 performanceLog +=
@@ -107,7 +112,13 @@ namespace Zpp.ZppSimulator.impl
                     Environment.NewLine;
                 SimulationInterval simulationInterval =
                     new SimulationInterval(i * _interval, _interval);
-                StartOneCycle(simulationInterval, new Quantity(customerOrderQuantity));
+                StartOneCycle(simulationInterval);
+
+                if (ZppConfiguration.CacheManager.GetDbTransactionData().CustomerOrderPartGetAll()
+                        .Count() > customerOrderQuantity.GetValue())
+                {
+                    break;
+                }
 
                 // TODO: Tickzaehlung nur um die Planung innerhalb StartOneCycle und über return zurück
             }
@@ -124,10 +135,10 @@ namespace Zpp.ZppSimulator.impl
          */
         public void StartMultipleTestCycles()
         {
-            const int maxSimulatingTime = 20160;
+            const int maxSimulatingTime = 5000;
 
             // for (int i = 0; i * _interval < maxSimulatingTime; i++)
-            for (int i = 0; i * _interval < 5000; i++)
+            for (int i = 0; i * _interval < maxSimulatingTime; i++)
             {
                 SimulationInterval simulationInterval =
                     new SimulationInterval(i * _interval, _interval);

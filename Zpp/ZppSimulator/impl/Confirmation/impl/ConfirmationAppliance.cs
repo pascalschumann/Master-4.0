@@ -7,6 +7,7 @@ using Master40.DB.Interfaces;
 using Zpp.DataLayer;
 using Zpp.DataLayer.impl.DemandDomain.Wrappers;
 using Zpp.DataLayer.impl.DemandDomain.WrappersForCollections;
+using Zpp.DataLayer.impl.OpenDemand;
 using Zpp.DataLayer.impl.ProviderDomain;
 using Zpp.DataLayer.impl.ProviderDomain.Wrappers;
 using Zpp.DataLayer.impl.ProviderDomain.WrappersForCollections;
@@ -49,17 +50,62 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             }
 
             // RemoveAllArrowsOnFinishedPurchaseOrderParts(dbTransactionData, aggregator);
-            
-            RemoveAllArrowsAndStockExchangeProviderOnNotFinishedCustomerOrderParts(dbTransactionData, aggregator);
-            
+
+            RemoveAllArrowsAndStockExchangeProviderOnNotFinishedCustomerOrderParts(
+                dbTransactionData, aggregator);
+
             SetReadOnly(dbTransactionData.StockExchangeProvidersGetAll());
             SetReadOnly(dbTransactionData.StockExchangeDemandsGetAll());
-            
+
             // ArchiveFinishedCustomerOrderParts(dbTransactionData, dbTransactionDataArchive);
             SetReadOnly(dbTransactionData.CustomerOrderPartGetAll());
             SetReadOnlyIfFinished(dbTransactionData.PurchaseOrderPartGetAll());
-            
+
             // ArchiveFinishedPurchaseOrderParts(dbTransactionData, dbTransactionDataArchive);
+        }
+
+        private static void ArchiveSubgraphOfClosedStockExchangeDemands(
+            IDbTransactionData dbTransactionData, IAggregator aggregator)
+        {
+            foreach (var demand in dbTransactionData.StockExchangeDemandsGetAll())
+            {
+                StockExchangeDemand stockExchangeDemand = (StockExchangeDemand) demand;
+                if (OpenDemandManager.IsOpen(stockExchangeDemand) == false)
+                {
+                    ArchiveSubGraphOfStockExchangeDemand(stockExchangeDemand, dbTransactionData,
+                        aggregator);
+                }
+            }
+        }
+
+        /**
+         * covers parent StockExchangeProvider(and its parent CustomerOrderPart if exist), child PurchaseOrderPart if exist
+         * --> 3 types of subgraphs: Production, Purchase, Customer
+         */
+        private static List<IDemandOrProvider> GetItemsOfStockExchangeDemandSubGraph(
+            StockExchangeDemand stockExchangeDemand, IDbTransactionData dbTransactionData,
+            IAggregator aggregator)
+        {
+            List<IDemandOrProvider> items = new List<IDemandOrProvider>();
+            Providers stockExchangeProviders = aggregator.GetAllParentProvidersOf(stockExchangeDemand);
+            foreach (var stockExchangeProvider in stockExchangeProviders)
+            {
+                
+                if (.Count() > 1)
+                {
+                    throw new MrpRunException();
+                }
+            }
+        }
+
+
+        private static void ArchiveSubGraphOfStockExchangeDemand(
+            StockExchangeDemand stockExchangeDemand, IDbTransactionData dbTransactionData,
+            IAggregator aggregator)
+        {
+            foreach (var VARIABLE in COLLECTION)
+            {
+            }
         }
 
         private static void SetReadOnly(IEnumerable<IDemandOrProvider> demandOrProviders)
@@ -77,8 +123,7 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
          * - childs of childs (StockExchangeProvider)
          */
         private static List<IDemandOrProvider> CreateProductionOrderSubGraph(
-            bool includeStockExchanges, ProductionOrder productionOrder,
-            IAggregator aggregator)
+            bool includeStockExchanges, ProductionOrder productionOrder, IAggregator aggregator)
         {
             List<IDemandOrProvider> demandOrProvidersOfProductionOrderSubGraph =
                 new List<IDemandOrProvider>();
@@ -110,10 +155,11 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                         throw new MrpRunException(
                             "A ProductionOrderBom can only have one childProvider (stockExchangeProvider).");
                     }
+
                     demandOrProvidersOfProductionOrderSubGraph.AddRange(stockExchangeProvider);
                 }
             }
-            
+
             return demandOrProvidersOfProductionOrderSubGraph;
         }
 
@@ -256,7 +302,7 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                 scheduleNode.SetReadOnly();
             }
         }
-        
+
         private static void SetReadOnlyIfFinished(IEnumerable<IScheduleNode> scheduleNodes)
         {
             foreach (var scheduleNode in scheduleNodes)
@@ -264,7 +310,6 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                 SetReadOnlyIfFinished(scheduleNode);
             }
         }
-
 
 
         private static void ArchiveFinishedCustomerOrderParts(IDbTransactionData dbTransactionData,
@@ -279,7 +324,7 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                 if (customerOrderPart.IsFinished())
                 {
                     SetReadOnlyIfFinished(customerOrderPart);
-                    
+
                     // archive it
                     Id customerOrderId = new Id(((CustomerOrderPart) customerOrderPart).GetValue()
                         .CustomerOrderId);
@@ -305,17 +350,18 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             IDbTransactionData dbTransactionData, IAggregator aggregator)
         {
             IDemands copyOfCustomerOrderParts = new Demands();
-                copyOfCustomerOrderParts.AddAll( dbTransactionData.CustomerOrderPartGetAll());
+            copyOfCustomerOrderParts.AddAll(dbTransactionData.CustomerOrderPartGetAll());
             foreach (var customerOrderPart in copyOfCustomerOrderParts)
             {
                 if (customerOrderPart.IsFinished() == false)
                 {
                     List<ILinkDemandAndProvider> demandAndProviderLinks =
                         aggregator.GetArrowsToAndFrom(customerOrderPart);
-                    
-                    
+
+
                     // remove child (stockExchangeProvider) on COP
-                    IProviders stockExchangeProviders = aggregator.GetAllChildProvidersOf(customerOrderPart);
+                    IProviders stockExchangeProviders =
+                        aggregator.GetAllChildProvidersOf(customerOrderPart);
                     if (stockExchangeProviders.Count() > 1)
                     {
                         throw new MrpRunException("A COP can only have one child.");
@@ -325,9 +371,9 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                     {
                         demandAndProviderLinks =
                             aggregator.GetArrowsToAndFrom(stockExchangeProvider);
-                        dbTransactionData.DeleteA(stockExchangeProvider);    
+                        dbTransactionData.DeleteA(stockExchangeProvider);
                     }
-                    
+
                     // remove arrows on COP/stockExchangeProvider
                     dbTransactionData.DeleteAllFrom(demandAndProviderLinks);
                 }

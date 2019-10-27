@@ -1,7 +1,9 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
+using Master40.DB.Interfaces;
 using Zpp.DataLayer.impl.DemandDomain;
 using Zpp.DataLayer.impl.DemandDomain.Wrappers;
 using Zpp.DataLayer.impl.DemandDomain.WrappersForCollections;
@@ -32,7 +34,7 @@ namespace Zpp.DataLayer.impl.OpenDemand
                 ZppConfiguration.CacheManager.GetDbTransactionData();
             if (considerInitialStockLevel)
             {
-                ConsiderInitialStockLevel(dbTransactionData);
+                ConsiderInitialStockLevels(dbTransactionData);
             }
             
             foreach (var stockExchangeDemand in dbTransactionData.StockExchangeDemandsGetAll())
@@ -41,8 +43,18 @@ namespace Zpp.DataLayer.impl.OpenDemand
                 AddDemand(stockExchangeDemand, reservedQuantity);
             }
         }
+
+        public static bool IsOpen(StockExchangeDemand stockExchangeDemand)
+        {
+            Quantity reservedQuantity = CalculateReservedQuantity(stockExchangeDemand);
+            return stockExchangeDemand.GetQuantity().Minus(reservedQuantity).GetValue() > 0;
+        }
         
-        private void ConsiderInitialStockLevel(IDbTransactionData dbTransactionData)
+        /**
+         * There initial stock levels defined in M_Stock, to avoid modelling stocks,
+         * the initial stock levels are simulated as stockExchangeDemands
+         */
+        private void ConsiderInitialStockLevels(IDbTransactionData dbTransactionData)
         {
             foreach (var stock in ZppConfiguration.CacheManager.GetMasterDataCache().M_StockGetAll())
             {
@@ -56,18 +68,15 @@ namespace Zpp.DataLayer.impl.OpenDemand
             }
         }
 
-        private Quantity CalculateReservedQuantity(Demand demand)
+        private static Quantity CalculateReservedQuantity(Demand demand)
         {
-            IDbTransactionData dbTransactionData =
-                ZppConfiguration.CacheManager.GetDbTransactionData();
+            IAggregator aggregator = ZppConfiguration.CacheManager.GetAggregator();
+            IEnumerable<ILinkDemandAndProvider> arrowsToDemand = aggregator.GetArrowsTo(demand);
             Quantity reservedQuantity = Quantity.Null();
-            List<T_ProviderToDemand> linksToDemand = dbTransactionData.ProviderToDemandGetAll()
-                .Where(x => x.GetDemandId().Equals(demand.GetId())).ToList();
-            foreach (var linkToDemand in linksToDemand)
+            foreach (var arrowToDemand in arrowsToDemand)
             {
-                reservedQuantity.IncrementBy(linkToDemand.GetQuantity());
+                reservedQuantity.IncrementBy(arrowToDemand.GetQuantity());
             }
-
 
             return reservedQuantity;
         }

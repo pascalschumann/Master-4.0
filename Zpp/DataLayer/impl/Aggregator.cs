@@ -220,10 +220,9 @@ namespace Zpp.DataLayer.impl
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.GetDbTransactionData();
             IAggregator aggregator = ZppConfiguration.CacheManager.GetAggregator();
-            
-            Demands customerOrderParts = 
-                dbTransactionData.CustomerOrderPartGetAll();
-            
+
+            Demands customerOrderParts = dbTransactionData.CustomerOrderPartGetAll();
+
             foreach (var customerOrderPart in customerOrderParts)
             {
                 if (aggregator.GetAllChildProvidersOf(customerOrderPart).Any() == false)
@@ -235,55 +234,128 @@ namespace Zpp.DataLayer.impl
             return unsatisifedCustomerOrderParts;
         }
 
-        public DemandOrProviders GetDemandsOrProvidersWhereStartTimeIsWithinInterval(SimulationInterval simulationInterval,
-            DemandOrProviders demandOrProviders)
+        public DemandOrProviders GetDemandsOrProvidersWhereStartTimeIsWithinInterval(
+            SimulationInterval simulationInterval, DemandOrProviders demandOrProviders)
         {
             // startTime within interval
             return new DemandOrProviders(demandOrProviders.GetAll()
                 .Where(x => simulationInterval.IsWithinInterval(x.GetStartTime())));
         }
-        
-        public DemandOrProviders GetDemandsOrProvidersWhereEndTimeIsWithinInterval(SimulationInterval simulationInterval,
-            DemandOrProviders demandOrProviders)
+
+        public DemandOrProviders GetDemandsOrProvidersWhereEndTimeIsWithinInterval(
+            SimulationInterval simulationInterval, DemandOrProviders demandOrProviders)
         {
             // endTime within interval
             return new DemandOrProviders(demandOrProviders.GetAll()
                 .Where(x => simulationInterval.IsWithinInterval(x.GetEndTime())));
         }
-        
+
+        /**
+         * DemandToProvider
+         */
+        public IEnumerable<ILinkDemandAndProvider> GetArrowsTo(Provider provider)
+        {
+            return _dbTransactionData.DemandToProviderGetAll().GetAll()
+                .Where(x => x.GetProviderId().Equals(provider.GetId()));
+        }
+
+        /**
+         * ProviderToDemand
+         */
+        public IEnumerable<ILinkDemandAndProvider> GetArrowsFrom(Provider provider)
+        {
+            return _dbTransactionData.ProviderToDemandGetAll().GetAll()
+                .Where(x => x.GetProviderId().Equals(provider.GetId()));
+        }
+
+        /**
+         * ProviderToDemand
+         */
+        public IEnumerable<ILinkDemandAndProvider> GetArrowsTo(Demand demand)
+        {
+            return _dbTransactionData.ProviderToDemandGetAll().GetAll()
+                .Where(x => x.GetDemandId().Equals(demand.GetId()));
+        }
+
+        /**
+         * DemandToProvider
+         */
+        public IEnumerable<ILinkDemandAndProvider> GetArrowsFrom(Demand demand)
+        {
+            return _dbTransactionData.DemandToProviderGetAll().GetAll()
+                .Where(x => x.GetDemandId().Equals(demand.GetId()));
+        }
+
+        public IEnumerable<ILinkDemandAndProvider> GetArrowsTo(Providers providers)
+        {
+            List<ILinkDemandAndProvider> list= new List<ILinkDemandAndProvider>();
+            foreach (var provider in providers)
+            {
+                list.AddRange(GetArrowsTo(provider));
+            }
+            return list;
+        }
+
+        public IEnumerable<ILinkDemandAndProvider> GetArrowsFrom(Providers providers)
+        {
+            List<ILinkDemandAndProvider> list= new List<ILinkDemandAndProvider>();
+            foreach (var provider in providers)
+            {
+                list.AddRange(GetArrowsFrom(provider));
+            }
+            return list;
+        }
+
+        public IEnumerable<ILinkDemandAndProvider> GetArrowsTo(Demands demands)
+        {
+            List<ILinkDemandAndProvider> list= new List<ILinkDemandAndProvider>();
+            foreach (var demand in demands)
+            {
+                list.AddRange(GetArrowsTo(demand));
+            }
+
+            return list;
+        }
+
+        public IEnumerable<ILinkDemandAndProvider> GetArrowsFrom(Demands demands)
+        {
+            List<ILinkDemandAndProvider> list= new List<ILinkDemandAndProvider>();
+            foreach (var demand in demands)
+            {
+                list.AddRange(GetArrowsFrom(demand));
+            }
+
+            return list;
+        }
+
+
         /**
          * Arrow equals DemandToProvider and ProviderToDemand
          */
         public List<ILinkDemandAndProvider> GetArrowsToAndFrom(Provider provider)
         {
-            List<ILinkDemandAndProvider> demandAndProviderLinks = new List<ILinkDemandAndProvider>();
-            
-            IEnumerable<T_DemandToProvider> demandToProviders = _dbTransactionData
-                .DemandToProviderGetAll().GetAll()
-                .Where(x => x.GetProviderId().Equals(provider.GetId()));
-            IEnumerable<T_ProviderToDemand> providerToDemands = _dbTransactionData
-                .ProviderToDemandGetAll().GetAll()
-                .Where(x => x.GetProviderId().Equals(provider.GetId()));
-            
+            List<ILinkDemandAndProvider>
+                demandAndProviderLinks = new List<ILinkDemandAndProvider>();
+
+            IEnumerable<ILinkDemandAndProvider> demandToProviders = GetArrowsTo(provider);
+            IEnumerable<ILinkDemandAndProvider> providerToDemands = GetArrowsFrom(provider);
+
             demandAndProviderLinks.AddRange(demandToProviders);
             demandAndProviderLinks.AddRange(providerToDemands);
 
             return demandAndProviderLinks;
         }
-        
+
         /**
          * Arrow equals DemandToProvider and ProviderToDemand
          */
         public List<ILinkDemandAndProvider> GetArrowsToAndFrom(Demand demand)
         {
-            List<ILinkDemandAndProvider> demandAndProviderLinks = new List<ILinkDemandAndProvider>();
-            
-            IEnumerable<T_DemandToProvider> demandToProviders = _dbTransactionData
-                .DemandToProviderGetAll().GetAll()
-                .Where(x => x.GetDemandId().Equals(demand.GetId()));
-            IEnumerable<T_ProviderToDemand> providerToDemands = _dbTransactionData
-                .ProviderToDemandGetAll().GetAll()
-                .Where(x => x.GetDemandId().Equals(demand.GetId()));
+            List<ILinkDemandAndProvider>
+                demandAndProviderLinks = new List<ILinkDemandAndProvider>();
+
+            IEnumerable<ILinkDemandAndProvider> demandToProviders = GetArrowsTo(demand);
+            IEnumerable<ILinkDemandAndProvider> providerToDemands = GetArrowsFrom(demand);
             demandAndProviderLinks.AddRange(demandToProviders);
             demandAndProviderLinks.AddRange(providerToDemands);
 
@@ -294,11 +366,11 @@ namespace Zpp.DataLayer.impl
         {
             if (demandOrProvider is Demand)
             {
-                return GetArrowsToAndFrom((Demand)demandOrProvider);
+                return GetArrowsToAndFrom((Demand) demandOrProvider);
             }
             else if (demandOrProvider is Provider)
             {
-                return GetArrowsToAndFrom((Provider)demandOrProvider);
+                return GetArrowsToAndFrom((Provider) demandOrProvider);
             }
             else
             {

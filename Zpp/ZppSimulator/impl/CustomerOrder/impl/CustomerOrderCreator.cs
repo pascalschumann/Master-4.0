@@ -10,11 +10,14 @@ namespace Zpp.ZppSimulator.impl.CustomerOrder.impl
     public class CustomerOrderCreator : ICustomerOrderCreator
     {
         private IOrderGenerator _orderGenerator = null;
-        private readonly Quantity _defaultMaxOrdersPerInterval;
+        private Quantity _defaultCustomerOrderQuantityPerCycle = new Quantity(10);
 
-        public CustomerOrderCreator(Quantity defaultMaxOrdersPerInterval)
+        public CustomerOrderCreator(Quantity customerOrderQuantity)
         {
-            _defaultMaxOrdersPerInterval = defaultMaxOrdersPerInterval;
+            if (customerOrderQuantity.IsSmallerThan(_defaultCustomerOrderQuantityPerCycle))
+            {
+                _defaultCustomerOrderQuantityPerCycle = customerOrderQuantity;
+            }
         }
 
         public void CreateCustomerOrders(SimulationInterval interval)
@@ -78,7 +81,7 @@ namespace Zpp.ZppSimulator.impl.CustomerOrder.impl
                     break;
                 }
                 else if (customerOrderQuantity == null &&
-                         createdCustomerOrders >= _defaultMaxOrdersPerInterval.GetValue())
+                         createdCustomerOrders >= _defaultCustomerOrderQuantityPerCycle.GetValue())
                 {
                     break;
                 }

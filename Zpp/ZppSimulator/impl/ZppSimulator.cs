@@ -73,6 +73,7 @@ namespace Zpp.ZppSimulator.impl
             // init transactionData
             ZppConfiguration.CacheManager.ReloadTransactionData();
 
+            _customerOrderCreator = new CustomerOrderCreator(customerOrderQuantity);
             _customerOrderCreator.CreateCustomerOrders(simulationInterval, customerOrderQuantity);
 
             // execute mrp2
@@ -89,16 +90,15 @@ namespace Zpp.ZppSimulator.impl
 
         public void StartPerformanceStudy()
         {
-            ZppConfiguration.IsInPerformanceMode = true;
+            // TODO: disable if log files
+            ZppConfiguration.IsInPerformanceMode = false;
+            
             const int maxSimulatingTime = 20160;
             Quantity customerOrderQuantity = new Quantity(ZppConfiguration.CacheManager
                 .GetTestConfiguration().CustomerOrderPartQuantity);
-            var defaultCustomerOrderQuantityPerCycle = new Quantity(10);
-            if (customerOrderQuantity.IsSmallerThan(defaultCustomerOrderQuantityPerCycle))
-            {
-                defaultCustomerOrderQuantityPerCycle = customerOrderQuantity;
-            }
-            _customerOrderCreator = new CustomerOrderCreator(defaultCustomerOrderQuantityPerCycle);
+            
+            
+            _customerOrderCreator = new CustomerOrderCreator(customerOrderQuantity);
 
             string performanceLog = "";
             Stopwatch stopwatch = new Stopwatch();
@@ -127,7 +127,7 @@ namespace Zpp.ZppSimulator.impl
             performanceLog +=
                 $"Elapsed cpu ticks: {DebuggingTools.Prettify(stopwatch.Elapsed.Ticks)}" +
                 Environment.NewLine;
-            DebuggingTools.WriteToFile(performanceLog, "performance");
+            DebuggingTools.WritePerformanceLog(performanceLog);
         }
 
         /**

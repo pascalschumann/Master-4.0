@@ -12,6 +12,7 @@ namespace Zpp.Util
     public static class DebuggingTools
     {
         private static readonly string SimulationFolder = $"../../../Test/Ordergraphs/Simulation/";
+        private static readonly string performanceLogFileName = "performance.log";
 
         /**
          * includes demandToProviderGraph, OrderOperationGraph and dbTransactionData
@@ -51,13 +52,18 @@ namespace Zpp.Util
             OrderOperationGraph orderOperationGraph = new OrderOperationGraph();
 
             WriteToFile(orderOperationGraph.ToString(),
-                $"orderOperationGraph_interval_{simulationInterval.StartAt}_{countOfPrintsInOneCycle}");
+                $"orderOperationGraph_interval_{simulationInterval.StartAt}_{countOfPrintsInOneCycle}.log");
         }
 
-        public static void WriteToFile(string content, string fileNameWithoutExtension)
+        public static void WriteToFile(string content, string fileName)
         {
-            File.WriteAllText($"{SimulationFolder}{fileNameWithoutExtension}.log", content,
+            File.WriteAllText($"{SimulationFolder}{fileName}", content,
                 Encoding.UTF8);
+        }
+
+        public static void WritePerformanceLog(string content)
+        {
+            WriteToFile(content, performanceLogFileName);
         }
 
         public static string Prettify(long value)
@@ -76,6 +82,16 @@ namespace Zpp.Util
             }
 
             return newValue;
+        }
+
+        private static string ReadFile(string pathToFile)
+        {
+            return File.ReadAllText(pathToFile, Encoding.UTF8);
+        }
+
+        public static string ReadPerformanceLog()
+        {
+            return ReadFile($"{SimulationFolder}{performanceLogFileName}");
         }
     }
 }

@@ -1,6 +1,10 @@
 using System;
+using System.IO;
+using System.Text;
 using Xunit;
+using Xunit.Abstractions;
 using Zpp.Test.Configuration;
+using Zpp.Util;
 using Zpp.ZppSimulator;
 
 namespace Zpp.Test.Integration_Tests
@@ -8,10 +12,11 @@ namespace Zpp.Test.Integration_Tests
     public class TestPerformance : AbstractTest
     {
         
+        private readonly ITestOutputHelper output;
         
-        public TestPerformance() : base(initDefaultTestConfig: false)
+        public TestPerformance(ITestOutputHelper output) : base(initDefaultTestConfig: false)
         {
-
+            this.output = output;
         }
         
         private void InitThisTest(string testConfiguration)
@@ -22,6 +27,7 @@ namespace Zpp.Test.Integration_Tests
     
         [Theory]
         [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
+        [InlineData(TestConfigurationFileNames.DESK_COP_2_LOTSIZE_2)]
         public void TestMaxTimeForMrpRunIsNotExceeded(string testConfigurationFileName)
         {
             const int MAX_TIME_FOR_MRP_RUN = 90;
@@ -38,6 +44,8 @@ namespace Zpp.Test.Integration_Tests
             Assert.True( neededTime < MAX_TIME_FOR_MRP_RUN,
                 $"MrpRun for example use case ({TestConfiguration.Name}) " +
                 $"takes longer than {MAX_TIME_FOR_MRP_RUN} seconds: {neededTime}");
+            
+            output.WriteLine("This is output from");
         }
 
         [Theory]
@@ -50,6 +58,8 @@ namespace Zpp.Test.Integration_Tests
             
             IZppSimulator zppSimulator = new ZppSimulator.impl.ZppSimulator();
             zppSimulator.StartPerformanceStudy();
+            string performanceLog = DebuggingTools.ReadPerformanceLog();
+            output.WriteLine($"{performanceLog}");
         }
         
         /**

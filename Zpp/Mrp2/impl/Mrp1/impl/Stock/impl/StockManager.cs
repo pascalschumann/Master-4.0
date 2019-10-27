@@ -118,11 +118,14 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Stock.impl
                             provider.GetStartTime(), lotSize);
                     entityCollector.Add(stockExchangeDemand);
 
-                    // quantityToReserve can be calculated as following
+                    /*// quantityToReserve can be calculated as following
                     // given demandedQuantity - (sumLotSize - lotSize) - (lotSize - providedByOpen.remaining)
                     Quantity quantityOfNewCreatedDemandToReserve = provider.GetQuantity()
                         .Minus(lotSizeSum.Minus(lotSize)).Minus(provider.GetQuantity()
-                            .Minus(entityCollector.GetRemainingQuantity(provider)));
+                            .Minus(entityCollector.GetRemainingQuantity(provider)));*/
+                    
+                    // idea (3 cases): always is the lotSize taken except: lotsize is greater than remaining or it's the last loop
+                    
                     T_ProviderToDemand providerToDemand = new T_ProviderToDemand(provider.GetId(),
                         stockExchangeDemand.GetId(), quantityOfNewCreatedDemandToReserve);
                     entityCollector.Add(providerToDemand);

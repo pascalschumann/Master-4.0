@@ -87,7 +87,7 @@ namespace Zpp.ZppSimulator.impl
         public void StartPerformanceStudy()
         {
             // TODO: disable if log files
-            ZppConfiguration.IsInPerformanceMode = true;
+            ZppConfiguration.IsInPerformanceMode = false;
             
             const int maxSimulatingTime = 20160;
             Quantity customerOrderQuantity = new Quantity(ZppConfiguration.CacheManager
@@ -114,7 +114,7 @@ namespace Zpp.ZppSimulator.impl
 
                 StartOneCycle(simulationInterval);
 
-                if (ZppConfiguration.CacheManager.GetDbTransactionData().CustomerOrderPartGetAll()
+                if (ZppConfiguration.CacheManager.GetDbTransactionDataArchive().CustomerOrderPartGetAll()
                         .Count() > customerOrderQuantity.GetValue())
                 {
                     break;

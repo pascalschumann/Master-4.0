@@ -44,16 +44,16 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             // set finished when endTime is within interval
             DemandOrProviders demandOrProvidersToSetFinished = new DemandOrProviders();
             demandOrProvidersToSetFinished.AddAll(
-                aggregator.GetDemandsOrProvidersWhereEndTimeIsWithinInterval(simulationInterval,
+                aggregator.GetDemandsOrProvidersWhereEndTimeIsWithinIntervalOrBefore(simulationInterval,
                     new DemandOrProviders(dbTransactionData.PurchaseOrderPartGetAll())));
             demandOrProvidersToSetFinished.AddAll(
-                aggregator.GetDemandsOrProvidersWhereEndTimeIsWithinInterval(simulationInterval,
+                aggregator.GetDemandsOrProvidersWhereEndTimeIsWithinIntervalOrBefore(simulationInterval,
                     new DemandOrProviders(dbTransactionData.StockExchangeDemandsGetAll())));
             demandOrProvidersToSetFinished.AddAll(
-                aggregator.GetDemandsOrProvidersWhereEndTimeIsWithinInterval(simulationInterval,
+                aggregator.GetDemandsOrProvidersWhereEndTimeIsWithinIntervalOrBefore(simulationInterval,
                     new DemandOrProviders(dbTransactionData.StockExchangeProvidersGetAll())));
             demandOrProvidersToSetFinished.AddAll(
-                aggregator.GetDemandsOrProvidersWhereEndTimeIsWithinInterval(simulationInterval,
+                aggregator.GetDemandsOrProvidersWhereEndTimeIsWithinIntervalOrBefore(simulationInterval,
                     new DemandOrProviders(dbTransactionData.ProductionOrderBomGetAll())));
             foreach (var demandOrProvider in demandOrProvidersToSetFinished)
             {

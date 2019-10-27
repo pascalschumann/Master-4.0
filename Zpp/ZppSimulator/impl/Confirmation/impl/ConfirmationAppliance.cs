@@ -5,6 +5,7 @@ using Master40.DB.DataModel;
 using Master40.DB.Enums;
 using Master40.DB.Interfaces;
 using Zpp.DataLayer;
+using Zpp.DataLayer.impl.DemandDomain;
 using Zpp.DataLayer.impl.DemandDomain.Wrappers;
 using Zpp.DataLayer.impl.DemandDomain.WrappersForCollections;
 using Zpp.DataLayer.impl.OpenDemand;
@@ -61,16 +62,23 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             SetReadOnly(dbTransactionData.CustomerOrderPartGetAll());
             SetReadOnlyIfFinished(dbTransactionData.PurchaseOrderPartGetAll());
 
-            // ArchiveFinishedPurchaseOrderParts(dbTransactionData, dbTransactionDataArchive);
+            ArchiveSubGraphOfClosedFinishedStockExchangeDemands(dbTransactionData, aggregator);
         }
 
-        private static void ArchiveSubgraphOfClosedStockExchangeDemands(
+        /**
+         * Closed means, the stockExchangeDemand cannot server another StockExchangeProvider
+         */
+        private static void ArchiveSubGraphOfClosedFinishedStockExchangeDemands(
             IDbTransactionData dbTransactionData, IAggregator aggregator)
         {
-            foreach (var demand in dbTransactionData.StockExchangeDemandsGetAll())
+            List<Demand> copyOfStockExchangeDemands = new List<Demand>();
+            copyOfStockExchangeDemands.AddRange(dbTransactionData.StockExchangeDemandsGetAll());
+
+            foreach (var demand in copyOfStockExchangeDemands)
             {
                 StockExchangeDemand stockExchangeDemand = (StockExchangeDemand) demand;
-                if (OpenDemandManager.IsOpen(stockExchangeDemand) == false)
+                if (OpenDemandManager.IsOpen(stockExchangeDemand) == false &&
+                    stockExchangeDemand.IsFinished())
                 {
                     ArchiveSubGraphOfStockExchangeDemand(stockExchangeDemand, dbTransactionData,
                         aggregator);
@@ -84,18 +92,48 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
          */
         private static List<IDemandOrProvider> GetItemsOfStockExchangeDemandSubGraph(
             StockExchangeDemand stockExchangeDemand, IDbTransactionData dbTransactionData,
-            IAggregator aggregator)
+            IAggregator aggregator, bool includeStockExchangeProviderHavingMultipleChilds)
         {
             List<IDemandOrProvider> items = new List<IDemandOrProvider>();
-            Providers stockExchangeProviders = aggregator.GetAllParentProvidersOf(stockExchangeDemand);
+            items.Add(stockExchangeDemand);
+
+            Providers stockExchangeProviders =
+                aggregator.GetAllParentProvidersOf(stockExchangeDemand);
             foreach (var stockExchangeProvider in stockExchangeProviders)
             {
-                
-                if (.Count() > 1)
+                Demands childsOfStockExchangeProvider =
+                    aggregator.GetAllChildDemandsOf(stockExchangeProvider);
+                if (includeStockExchangeProviderHavingMultipleChilds ||
+                    childsOfStockExchangeProvider.Count() == 1)
                 {
-                    throw new MrpRunException();
+                    items.Add(stockExchangeProvider);
+                    Demands customerOrderParts =
+                        aggregator.GetAllParentDemandsOf(stockExchangeProvider);
+                    if (customerOrderParts.Count() > 1)
+                    {
+                        throw new MrpRunException(
+                            "A stockExchangeProvider can only have one parent.");
+                    }
+
+                    foreach (var customerOrderPart in customerOrderParts)
+                    {
+                        items.Add(customerOrderPart);
+                    }
                 }
             }
+
+            Providers purchaseOrderParts = aggregator.GetAllChildProvidersOf(stockExchangeDemand);
+            if (purchaseOrderParts.Count() > 1)
+            {
+                throw new MrpRunException("A stockExchangeDemand can only have one child.");
+            }
+
+            foreach (var purchaseOrderPart in purchaseOrderParts)
+            {
+                items.Add(purchaseOrderPart);
+            }
+
+            return items;
         }
 
 
@@ -103,9 +141,62 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             StockExchangeDemand stockExchangeDemand, IDbTransactionData dbTransactionData,
             IAggregator aggregator)
         {
-            foreach (var VARIABLE in COLLECTION)
+            IDbTransactionData dbTransactionDataArchive =
+                ZppConfiguration.CacheManager.GetDbTransactionDataArchive();
+            List<IDemandOrProvider> demandOrProviders =
+                GetItemsOfStockExchangeDemandSubGraph(stockExchangeDemand, dbTransactionData,
+                    aggregator, false);
+
+            foreach (var demandOrProvider in demandOrProviders)
             {
+                if (demandOrProvider.GetType() == typeof(PurchaseOrderPart))
+                {
+                    ArchivePurchaseOrderParts(dbTransactionData, dbTransactionDataArchive,
+                        (PurchaseOrderPart) demandOrProvider);
+                    ArchiveArrowsToAndFrom(demandOrProvider, dbTransactionData,
+                        dbTransactionDataArchive, aggregator);
+                }
+                else if (demandOrProvider.GetType() == typeof(CustomerOrderPart))
+                {
+                    ArchiveCustomerOrderParts(dbTransactionData, dbTransactionDataArchive,
+                        (CustomerOrderPart) demandOrProvider);
+                    ArchiveArrowsToAndFrom(demandOrProvider, dbTransactionData,
+                        dbTransactionDataArchive, aggregator);
+                }
+                else
+                {
+                    ArchiveDemandOrProvider(demandOrProvider, dbTransactionData, aggregator, true);
+                }
             }
+        }
+
+        private static void ArchiveArrowsToAndFrom(IDemandOrProvider demandOrProvider,
+            IDbTransactionData dbTransactionData, IDbTransactionData dbTransactionDataArchive,
+            IAggregator aggregator)
+        {
+            List<ILinkDemandAndProvider> demandAndProviderLinks =
+                aggregator.GetArrowsToAndFrom(demandOrProvider);
+            foreach (var demandAndProviderLink in demandAndProviderLinks)
+            {
+                dbTransactionDataArchive.AddA(demandAndProviderLink);
+                dbTransactionData.DeleteA(demandAndProviderLink);
+            }
+        }
+
+        private static void ArchiveDemandOrProvider(IDemandOrProvider demandOrProvider,
+            IDbTransactionData dbTransactionData, IAggregator aggregator, bool includeArrows)
+        {
+            IDbTransactionData dbTransactionDataArchive =
+                ZppConfiguration.CacheManager.GetDbTransactionDataArchive();
+
+            if (includeArrows)
+            {
+                ArchiveArrowsToAndFrom(demandOrProvider, dbTransactionData,
+                    dbTransactionDataArchive, aggregator);
+            }
+
+            dbTransactionDataArchive.AddA(demandOrProvider);
+            dbTransactionData.DeleteA(demandOrProvider);
         }
 
         private static void SetReadOnly(IEnumerable<IDemandOrProvider> demandOrProviders)
@@ -266,33 +357,19 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             }
         }
 
-        private static void ArchiveFinishedPurchaseOrderParts(IDbTransactionData dbTransactionData,
-            IDbTransactionData dbTransactionDataArchive)
+        private static void ArchivePurchaseOrderParts(IDbTransactionData dbTransactionData,
+            IDbTransactionData dbTransactionDataArchive, Provider purchaseOrderPart)
         {
-            List<Id> purchaseOrderIds = new List<Id>();
-            IProviders purchaseOrderPartsCopy = new Providers();
-            purchaseOrderPartsCopy.AddAll(dbTransactionData.PurchaseOrderPartGetAll());
+            // archive purchaseOrderPart
+            Id purchaseOrderId = new Id(((PurchaseOrderPart) purchaseOrderPart).GetValue()
+                .PurchaseOrderId);
+            dbTransactionDataArchive.ProvidersAdd(purchaseOrderPart);
+            dbTransactionData.ProvidersDelete(purchaseOrderPart);
 
-            foreach (var purchaseOrderPart in purchaseOrderPartsCopy)
-            {
-                if (purchaseOrderPart.IsFinished())
-                {
-                    // archive it
-                    Id purchaseOrderId = new Id(((PurchaseOrderPart) purchaseOrderPart).GetValue()
-                        .PurchaseOrderId);
-                    purchaseOrderIds.Add(purchaseOrderId);
-                    dbTransactionDataArchive.ProvidersAdd(purchaseOrderPart);
-                    dbTransactionData.ProvidersDelete(purchaseOrderPart);
-                }
-            }
-
-            foreach (var purchaseOrderId in purchaseOrderIds)
-            {
-                T_PurchaseOrder purchaseOrder =
-                    dbTransactionData.PurchaseOrderGetById(purchaseOrderId);
-                dbTransactionDataArchive.PurchaseOrderAdd(purchaseOrder);
-                dbTransactionData.PurchaseOrderDelete(purchaseOrder);
-            }
+            // archive purchaseOrder
+            T_PurchaseOrder purchaseOrder = dbTransactionData.PurchaseOrderGetById(purchaseOrderId);
+            dbTransactionDataArchive.PurchaseOrderAdd(purchaseOrder);
+            dbTransactionData.PurchaseOrderDelete(purchaseOrder);
         }
 
         private static void SetReadOnlyIfFinished(IScheduleNode scheduleNode)
@@ -312,35 +389,20 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
         }
 
 
-        private static void ArchiveFinishedCustomerOrderParts(IDbTransactionData dbTransactionData,
-            IDbTransactionData dbTransactionDataArchive)
+        private static void ArchiveCustomerOrderParts(IDbTransactionData dbTransactionData,
+            IDbTransactionData dbTransactionDataArchive, CustomerOrderPart customerOrderPart)
         {
-            List<Id> idsOfCustomerOrders = new List<Id>();
-            IDemands customerOrderParts = new Demands();
-            customerOrderParts.AddAll(dbTransactionData.CustomerOrderPartGetAll());
+            // archive customerOrderPart
+            Id customerOrderId = new Id(((CustomerOrderPart) customerOrderPart).GetValue()
+                .CustomerOrderId);
+            dbTransactionDataArchive.DemandsAdd(customerOrderPart);
+            dbTransactionData.DemandsDelete(customerOrderPart);
 
-            foreach (var customerOrderPart in customerOrderParts)
-            {
-                if (customerOrderPart.IsFinished())
-                {
-                    SetReadOnlyIfFinished(customerOrderPart);
-
-                    // archive it
-                    Id customerOrderId = new Id(((CustomerOrderPart) customerOrderPart).GetValue()
-                        .CustomerOrderId);
-                    idsOfCustomerOrders.Add(customerOrderId);
-                    dbTransactionDataArchive.DemandsAdd(customerOrderPart);
-                    dbTransactionData.DemandsDelete(customerOrderPart);
-                }
-            }
-
-            foreach (var idsOfCustomerOrder in idsOfCustomerOrders)
-            {
-                T_CustomerOrder customerOrder =
-                    dbTransactionData.CustomerOrderGetById(idsOfCustomerOrder);
-                dbTransactionDataArchive.CustomerOrderAdd(customerOrder);
-                dbTransactionData.T_CustomerOrderDelete(customerOrder);
-            }
+            // archive customerOrder
+            T_CustomerOrder customerOrder =
+                dbTransactionData.CustomerOrderGetById(customerOrderId);
+            dbTransactionDataArchive.CustomerOrderAdd(customerOrder);
+            dbTransactionData.T_CustomerOrderDelete(customerOrder);
         }
 
         /**

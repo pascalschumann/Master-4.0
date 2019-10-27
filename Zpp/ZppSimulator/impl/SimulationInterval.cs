@@ -19,6 +19,11 @@ namespace Zpp.ZppSimulator.impl
                                 dueTime.GetValue() >= StartAt;
             return isInInterval;
         }
+
+        public bool IsBeforeInterval(DueTime dueTime)
+        {
+            return dueTime.GetValue() < StartAt;
+        }
     }
     
     

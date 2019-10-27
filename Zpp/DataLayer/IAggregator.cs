@@ -54,7 +54,10 @@ namespace Zpp.DataLayer
 
         Demands GetUnsatisifedCustomerOrderParts();
 
-        DemandOrProviders GetDemandsOrProvidersWhereEndTimeIsWithinInterval(
+        /**
+         * return DemandsOrProviders' EndTime within given interval AND EndTime BEFORE the startOfInterval
+         */
+        DemandOrProviders GetDemandsOrProvidersWhereEndTimeIsWithinIntervalOrBefore(
             SimulationInterval simulationInterval, DemandOrProviders demandOrProviders);
 
         DemandOrProviders GetDemandsOrProvidersWhereStartTimeIsWithinInterval(

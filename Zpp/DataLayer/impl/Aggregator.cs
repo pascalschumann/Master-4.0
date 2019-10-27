@@ -242,12 +242,16 @@ namespace Zpp.DataLayer.impl
                 .Where(x => simulationInterval.IsWithinInterval(x.GetStartTime())));
         }
 
-        public DemandOrProviders GetDemandsOrProvidersWhereEndTimeIsWithinInterval(
+        public DemandOrProviders GetDemandsOrProvidersWhereEndTimeIsWithinIntervalOrBefore(
             SimulationInterval simulationInterval, DemandOrProviders demandOrProviders)
         {
             // endTime within interval
-            return new DemandOrProviders(demandOrProviders.GetAll()
-                .Where(x => simulationInterval.IsWithinInterval(x.GetEndTime())));
+            return new DemandOrProviders(demandOrProviders.GetAll().Where(x =>
+            {
+                DueTime endTime = x.GetEndTime();
+                return simulationInterval.IsWithinInterval(endTime) ||
+                           simulationInterval.IsBeforeInterval(endTime);
+            }));
         }
 
         /**
@@ -288,27 +292,29 @@ namespace Zpp.DataLayer.impl
 
         public IEnumerable<ILinkDemandAndProvider> GetArrowsTo(Providers providers)
         {
-            List<ILinkDemandAndProvider> list= new List<ILinkDemandAndProvider>();
+            List<ILinkDemandAndProvider> list = new List<ILinkDemandAndProvider>();
             foreach (var provider in providers)
             {
                 list.AddRange(GetArrowsTo(provider));
             }
+
             return list;
         }
 
         public IEnumerable<ILinkDemandAndProvider> GetArrowsFrom(Providers providers)
         {
-            List<ILinkDemandAndProvider> list= new List<ILinkDemandAndProvider>();
+            List<ILinkDemandAndProvider> list = new List<ILinkDemandAndProvider>();
             foreach (var provider in providers)
             {
                 list.AddRange(GetArrowsFrom(provider));
             }
+
             return list;
         }
 
         public IEnumerable<ILinkDemandAndProvider> GetArrowsTo(Demands demands)
         {
-            List<ILinkDemandAndProvider> list= new List<ILinkDemandAndProvider>();
+            List<ILinkDemandAndProvider> list = new List<ILinkDemandAndProvider>();
             foreach (var demand in demands)
             {
                 list.AddRange(GetArrowsTo(demand));
@@ -319,7 +325,7 @@ namespace Zpp.DataLayer.impl
 
         public IEnumerable<ILinkDemandAndProvider> GetArrowsFrom(Demands demands)
         {
-            List<ILinkDemandAndProvider> list= new List<ILinkDemandAndProvider>();
+            List<ILinkDemandAndProvider> list = new List<ILinkDemandAndProvider>();
             foreach (var demand in demands)
             {
                 list.AddRange(GetArrowsFrom(demand));

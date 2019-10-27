@@ -1,6 +1,6 @@
 {
-  "CustomerOrderPartQuantity": 5,
+  "CustomerOrderPartQuantity": 500,
   "LotSize": 2,
-  "Name": "desk_cop_5_lotsize_2",
+  "Name": "desk_cop_500_lotsize_2",
   "DbSetInitializer": "Zpp.Test.Configuration.MasterDBInitializerDesk"
 }

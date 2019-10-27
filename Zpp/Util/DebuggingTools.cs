@@ -50,11 +50,11 @@ namespace Zpp.Util
                 demandToProviderGraph.ToString());
             OrderOperationGraph orderOperationGraph = new OrderOperationGraph();
 
-            WriteToFile(orderOperationGraph.ToString(),
-                $"orderOperationGraph_interval_{simulationInterval.StartAt}_{countOfPrintsInOneCycle}.log");
+            WriteToFile($"orderOperationGraph_interval_{simulationInterval.StartAt}_{countOfPrintsInOneCycle}.log",
+                orderOperationGraph.ToString());
         }
 
-        public static void WriteToFile(string content, string fileName)
+        public static void WriteToFile(string fileName, string content)
         {
             Directory.CreateDirectory(SimulationFolder);
             File.WriteAllText($"{SimulationFolder}{fileName}", content,
@@ -63,7 +63,7 @@ namespace Zpp.Util
 
         public static void WritePerformanceLog(string content)
         {
-            WriteToFile(content, performanceLogFileName);
+            WriteToFile( performanceLogFileName, content);
         }
 
         public static string Prettify(long value)

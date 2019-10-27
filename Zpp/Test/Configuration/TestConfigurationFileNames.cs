@@ -10,7 +10,8 @@ namespace Zpp.Test.Configuration
         // desk
         public const string DESK_COP_5_LOTSIZE_2 =
             _basePath + "tisch_cop_5_lotsize_2.json";
-        
+        public const string DESK_COP_500_LOTSIZE_2 =
+            _basePath + "tisch_cop_500_lotsize_2.json";
         public const string DESK_COP_2_LOTSIZE_2 =
             _basePath + "tisch_cop_2_lotsize_2.json";
 

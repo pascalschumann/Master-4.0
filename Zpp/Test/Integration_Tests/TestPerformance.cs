@@ -69,7 +69,7 @@ namespace Zpp.Test.Integration_Tests
         [Theory]
         [InlineData(TestConfigurationFileNames.DESK_COP_2_LOTSIZE_2)]
         [InlineData(TestConfigurationFileNames.TRUCK_COP_2_LOTSIZE_2)]
-        [InlineData(TestConfigurationFileNames.TRUCK_COP_500_LOTSIZE_2)]
+        // [InlineData(TestConfigurationFileNames.TRUCK_COP_500_LOTSIZE_2)]
         public void TestMultipleTestCycles(string testConfigurationFileName)
         {
             InitThisTest(testConfigurationFileName);

@@ -13,30 +13,38 @@ namespace Zpp.Util
     {
         private static readonly string SimulationFolder = $"../../../Test/Ordergraphs/Simulation/";
         private static readonly string performanceLogFileName = "performance.log";
+        private static bool _isCleanedUp = false;
 
-        /**
-         * includes demandToProviderGraph, OrderOperationGraph and dbTransactionData
-         */
+        public static void PrintStateToFiles(IDbTransactionData dbTransactionData, bool forcePrint)
+        {
+            // interval and end is not used anyway, so the second 1 is here a random number
+            PrintStateToFiles( new SimulationInterval(0, 1),
+             dbTransactionData,  0, forcePrint);
+        }
+
         public static void PrintStateToFiles(SimulationInterval simulationInterval,
             IDbTransactionData dbTransactionData, int countOfPrintsInOneCycle)
         {
+            PrintStateToFiles( simulationInterval,
+             dbTransactionData,  countOfPrintsInOneCycle,false);
+        }
+        
+        /**
+         * includes demandToProviderGraph, OrderOperationGraph and dbTransactionData
+         * forcePrint: force printing even if in performanceMode
+         */
+        public static void PrintStateToFiles(SimulationInterval simulationInterval,
+            IDbTransactionData dbTransactionData, int countOfPrintsInOneCycle, bool forcePrint)
+        {
             if (Constants.IsWindows == false || ZppConfiguration.IsInPerformanceMode)
             {
-                // skip this in the cloud, results there in DirectoryNotFoundException 
-                return;
-            }
-
-            if (simulationInterval.StartAt.Equals(0))
-            {
-                DirectoryInfo directoryInfo = new DirectoryInfo(SimulationFolder);
-                if (directoryInfo.Exists)
+                // skip this in the cloud/IsInPerformanceMode
+                if (forcePrint == false)
                 {
-                    foreach (FileInfo file in directoryInfo.GetFiles())
-                    {
-                        file.Delete();
-                    }
+                    return;
                 }
             }
+            CleanupOldFiles();
 
             WriteToFile(
                 $"{SimulationFolder}dbTransactionData_interval_{simulationInterval.StartAt}_{countOfPrintsInOneCycle}.txt",
@@ -52,6 +60,23 @@ namespace Zpp.Util
 
             WriteToFile($"orderOperationGraph_interval_{simulationInterval.StartAt}_{countOfPrintsInOneCycle}.log",
                 orderOperationGraph.ToString());
+        }
+
+        private static void CleanupOldFiles()
+        {
+            if (_isCleanedUp == false)
+            {
+                DirectoryInfo directoryInfo = new DirectoryInfo(SimulationFolder);
+                if (directoryInfo.Exists)
+                {
+                    foreach (FileInfo file in directoryInfo.GetFiles())
+                    {
+                        file.Delete();
+                    }
+                }
+
+                _isCleanedUp = true;
+            }
         }
 
         public static void WriteToFile(string fileName, string content)

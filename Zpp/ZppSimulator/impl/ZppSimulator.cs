@@ -33,9 +33,8 @@ namespace Zpp.ZppSimulator.impl
         public void StartOneCycle(SimulationInterval simulationInterval,
             Quantity customerOrderQuantity)
         {
-            // init transactionData
             IDbTransactionData dbTransactionData =
-                ZppConfiguration.CacheManager.ReloadTransactionData();
+                ZppConfiguration.CacheManager.GetDbTransactionData();
 
             _customerOrderCreator.CreateCustomerOrders(simulationInterval, customerOrderQuantity);
 
@@ -47,9 +46,6 @@ namespace Zpp.ZppSimulator.impl
 
             _confirmationManager.ApplyConfirmations();
             DebuggingTools.PrintStateToFiles(simulationInterval, dbTransactionData, 2);
-
-            // persisting cached/created data
-            ZppConfiguration.CacheManager.Persist();
         }
 
         /**
@@ -91,7 +87,7 @@ namespace Zpp.ZppSimulator.impl
         public void StartPerformanceStudy()
         {
             // TODO: disable if log files
-            ZppConfiguration.IsInPerformanceMode = false;
+            ZppConfiguration.IsInPerformanceMode = true;
             
             const int maxSimulatingTime = 20160;
             Quantity customerOrderQuantity = new Quantity(ZppConfiguration.CacheManager
@@ -100,6 +96,9 @@ namespace Zpp.ZppSimulator.impl
             
             _customerOrderCreator = new CustomerOrderCreator(customerOrderQuantity);
 
+            // init transactionData
+            IDbTransactionData dbTransactionData = ZppConfiguration.CacheManager.ReloadTransactionData();
+            
             string performanceLog = "";
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -112,6 +111,7 @@ namespace Zpp.ZppSimulator.impl
                     Environment.NewLine;
                 SimulationInterval simulationInterval =
                     new SimulationInterval(i * _interval, _interval - 1);
+
                 StartOneCycle(simulationInterval);
 
                 if (ZppConfiguration.CacheManager.GetDbTransactionData().CustomerOrderPartGetAll()
@@ -127,7 +127,11 @@ namespace Zpp.ZppSimulator.impl
             performanceLog +=
                 $"Elapsed cpu ticks: {DebuggingTools.Prettify(stopwatch.Elapsed.Ticks)}" +
                 Environment.NewLine;
+            DebuggingTools.PrintStateToFiles(dbTransactionData, true);
             DebuggingTools.WritePerformanceLog(performanceLog);
+            
+            // persisting cached/created data
+            ZppConfiguration.CacheManager.Persist();
         }
 
         /**

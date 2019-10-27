@@ -111,7 +111,7 @@ namespace Zpp.ZppSimulator.impl
                     $"CurrentMemoryUsage: {DebuggingTools.Prettify(currentMemoryUsage)}" +
                     Environment.NewLine;
                 SimulationInterval simulationInterval =
-                    new SimulationInterval(i * _interval, _interval);
+                    new SimulationInterval(i * _interval, _interval - 1);
                 StartOneCycle(simulationInterval);
 
                 if (ZppConfiguration.CacheManager.GetDbTransactionData().CustomerOrderPartGetAll()
@@ -141,7 +141,7 @@ namespace Zpp.ZppSimulator.impl
             for (int i = 0; i * _interval < maxSimulatingTime; i++)
             {
                 SimulationInterval simulationInterval =
-                    new SimulationInterval(i * _interval, _interval);
+                    new SimulationInterval(i * _interval, _interval - 1);
                 StartTestCycle(simulationInterval);
             }
         }

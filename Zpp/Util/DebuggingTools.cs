@@ -38,17 +38,16 @@ namespace Zpp.Util
                 }
             }
 
-            File.WriteAllText(
+            WriteToFile(
                 $"{SimulationFolder}dbTransactionData_interval_{simulationInterval.StartAt}_{countOfPrintsInOneCycle}.txt",
-                dbTransactionData.ToString(), Encoding.UTF8);
-            File.WriteAllText(
+                dbTransactionData.ToString());
+            WriteToFile(
                 $"{SimulationFolder}dbTransactionDataArchive_interval_{simulationInterval.StartAt}_{countOfPrintsInOneCycle}.txt",
-                ZppConfiguration.CacheManager.GetDbTransactionDataArchive().ToString(),
-                Encoding.UTF8);
+                ZppConfiguration.CacheManager.GetDbTransactionDataArchive().ToString());
             DemandToProviderGraph demandToProviderGraph = new DemandToProviderGraph();
-            File.WriteAllText(
+            WriteToFile(
                 $"{SimulationFolder}demandToProviderGraph_interval_{simulationInterval.StartAt}_{countOfPrintsInOneCycle}.txt",
-                demandToProviderGraph.ToString(), Encoding.UTF8);
+                demandToProviderGraph.ToString());
             OrderOperationGraph orderOperationGraph = new OrderOperationGraph();
 
             WriteToFile(orderOperationGraph.ToString(),
@@ -57,6 +56,7 @@ namespace Zpp.Util
 
         public static void WriteToFile(string content, string fileName)
         {
+            Directory.CreateDirectory(SimulationFolder);
             File.WriteAllText($"{SimulationFolder}{fileName}", content,
                 Encoding.UTF8);
         }

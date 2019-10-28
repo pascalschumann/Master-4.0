@@ -9,6 +9,7 @@ using Zpp.Mrp2;
 using Zpp.Mrp2.impl.Scheduling.impl;
 using Zpp.Util;
 using Zpp.Util.Graph.impl;
+using Zpp.Util.Performance;
 using Zpp.ZppSimulator.impl.Confirmation;
 using Zpp.ZppSimulator.impl.Confirmation.impl;
 using Zpp.ZppSimulator.impl.CustomerOrder;
@@ -36,15 +37,26 @@ namespace Zpp.ZppSimulator.impl
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.GetDbTransactionData();
 
+            ZppConfiguration.PerformanceMonitors.Start(InstanceToTrack.CreateCustomerOrders);
             _customerOrderCreator.CreateCustomerOrders(simulationInterval, customerOrderQuantity);
+            ZppConfiguration.PerformanceMonitors.Stop(InstanceToTrack.CreateCustomerOrders);
 
+            // Mrp2
+            ZppConfiguration.PerformanceMonitors.Start(InstanceToTrack.Mrp2);
             _mrp2.StartMrp2();
+            ZppConfiguration.PerformanceMonitors.Stop(InstanceToTrack.Mrp2);
             DebuggingTools.PrintStateToFiles(simulationInterval, dbTransactionData, 0);
 
+            // CreateConfirmations
+            ZppConfiguration.PerformanceMonitors.Start(InstanceToTrack.CreateConfirmations);
             _confirmationManager.CreateConfirmations(simulationInterval);
+            ZppConfiguration.PerformanceMonitors.Stop(InstanceToTrack.CreateConfirmations);
             DebuggingTools.PrintStateToFiles(simulationInterval, dbTransactionData, 1);
 
+            // ApplyConfirmations
+            ZppConfiguration.PerformanceMonitors.Start(InstanceToTrack.ApplyConfirmations);
             _confirmationManager.ApplyConfirmations();
+            ZppConfiguration.PerformanceMonitors.Stop(InstanceToTrack.ApplyConfirmations);
             DebuggingTools.PrintStateToFiles(simulationInterval, dbTransactionData, 2);
         }
 
@@ -100,15 +112,11 @@ namespace Zpp.ZppSimulator.impl
             IDbTransactionData dbTransactionData = ZppConfiguration.CacheManager.ReloadTransactionData();
             
             string performanceLog = "";
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
+            ZppConfiguration.PerformanceMonitors.Start();
 
             for (int i = 0; i * _interval < maxSimulatingTime; i++)
             {
-                long currentMemoryUsage = GC.GetTotalMemory(false);
-                performanceLog +=
-                    $"CurrentMemoryUsage: {DebuggingTools.Prettify(currentMemoryUsage)}" +
-                    Environment.NewLine;
+
                 SimulationInterval simulationInterval =
                     new SimulationInterval(i * _interval, _interval - 1);
 
@@ -120,13 +128,11 @@ namespace Zpp.ZppSimulator.impl
                     break;
                 }
 
-                // TODO: Tickzaehlung nur um die Planung innerhalb StartOneCycle und über return zurück
+                performanceLog += ZppConfiguration.PerformanceMonitors.ToString();
             }
-
-            stopwatch.Stop();
-            performanceLog +=
-                $"Elapsed cpu ticks: {DebuggingTools.Prettify(stopwatch.Elapsed.Ticks)}" +
-                Environment.NewLine;
+            ZppConfiguration.PerformanceMonitors.Stop();
+            performanceLog += $"{ZppConfiguration.PerformanceMonitors.ToString()}";
+            
             DebuggingTools.PrintStateToFiles(dbTransactionData, true);
             DebuggingTools.WritePerformanceLog(performanceLog);
             

@@ -14,6 +14,7 @@ using Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler;
 using Zpp.Util;
 using Zpp.Util.Graph;
 using Zpp.Util.Graph.impl;
+using Zpp.Util.Performance;
 
 namespace Zpp.Mrp2.impl
 {
@@ -36,18 +37,15 @@ namespace Zpp.Mrp2.impl
             }
 
             // MaterialRequirementsPlanning
+            ZppConfiguration.PerformanceMonitors.Start(InstanceToTrack.Mrp1);
             IMrp1 mrp1 = new Mrp1.impl.Mrp1(dbDemands);
             mrp1.StartMrp1();
-            DemandToProviderGraph demandToProviderGraph = new DemandToProviderGraph();
-            if (demandToProviderGraph.IsEmpty())
-            {
-                throw new MrpRunException("How could the demandToProviderGraph be empty ?");
-            }
+            ZppConfiguration.PerformanceMonitors.Stop(InstanceToTrack.Mrp1);
+            
+            // BackwardForwardBackwardScheduling
+            ZppConfiguration.PerformanceMonitors.Start(InstanceToTrack.BackwardForwardBackwardScheduling);
             OrderOperationGraph orderOperationGraph = new OrderOperationGraph();
-            if (orderOperationGraph.IsEmpty())
-            {
-                throw new MrpRunException("How could the orderOperationGraph be empty ?");
-            }
+            AssertGraphsAreNotEmpty(orderOperationGraph);
 
             ScheduleBackward(orderOperationGraph.GetRootNodes().ToStack(), orderOperationGraph,
                 true);
@@ -69,11 +67,31 @@ namespace Zpp.Mrp2.impl
             }
 
             ScheduleBackward(childRootNodes.ToStack(), orderOperationGraph, false);
+            ZppConfiguration.PerformanceMonitors.Stop(InstanceToTrack.BackwardForwardBackwardScheduling);
 
             // job shop scheduling
+            ZppConfiguration.PerformanceMonitors.Start(InstanceToTrack.JobShopScheduling);
             JobShopScheduling();
+            ZppConfiguration.PerformanceMonitors.Stop(InstanceToTrack.JobShopScheduling);
 
             Logger.Info("MrpRun finished.");
+        }
+
+        private void AssertGraphsAreNotEmpty(OrderOperationGraph orderOperationGraph)
+        {
+            if (ZppConfiguration.IsInPerformanceMode == false)
+            {
+                DemandToProviderGraph demandToProviderGraph = new DemandToProviderGraph();
+                if (demandToProviderGraph.IsEmpty())
+                {
+                    throw new MrpRunException("How could the demandToProviderGraph be empty ?");
+                }
+                
+                if (orderOperationGraph.IsEmpty())
+                {
+                    throw new MrpRunException("How could the orderOperationGraph be empty ?");
+                }
+            }
         }
 
         private void ScheduleBackward(Stack<INode> rootNodes,

@@ -310,7 +310,7 @@ namespace Zpp.Util.Graph.impl
 
         public bool IsEmpty()
         {
-            return GetAllTailNodes() == null && GetAllHeadNodes() == null;
+            return Edges == null || Edges.Any() == false;
         }
 
         public INodes GetRootNodes()

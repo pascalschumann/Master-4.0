@@ -30,9 +30,8 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Stock.impl
 
         public StockManager()
         {
-            
         }
-        
+
         /**
          * COP or PrOB --> satisfy by SE:W
          */
@@ -92,7 +91,7 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Stock.impl
             }
 
             // try to provide by existing demand
-            
+
             // collects stockExchangeDemands, providerToDemands
             EntityCollector entityCollector =
                 _openDemandManager.SatisfyProviderByOpenDemand(provider, provider.GetQuantity());
@@ -107,41 +106,58 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Stock.impl
             {
                 LotSize.Impl.LotSize lotSizes =
                     new LotSize.Impl.LotSize(remainingQuantity, provider.GetArticleId());
-                Quantity lotSizeSum = Quantity.Null();
+                bool isLastIteration = false;
                 foreach (var lotSize in lotSizes.GetLotSizes())
                 {
-                    lotSizeSum.IncrementBy(lotSize);
-
+                    if (isLastIteration || remainingQuantity.IsNegative() ||
+                        remainingQuantity.IsNull())
+                    {
+                        throw new MrpRunException("This is one iteration too many.");
+                    }
 
                     Demand stockExchangeDemand =
                         StockExchangeDemand.CreateStockExchangeStockDemand(provider.GetArticleId(),
                             provider.GetStartTime(), lotSize);
                     entityCollector.Add(stockExchangeDemand);
 
-                    /*// quantityToReserve can be calculated as following
-                    // given demandedQuantity - (sumLotSize - lotSize) - (lotSize - providedByOpen.remaining)
-                    Quantity quantityOfNewCreatedDemandToReserve = provider.GetQuantity()
-                        .Minus(lotSizeSum.Minus(lotSize)).Minus(provider.GetQuantity()
-                            .Minus(entityCollector.GetRemainingQuantity(provider)));*/
-                    
-                    // idea (3 cases): always is the lotSize taken except: lotsize is greater than remaining or it's the last loop
-                    
-                    T_ProviderToDemand providerToDemand = new T_ProviderToDemand(provider.GetId(),
-                        stockExchangeDemand.GetId(), quantityOfNewCreatedDemandToReserve);
-                    entityCollector.Add(providerToDemand);
-
-                    if (lotSizeSum.IsGreaterThan(provider.GetQuantity()))
-                        // remember created demand as openDemand
+                    // idea (3 cases)
+                    Quantity quantityOfNewCreatedDemandToReserve;
+                    if (remainingQuantity.IsGreaterThan(lotSize))
                     {
+                        quantityOfNewCreatedDemandToReserve = lotSize;
+                    }
+                    else if (remainingQuantity.Equals(lotSize))
+                    {
+                        // last iteration
+                        isLastIteration = true;
+                        quantityOfNewCreatedDemandToReserve = lotSize;
+                    }
+                    else
+                    {
+                        // last iteration, remaining < lotsize
+                        isLastIteration = true;
+                        quantityOfNewCreatedDemandToReserve = new Quantity(remainingQuantity);
+                        // remember created demand as openDemand
                         _openDemandManager.AddDemand(stockExchangeDemand,
                             quantityOfNewCreatedDemandToReserve);
                     }
+
+                    remainingQuantity.DecrementBy(lotSize);
+                    if (quantityOfNewCreatedDemandToReserve.IsNegative() ||
+                        quantityOfNewCreatedDemandToReserve.IsNull())
+                    {
+                        throw new MrpRunException(
+                            $"quantityOfNewCreatedDemandToReserve cannot be negative or null: " +
+                            $"{quantityOfNewCreatedDemandToReserve}");
+                    }
+
+                    T_ProviderToDemand providerToDemand = new T_ProviderToDemand(provider.GetId(),
+                        stockExchangeDemand.GetId(), quantityOfNewCreatedDemandToReserve);
+                    entityCollector.Add(providerToDemand);
                 }
             }
 
             return entityCollector;
         }
-        
-        
     }
 }

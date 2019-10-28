@@ -50,7 +50,7 @@ namespace Zpp.Mrp2.impl
             ScheduleBackward(orderOperationGraph.GetRootNodes().ToStack(), orderOperationGraph,
                 true);
 
-            ScheduleForward();
+            ScheduleForward(orderOperationGraph);
 
             INodes childRootNodes = new Nodes();
             foreach (var rootNode in orderOperationGraph.GetRootNodes().ToStackSet())
@@ -102,9 +102,9 @@ namespace Zpp.Mrp2.impl
             backwardsScheduler.ScheduleBackward();
         }
 
-        public void ScheduleForward()
+        private void ScheduleForward(OrderOperationGraph orderOperationGraph)
         {
-            IForwardScheduler forwardScheduler = new ForwardScheduler();
+            IForwardScheduler forwardScheduler = new ForwardScheduler(orderOperationGraph);
             forwardScheduler.ScheduleForward();
         }
 

@@ -12,7 +12,7 @@ namespace Zpp.Util.Graph.impl
             _directedProductionOrderOperationGraphs = new Dictionary<ProductionOrder, IDirectedGraph<INode>>();*/
 
 
-        public ProductionOrderOperationGraph(ProductionOrder productionOrder) : base(false)
+        public ProductionOrderOperationGraph(ProductionOrder productionOrder) : base()
         {
             IAggregator aggregator = ZppConfiguration.CacheManager.GetAggregator();
 

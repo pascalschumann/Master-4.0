@@ -8,7 +8,7 @@ using Zpp.DataLayer.impl.ProviderDomain;
 
 namespace Zpp.Util.Graph.impl
 {
-    public class DemandToProviderGraph : DirectedGraph, IDirectedGraph<INode>
+    public class DemandToProviderGraph : DirectedGraph
     {
         public DemandToProviderGraph() : base()
         {

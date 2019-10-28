@@ -9,13 +9,19 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
 {
     public class ForwardScheduler : IForwardScheduler
     {
+        private readonly OrderOperationGraph _orderOperationGraph;
+
+        public ForwardScheduler(OrderOperationGraph orderOperationGraph)
+        {
+            _orderOperationGraph = orderOperationGraph;
+        }
+
         public void ScheduleForward()
         {
             Stack<INode> S = new Stack<INode>();
-            IDirectedGraph<INode> orderOperationGraph = new OrderOperationGraph();
 
             // d_0 = 0
-            foreach (var node in orderOperationGraph.GetLeafNodes())
+            foreach (var node in _orderOperationGraph.GetLeafNodes())
             {
                 IScheduleNode scheduleNode = node.GetEntity();
                 if (scheduleNode.GetStartTime().IsNegative())
@@ -36,7 +42,7 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
                 INode i = S.Pop();
                 IScheduleNode iAsScheduleNode = (IScheduleNode) i.GetEntity();
 
-                INodes predecessors = orderOperationGraph.GetPredecessorNodes(i);
+                INodes predecessors = _orderOperationGraph.GetPredecessorNodes(i);
                 if (predecessors != null && predecessors.Any())
                 {
                     foreach (var predecessor in predecessors)
@@ -54,7 +60,7 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
 
                                 // This must be the maximum endTime of all childs !!!
                                 DueTime maxEndTime = iAsScheduleNode.GetEndTime();
-                                foreach (var successor in orderOperationGraph.GetSuccessorNodes(
+                                foreach (var successor in _orderOperationGraph.GetSuccessorNodes(
                                     predecessor))
                                 {
                                     DueTime successorsEndTime = successor.GetEntity().GetEndTime();

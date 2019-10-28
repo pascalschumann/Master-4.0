@@ -99,7 +99,7 @@ namespace Zpp.ZppSimulator.impl
         public void StartPerformanceStudy()
         {
             // TODO: disable if log files
-            ZppConfiguration.IsInPerformanceMode = false;
+            ZppConfiguration.IsInPerformanceMode = true;
             
             const int maxSimulatingTime = 20160;
             Quantity customerOrderQuantity = new Quantity(ZppConfiguration.CacheManager

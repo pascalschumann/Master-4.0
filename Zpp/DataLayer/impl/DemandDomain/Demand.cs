@@ -17,6 +17,7 @@ namespace Zpp.DataLayer.impl.DemandDomain
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         protected readonly IDemand _demand;
         protected readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
+        private readonly Id _id;
 
         public Demand(IDemand demand)
         {
@@ -25,6 +26,7 @@ namespace Zpp.DataLayer.impl.DemandDomain
                 throw new MrpRunException("Given demand should not be null.");
             }
 
+            _id = new Id(demand.Id);
             _demand = demand;
             
         }
@@ -74,7 +76,7 @@ namespace Zpp.DataLayer.impl.DemandDomain
 
         public Id GetId()
         {
-            return new Id(_demand.Id);
+            return _id;
         }
 
         public abstract Id GetArticleId();

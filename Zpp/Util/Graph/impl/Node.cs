@@ -38,8 +38,8 @@ namespace Zpp.Util.Graph.impl
         public override bool Equals(object obj)
         {
             INode otherObject = (INode) obj;
-            // return _id.Equals(otherObject.GetId()) && _entity.GetNodeType().Equals(otherObject.GetNodeType());
-            return _id.GetValue() == otherObject.GetId().GetValue();
+            // performance optimized
+            return _id.Int == otherObject.GetId().Int;
         }
 
         public override int GetHashCode()

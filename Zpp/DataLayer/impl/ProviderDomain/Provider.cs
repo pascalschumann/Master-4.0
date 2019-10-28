@@ -15,6 +15,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain
     public abstract class Provider : IProviderLogic, IDemandOrProvider
     {
         protected readonly IProvider _provider;
+        private readonly Id _id;
 
         protected readonly IDbMasterDataCache _dbMasterDataCache =
             ZppConfiguration.CacheManager.GetMasterDataCache();
@@ -28,6 +29,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain
                 throw new MrpRunException("Given provider should not be null.");
             }
 
+            _id = new Id(provider.Id);
             _provider = provider;
         }
 
@@ -88,7 +90,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain
 
         public Id GetId()
         {
-            return new Id(_provider.Id);
+            return _id;
         }
 
         public override string ToString()

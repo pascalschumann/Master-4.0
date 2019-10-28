@@ -4,7 +4,7 @@ namespace Master40.DB.Data.WrappersForPrimitives
 {
     public class IntPrimitive<T> : INumericPrimitive<T> where T : IntPrimitive<T>, new()
     {
-        protected int Int;
+        public int Int;
 
         public IntPrimitive(int @int)
         {
@@ -127,7 +127,7 @@ namespace Master40.DB.Data.WrappersForPrimitives
                 return false;
             }
 
-            return Int.Equals(other.Int);
+            return Int == other.Int;
         }
 
         public override int GetHashCode()

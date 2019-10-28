@@ -43,7 +43,7 @@ namespace Zpp.Util.Performance
         public override string ToString()
         {
             // create report
-            string report = "";
+            string report = "---------------------------------------" + Environment.NewLine;
 
             foreach (InstanceToTrack instancesToTrack in Enum.GetValues(typeof(InstanceToTrack)))
             {

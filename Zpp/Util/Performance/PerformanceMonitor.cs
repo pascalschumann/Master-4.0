@@ -14,6 +14,11 @@ namespace Zpp.Util.Performance
             _instanceToTrack = instanceToTrack;
         }
 
+        public bool IsStarted()
+        {
+            return _isStarted;
+        }
+
         public void Start()
         {
             if (_isStarted)

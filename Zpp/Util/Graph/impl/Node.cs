@@ -39,7 +39,7 @@ namespace Zpp.Util.Graph.impl
         {
             INode otherObject = (INode) obj;
             // return _id.Equals(otherObject.GetId()) && _entity.GetNodeType().Equals(otherObject.GetNodeType());
-            return _id.Equals(otherObject.GetId());
+            return _id.GetValue() == otherObject.GetId().GetValue();
         }
 
         public override int GetHashCode()

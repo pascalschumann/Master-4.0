@@ -40,7 +40,7 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Stock.impl
             EntityCollector entityCollector = new EntityCollector();
 
             Provider stockProvider = CreateStockExchangeProvider(demand.GetArticle(),
-                demand.GetStartTime(), demandedQuantity);
+                demand.GetStartTimeBackward(), demandedQuantity);
             entityCollector.Add(stockProvider);
 
             T_DemandToProvider demandToProvider =
@@ -117,7 +117,7 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Stock.impl
 
                     Demand stockExchangeDemand =
                         StockExchangeDemand.CreateStockExchangeStockDemand(provider.GetArticleId(),
-                            provider.GetStartTime(), lotSize);
+                            provider.GetStartTimeBackward(), lotSize);
                     entityCollector.Add(stockExchangeDemand);
 
                     // idea (3 cases)

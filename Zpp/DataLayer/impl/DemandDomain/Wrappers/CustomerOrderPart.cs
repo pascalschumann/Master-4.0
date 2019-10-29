@@ -40,7 +40,7 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
             return Duration.Null();
         }
 
-        public override void SetStartTime(DueTime startTime)
+        public override void SetStartTimeBackward(DueTime startTime)
         {
             // is NOT allowed to change
             throw new System.NotImplementedException();
@@ -69,7 +69,7 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
                 dbTransactionData.CustomerOrderGetById(customerOrderId);
         }
 
-        public override DueTime GetEndTime()
+        public override DueTime GetEndTimeBackward()
         {
             EnsureCustomerOrderIsLoaded();
 
@@ -82,17 +82,17 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
             return _customerOrderPart.State.Equals(State.Finished);
         }
 
-        public override void SetEndTime(DueTime endTime)
+        public override void SetEndTimeBackward(DueTime endTime)
         {
             throw new System.NotImplementedException();
         }
 
-        public override void ClearStartTime()
+        public override void ClearStartTimeBackward()
         {
             throw new System.NotImplementedException();
         }
 
-        public override void ClearEndTime()
+        public override void ClearEndTimeBackward()
         {
             throw new System.NotImplementedException();
         }

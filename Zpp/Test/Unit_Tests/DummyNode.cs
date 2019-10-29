@@ -39,17 +39,17 @@ namespace Zpp.Test.Unit_Tests
             return _id.ToString();
         }
 
-        public DueTime GetEndTime()
+        public DueTime GetEndTimeBackward()
         {
             throw new System.NotImplementedException();
         }
 
-        public DueTime GetStartTime()
+        public DueTime GetStartTimeBackward()
         {
             throw new System.NotImplementedException();
         }
 
-        public void SetStartTime(DueTime startTime)
+        public void SetStartTimeBackward(DueTime startTime)
         {
             throw new System.NotImplementedException();
         }
@@ -74,17 +74,17 @@ namespace Zpp.Test.Unit_Tests
             throw new System.NotImplementedException();
         }
 
-        public void SetEndTime(DueTime endTime)
+        public void SetEndTimeBackward(DueTime endTime)
         {
             throw new System.NotImplementedException();
         }
 
-        public void ClearStartTime()
+        public void ClearStartTimeBackward()
         {
             throw new System.NotImplementedException();
         }
 
-        public void ClearEndTime()
+        public void ClearEndTimeBackward()
         {
             throw new System.NotImplementedException();
         }

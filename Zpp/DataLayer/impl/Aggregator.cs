@@ -131,8 +131,8 @@ namespace Zpp.DataLayer.impl
         {
             var providers = _dbTransactionData.StockExchangeProvidersGetAll();
             var currentProviders = providers.GetAll().FindAll(x =>
-                x.GetStartTime().GetValue() >= from.GetValue() &&
-                x.GetStartTime().GetValue() <= to.GetValue());
+                x.GetStartTimeBackward().GetValue() >= from.GetValue() &&
+                x.GetStartTimeBackward().GetValue() <= to.GetValue());
             return currentProviders;
         }
 
@@ -166,7 +166,7 @@ namespace Zpp.DataLayer.impl
 
         public DueTime GetEarliestPossibleStartTimeOf(ProductionOrderBom productionOrderBom)
         {
-            DueTime earliestStartTime = productionOrderBom.GetStartTime();
+            DueTime earliestStartTime = productionOrderBom.GetStartTimeBackward();
             Providers providers = ZppConfiguration.CacheManager.GetAggregator()
                 .GetAllChildProvidersOf(productionOrderBom);
             if (providers.Count() > 1)
@@ -176,9 +176,9 @@ namespace Zpp.DataLayer.impl
 
 
             Provider stockExchangeProvider = providers.GetAny();
-            if (earliestStartTime.IsGreaterThanOrEqualTo(stockExchangeProvider.GetStartTime()))
+            if (earliestStartTime.IsGreaterThanOrEqualTo(stockExchangeProvider.GetStartTimeBackward()))
             {
-                earliestStartTime = stockExchangeProvider.GetStartTime();
+                earliestStartTime = stockExchangeProvider.GetStartTimeBackward();
             }
             else
             {
@@ -191,7 +191,7 @@ namespace Zpp.DataLayer.impl
                 // StockExchangeProvider has no childs (stockExchangeDemands),
                 // take that from stockExchangeProvider
             {
-                DueTime childDueTime = stockExchangeProvider.GetStartTime();
+                DueTime childDueTime = stockExchangeProvider.GetStartTimeBackward();
                 if (childDueTime.IsGreaterThan(earliestStartTime))
                 {
                     earliestStartTime = childDueTime;
@@ -202,7 +202,7 @@ namespace Zpp.DataLayer.impl
             {
                 foreach (var stockExchangeDemand in stockExchangeDemands)
                 {
-                    DueTime stockExchangeDemandDueTime = stockExchangeDemand.GetStartTime();
+                    DueTime stockExchangeDemandDueTime = stockExchangeDemand.GetStartTimeBackward();
                     if (stockExchangeDemandDueTime.IsGreaterThan(earliestStartTime))
                     {
                         earliestStartTime = stockExchangeDemandDueTime;
@@ -239,7 +239,7 @@ namespace Zpp.DataLayer.impl
         {
             // startTime within interval
             return new DemandOrProviders(demandOrProviders.GetAll()
-                .Where(x => simulationInterval.IsWithinInterval(x.GetStartTime())));
+                .Where(x => simulationInterval.IsWithinInterval(x.GetStartTimeBackward())));
         }
 
         public DemandOrProviders GetDemandsOrProvidersWhereEndTimeIsWithinIntervalOrBefore(
@@ -248,7 +248,7 @@ namespace Zpp.DataLayer.impl
             // endTime within interval
             return new DemandOrProviders(demandOrProviders.GetAll().Where(x =>
             {
-                DueTime endTime = x.GetEndTime();
+                DueTime endTime = x.GetEndTimeBackward();
                 return simulationInterval.IsWithinInterval(endTime) ||
                        simulationInterval.IsBeforeInterval(endTime);
             }));

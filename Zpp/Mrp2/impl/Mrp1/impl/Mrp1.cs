@@ -30,7 +30,7 @@ namespace Zpp.Mrp2.impl.Mrp1.impl
             foreach (var demand in dbDemands)
             {
                 // TODO: EnqueueAll()
-                demandQueue.Enqueue(new DemandQueueNode(demand), demand.GetStartTime().GetValue());
+                demandQueue.Enqueue(new DemandQueueNode(demand), demand.GetStartTimeBackward().GetValue());
             }
             
             EntityCollector allCreatedEntities = new EntityCollector();
@@ -46,7 +46,7 @@ namespace Zpp.Mrp2.impl.Mrp1.impl
                 foreach (var demand in response.GetDemands())
                 {
                     demandQueue.Enqueue(new DemandQueueNode(demand),
-                        demand.GetStartTime().GetValue());
+                        demand.GetStartTimeBackward().GetValue());
                 }
             }
 

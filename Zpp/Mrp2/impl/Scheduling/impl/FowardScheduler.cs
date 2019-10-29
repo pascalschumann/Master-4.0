@@ -24,10 +24,10 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
             foreach (var node in _orderOperationGraph.GetLeafNodes())
             {
                 IScheduleNode scheduleNode = node.GetEntity();
-                if (scheduleNode.GetStartTime().IsNegative())
+                if (scheduleNode.GetStartTimeBackward().IsNegative())
                 {
                     // implicitly the due/endTime will also be set accordingly
-                    scheduleNode.SetStartTime(DueTime.Null());
+                    scheduleNode.SetStartTimeBackward(DueTime.Null());
                     S.Push(node);
                 }
                 else // no forward scheduling is needed
@@ -50,7 +50,7 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
                         IScheduleNode predecessorScheduleNode = predecessor.GetEntity();
                         // if predecessor starts before endTime of current d/p --> change that
                         if (predecessorScheduleNode.IsReadOnly() == false && predecessorScheduleNode
-                                .GetStartTime().IsSmallerThan(iAsScheduleNode.GetEndTime()))
+                                .GetStartTimeBackward().IsSmallerThan(iAsScheduleNode.GetEndTimeBackward()))
                         {
                             // COPs are not allowed to change
                             if (predecessorScheduleNode.GetType() != typeof(CustomerOrderPart))
@@ -59,18 +59,18 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
                                 // this will be the startTime, which is to early
 
                                 // This must be the maximum endTime of all childs !!!
-                                DueTime maxEndTime = iAsScheduleNode.GetEndTime();
+                                DueTime maxEndTime = iAsScheduleNode.GetEndTimeBackward();
                                 foreach (var successor in _orderOperationGraph.GetSuccessorNodes(
                                     predecessor))
                                 {
-                                    DueTime successorsEndTime = successor.GetEntity().GetEndTime();
+                                    DueTime successorsEndTime = successor.GetEntity().GetEndTimeBackward();
                                     if (successorsEndTime.IsGreaterThan(maxEndTime))
                                     {
                                         maxEndTime = successorsEndTime;
                                     }
                                 }
 
-                                predecessorScheduleNode.SetStartTime(maxEndTime);
+                                predecessorScheduleNode.SetStartTimeBackward(maxEndTime);
                             }
                         }
 
@@ -108,10 +108,10 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
             foreach (var node in S)
             {
                 IScheduleNode scheduleNode = (IScheduleNode) node.GetEntity();
-                if (scheduleNode.GetStartTime().IsNegative())
+                if (scheduleNode.GetStartTimeBackward().IsNegative())
                 {
                     // implicitly the due/endTime will also be set accordingly
-                    scheduleNode.SetStartTime(DueTime.Null());
+                    scheduleNode.SetStartTimeBackward(DueTime.Null());
                     newS.Push(node);
                 }
                 else // no forward scheduling is needed
@@ -141,15 +141,15 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
                         IScheduleNode predecessorScheduleNode =
                             (IScheduleNode) predecessor.GetEntity();
                         // if predecessor starts before endTime of current d/p --> change that
-                        if (predecessorScheduleNode.GetStartTime()
-                            .IsSmallerThan(iAsScheduleNode.GetEndTime()))
+                        if (predecessorScheduleNode.GetStartTimeBackward()
+                            .IsSmallerThan(iAsScheduleNode.GetEndTimeBackward()))
                         {
                             // COPs are not allowed to change
                             if (predecessorScheduleNode.GetType() != typeof(CustomerOrderPart))
                             {
                                 // don't take getDueTime() since in case of a demand,
                                 // this will be the startTime, which is to early
-                                predecessorScheduleNode.SetStartTime(iAsScheduleNode.GetEndTime());
+                                predecessorScheduleNode.SetStartTimeBackward(iAsScheduleNode.GetEndTimeBackward());
                             }
                         }
 

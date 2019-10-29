@@ -86,20 +86,20 @@ namespace Zpp.DataLayer.impl.DemandDomain
             return NodeType.Demand;
         }
 
-        public DueTime GetStartTime()
+        public DueTime GetStartTimeBackward()
         {
-            if (GetEndTime().IsInvalid())
+            if (GetEndTimeBackward().IsInvalid())
             {
                 return null;
             }
-            return GetEndTime().Minus(new DueTime(GetDuration()));
+            return GetEndTimeBackward().Minus(new DueTime(GetDuration()));
         }
 
-        public abstract DueTime GetEndTime();
+        public abstract DueTime GetEndTimeBackward();
 
         public abstract Duration GetDuration();
 
-        public abstract void SetStartTime(DueTime startTime);
+        public abstract void SetStartTimeBackward(DueTime startTime);
 
         public static Demand AsDemand(IDemandOrProvider demandOrProvider)
         {
@@ -127,11 +127,11 @@ namespace Zpp.DataLayer.impl.DemandDomain
 
         public abstract bool IsFinished();
         
-        public  abstract void SetEndTime(DueTime endTime);
+        public  abstract void SetEndTimeBackward(DueTime endTime);
 
-        public abstract void ClearStartTime();
+        public abstract void ClearStartTimeBackward();
 
-        public abstract void ClearEndTime();
+        public abstract void ClearEndTimeBackward();
 
         public abstract State? GetState();
 

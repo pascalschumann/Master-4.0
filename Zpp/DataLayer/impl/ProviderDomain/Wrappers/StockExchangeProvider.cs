@@ -45,7 +45,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             _stockExchangeProvider.Time = atTime.GetValue();
         }
 
-        public override void SetStartTime(DueTime startTime)
+        public override void SetStartTimeBackward(DueTime startTime)
         {
             if (_stockExchangeProvider.IsReadOnly)
             {
@@ -73,7 +73,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             return Duration.Null();
         }
 
-        public override DueTime GetEndTime()
+        public override DueTime GetEndTimeBackward()
         {
             return new DueTime(_stockExchangeProvider.RequiredOnTime);
         }
@@ -83,7 +83,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             return _stockExchangeProvider.State.Equals(State.Finished);
         }
 
-        public override void SetEndTime(DueTime endTime)
+        public override void SetEndTimeBackward(DueTime endTime)
         {
             if (_stockExchangeProvider.IsReadOnly)
             {
@@ -92,12 +92,12 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             _stockExchangeProvider.RequiredOnTime = endTime.GetValue();
         }
 
-        public override void ClearStartTime()
+        public override void ClearStartTimeBackward()
         {
             _stockExchangeProvider.RequiredOnTime = DueTime.INVALID_DUETIME;
         }
 
-        public override void ClearEndTime()
+        public override void ClearEndTimeBackward()
         {
             _stockExchangeProvider.RequiredOnTime = DueTime.INVALID_DUETIME;
         }

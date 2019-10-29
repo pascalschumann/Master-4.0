@@ -6,19 +6,19 @@ namespace Zpp.Util.Graph
 {
     public interface IScheduleNode
     {
-        DueTime GetEndTime();
+        DueTime GetEndTimeBackward();
 
-        DueTime GetStartTime();
+        DueTime GetStartTimeBackward();
 
         /**
          * Adapts the startTime and also adapts the endTime accordingly (if exists)
          */
-        void SetStartTime(DueTime startTime);
+        void SetStartTimeBackward(DueTime startTime);
 
         /**
          * Adapts the endTime and also adapts the startTime accordingly (if exists)
          */
-        void SetEndTime(DueTime endTime);
+        void SetEndTimeBackward(DueTime endTime);
 
         /**
          * Contains transition time if exits
@@ -35,9 +35,9 @@ namespace Zpp.Util.Graph
 
         Id GetId();
 
-        void ClearStartTime();
+        void ClearStartTimeBackward();
 
-        void ClearEndTime();
+        void ClearEndTimeBackward();
 
         State? GetState();
 

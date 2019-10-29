@@ -37,8 +37,8 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
                     if (uniqueScheduleNode.IsReadOnly() == false &&
                         uniqueScheduleNode.GetType() != typeof(CustomerOrderPart))
                     {
-                        uniqueScheduleNode.ClearStartTime();
-                        uniqueScheduleNode.ClearEndTime();
+                        uniqueScheduleNode.ClearStartTimeBackward();
+                        uniqueScheduleNode.ClearEndTimeBackward();
                     }
                 }
             }
@@ -61,11 +61,11 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
                         // (prüfe parents und ermittle minStart und setze das)
                         INodes predecessorNodes =
                             _orderOperationGraph.GetPredecessorNodes(successor);
-                        DueTime minStartTime = iAsScheduleNode.GetStartTime();
+                        DueTime minStartTime = iAsScheduleNode.GetStartTimeBackward();
                         foreach (var predecessorNode in predecessorNodes)
                         {
                             DueTime predecessorsStartTime =
-                                predecessorNode.GetEntity().GetStartTime();
+                                predecessorNode.GetEntity().GetStartTimeBackward();
                             if (predecessorsStartTime != null &&
                                 predecessorsStartTime.IsSmallerThan(minStartTime))
                             {
@@ -81,7 +81,7 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
 
                         if (successorScheduleNode.IsReadOnly() == false)
                         {
-                            successorScheduleNode.SetEndTime(minStartTime);
+                            successorScheduleNode.SetEndTimeBackward(minStartTime);
                         }
 
                         _S.Push(successor);

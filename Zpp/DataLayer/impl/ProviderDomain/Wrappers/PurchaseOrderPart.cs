@@ -30,7 +30,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             return articleId;
         }
 
-        public override DueTime GetEndTime()
+        public override DueTime GetEndTimeBackward()
         {
             EnsurePurchaseOrderIsLoaded();
             return new DueTime(_tPurchaseOrderPart.PurchaseOrder.DueTime);
@@ -53,7 +53,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             }
         }
 
-        public override void SetStartTime(DueTime startTime)
+        public override void SetStartTimeBackward(DueTime startTime)
         {
             if (_tPurchaseOrderPart.IsReadOnly)
             {
@@ -93,7 +93,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             return _tPurchaseOrderPart.State.Equals(State.Finished);
         }
 
-        public override void SetEndTime(DueTime endTime)
+        public override void SetEndTimeBackward(DueTime endTime)
         {
             if (_tPurchaseOrderPart.IsReadOnly)
             {
@@ -104,7 +104,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
                 endTime.GetValue();
         }
 
-        public override void ClearStartTime()
+        public override void ClearStartTimeBackward()
         {
             EnsurePurchaseOrderIsLoaded();
             _tPurchaseOrderPart.PurchaseOrder.DueTime =
@@ -112,7 +112,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
 
         }
 
-        public override void ClearEndTime()
+        public override void ClearEndTimeBackward()
         {
             EnsurePurchaseOrderIsLoaded();
             _tPurchaseOrderPart.PurchaseOrder.DueTime =

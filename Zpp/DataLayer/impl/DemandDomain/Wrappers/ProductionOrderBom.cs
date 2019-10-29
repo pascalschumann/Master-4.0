@@ -200,7 +200,7 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
             return _productionOrderBom.ProductionOrderOperation.GetDuration();
         }
 
-        public override void SetStartTime(DueTime startTime)
+        public override void SetStartTimeBackward(DueTime startTime)
         {
             throw new NotImplementedException();
         }
@@ -222,7 +222,7 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
             _productionOrderBom.ProductionOrderOperation.State = State.InProgress;
         }
 
-        public override DueTime GetEndTime()
+        public override DueTime GetEndTimeBackward()
         {
             return GetEndTimeOfOperation();
         }
@@ -233,17 +233,17 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
             return _productionOrderBom.ProductionOrderOperation.State.Equals(State.Finished);
         }
 
-        public override void SetEndTime(DueTime endTime)
+        public override void SetEndTimeBackward(DueTime endTime)
         {
             throw new NotImplementedException();
         }
 
-        public override void ClearStartTime()
+        public override void ClearStartTimeBackward()
         {
             throw new NotImplementedException();
         }
 
-        public override void ClearEndTime()
+        public override void ClearEndTimeBackward()
         {
             throw new NotImplementedException();
         }

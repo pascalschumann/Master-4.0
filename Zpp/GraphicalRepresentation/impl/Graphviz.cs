@@ -18,14 +18,14 @@ namespace Zpp.GraphicalRepresentation.impl
         {
 
             return $"\\n{demand.GetId()}: {demand.GetArticle().Name};Anzahl: {demand.GetQuantity()};" 
-                    +$"\\nStart/End: {demand.GetStartTime()}/{demand.GetEndTime()};"
+                    +$"\\nStart/End: {demand.GetStartTimeBackward()}/{demand.GetEndTimeBackward()};"
                 ;
         }
 
         private string ToGraphizString(Provider provider)
         {
             return $"\\n{provider.GetId()}: {provider.GetArticle().Name};Anzahl: {provider.GetQuantity()};" 
-                    +$"\\nStart/End: {provider.GetStartTime()}/{provider.GetEndTime()};"
+                    +$"\\nStart/End: {provider.GetStartTimeBackward()}/{provider.GetEndTimeBackward()};"
                 ;
         }
 

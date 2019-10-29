@@ -190,7 +190,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             _productionOrderOperation.State = State.InProgress;
         }
         
-        public DueTime GetEndTime()
+        public DueTime GetEndTimeBackward()
         {
             if (_productionOrderOperation.EndBackward == null)
             {
@@ -199,7 +199,9 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             return new DueTime(_productionOrderOperation.EndBackward.GetValueOrDefault());
         }
         
-        public DueTime GetStartTime()
+        
+        
+        public DueTime GetStartTimeBackward()
         {
             if (_productionOrderOperation.StartBackward == null)
             {
@@ -214,7 +216,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             return startTime;
         }
 
-        public void SetStartTime(DueTime startTime)
+        public void SetStartTimeBackward(DueTime startTime)
         {
             if (_productionOrderOperation.IsReadOnly)
             {
@@ -245,7 +247,37 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             return _productionOrderOperation.State.Equals(State.InProgress);
         }
 
-        public void SetEndTime(DueTime endTime)
+        public int GetStartTime()
+        {
+            return _productionOrderOperation.Start;
+        }
+        
+        public int GetEndTime()
+        {
+            return _productionOrderOperation.End;
+        }
+        
+        public void SetStartTime(int startTime)
+        {
+            if (_productionOrderOperation.IsReadOnly)
+            {
+                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+            }
+
+            _productionOrderOperation.Start = startTime;
+        }
+
+        public void SetEndTime(int endTime)
+        {
+            if (_productionOrderOperation.IsReadOnly)
+            {
+                throw new MrpRunException("A readOnly entity cannot be changed anymore.");
+            }
+
+            _productionOrderOperation.End = endTime;
+        }
+
+        public void SetEndTimeBackward(DueTime endTime)
         {
             if (_productionOrderOperation.IsReadOnly)
             {
@@ -258,7 +290,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             _productionOrderOperation.StartBackward = startTimeOfOperation.GetValue();
         }
 
-        public void ClearStartTime()
+        public void ClearStartTimeBackward()
         {
             if (_productionOrderOperation.IsReadOnly)
             {
@@ -267,7 +299,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             _productionOrderOperation.StartBackward = null;
         }
 
-        public void ClearEndTime()
+        public void ClearEndTimeBackward()
         {
             if (_productionOrderOperation.IsReadOnly)
             {

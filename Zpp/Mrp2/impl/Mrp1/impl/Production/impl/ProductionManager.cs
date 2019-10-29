@@ -141,7 +141,7 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Production.impl
                 foreach (var productionOrderOperation in sortedProductionOrderOperations)
                 {
                     lastOperationBackwardsSchedule = productionOrderOperation.ScheduleBackwards(
-                        lastOperationBackwardsSchedule, parentProductionOrder.GetStartTime());
+                        lastOperationBackwardsSchedule, parentProductionOrder.GetStartTimeBackward());
                 }
                 
                 return new ProductionOrderBoms(newDemands);

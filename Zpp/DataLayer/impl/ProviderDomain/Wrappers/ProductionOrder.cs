@@ -55,7 +55,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             throw new System.NotImplementedException();
         }
 
-        public override void SetStartTime(DueTime startTime)
+        public override void SetStartTimeBackward(DueTime startTime)
         {
             if (_productionOrder.IsReadOnly)
             {
@@ -81,7 +81,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             return Duration.Null();
         }
 
-        public override DueTime GetEndTime()
+        public override DueTime GetEndTimeBackward()
         {
             return new DueTime(_productionOrder.DueTime);
         }
@@ -92,7 +92,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             return true;
         }
 
-        public override void SetEndTime(DueTime endTime)
+        public override void SetEndTimeBackward(DueTime endTime)
         {
             if (_productionOrder.IsReadOnly)
             {
@@ -101,7 +101,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             _productionOrder.DueTime = endTime.GetValue();
         }
 
-        public override void ClearStartTime()
+        public override void ClearStartTimeBackward()
         {
             if (_productionOrder.IsReadOnly)
             {
@@ -110,7 +110,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             _productionOrder.DueTime = DueTime.INVALID_DUETIME;
         }
 
-        public override void ClearEndTime()
+        public override void ClearEndTimeBackward()
         {
             if (_productionOrder.IsReadOnly)
             {

@@ -30,7 +30,7 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Purchase.impl
         {
             EntityCollector entityCollector = new EntityCollector();
             M_Article article = demand.GetArticle();
-            DueTime dueTime = demand.GetStartTime();
+            DueTime dueTime = demand.GetStartTimeBackward();
             if (article.ToBuild)
             {
                 throw new MrpRunException(

@@ -43,9 +43,9 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
                         operation.GetResourceSkillId()])
                     {
                         if (resource.GetValue().Id.Equals(operation.GetValue().ResourceId) &&
-                            resource.GetIdleStartTime().GetValue() < operation.GetValue().End)
+                            resource.GetIdleStartTime().GetValue() < operation.GetEndTime())
                         {
-                            resource.SetIdleStartTime(new DueTime(operation.GetValue().End));
+                            resource.SetIdleStartTime(new DueTime(operation.GetEndTime()));
                         }
                     }
                 }
@@ -73,7 +73,8 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
             // t(o) = 0 für alle o aus S
             foreach (var o in S)
             {
-                o.GetValue().Start = o.GetValue().StartBackward.GetValueOrDefault();
+                int newStart = o.GetStartTimeBackward().GetValue();
+                o.SetStartTime(newStart);
             }
 
             // while S not empty do
@@ -84,11 +85,12 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
                 foreach (var o in S)
                 {
                     // Berechne d(o) = t(o) + p(o) für alle o aus S
-                    o.GetValue().End = o.GetValue().Start + o.GetValue().Duration;
+                    int newEnd = o.GetStartTime() + o.GetValue().Duration;
+                    o.SetEndTime(newEnd);
                     // Bestimme d_min = min{ d(o) | o aus S }
-                    if (o.GetValue().End < d_min)
+                    if (o.GetEndTime() < d_min)
                     {
-                        d_min = o.GetValue().End;
+                        d_min = o.GetEndTime();
                         o_min = o;
                     }
                 }
@@ -98,7 +100,7 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
                 foreach (var o in S)
                 {
                     if (o.GetValue().ResourceSkillId.Equals(o_min.GetValue().ResourceSkillId) &&
-                        o.GetValue().Start < d_min)
+                        o.GetStartTime() < d_min)
                     {
                         K.Push(o);
                     }
@@ -133,28 +135,32 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
 
                         o1.SetMachine(machine);
                         // correct op's start time if resource's idleTime is later
-                        if (machine.GetIdleStartTime().GetValue() > o1.GetValue().Start)
+                        if (machine.GetIdleStartTime().GetValue() > o1.GetStartTime())
                         {
-                            o1.GetValue().Start = machine.GetIdleStartTime().GetValue();
-                            o1.GetValue().End = o1.GetValue().Start + o1.GetValue().Duration;
+                            int newStart = machine.GetIdleStartTime().GetValue();
+                            o1.SetStartTime(newStart);
+                            int newEnd = o1.GetStartTime() + o1.GetValue().Duration;
+                            o1.SetEndTime(newEnd);
                         }
 
                         // correct op's start time if op's material is later available
                         DueTime dueTimeOfOperationMaterial = o1.GetEarliestPossibleStartTime();
-                        if (dueTimeOfOperationMaterial.GetValue() > o1.GetValue().Start)
+                        if (dueTimeOfOperationMaterial.GetValue() > o1.GetStartTime())
                         {
-                            o1.GetValue().Start = dueTimeOfOperationMaterial.GetValue();
-                            o1.GetValue().End = o1.GetValue().Start + o1.GetValue().Duration;
+                            int newStart = dueTimeOfOperationMaterial.GetValue();
+                            o1.SetStartTime(newStart) ;
+                            int newEnd = o1.GetStartTime() + o1.GetValue().Duration;
+                            o1.SetEndTime(newEnd);
                         }
 
-                        machine.SetIdleStartTime(new DueTime(o1.GetValue().End));
+                        machine.SetIdleStartTime(new DueTime(o1.GetEndTime()));
                     }
 
 
                     // t(o) = d(o1) für alle o aus K ohne alle o1 
                     foreach (var o in K)
                     {
-                        o.GetValue().Start = allO1[0].GetValue().End;
+                        o.SetStartTime(allO1[0].GetEndTime());
                     }
 
                     /*if N(o1) not empty then
@@ -177,7 +183,7 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
                         {
                             foreach (var n in N)
                             {
-                                n.GetValue().Start = o1.GetValue().End;
+                                n.SetStartTime(o1.GetEndTime());
                             }
                         }
 

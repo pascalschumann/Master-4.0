@@ -133,7 +133,8 @@ namespace Zpp.ZppSimulator.impl
             ZppConfiguration.PerformanceMonitors.Stop();
             performanceLog += $"{ZppConfiguration.PerformanceMonitors.ToString()}";
             
-            DebuggingTools.PrintStateToFiles(dbTransactionData, true);
+            // TODO: enable this again
+            // DebuggingTools.PrintStateToFiles(dbTransactionData, true);
             DebuggingTools.WritePerformanceLog(performanceLog);
             
             // persisting cached/created data

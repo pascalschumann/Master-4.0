@@ -18,10 +18,6 @@ namespace Zpp.DataLayer.impl.ProviderDomain
 
         bool ProvidesMoreThan(Quantity quantity);
 
-        Id GetId();
-        
-        DueTime GetStartTime();
-
         void SetProvided(DueTime atTime);
     }
 }

@@ -154,7 +154,7 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                 }
                 else if (demandOrProvider.GetType() == typeof(CustomerOrderPart))
                 {
-                    ArchiveCustomerOrderParts(dbTransactionData, dbTransactionDataArchive,
+                    ArchiveCustomerOrderPart(dbTransactionData, dbTransactionDataArchive,
                         (CustomerOrderPart) demandOrProvider);
                     ArchiveArrowsToAndFrom(demandOrProvider, dbTransactionData,
                         dbTransactionDataArchive, aggregator);
@@ -195,7 +195,6 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             dbTransactionData.DeleteA(demandOrProvider);
         }
 
-        
 
         /**
          * Subgraph of a productionOrder includes:
@@ -279,10 +278,7 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                 ZppConfiguration.CacheManager.GetDbTransactionDataArchive();
 
             // archive operations
-            List<ProductionOrderOperation> operations =
-                aggregator.GetProductionOrderOperationsOfProductionOrder(productionOrder);
-            dbTransactionDataArchive.ProductionOrderOperationAddAll(operations);
-            dbTransactionData.ProductionOrderOperationDeleteAll(operations);
+            ArchiveOperations(dbTransactionData, dbTransactionDataArchive, aggregator, productionOrder);
 
             // collect demands Or providers
             List<IDemandOrProvider> demandOrProvidersToArchive =
@@ -359,7 +355,17 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             dbTransactionData.PurchaseOrderDelete(purchaseOrder);
         }
 
-        private static void ArchiveCustomerOrderParts(IDbTransactionData dbTransactionData,
+        private static void ArchiveOperations(IDbTransactionData dbTransactionData,
+            IDbTransactionData dbTransactionDataArchive, IAggregator aggregator,
+            ProductionOrder productionOrder)
+        {
+            List<ProductionOrderOperation> operations =
+                aggregator.GetProductionOrderOperationsOfProductionOrder(productionOrder);
+            dbTransactionDataArchive.ProductionOrderOperationAddAll(operations);
+            dbTransactionData.ProductionOrderOperationDeleteAll(operations);
+        }
+
+        private static void ArchiveCustomerOrderPart(IDbTransactionData dbTransactionData,
             IDbTransactionData dbTransactionDataArchive, CustomerOrderPart customerOrderPart)
         {
             // archive customerOrderPart
@@ -369,8 +375,7 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             dbTransactionData.DemandsDelete(customerOrderPart);
 
             // archive customerOrder
-            T_CustomerOrder customerOrder =
-                dbTransactionData.CustomerOrderGetById(customerOrderId);
+            T_CustomerOrder customerOrder = dbTransactionData.CustomerOrderGetById(customerOrderId);
             dbTransactionDataArchive.CustomerOrderAdd(customerOrder);
             dbTransactionData.T_CustomerOrderDelete(customerOrder);
         }

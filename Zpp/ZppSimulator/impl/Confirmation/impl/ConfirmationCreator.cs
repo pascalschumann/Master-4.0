@@ -72,10 +72,17 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                 {
                     CustomerOrderPart customerOrderPart = (CustomerOrderPart) rootNode.GetEntity();
                     customerOrderPart.SetReadOnly();
-                    
-                    bool isFinished = ProcessChilds(demandToProviderGraph.GetSuccessorNodes(rootNode),
-                        demandToProviderGraph);
-                    if (isFinished)
+
+                    bool allChildsAreFinished = true;
+                    foreach (var stockExchangeProvider in aggregator.GetAllChildProvidersOf(customerOrderPart))
+                    {
+                        if (stockExchangeProvider.IsFinished() == false)
+                        {
+                            allChildsAreFinished = false;
+                            break;
+                        }
+                    }
+                    if (allChildsAreFinished)
                     {
                         customerOrderPart.SetFinished();
                     }
@@ -87,34 +94,14 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             {
                 operation.SetReadOnly();
             }
-        }
-
-        /**
-         * Top-down traversing demandToProviderGraph
-         */
-        private static bool ProcessChilds(INodes childs,
-            DemandToProviderGraph demandToProviderGraph)
-        {
-            if (childs == null)
+            
+            // set productionOrders readonly
+            foreach (var productionOrder in dbTransactionData.ProductionOrderGetAll())
             {
-                return true;
+                productionOrder.SetReadOnly();
             }
-
-            foreach (var child in childs)
-            {
-                IDemandOrProvider demandOrProvider = (IDemandOrProvider) child.GetEntity();
-                if (demandOrProvider.IsFinished())
-                {
-                    return ProcessChilds(demandToProviderGraph.GetSuccessorNodes(child),
-                        demandToProviderGraph);
-                }
-                else
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            
+            
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Zpp.ZppSimulator.impl.CustomerOrder.impl
     public class CustomerOrderCreator : ICustomerOrderCreator
     {
         private IOrderGenerator _orderGenerator = null;
-        private Quantity _defaultCustomerOrderQuantityPerCycle = new Quantity(10);
+        private readonly Quantity _defaultCustomerOrderQuantityPerCycle = new Quantity(10);
 
         public CustomerOrderCreator(Quantity customerOrderQuantity)
         {
@@ -18,34 +18,60 @@ namespace Zpp.ZppSimulator.impl.CustomerOrder.impl
             {
                 _defaultCustomerOrderQuantityPerCycle = customerOrderQuantity;
             }
+            
+            var orderArrivalRate = new OrderArrivalRate(0.025);
+            IDbMasterDataCache masterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
+            _orderGenerator = TestScenario.GetOrderGenerator(new MinDeliveryTime(200),
+                new MaxDeliveryTime(1430), orderArrivalRate, masterDataCache.M_ArticleGetAll(),
+                masterDataCache.M_BusinessPartnerGetAll());
         }
-
+        
         public void CreateCustomerOrders(SimulationInterval interval)
         {
-            CreateCustomerOrders(interval, null);
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
+            var creationTime = interval.StartAt;
+            var endOrderCreation = interval.EndAt;
+
+            while (creationTime < endOrderCreation)
+            {
+                var order = _orderGenerator.GetNewRandomOrder(time: creationTime);
+                foreach (var orderPart in order.CustomerOrderParts)
+                {
+                    orderPart.CustomerOrder = order;
+                    orderPart.CustomerOrderId = order.Id;
+                    dbTransactionData.CustomerOrderPartAdd(orderPart);
+                }
+
+                dbTransactionData.CustomerOrderAdd(order);
+
+                // TODO : Handle this another way
+                creationTime += order.CreationTime;
+            }
         }
 
         public void CreateCustomerOrders(SimulationInterval interval,
             Quantity customerOrderQuantity)
         {
+            if (customerOrderQuantity == null)
+            {
+                // use Martin's original cop creator
+                CreateCustomerOrders(interval);
+                return;
+            }
+            
             IDbMasterDataCache masterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.GetDbTransactionData();
             OrderArrivalRate orderArrivalRate;
-            if (customerOrderQuantity == null)
-            {
-                orderArrivalRate = new OrderArrivalRate(0.025);
-            }
-            else
-            {
+            
                 // (Menge der zu erzeugenden auftrage im intervall +1) / (die dauer des intervalls)
                 // works only small numbers e.g. 10
                 orderArrivalRate =
                     new OrderArrivalRate((double) (customerOrderQuantity.GetValue() * 2) /
                                          interval.Interval);
-            }
 
-            if (_orderGenerator == null ||
+                if (_orderGenerator == null ||
                 _orderGenerator.GetOrderArrivalRate().Equals(orderArrivalRate) == false)
             {
                 _orderGenerator = TestScenario.GetOrderGenerator(new MinDeliveryTime(200),
@@ -75,13 +101,7 @@ namespace Zpp.ZppSimulator.impl.CustomerOrder.impl
                 dbTransactionData.CustomerOrderAdd(order);
                 createdCustomerOrders++;
 
-                if (customerOrderQuantity != null &&
-                    createdCustomerOrders >= customerOrderQuantity.GetValue())
-                {
-                    break;
-                }
-                else if (customerOrderQuantity == null &&
-                         createdCustomerOrders >= _defaultCustomerOrderQuantityPerCycle.GetValue())
+                if (createdCustomerOrders >= customerOrderQuantity.GetValue())
                 {
                     break;
                 }

@@ -46,7 +46,7 @@ namespace Zpp.ZppSimulator.impl.CustomerOrder.impl
                 dbTransactionData.CustomerOrderAdd(order);
 
                 // TODO : Handle this another way
-                creationTime = order.DueTime;
+                creationTime = order.CreationTime;
             }
         }
 

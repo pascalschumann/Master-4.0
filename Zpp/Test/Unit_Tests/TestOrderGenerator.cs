@@ -19,7 +19,7 @@ namespace Zpp.Test.Unit_Tests
             og.CreateCustomerOrders( new SimulationInterval(0, 20160));
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.GetDbTransactionData();
-            var orders = dbTransactionData.CustomerOrderPartGetAll();
+            var orders = dbTransactionData.CustomerOrderGetAll();
             Assert.InRange(orders.Count(), 450, 550);
         }
     }

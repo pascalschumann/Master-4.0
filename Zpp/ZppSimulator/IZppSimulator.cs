@@ -9,7 +9,12 @@ namespace Zpp.ZppSimulator
 
         void StartOneCycle(SimulationInterval simulationInterval);
 
-        void StartPerformanceStudy();
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="shouldPersist">Should dbTransactionData and dbTransactionDataArchive
+        /// be persisted at the end</param>
+        void StartPerformanceStudy(bool shouldPersist);
 
         void StartTestCycle();
 

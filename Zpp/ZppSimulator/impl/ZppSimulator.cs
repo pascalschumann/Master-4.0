@@ -96,7 +96,7 @@ namespace Zpp.ZppSimulator.impl
             ZppConfiguration.CacheManager.Persist();
         }
 
-        public void StartPerformanceStudy()
+        public void StartPerformanceStudy(bool shouldPersist)
         {
             // TODO: disable if log files
             ZppConfiguration.IsInPerformanceMode = true;
@@ -137,7 +137,11 @@ namespace Zpp.ZppSimulator.impl
             DebuggingTools.WritePerformanceLog(performanceLog);
             
             // persisting cached/created data
-            ZppConfiguration.CacheManager.Persist();
+            if (shouldPersist)
+            {
+                ZppConfiguration.CacheManager.Persist();    
+            }
+            
         }
 
         /**

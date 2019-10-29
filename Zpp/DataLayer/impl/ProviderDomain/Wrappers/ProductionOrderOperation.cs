@@ -45,12 +45,39 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             _productionOrderOperation.Resource = resource.GetValue();
         }
 
-        /// <summary>
-        /// Todo: Rename to GetPossibleMachines prevent irritation
-        /// </summary>
-        /// <param name="dbTransactionData"></param>
-        /// <returns></returns>
-        public List<Resource> GetMachines()
+        private void EnsureMachineIsLoaded()
+        {
+            if (_productionOrderOperation.Resource == null)
+            {
+                if (_productionOrderOperation.ResourceId == null)
+                {
+                    throw new MrpRunException("Cannot load Machine, if this operation is not yet planned.");
+                }
+                
+                Id resourceId = new Id(_productionOrderOperation.ResourceId.GetValueOrDefault());
+                IDbMasterDataCache dbMasterDataCache =
+                    ZppConfiguration.CacheManager.GetMasterDataCache();
+                Resource resource = dbMasterDataCache.M_ResourceGetById(resourceId);
+                _productionOrderOperation.Resource = resource.GetValue();
+            }
+        }
+        
+        public Id GetMachineId()
+        {
+            if (_productionOrderOperation.ResourceId == null)
+            {
+                throw new MrpRunException("Cannot get Machine, if this operation is not yet planned.");
+            }
+            return new Id(_productionOrderOperation.ResourceId.GetValueOrDefault());
+        }
+
+        public M_Resource GetMachine()
+        {
+            EnsureMachineIsLoaded();
+            return _productionOrderOperation.Resource;
+        }
+
+        public List<Resource> GetPossibleMachines()
         {
             return ZppConfiguration.CacheManager.GetAggregator()
                 .GetResourcesByResourceSkillId(this.GetResourceSkillId());

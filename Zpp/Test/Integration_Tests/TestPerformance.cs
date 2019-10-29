@@ -12,11 +12,9 @@ namespace Zpp.Test.Integration_Tests
     public class TestPerformance : AbstractTest
     {
         
-        private readonly ITestOutputHelper output;
-        
-        public TestPerformance(ITestOutputHelper output) : base(initDefaultTestConfig: false)
+        public TestPerformance() : base(initDefaultTestConfig: false)
         {
-            this.output = output;
+
         }
         
         private void InitThisTest(string testConfiguration)
@@ -44,8 +42,6 @@ namespace Zpp.Test.Integration_Tests
             Assert.True( neededTime < MAX_TIME_FOR_MRP_RUN,
                 $"MrpRun for example use case ({TestConfiguration.Name}) " +
                 $"takes longer than {MAX_TIME_FOR_MRP_RUN} seconds: {neededTime}");
-            
-            output.WriteLine("This is output from");
         }
 
         [Theory]
@@ -56,9 +52,7 @@ namespace Zpp.Test.Integration_Tests
             InitThisTest(testConfigurationFileName);
             
             IZppSimulator zppSimulator = new ZppSimulator.impl.ZppSimulator();
-            zppSimulator.StartPerformanceStudy();
-            string performanceLog = DebuggingTools.ReadPerformanceLog();
-            output.WriteLine($"{performanceLog}");
+            zppSimulator.StartPerformanceStudy(true);
         }
         
         /**

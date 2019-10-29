@@ -4,6 +4,7 @@ using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Zpp.DataLayer;
 using Zpp.DataLayer.impl.ProviderDomain.Wrappers;
+using Zpp.DataLayer.impl.ProviderDomain.WrappersForCollections;
 using Zpp.DataLayer.impl.WrapperForEntities;
 using Zpp.Util;
 using Zpp.Util.Graph;
@@ -30,6 +31,26 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
                     ZppConfiguration.CacheManager.GetAggregator()
                         .GetResourcesByResourceSkillId(resourceSkill.GetId()));
             }
+
+            // set correct idleStartTimes in resources from operations in progress
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
+            foreach (var operation in dbTransactionData.ProductionOrderOperationGetAll())
+            {
+                if (operation.IsInProgress())
+                {
+                    foreach (var resource in resourcesByResourceSkillId[
+                        operation.GetResourceSkillId()])
+                    {
+                        if (resource.GetValue().Id.Equals(operation.GetValue().ResourceId) &&
+                            resource.GetIdleStartTime().GetValue() < operation.GetValue().End)
+                        {
+                            resource.SetIdleStartTime(new DueTime(operation.GetValue().End));
+                        }
+                    }
+                }
+            }
+
 
             /*
             S: Menge der aktuell einplanbaren Arbeitsvorgänge
@@ -119,8 +140,7 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
                         }
 
                         // correct op's start time if op's material is later available
-                        DueTime dueTimeOfOperationMaterial =
-                            o1.GetEarliestPossibleStartTime();
+                        DueTime dueTimeOfOperationMaterial = o1.GetEarliestPossibleStartTime();
                         if (dueTimeOfOperationMaterial.GetValue() > o1.GetValue().Start)
                         {
                             o1.GetValue().Start = dueTimeOfOperationMaterial.GetValue();
@@ -144,7 +164,8 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
                     {
                         INode o1AsNode = new Node(o1);
 
-                        IStackSet<ProductionOrderOperation> predecessorOperations = new StackSet<ProductionOrderOperation>();
+                        IStackSet<ProductionOrderOperation> predecessorOperations =
+                            new StackSet<ProductionOrderOperation>();
                         productionOrderToOperationGraph.DeterminePredecessorOperations(
                             predecessorOperations, o1AsNode);
 

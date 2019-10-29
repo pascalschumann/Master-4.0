@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Master40.DB.Data.WrappersForPrimitives;
+using Master40.DB.DataModel;
 using Master40.DB.Interfaces;
 using Zpp.DataLayer.impl.DemandDomain;
 using Zpp.DataLayer.impl.DemandDomain.Wrappers;
@@ -93,5 +94,7 @@ namespace Zpp.DataLayer
          * Arrow equals DemandToProvider and ProviderToDemand
          */
         List<ILinkDemandAndProvider> GetArrowsToAndFrom(IDemandOrProvider demandOrProvider);
+
+        List<ProductionOrderOperation> GetAllOperationsOnResource(M_Resource resource);
     }
 }

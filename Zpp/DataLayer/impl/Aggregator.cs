@@ -250,7 +250,7 @@ namespace Zpp.DataLayer.impl
             {
                 DueTime endTime = x.GetEndTime();
                 return simulationInterval.IsWithinInterval(endTime) ||
-                           simulationInterval.IsBeforeInterval(endTime);
+                       simulationInterval.IsBeforeInterval(endTime);
             }));
         }
 
@@ -382,6 +382,12 @@ namespace Zpp.DataLayer.impl
             {
                 throw new MrpRunException("This type is not expected.");
             }
+        }
+
+        public List<ProductionOrderOperation> GetAllOperationsOnResource(M_Resource resource)
+        {
+            return _dbTransactionData.ProductionOrderOperationGetAll().GetAll()
+                .Where(x => x.GetMachineId().GetValue().Equals(resource.Id)).ToList();
         }
     }
 }

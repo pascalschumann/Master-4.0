@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Zpp.DataLayer;
 using Zpp.DataLayer.impl.DemandDomain.Wrappers;
 using Zpp.DataLayer.impl.WrappersForCollections;
@@ -38,6 +39,7 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             foreach (var demandOrProvider in demandOrProvidersToSetInProgress)
             {
                 demandOrProvider.SetInProgress();
+                demandOrProvider.SetReadOnly();
             }
 
             // stockExchanges, purchaseOrderParts, operations(use PrBom instead):
@@ -58,6 +60,7 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             foreach (var demandOrProvider in demandOrProvidersToSetFinished)
             {
                 demandOrProvider.SetFinished();
+                demandOrProvider.SetReadOnly();
             }
 
             // customerOrderParts: set finished if all childs are finished
@@ -65,13 +68,24 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             INodes rootNodes = demandToProviderGraph.GetRootNodes();
             foreach (var rootNode in rootNodes)
             {
-                bool isFinished = ProcessChilds(demandToProviderGraph.GetSuccessorNodes(rootNode),
-                    demandToProviderGraph);
-                if (isFinished && rootNode.GetEntity().GetType() == typeof(CustomerOrderPart))
+                if (rootNode.GetEntity().GetType() == typeof(CustomerOrderPart))
                 {
                     CustomerOrderPart customerOrderPart = (CustomerOrderPart) rootNode.GetEntity();
-                    customerOrderPart.SetFinished();
+                    customerOrderPart.SetReadOnly();
+                    
+                    bool isFinished = ProcessChilds(demandToProviderGraph.GetSuccessorNodes(rootNode),
+                        demandToProviderGraph);
+                    if (isFinished)
+                    {
+                        customerOrderPart.SetFinished();
+                    }
                 }
+            }
+            
+            // set operations readonly
+            foreach (var operation in dbTransactionData.ProductionOrderOperationGetAll())
+            {
+                operation.SetReadOnly();
             }
         }
 

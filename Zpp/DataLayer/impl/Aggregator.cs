@@ -91,7 +91,7 @@ namespace Zpp.DataLayer.impl
             if (productionOrderBoms == null || productionOrderBoms.Any() == false)
             {
                 throw new MrpRunException(
-                    "How could an productionOrderOperation without an T_ProductionOrderBom exists?");
+                    $"How could an productionOrderOperation({productionOrderOperation}) without an T_ProductionOrderBom exists?");
             }
 
             return new ProductionOrderBoms(productionOrderBoms);

@@ -33,7 +33,7 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
             }
 
             // set correct idleStartTimes in resources from operations in progress
-            IDbTransactionData dbTransactionData =
+            /*IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.GetDbTransactionData();
             foreach (var operation in dbTransactionData.ProductionOrderOperationGetAll())
             {
@@ -49,7 +49,7 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
                         }
                     }
                 }
-            }
+            }*/
 
 
             /*

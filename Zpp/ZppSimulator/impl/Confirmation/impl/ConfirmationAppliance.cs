@@ -55,12 +55,8 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             RemoveAllArrowsAndStockExchangeProviderOnNotFinishedCustomerOrderParts(
                 dbTransactionData, aggregator);
 
-            SetReadOnly(dbTransactionData.StockExchangeProvidersGetAll());
-            SetReadOnly(dbTransactionData.StockExchangeDemandsGetAll());
-
             // ArchiveFinishedCustomerOrderParts(dbTransactionData, dbTransactionDataArchive);
-            SetReadOnly(dbTransactionData.CustomerOrderPartGetAll());
-            SetReadOnlyIfFinished(dbTransactionData.PurchaseOrderPartGetAll());
+
 
             ArchiveSubGraphOfClosedFinishedStockExchangeDemands(dbTransactionData, aggregator);
         }
@@ -199,13 +195,7 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             dbTransactionData.DeleteA(demandOrProvider);
         }
 
-        private static void SetReadOnly(IEnumerable<IDemandOrProvider> demandOrProviders)
-        {
-            foreach (var demandOrProvider in demandOrProviders)
-            {
-                demandOrProvider.SetReadOnly();
-            }
-        }
+        
 
         /**
          * Subgraph of a productionOrder includes:
@@ -291,15 +281,12 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             // archive operations
             List<ProductionOrderOperation> operations =
                 aggregator.GetProductionOrderOperationsOfProductionOrder(productionOrder);
-            SetReadOnlyIfFinished(operations);
             dbTransactionDataArchive.ProductionOrderOperationAddAll(operations);
             dbTransactionData.ProductionOrderOperationDeleteAll(operations);
 
             // collect demands Or providers
             List<IDemandOrProvider> demandOrProvidersToArchive =
                 CreateProductionOrderSubGraph(false, productionOrder, aggregator);
-            // set readOnly
-            SetReadOnlyIfFinished(demandOrProvidersToArchive);
 
             // delete archive all collected entities
             foreach (var demandOrProvider in demandOrProvidersToArchive)
@@ -371,23 +358,6 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             dbTransactionDataArchive.PurchaseOrderAdd(purchaseOrder);
             dbTransactionData.PurchaseOrderDelete(purchaseOrder);
         }
-
-        private static void SetReadOnlyIfFinished(IScheduleNode scheduleNode)
-        {
-            if (scheduleNode.IsFinished())
-            {
-                scheduleNode.SetReadOnly();
-            }
-        }
-
-        private static void SetReadOnlyIfFinished(IEnumerable<IScheduleNode> scheduleNodes)
-        {
-            foreach (var scheduleNode in scheduleNodes)
-            {
-                SetReadOnlyIfFinished(scheduleNode);
-            }
-        }
-
 
         private static void ArchiveCustomerOrderParts(IDbTransactionData dbTransactionData,
             IDbTransactionData dbTransactionDataArchive, CustomerOrderPart customerOrderPart)

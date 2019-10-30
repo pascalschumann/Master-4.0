@@ -10,7 +10,7 @@ namespace Zpp.Util.StackSet
      * - pop any element with O(1)
      * - remove O(n), since list must be reindexed
      * - push() O(1)
-     * - GetById(): O(1)
+     * - GetById(), Contains(): O(1)
      * but remains the idea of a mathematical set: every item exists only once
      */
     public interface IStackSet<T>: IEnumerable<T> where T: IId
@@ -42,7 +42,7 @@ namespace Zpp.Util.StackSet
 
         T GetById(Id id);
 
-        // replaces ToString() since debugger is unusable
-        string AsString();
+        bool Contains(T t);
+
     }
 }

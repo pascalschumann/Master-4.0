@@ -13,7 +13,7 @@ namespace Zpp.Test.Unit_Tests
         {
             INode[] nodes = EntityFactory.CreateDummyNodes(7);
             IDirectedGraph<INode> directedGraph = CreateBinaryDirectedGraph(nodes);
-            Assert.True(directedGraph.AsString() != null,
+            Assert.True(directedGraph.ToString() != null,
                 "AsString() must work in unit tests without a database.");
         }
 

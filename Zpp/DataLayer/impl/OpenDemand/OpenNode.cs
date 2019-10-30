@@ -39,7 +39,7 @@ namespace Zpp.DataLayer.impl.OpenDemand
             return _openNode.GetId();
         }
 
-        public string AsString()
+        public override string ToString()
         {
             return $"{_openQuantity} open of '{_openNode}'";
         }

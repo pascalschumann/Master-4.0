@@ -80,9 +80,14 @@ namespace Zpp.DataLayer.impl.WrappersForCollections
             return StackSet.GetById(id);
         }
 
-        public string AsString()
+        public override string ToString()
         {
-            return StackSet.AsString();
+            return StackSet.ToString();
+        }
+
+        public bool Contains(T t)
+        {
+            return StackSet.Contains(t);
         }
     }
 }

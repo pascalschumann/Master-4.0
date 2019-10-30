@@ -42,8 +42,7 @@ namespace Zpp.Util.Performance
             _isStarted = false;
         }
 
-        // replaces ToString() since debugger is unusable
-        public string AsString()
+        public override string ToString()
         {
             string instanceToTrack = Enum.GetName(typeof(InstanceToTrack), _instanceToTrack);
             string objectAsString =

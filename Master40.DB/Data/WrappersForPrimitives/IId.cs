@@ -4,7 +4,5 @@ namespace Master40.DB.Data.WrappersForPrimitives
     {
         Id GetId();
         
-        // replaces ToString() since debugger is unusable
-        string AsString();
-    }
+        }
 }

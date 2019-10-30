@@ -38,9 +38,9 @@ namespace Zpp.Test.Unit_Tests
             return NodeType.Operation;
         }
 
-        public string AsString()
+        public override string ToString()
         {
-            return _id.AsString();
+            return _id.ToString();
         }
 
         public DueTime GetEndTimeBackward()

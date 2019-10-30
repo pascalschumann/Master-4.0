@@ -124,7 +124,7 @@ namespace Zpp.GraphicalRepresentation.impl
                     return GetGraphizString(t7);
                 case Node t8:
                     throw new MrpRunException("Call getEntity() before calling this method.");
-                default: return node.AsString();
+                default: return node.ToString();
             }
         }
     }

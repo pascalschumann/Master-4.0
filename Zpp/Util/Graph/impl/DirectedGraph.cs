@@ -100,7 +100,7 @@ namespace Zpp.Util.Graph.impl
             return _edgeCount;
         }
 
-        public virtual string AsString()
+        public override string ToString()
         {
             string mystring = "";
             List<IEdge> edges = GetAllEdges();

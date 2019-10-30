@@ -71,7 +71,7 @@ namespace Zpp.Test.Integration_Tests
             IDirectedGraph<INode> operationDirectedGraph =
                 new ProductionOrderToOperationGraph();
             
-            string actualOperationGraph = operationDirectedGraph.AsString();
+            string actualOperationGraph = operationDirectedGraph.ToString();
             if (File.Exists(operationGraphFileName) == false)
             {
                 File.WriteAllText(operationGraphFileName, actualOperationGraph, Encoding.UTF8);

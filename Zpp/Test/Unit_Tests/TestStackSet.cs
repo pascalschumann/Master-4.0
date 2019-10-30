@@ -107,5 +107,27 @@ namespace Zpp.Test.Unit_Tests
                 stackSet.Remove(scheduleNode);
             }
         }
+        
+        [Fact]
+        public void TestContains()
+        {
+            IStackSet<IScheduleNode> stackSet = new StackSet<IScheduleNode>();
+            int countNodes = 10;
+            for (int i = 0; i < countNodes; i++)
+            {
+                IScheduleNode testNumber = new DummyNode(i);
+                stackSet.Push(testNumber);
+            }
+
+            for (int i = countNodes - 1; i > 0; i--)
+            {
+                IScheduleNode scheduleNode = new DummyNode(i);
+                Assert.True(
+                    stackSet.Contains(scheduleNode) 
+                    && stackSet.Count() == i + 1,
+                    "Contains() didn't work.");
+                stackSet.Remove(scheduleNode);
+            }
+        }
     }
 }

@@ -139,13 +139,13 @@ namespace Zpp.Util.StackSet
             _indexId = new Dictionary<Id, int>();
         }
 
-        public string AsString()
+        public override string ToString()
         {
             string result = "";
             
             foreach (var item in _list)
             {
-                result += item.AsString() + Environment.NewLine;
+                result += item.ToString() + Environment.NewLine;
             }
 
             return result;
@@ -161,6 +161,11 @@ namespace Zpp.Util.StackSet
             {
                 return default(T);
             }
+        }
+
+        public bool Contains(T t)
+        {
+            return _indexElement.ContainsKey(t);
         }
     }
 }

@@ -38,15 +38,14 @@ namespace Zpp.Util.Performance
             _monitors[InstanceToTrack.Global].Stop();
         }
         
-        // replaces ToString() since debugger is unusable
-        public string AsString()
+        public override string ToString()
         {
             // create report
             string report = "---------------------------------------" + Environment.NewLine;
 
             foreach (InstanceToTrack instancesToTrack in Enum.GetValues(typeof(InstanceToTrack)))
             {
-                report += _monitors[instancesToTrack].AsString() + Environment.NewLine +
+                report += _monitors[instancesToTrack].ToString() + Environment.NewLine +
                           Environment.NewLine;
             }
             

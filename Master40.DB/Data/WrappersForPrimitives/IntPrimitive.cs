@@ -135,7 +135,7 @@ namespace Master40.DB.Data.WrappersForPrimitives
             return Int.GetHashCode();
         }
 
-        public string AsString()
+        public override string ToString()
         {
             return $"{Int}";
         }

@@ -62,7 +62,5 @@ namespace Zpp.Util.Graph
 
         bool IsEmpty();
         
-        // replaces ToString() since debugger is unusable
-        string AsString();
-    }
+        }
 }

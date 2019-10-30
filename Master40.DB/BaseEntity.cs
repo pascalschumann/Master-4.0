@@ -71,7 +71,7 @@ namespace Master40.DB
             return Id.GetHashCode();
         }
 
-        public string AsString()
+        public override string ToString()
         {
             string fullName = GetType().FullName; 
             return $"{Id}: {fullName}";

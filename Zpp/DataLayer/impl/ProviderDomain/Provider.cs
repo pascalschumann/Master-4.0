@@ -91,7 +91,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain
             return _id;
         }
 
-        public string AsString()
+        public override string ToString()
         {
             string state = "";
             if (GetState() != null)

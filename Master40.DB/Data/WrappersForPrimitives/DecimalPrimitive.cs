@@ -125,7 +125,7 @@ namespace Master40.DB.Data.WrappersForPrimitives
             return _decimal.GetHashCode();
         }
 
-        public string AsString()
+        public override string ToString()
         {
             return $"{_decimal}";
         }

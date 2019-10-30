@@ -48,18 +48,18 @@ namespace Zpp.Util
 
             WriteToFile(
                 $"{SimulationFolder}dbTransactionData_interval_{simulationInterval.StartAt}_{countOfPrintsInOneCycle}.txt",
-                dbTransactionData.AsString());
+                dbTransactionData.ToString());
             WriteToFile(
                 $"{SimulationFolder}dbTransactionDataArchive_interval_{simulationInterval.StartAt}_{countOfPrintsInOneCycle}.txt",
-                ZppConfiguration.CacheManager.GetDbTransactionDataArchive().AsString());
+                ZppConfiguration.CacheManager.GetDbTransactionDataArchive().ToString());
             DemandToProviderGraph demandToProviderGraph = new DemandToProviderGraph();
             WriteToFile(
                 $"{SimulationFolder}demandToProviderGraph_interval_{simulationInterval.StartAt}_{countOfPrintsInOneCycle}.txt",
-                demandToProviderGraph.AsString());
+                demandToProviderGraph.ToString());
             OrderOperationGraph orderOperationGraph = new OrderOperationGraph();
 
             WriteToFile($"orderOperationGraph_interval_{simulationInterval.StartAt}_{countOfPrintsInOneCycle}.log",
-                orderOperationGraph.AsString());
+                orderOperationGraph.ToString());
         }
 
         private static void CleanupOldFiles()

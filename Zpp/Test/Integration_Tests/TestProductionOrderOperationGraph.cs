@@ -52,7 +52,7 @@ namespace Zpp.Test.Integration_Tests
                 new ProductionOrderToOperationGraph();
             
             
-            string actualOrderGraphWithIds = productionOrderToOperationGraph.AsString();
+            string actualOrderGraphWithIds = productionOrderToOperationGraph.ToString();
             if (File.Exists(orderGraphFileNameWithIds) == false)
             {
                 File.WriteAllText(orderGraphFileNameWithIds, actualOrderGraphWithIds,

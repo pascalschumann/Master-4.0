@@ -39,7 +39,7 @@ namespace Zpp.Util.Graph.impl
             return _demandToProvider;
         }
 
-        public string AsString()
+        public override string ToString()
         {
             return $"{TailNode} --> {HeadNode}";
         }

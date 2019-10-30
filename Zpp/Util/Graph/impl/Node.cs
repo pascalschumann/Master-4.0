@@ -53,9 +53,9 @@ namespace Zpp.Util.Graph.impl
             return _id.GetHashCode();
         }
 
-        public string AsString()
+        public override string ToString()
         {
-            return $"{_entity.AsString()}";
+            return $"{_entity.ToString()}";
         }
 
         public void AddSuccessor(INode node)
@@ -107,5 +107,7 @@ namespace Zpp.Util.Graph.impl
         {
             _predecessors.Remove(node);
         }
+        
+        
     }
 }

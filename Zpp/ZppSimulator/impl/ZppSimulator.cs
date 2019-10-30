@@ -133,10 +133,10 @@ namespace Zpp.ZppSimulator.impl
                     break;
                 }
 
-                performanceLog += _performanceMonitors.AsString();
+                performanceLog += _performanceMonitors.ToString();
             }
             _performanceMonitors.Stop();
-            performanceLog += $"{_performanceMonitors.AsString()}";
+            performanceLog += $"{_performanceMonitors.ToString()}";
             
             // TODO: enable this again
             // DebuggingTools.PrintStateToFiles(dbTransactionData, true);

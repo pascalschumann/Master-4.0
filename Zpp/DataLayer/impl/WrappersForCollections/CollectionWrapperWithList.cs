@@ -80,7 +80,12 @@ namespace Zpp.DataLayer.impl.WrappersForCollections
             throw new System.NotImplementedException();
         }
 
-        public string AsString()
+        public override string ToString()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public bool Contains(T t)
         {
             throw new System.NotImplementedException();
         }

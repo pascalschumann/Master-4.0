@@ -127,7 +127,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             return new Id(_productionOrderOperation.ProductionOrderId);
         }
 
-        public string AsString()
+        public override string ToString()
         {
             string state = Enum.GetName(typeof(State), GetState());
             return

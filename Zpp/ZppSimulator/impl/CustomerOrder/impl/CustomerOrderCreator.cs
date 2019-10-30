@@ -18,15 +18,21 @@ namespace Zpp.ZppSimulator.impl.CustomerOrder.impl
             {
                 _defaultCustomerOrderQuantityPerCycle = customerOrderQuantity;
             }
-            
+
             var orderArrivalRate = new OrderArrivalRate(0.025);
             IDbMasterDataCache masterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
             _orderGenerator = TestScenario.GetOrderGenerator(new MinDeliveryTime(200),
                 new MaxDeliveryTime(1430), orderArrivalRate, masterDataCache.M_ArticleGetAll(),
                 masterDataCache.M_BusinessPartnerGetAll());
         }
-        
+
         public void CreateCustomerOrders(SimulationInterval interval)
+        {
+            CreateCustomerOrders(interval, null);
+        }
+
+        public void CreateCustomerOrders(SimulationInterval interval,
+            Quantity customerOrderQuantity)
         {
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.GetDbTransactionData();
@@ -47,61 +53,9 @@ namespace Zpp.ZppSimulator.impl.CustomerOrder.impl
 
                 // TODO : Handle this another way
                 creationTime = order.CreationTime;
-            }
-        }
 
-        public void CreateCustomerOrders(SimulationInterval interval,
-            Quantity customerOrderQuantity)
-        {
-            if (customerOrderQuantity == null)
-            {
-                // use Martin's original cop creator
-                CreateCustomerOrders(interval);
-                return;
-            }
-            
-            IDbMasterDataCache masterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
-            IDbTransactionData dbTransactionData =
-                ZppConfiguration.CacheManager.GetDbTransactionData();
-            OrderArrivalRate orderArrivalRate;
-            
-                // (Menge der zu erzeugenden auftrage im intervall +1) / (die dauer des intervalls)
-                // works only small numbers e.g. 10
-                orderArrivalRate =
-                    new OrderArrivalRate((double) (customerOrderQuantity.GetValue() * 2) /
-                                         interval.Interval);
-
-                if (_orderGenerator == null ||
-                _orderGenerator.GetOrderArrivalRate().Equals(orderArrivalRate) == false)
-            {
-                _orderGenerator = TestScenario.GetOrderGenerator(new MinDeliveryTime(200),
-                    new MaxDeliveryTime(1430), orderArrivalRate, masterDataCache.M_ArticleGetAll(),
-                    masterDataCache.M_BusinessPartnerGetAll());
-            }
-
-            var random = new Random();
-            var startOrderCreation = interval.StartAt;
-            var endOrderCreation = interval.EndAt;
-            int createdCustomerOrders = 0;
-
-            // Generate exact given quantity of customerOrders
-            while (true)
-            {
-                long creationTime = startOrderCreation +
-                                    (long) random.NextDouble() *
-                                    (endOrderCreation - startOrderCreation);
-                var order = _orderGenerator.GetNewRandomOrder(time: creationTime);
-                foreach (var orderPart in order.CustomerOrderParts)
-                {
-                    orderPart.CustomerOrder = order;
-                    orderPart.CustomerOrderId = order.Id;
-                    dbTransactionData.CustomerOrderPartAdd(orderPart);
-                }
-
-                dbTransactionData.CustomerOrderAdd(order);
-                createdCustomerOrders++;
-
-                if (createdCustomerOrders >= customerOrderQuantity.GetValue())
+                if (customerOrderQuantity != null && dbTransactionData.CustomerOrderGetAll().Count >=
+                    customerOrderQuantity.GetValue())
                 {
                     break;
                 }

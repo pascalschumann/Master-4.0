@@ -125,7 +125,7 @@ namespace Zpp.ZppSimulator.impl
                 SimulationInterval simulationInterval =
                     new SimulationInterval(i * _interval, _interval - 1);
 
-                StartOneCycle(simulationInterval);
+                StartOneCycle(simulationInterval, customerOrderQuantity);
 
                 if (ZppConfiguration.CacheManager.GetDbTransactionDataArchive().CustomerOrderPartGetAll()
                         .Count() > customerOrderQuantity.GetValue())

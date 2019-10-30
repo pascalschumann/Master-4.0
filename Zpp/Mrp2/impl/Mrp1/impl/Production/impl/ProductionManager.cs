@@ -18,7 +18,7 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Production.impl
 {
     public class ProductionManager
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        
 
         private readonly IDbMasterDataCache _dbMasterDataCache =
             ZppConfiguration.CacheManager.GetMasterDataCache();
@@ -40,8 +40,6 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Production.impl
             }
 
             EntityCollector entityCollector = CreateProductionOrder(demand, demandedQuantity);
-
-            Logger.Debug("ProductionOrder(s) created.");
 
             foreach (var provider in entityCollector.GetProviders())
             {

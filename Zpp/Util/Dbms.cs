@@ -4,13 +4,12 @@ using System.Data.SqlClient;
 using Master40.DB.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using NLog.Extensions.Logging;
 
 namespace Zpp.Util
 {
     public static class Dbms
     {
-        private static readonly NLog.Logger LOGGER = NLog.LogManager.GetCurrentClassLogger();
+        
 
         public static readonly LoggerFactory MyLoggerFactory = new LoggerFactory();
 
@@ -20,13 +19,14 @@ namespace Zpp.Util
         {
             ProductionDomainContexts productionDomainContexts = new ProductionDomainContexts();
             
+            // In case you need detail ef log, reAdd Nlog and enable commented out part
             ProductionDomainContext productionDomainContext = new ProductionDomainContext(
-                new DbContextOptionsBuilder<MasterDBContext>().UseLoggerFactory(MyLoggerFactory)
+                new DbContextOptionsBuilder<MasterDBContext>()// .UseLoggerFactory(MyLoggerFactory)
                     .UseSqlServer(Constants.GetConnectionString(Constants.DefaultDbName)).Options);
             productionDomainContexts.ProductionDomainContext = productionDomainContext;
             
             ProductionDomainContext productionDomainContextArchive = new ProductionDomainContext(
-                new DbContextOptionsBuilder<MasterDBContext>().UseLoggerFactory(MyLoggerFactory)
+                new DbContextOptionsBuilder<MasterDBContext>()// .UseLoggerFactory(MyLoggerFactory)
                     .UseSqlServer(Constants.GetConnectionString(Constants.DefaultDbName + "_archive")).Options);
             productionDomainContexts.ProductionDomainContextArchive =
                 productionDomainContextArchive;
@@ -44,8 +44,8 @@ namespace Zpp.Util
                 // With Sql Server for Mac/Linux
 
             }
-
-            MyLoggerFactory.AddNLog();
+            // In case you need detail ef log, reAdd Nlog and enable following statement
+            // MyLoggerFactory.AddNLog();
 
             // disable tracking (https://docs.microsoft.com/en-us/ef/core/querying/tracking)
             productionDomainContext.ChangeTracker.QueryTrackingBehavior =

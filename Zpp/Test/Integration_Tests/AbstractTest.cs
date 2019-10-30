@@ -13,7 +13,6 @@ namespace Zpp.Test.Integration_Tests
      */
     public abstract class AbstractTest : IDisposable
     {
-        private readonly NLog.Logger LOGGER = NLog.LogManager.GetCurrentClassLogger();
         protected ProductionDomainContext ProductionDomainContext;
 
         protected static TestConfiguration TestConfiguration;

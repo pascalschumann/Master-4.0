@@ -26,8 +26,6 @@ namespace Zpp.DataLayer.impl
      */
     public class DbTransactionData : IDbTransactionData
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-
         private readonly ProductionDomainContext _productionDomainContext;
 
         // TODO: These 3 lines should be removed
@@ -186,15 +184,7 @@ namespace Zpp.DataLayer.impl
                     _productionDomainContext.ProviderToDemand, _productionDomainContext);
             }
 
-            try
-            {
-                _productionDomainContext.SaveChanges();
-            }
-            catch (Exception e)
-            {
-                Logger.Error("DbCache could not be persisted.");
-                throw e;
-            }
+            _productionDomainContext.SaveChanges();
         }
 
         public void CustomerOrderAdd(T_CustomerOrder customerOrder)

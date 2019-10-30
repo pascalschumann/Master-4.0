@@ -14,7 +14,7 @@ namespace Zpp.DataLayer.impl.DemandDomain
      */
     public abstract class Demand : IDemandLogic, IDemandOrProvider
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        
         protected readonly IDemand _demand;
         protected readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
         private readonly Id _id;

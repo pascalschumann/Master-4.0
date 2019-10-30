@@ -20,7 +20,7 @@ namespace Zpp.ZppSimulator.impl
     public class ZppSimulator : IZppSimulator
     {
         const int _interval = 1440;
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        
 
         private readonly IMrp2 _mrp2 = new Mrp2.impl.Mrp2();
         private readonly IConfirmationManager _confirmationManager = new ConfirmationManager();

@@ -16,7 +16,7 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Stock.impl
 {
     public class StockManager
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        
 
         private readonly HashSet<Provider> _alreadyConsideredProviders = new HashSet<Provider>();
 

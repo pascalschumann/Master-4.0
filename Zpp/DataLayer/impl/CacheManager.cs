@@ -21,8 +21,7 @@ namespace Zpp.DataLayer.impl
         private IOpenDemandManager _openDemandManager;
         private TestConfiguration _testConfiguration;
         private IAggregator _aggregator;
-        private readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
-        
+
         public void InitByReadingFromDatabase(string testConfiguration)
         {
             ProductionDomainContexts productionDomainContexts = Dbms.GetDbContext();
@@ -85,7 +84,7 @@ namespace Zpp.DataLayer.impl
                 bool isDeleted = productionDomainContext.Database.EnsureDeleted();
                 if (!isDeleted)
                 {
-                    _logger.Error("Database could not be deleted.");
+                    // pass
                 }
             }
 
@@ -96,7 +95,7 @@ namespace Zpp.DataLayer.impl
                     Constants.GetConnectionString(Constants.DefaultDbName));
                 if (wasDropped == false)
                 {
-                    _logger.Warn($"Database {Constants.GetDbName()} could not be dropped.");
+                    // pass
                 }
             }
 

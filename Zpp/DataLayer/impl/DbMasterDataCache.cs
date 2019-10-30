@@ -18,7 +18,7 @@ namespace Zpp.DataLayer.impl
     public class DbMasterDataCache : IDbMasterDataCache
     {
         private readonly ProductionDomainContext _productionDomainContext;
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
 
         // cached tables
         // M_*
@@ -65,9 +65,8 @@ namespace Zpp.DataLayer.impl
 
         internal void Clone(ProductionDomainContext productionDomainContext)
         {
-
-            DbTransactionData.InsertRange(_articles.GetAll(),
-                productionDomainContext.Articles, productionDomainContext);
+            DbTransactionData.InsertRange(_articles.GetAll(), productionDomainContext.Articles,
+                productionDomainContext);
             DbTransactionData.InsertRange(_articleBoms.GetAll(),
                 productionDomainContext.ArticleBoms, productionDomainContext);
 
@@ -80,37 +79,28 @@ namespace Zpp.DataLayer.impl
             DbTransactionData.InsertRange(_businessPartners.GetAll(),
                 productionDomainContext.BusinessPartners, productionDomainContext);
 
-            DbTransactionData.InsertRange(_resources.GetAll(),
-                productionDomainContext.Resources, productionDomainContext);
-            
+            DbTransactionData.InsertRange(_resources.GetAll(), productionDomainContext.Resources,
+                productionDomainContext);
+
             DbTransactionData.InsertRange(_resourceSkills.GetAll(),
                 productionDomainContext.ResourceSkills, productionDomainContext);
-            
+
             DbTransactionData.InsertRange(_resourceTools.GetAll(),
                 productionDomainContext.ResourceTools, productionDomainContext);
-            
+
             DbTransactionData.InsertRange(_resourceSetups.GetAll(),
                 productionDomainContext.ResourceSetups, productionDomainContext);
-            
-            DbTransactionData.InsertRange(_operations.GetAll(),
-                productionDomainContext.Operations, productionDomainContext);
-            
-            DbTransactionData.InsertRange(_stocks.GetAll(),
-                productionDomainContext.Stocks, productionDomainContext);
-            
-            DbTransactionData.InsertRange(_units.GetAll(),
-                productionDomainContext.Units, productionDomainContext);
 
+            DbTransactionData.InsertRange(_operations.GetAll(), productionDomainContext.Operations,
+                productionDomainContext);
 
-            try
-            {
-                productionDomainContext.SaveChanges();
-            }
-            catch (Exception e)
-            {
-                Logger.Error("Clone could not be persisted.");
-                throw e;
-            }
+            DbTransactionData.InsertRange(_stocks.GetAll(), productionDomainContext.Stocks,
+                productionDomainContext);
+
+            DbTransactionData.InsertRange(_units.GetAll(), productionDomainContext.Units,
+                productionDomainContext);
+            
+            productionDomainContext.SaveChanges();
         }
 
         public List<M_BusinessPartner> M_BusinessPartnerGetAll()

@@ -12,7 +12,7 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Purchase.impl
 {
     public class PurchaseManager
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        
         private readonly IDbMasterDataCache _dbMasterDataCache = ZppConfiguration.CacheManager.GetMasterDataCache();
 
         private readonly ICacheManager _cacheManager =
@@ -49,16 +49,7 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Purchase.impl
             purchaseOrder.BusinessPartner = businessPartner;
             purchaseOrder.Name = $"PurchaseOrder{article.Name} for " +
                                  $"businessPartner {purchaseOrder.BusinessPartner.Id}";
-
-            // demand cannot be fulfilled in time
-            if (articleToBusinessPartner.TimeToDelivery > dueTime.GetValue())
-            {
-                Logger.Error($"Article {article.GetId()} from demand {demand.GetId()} " +
-                             $"should be available at {dueTime}, but " +
-                             $"businessPartner {businessPartner.Id} " +
-                             $"can only deliver at {articleToBusinessPartner.TimeToDelivery}.");
-            }
-
+            
             // init a new purchaseOderPart
             T_PurchaseOrderPart tPurchaseOrderPart = new T_PurchaseOrderPart();
 
@@ -77,8 +68,7 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Purchase.impl
             }
 
             tPurchaseOrderPart.State = State.Created;
-
-            Logger.Debug("PurchaseOrderPart created.");
+            
             PurchaseOrderPart purchaseOrderPart =
                 new PurchaseOrderPart(tPurchaseOrderPart, null);
             

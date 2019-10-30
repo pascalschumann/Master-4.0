@@ -19,9 +19,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain
 
         protected readonly IDbMasterDataCache _dbMasterDataCache =
             ZppConfiguration.CacheManager.GetMasterDataCache();
-
-        protected static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-
+        
         public Provider(IProvider provider)
         {
             if (provider == null)

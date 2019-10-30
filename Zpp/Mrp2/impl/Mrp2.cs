@@ -20,7 +20,7 @@ namespace Zpp.Mrp2.impl
 {
     public class Mrp2 : IMrp2
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        
         private readonly IJobShopScheduler _jobShopScheduler = new JobShopScheduler();
 
 
@@ -73,8 +73,7 @@ namespace Zpp.Mrp2.impl
             ZppConfiguration.PerformanceMonitors.Start(InstanceToTrack.JobShopScheduling);
             JobShopScheduling();
             ZppConfiguration.PerformanceMonitors.Stop(InstanceToTrack.JobShopScheduling);
-
-            Logger.Info("MrpRun finished.");
+            
         }
 
         private void AssertGraphsAreNotEmpty(OrderOperationGraph orderOperationGraph)

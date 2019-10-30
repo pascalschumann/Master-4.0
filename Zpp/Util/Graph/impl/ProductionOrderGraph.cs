@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Zpp.DataLayer.impl.ProviderDomain.Wrappers;
@@ -61,7 +62,7 @@ namespace Zpp.Util.Graph.impl
             StackSet<IEdge> newEdges = new StackSet<IEdge>();
             foreach (var rootNode in roots)
             {
-                newEdges.PushAll(CreateGraphFor(rootNode));
+                newEdges.PushAll(CreateGraphFor(rootNode, typeof(ProductionOrder), this));
             }
             Clear();
             AddEdges(newEdges);
@@ -77,7 +78,7 @@ namespace Zpp.Util.Graph.impl
             put D on the list -> {A,B,D}
             since D is a leaf, print the list (A,B,D)
          */
-        private List<IEdge> CreateGraphFor(INode root)
+        public static List<IEdge> CreateGraphFor(INode root, Type type, IDirectedGraph<INode> directedGraph)
         {
             Stack<INode> stack = new Stack<INode>();
             Stack<INode> pathProductionOrders = new Stack<INode>();
@@ -90,7 +91,7 @@ namespace Zpp.Util.Graph.impl
                 // Do something
                 INode popped = stack.Pop();
                 
-                if (popped.GetEntity().GetType() == typeof(ProductionOrder))
+                if (popped.GetEntity().GetType() == type)
                 {
                     pathProductionOrders.Push(popped);
                     if (lastProductionOrder == null)
@@ -105,7 +106,7 @@ namespace Zpp.Util.Graph.impl
                 }
 
                 // Push other objects on the stack.
-                INodes successorNodes = GetSuccessorNodes(popped);
+                INodes successorNodes = directedGraph.GetSuccessorNodes(popped);
                 if (successorNodes != null)
                 {
                     foreach (var successorNode in successorNodes)

@@ -4,7 +4,7 @@ using Zpp.Util.Graph;
 
 namespace Zpp.Mrp2.impl.Mrp1.impl.Production.impl.ProductionTypes
 {
-    public class ProductionOrderOperationGraphsAsDictionary : Dictionary<ProductionOrder, IDirectedGraph<INode>>
+    public class OperationGraphsAsDictionary : Dictionary<ProductionOrder, IDirectedGraph<INode>>
     {
     }
 }

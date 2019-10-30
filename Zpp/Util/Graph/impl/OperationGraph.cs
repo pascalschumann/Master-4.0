@@ -6,6 +6,9 @@ using Zpp.DataLayer.impl.ProviderDomain.Wrappers;
 
 namespace Zpp.Util.Graph.impl
 {
+    /**
+     * root is production order, followed by operations ordered by hierarchyNumber
+     */
     public class OperationGraph : DirectedGraph
     {
         public OperationGraph(ProductionOrder productionOrder) : base()
@@ -26,17 +29,13 @@ namespace Zpp.Util.Graph.impl
 
             productionOrderOperations =
                 productionOrderOperations.OrderBy(x => x.GetHierarchyNumber().GetValue());
-            ProductionOrderOperation predecessor = null;
+            // root is always the productionOrder
+            INode predecessor = new Node(productionOrder);
             foreach (var operation in productionOrderOperations)
             {
-                if (predecessor == null)
-                {
-                    predecessor = operation;
-                }
-                else
-                {
-                    AddEdge(new Edge(new Node(predecessor), new Node(operation)));
-                }
+                INode operationNode = new Node(operation);
+                    AddEdge(new Edge(predecessor, operationNode));
+                    predecessor = operationNode;
             }
         }
 

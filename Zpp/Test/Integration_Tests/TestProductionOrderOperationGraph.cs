@@ -12,9 +12,9 @@ using Zpp.ZppSimulator;
 
 namespace Zpp.Test.Integration_Tests
 {
-    public class TestProductionOrderOperationGraph : AbstractTest
+    public class TestOperationGraph : AbstractTest
     {
-        public TestProductionOrderOperationGraph(): base(false)
+        public TestOperationGraph(): base(false)
         {
             
         }
@@ -36,7 +36,7 @@ namespace Zpp.Test.Integration_Tests
         
         [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
         [InlineData(TestConfigurationFileNames.TRUCK_COP_1_LOTSIZE_1)]
-        public void TestProductionOrderOperationGraphStaysTheSame(string testConfigurationFileName)
+        public void TestOperationGraphStaysTheSame(string testConfigurationFileName)
         {
             InitThisTest(testConfigurationFileName);
             

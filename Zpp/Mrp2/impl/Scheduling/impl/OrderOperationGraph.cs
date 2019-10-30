@@ -139,16 +139,16 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
 
             INode productionOrderNode = new Node(provider);
 
-            IDirectedGraph<INode> productionOrderOperationGraph =
+            IDirectedGraph<INode> operationGraph =
                 new OperationGraph((ProductionOrder) productionOrderNode.GetEntity());
-            if (productionOrderOperations.Count.Equals(productionOrderOperationGraph
+            if (productionOrderOperations.Count.Equals(operationGraph
                     .CountEdges()) == false)
             {
                 throw new MrpRunException(
                     "One of the compared collections do not have all operations.");
             }
 
-            AddEdges(productionOrderOperationGraph.GetEdges());
+            AddEdges(operationGraph.GetEdges());
             // connect
             foreach (var operation in productionOrderOperations)
             {

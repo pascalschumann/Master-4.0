@@ -13,29 +13,32 @@ namespace Zpp.Util.Graph.impl
     /**
      * An impl for a directed graph. It's important to always return null if aggregation is empty
      * (simplify error detecting, since no empty collections should pass through the program).
+     * A directed graph is stored/read in by its edges, from that edges a list of nodes is built up
+     * where every node has:
+     * - a list of successors
+     * - a list of predecessors
+     * --> so that O(1) can be realized for most operations
      */
     public class DirectedGraph : IDirectedGraph<INode>
     {
-        protected IStackSet<IEdge> Edges = new StackSet<IEdge>();
-
+        protected IStackSet<INode> Nodes = new StackSet<INode>();
+        private int _edgeCount = 0;
+        
+        
         protected readonly IGraphviz Graphviz = new Graphviz();
 
         public DirectedGraph()
         {
         }
-
-        public INodes GetSuccessorNodes(INode tailNode)
+        
+        public DirectedGraph(List<IEdge> edges)
         {
-            INodes successors = new Nodes();
-            // new Nodes(Edges.Where(x => x.GetTailNode().Equals(tailNode))
-            // .Select(x => x.GetHeadNode()));
-            foreach (var edge in Edges)
-            {
-                if (edge.TailNode.Equals(tailNode))
-                {
-                    successors.Add(edge.HeadNode);
-                }
-            }
+            AddEdges(edges);
+        }
+
+        public INodes GetSuccessorNodes(INode node)
+        {
+            INodes successors = node.GetSuccessors();
 
             if (successors.Any() == false)
             {
@@ -45,66 +48,24 @@ namespace Zpp.Util.Graph.impl
             return successors;
         }
 
-        public void GetPredecessorNodesRecursively(INodes predecessorNodes, INodes newNodes,
-            bool firstRun = true)
+        public INodes GetPredecessorNodes(INode node)
         {
-            INodes newNodes2 = new Nodes();
-            foreach (var headNode in newNodes)
-            {
-                if (GetAllEdgesTowardsHeadNode(headNode) == null)
-                {
-                    continue;
-                }
+            INodes predecessors = node.GetPredecessors();
 
-                foreach (var edge in GetAllEdgesTowardsHeadNode(headNode))
-                {
-                    newNodes2.Add(edge.GetTailNode());
-                }
-            }
-
-            if (firstRun == false)
-            {
-                predecessorNodes.AddAll(newNodes);
-            }
-
-            if (newNodes2.Any() == false)
-            {
-                return;
-            }
-
-            GetPredecessorNodesRecursively(predecessorNodes, newNodes2, false);
-        }
-
-        public INodes GetPredecessorNodes(INode headNode)
-        {
-            INodes predecessorNodes = new Nodes();
-
-            IStackSet<IEdge> edgesTowardsHeadNode = GetAllEdgesTowardsHeadNode(headNode);
-            if (edgesTowardsHeadNode == null)
+            if (predecessors.Any() == false)
             {
                 return null;
             }
 
-            foreach (var edge in edgesTowardsHeadNode)
-            {
-                INode tailNode = edge.TailNode;
-                if (tailNode != null && tailNode.GetEntity() != null)
-                {
-                    predecessorNodes.Add(tailNode);
-                }
-            }
-
-            if (predecessorNodes.Any() == false)
-            {
-                return null;
-            }
-
-            return predecessorNodes;
+            return predecessors;
         }
 
         public void AddEdges(IEnumerable<IEdge> edges)
         {
-            Edges.PushAll(edges);
+            foreach (var edge in edges)
+            {
+                AddEdge(edge);
+            }
         }
 
         public void AddEdges(INode fromNode, INodes nodes)
@@ -117,34 +78,26 @@ namespace Zpp.Util.Graph.impl
 
         public void AddEdge(IEdge edge)
         {
-            Edges.Push(edge);
+            INode tail = edge.TailNode;
+            INode head = edge.HeadNode;
+            if (Nodes.Contains(tail) == false)
+            {
+                Nodes.Push(tail);
+            }
+            tail.AddSuccessor(head);
+                
+            if (Nodes.Contains(head) == false)
+            {
+                Nodes.Push(head);
+            }
+            head.AddPredecessor(tail);
+
+            _edgeCount++;
         }
 
         public int CountEdges()
         {
-            return GetAllHeadNodes().Count();
-        }
-
-        public IStackSet<IEdge> GetAllEdgesFromTailNode(INode tailNode)
-        {
-            List<IEdge> edges = Edges.Where(x => x.TailNode.Equals(tailNode)).ToList();
-            if (edges.Any() == false)
-            {
-                return null;
-            }
-
-            return new StackSet<IEdge>(edges);
-        }
-
-        public IStackSet<IEdge> GetAllEdgesTowardsHeadNode(INode headNode)
-        {
-            IEnumerable<IEdge> edges = Edges.Where(x => x.HeadNode.Equals(headNode));
-            if (edges.Any() == false)
-            {
-                return null;
-            }
-
-            return new StackSet<IEdge>(edges);
+            return _edgeCount;
         }
 
         public virtual string AsString()
@@ -170,17 +123,6 @@ namespace Zpp.Util.Graph.impl
             }
 
             return mystring;
-        }
-
-        public IStackSet<INode> GetAllHeadNodes()
-        {
-            INodes headNodes = new Nodes(Edges.Select(x => x.GetHeadNode()));
-            if (headNodes.Any() == false)
-            {
-                return null;
-            }
-
-            return new StackSet<INode>(headNodes);
         }
 
         /// 
@@ -233,29 +175,10 @@ namespace Zpp.Util.Graph.impl
             return traversed;
         }
 
-        public IStackSet<INode> GetAllTailNodes()
-        {
-            INodes tailNodes = new Nodes(Edges.Select(x => x.TailNode));
-            if (tailNodes.Any() == false)
-            {
-                return null;
-            }
-
-            return new StackSet<INode>(tailNodes);
-        }
-
         public IStackSet<INode> GetAllUniqueNodes()
         {
-            IStackSet<INode> fromNodes = GetAllTailNodes();
-            IStackSet<INode> toNodes = GetAllHeadNodes();
             IStackSet<INode> uniqueNodes = new StackSet<INode>();
-            if (fromNodes == null && toNodes == null)
-            {
-                throw new MrpRunException("How could it happen, that no nodes are in this graph ?");
-            }
-
-            uniqueNodes.PushAll(fromNodes);
-            uniqueNodes.PushAll(toNodes);
+            uniqueNodes.PushAll(Nodes);
 
             if (uniqueNodes.Any() == false)
             {
@@ -267,53 +190,46 @@ namespace Zpp.Util.Graph.impl
 
         public void RemoveNode(INode node)
         {
-            IStackSet<IEdge> edgesTowardsNode = GetAllEdgesTowardsHeadNode(node);
-            IStackSet<IEdge> edgesFromNode = GetAllEdgesFromTailNode(node);
-            RemoveAllEdgesFromTailNode(node);
-            RemoveAllEdgesTowardsHeadNode(node);
-
-            // node is NOT start node AND NOT leaf node
-            if (edgesTowardsNode != null && edgesFromNode != null)
+            // e.g. A -> B --> C, B is removed
+            
+            // holds A
+            INodes predecessors = node.GetPredecessors();
+            // holds C
+            INodes successors = node.GetSuccessors();
+            
+            
+            foreach (var predecessor in predecessors)
             {
-                foreach (var edgeTowardsNode in edgesTowardsNode)
-
-                {
-                    foreach (var edgeFromNode in edgesFromNode)
-                    {
-                        AddEdge(new Edge(edgeTowardsNode.GetTailNode(),
-                            edgeFromNode.GetHeadNode()));
-                    }
-                }
+                // predecessor is A
+                
+                // remove edge A -> B
+                predecessor.RemoveSuccessor(node);
+                // add edge A -> C
+                predecessor.AddSuccessors(successors);
             }
-        }
-
-        public void RemoveAllEdgesFromTailNode(INode tailNode)
-        {
-            List<IEdge> edges = Edges.Where(x => x.GetTailNode().Equals(tailNode)).ToList();
-            foreach (var edge in edges)
+            foreach (var successor in successors)
             {
-                Edges.Remove(edge);
+                // successor is C
+                
+                // remove edge B -> C
+                successor.RemovePredecessor(node);
+                // add edge A -> C
+                successor.AddPredecessors(predecessors);
             }
-        }
-
-        public void RemoveAllEdgesTowardsHeadNode(INode headNode)
-        {
-            List<IEdge> edges = Edges.Where(x => x.GetHeadNode().Equals(headNode)).ToList();
-            foreach (var edge in edges)
-            {
-                Edges.Remove(edge);
-            }
+            // remove node
+            Nodes.Remove(node);
         }
 
         public INodes GetLeafNodes()
         {
             List<INode> leafs = new List<INode>();
-            foreach (var headNode in GetAllHeadNodes())
+            
+            foreach (var node in Nodes)
             {
-                INodes successors = GetSuccessorNodes(headNode);
+                INodes successors = GetSuccessorNodes(node);
                 if (successors == null || successors.Any() == false)
                 {
-                    leafs.Add(headNode);
+                    leafs.Add(node);
                 }
             }
 
@@ -327,18 +243,19 @@ namespace Zpp.Util.Graph.impl
 
         public bool IsEmpty()
         {
-            return Edges == null || Edges.Any() == false;
+            return Nodes == null || Nodes.Any() == false;
         }
 
         public INodes GetRootNodes()
         {
             INodes roots = new Nodes();
-            foreach (var uniqueNode in GetAllUniqueNodes())
+            
+            foreach (var node in Nodes)
             {
-                INodes predecessors = GetPredecessorNodes(uniqueNode);
+                INodes predecessors = GetPredecessorNodes(node);
                 if (predecessors == null)
                 {
-                    roots.Add(uniqueNode);
+                    roots.Add(node);
                 }
             }
 
@@ -383,49 +300,40 @@ namespace Zpp.Util.Graph.impl
             AddEdges(graphToInsert.GetEdges().GetAll());
         }
 
-        public static IDirectedGraph<INode> MergeDirectedGraphs(
-            List<IDirectedGraph<INode>> directedGraphs)
+        public INodes GetNodes()
         {
-            IDirectedGraph<INode> mergedDirectedGraph = new DirectedGraph();
-            foreach (var directedGraph in directedGraphs)
-            {
-                foreach (var edge in directedGraph.GetAllEdges())
-                {
-                    mergedDirectedGraph.AddEdge(edge);
-                }
-            }
-
-            return mergedDirectedGraph;
+            INodes nodes = new Nodes();
+            nodes.AddAll(Nodes);
+            return nodes;
         }
 
         public List<IEdge> GetAllEdges()
         {
-            if (Edges.Any() == false)
-            {
-                return null;
-            }
-
-            return Edges.GetAll();
+            return GetEdges().ToList();
         }
 
         public IStackSet<IEdge> GetEdges()
         {
-            if (Edges.Any() == false)
+            IStackSet<IEdge> edges = new StackSet<IEdge>();
+
+            // one is enough either all successors or all predecessors
+            foreach (var node in Nodes)
+            {
+                foreach (var successor in node.GetSuccessors())
+                {
+                    edges.Push(new Edge(node, successor));
+                }
+            }
+            if (edges.Any() == false)
             {
                 return null;
             }
-
-            return Edges;
+            return edges;
         }
 
         public void Clear()
         {
-            Edges.Clear();
-        }
-
-        public bool Exists(IEdge edge)
-        {
-            return Edges.Any(x => x.Equals(edge));
+            Nodes.Clear();
         }
 
         public void RemoveTopDown(INode node)
@@ -441,6 +349,19 @@ namespace Zpp.Util.Graph.impl
             {
                 RemoveTopDown(successor);
             }
+        }
+
+        public void AddNodes(INodes nodes)
+        {
+            foreach (var node in nodes)
+            {
+                AddNode(node);
+            }
+        }
+
+        public void AddNode(INode node)
+        {
+            Nodes.Push(node);
         }
     }
 }

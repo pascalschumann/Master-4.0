@@ -29,9 +29,9 @@ namespace Zpp.Util.Graph.impl
                     productionOrderOperationGraph);
             }
 
-            Edges = _productionOrderGraph.GetEdges();
-            
-            // _productionOrderGraph = new ProductionOrderDirectedGraph(_dbTransactionData, false);
+            Clear();
+            AddNodes(_productionOrderGraph.GetNodes());
+
         }
 
         public ProductionOrderOperations GetAllOperations()

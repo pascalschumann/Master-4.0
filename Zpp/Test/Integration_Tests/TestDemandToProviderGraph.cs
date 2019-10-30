@@ -50,7 +50,7 @@ namespace Zpp.Test.Integration_Tests
 
             IDirectedGraph<INode> demandToProviderGraph = new DemandToProviderGraph();
 
-            Assert.True(demandToProviderGraph.GetAllHeadNodes().Any(),
+            Assert.True(demandToProviderGraph.IsEmpty() == false,
                 "There are no toNodes in the demandToProviderGraph.");
 
             int sumDemandToProviderAndProviderToDemand =

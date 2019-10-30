@@ -31,7 +31,7 @@ namespace Zpp.Util.Graph.impl
                 /*directedGraph.AddEdge(productionOrder,
                     new Edge(productionOrder, productionOrder));
                 _adjacencyList = directedGraph.GetAdjacencyList();*/
-                Edges = null;
+                Clear();
                 return;
             }
 
@@ -74,7 +74,8 @@ namespace Zpp.Util.Graph.impl
                 i++;
             }
 
-            Edges = directedGraph.GetEdges();
+            Clear();
+            AddNodes(directedGraph.GetNodes());
         }
     }
 }

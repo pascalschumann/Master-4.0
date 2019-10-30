@@ -16,17 +16,9 @@ namespace Zpp.Util.Graph
          * one fromNode has many toNodes
          * @return: toNodes
          */
-        INodes GetSuccessorNodes(TNode tailNode);
+        INodes GetSuccessorNodes(TNode node);
         
-        /// <summary>
-        /// traverse graph from leaf upwards to root
-        /// </summary>
-        /// <param name="predecessorNodes">empty collection, will contain result (the traversed nodes)</param>
-        /// <param name="newNodes">collection initialized with your wanted node that is the leaf</param>
-        /// <param name="firstRun">must always be true if called from outside</param>
-        void GetPredecessorNodesRecursively(INodes predecessorNodes, INodes newNodes, bool firstRun = true);
-
-        INodes GetPredecessorNodes(INode headNode);
+        INodes GetPredecessorNodes(INode node);
 
         void AddEdges(IEnumerable<IEdge> edges);
         
@@ -36,29 +28,17 @@ namespace Zpp.Util.Graph
 
         int CountEdges();
 
-        IStackSet<INode> GetAllHeadNodes();
-        
-        IStackSet<INode> GetAllTailNodes();
-
         /**
          * No duplicates should be contained
          */
         IStackSet<INode> GetAllUniqueNodes();
 
-        IStackSet<IEdge> GetAllEdgesFromTailNode(TNode tailNode);
-        
-        IStackSet<IEdge> GetAllEdgesTowardsHeadNode(TNode headNode);
-        
         INodes TraverseDepthFirst(Action<TNode, INodes, INodes> action, CustomerOrderPart startNode);
      
         /**
-         * This removed the node, the edges towards it will point to its childs afterwards
+         * This removes the node, the edges towards it will point to its childs afterwards
          */
         void RemoveNode(TNode node);
-
-        void RemoveAllEdgesFromTailNode(TNode tailNode);
-
-        void RemoveAllEdgesTowardsHeadNode(TNode headNode);
 
         INodes GetLeafNodes();
         
@@ -70,9 +50,13 @@ namespace Zpp.Util.Graph
 
         IStackSet<IEdge> GetEdges();
 
-        void Clear();
+        INodes GetNodes();
 
-        bool Exists(IEdge edge);
+        void AddNodes(INodes nodes);
+
+        void AddNode(INode node);
+
+        void Clear();
 
         void RemoveTopDown(INode node);
 

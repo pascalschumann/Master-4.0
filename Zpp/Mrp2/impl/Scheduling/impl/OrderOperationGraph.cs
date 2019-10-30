@@ -93,7 +93,7 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
                         new ProductionOrderOperationGraph(
                             (ProductionOrder) productionOrderNode.GetEntity());
                     if (productionOrderOperations.Count.Equals(productionOrderOperationGraph
-                            .GetAllHeadNodes().Count()) == false)
+                            .CountEdges()) == false)
                     {
                         throw new MrpRunException(
                             "One of the compared collections do not have all operations.");

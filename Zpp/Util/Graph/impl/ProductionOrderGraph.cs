@@ -28,8 +28,8 @@ namespace Zpp.Util.Graph.impl
             {
                 Traverse( rootNode,  null,  edges);
             }
-            Edges = new StackSet<IEdge>();
-            Edges.PushAll(edges);
+            Clear();
+            AddEdges(edges);
         }
 
         private void Traverse(INode node, INode lastProductionOrder, List<IEdge> edges)
@@ -63,7 +63,8 @@ namespace Zpp.Util.Graph.impl
             {
                 newEdges.PushAll(CreateGraphFor(rootNode));
             }
-            Edges = newEdges;
+            Clear();
+            AddEdges(newEdges);
         }
         
         /** basic principle:

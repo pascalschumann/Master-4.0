@@ -13,24 +13,36 @@ namespace Zpp.Test.Unit_Tests
         {
             INode[] nodes = EntityFactory.CreateDummyNodes(7);
             IDirectedGraph<INode> directedGraph = CreateBinaryDirectedGraph(nodes);
-            Assert.True(directedGraph.AsString() != null, 
+            Assert.True(directedGraph.AsString() != null,
                 "AsString() must work in unit tests without a database.");
         }
 
         [Fact]
         public void TestGetLeafs()
         {
-            
             INode[] nodes = EntityFactory.CreateDummyNodes(7);
             IDirectedGraph<INode> directedGraph = CreateBinaryDirectedGraph(nodes);
             INodes leafs = directedGraph.GetLeafNodes();
-            
+
             Assert.True(leafs != null, "There should be leafs in the graph.");
-            
+
             for (int i = 3; i < 7; i++)
             {
                 Assert.True(leafs.Contains(nodes[i]), $"Leafs do not contain node {nodes[i]}.");
             }
+        }
+
+        [Fact]
+        public void TestGetRoots()
+        {
+            INode[] nodes = EntityFactory.CreateDummyNodes(7);
+            IDirectedGraph<INode> directedGraph = CreateBinaryDirectedGraph(nodes);
+            INodes roots = directedGraph.GetRootNodes();
+
+            Assert.True(roots != null, "There should be roots in the graph.");
+
+            Assert.True(roots.Contains(nodes[0]), $"Leafs do not contain node {nodes[0]}.");
+            Assert.True(roots.Count() == 1, "Roots must contain exact one node.");
         }
 
         [Fact]
@@ -53,7 +65,7 @@ namespace Zpp.Test.Unit_Tests
                 }
             }
         }
-        
+
         [Fact]
         public void TestGetPredecessorNodes()
         {

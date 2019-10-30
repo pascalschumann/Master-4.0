@@ -6,14 +6,16 @@ using Zpp.DataLayer.impl.ProviderDomain.Wrappers;
 
 namespace Zpp.Util.Graph.impl
 {
-    public class ProductionOrderOperationGraph : ProductionOrderGraph, IDirectedGraph<INode>
+    public class ProductionOrderOperationGraph : DirectedGraph
     {
-        /*private readonly Dictionary<ProductionOrder, IDirectedGraph<INode>>
-            _directedProductionOrderOperationGraphs = new Dictionary<ProductionOrder, IDirectedGraph<INode>>();*/
-
 
         public ProductionOrderOperationGraph(ProductionOrder productionOrder) : base()
         {
+            CreateGraph1(productionOrder);
+        }
+
+        private void CreateGraph1(ProductionOrder productionOrder)
+        { 
             IAggregator aggregator = ZppConfiguration.CacheManager.GetAggregator();
 
             Dictionary<HierarchyNumber, List<ProductionOrderOperation>>

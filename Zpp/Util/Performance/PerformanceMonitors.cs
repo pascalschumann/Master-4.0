@@ -39,19 +39,20 @@ namespace Zpp.Util.Performance
         {
             _performanceMonitor.Stop();
         }
-
-        public override string ToString()
+        
+        // replaces ToString() since debugger is unusable
+        public string AsString()
         {
             // create report
             string report = "---------------------------------------" + Environment.NewLine;
 
             foreach (InstanceToTrack instancesToTrack in Enum.GetValues(typeof(InstanceToTrack)))
             {
-                report += _monitors[instancesToTrack].ToString() + Environment.NewLine +
+                report += _monitors[instancesToTrack].AsString() + Environment.NewLine +
                           Environment.NewLine;
             }
 
-            report += _performanceMonitor.ToString() + Environment.NewLine + Environment.NewLine;
+            report += _performanceMonitor.AsString() + Environment.NewLine + Environment.NewLine;
             // long currentMemoryUsage = GC.GetTotalMemory(false);
             long currentMemoryUsage = Process.GetCurrentProcess().WorkingSet64;
             report +=

@@ -48,9 +48,9 @@ namespace Zpp.Util.Graph.impl
             return _id.GetHashCode();
         }
 
-        public override string ToString()
+        public string AsString()
         {
-            return $"{_entity.ToString()}";
+            return $"{_entity.AsString()}";
         }
     }
 }

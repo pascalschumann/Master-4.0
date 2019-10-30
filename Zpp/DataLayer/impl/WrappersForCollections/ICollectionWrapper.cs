@@ -25,5 +25,8 @@ namespace Zpp.DataLayer.impl.WrappersForCollections
         void Remove(T t);
 
         T GetById(Id id);
+
+        // replaces ToString() since debugger is unusable
+        string AsString();
     }
 }

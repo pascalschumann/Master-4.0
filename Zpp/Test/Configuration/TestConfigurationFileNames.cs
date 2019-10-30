@@ -17,6 +17,8 @@ namespace Zpp.Test.Configuration
 
         // truck
         public const string TRUCK_COP_5_LOTSIZE_2 = _basePath + "truck_cop_5_lotsize_2.json";
+        public const string TRUCK_COP_20_LOTSIZE_5 = _basePath + "truck_cop_20_lotsize_5.json";
+        public const string TRUCK_COP_20_LOTSIZE_10 = _basePath + "truck_cop_20_lotsize_10.json";
         public const string TRUCK_COP_2_LOTSIZE_2 = _basePath + "truck_cop_2_lotsize_2.json";
         public const string TRUCK_COP_100_LOTSIZE_2 = _basePath + "truck_cop_100_lotsize_2.json";
         public const string TRUCK_COP_500_LOTSIZE_2 = _basePath + "truck_cop_500_lotsize_2.json";

@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
+using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Zpp.DataLayer.impl.DemandDomain.Wrappers;
 using Zpp.Util;
 
 namespace Zpp.DataLayer.impl.OpenDemand
 {
-    public class OpenNodes<T>
+    public class OpenNodes<T> where T: IId
     {
         private readonly Dictionary<M_Article, List<OpenNode<T>>> _openNodes = new Dictionary<M_Article, List<OpenNode<T>>>();
 

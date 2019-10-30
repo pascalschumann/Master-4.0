@@ -55,11 +55,13 @@ namespace Zpp.Util.Graph.impl
                 AddEdge(new Edge(providerToDemand, fromNode, toNode));
             }
         }
+        
+        
 
         /**
          * overriden, because we need the quantity on the arrows
          */
-        public override string ToString()
+        public override string AsString()
         {
             string mystring = "";
             List<IEdge> edges = GetAllEdges();

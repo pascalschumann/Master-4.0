@@ -19,11 +19,9 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
         private readonly T_ProductionOrderOperation _productionOrderOperation;
         private Priority _priority = null;
 
-        public ProductionOrderOperation(T_ProductionOrderOperation productionOrderOperation
-            )
+        public ProductionOrderOperation(T_ProductionOrderOperation productionOrderOperation)
         {
             _productionOrderOperation = productionOrderOperation;
-            
         }
 
         public T_ProductionOrderOperation GetValue()
@@ -42,6 +40,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             {
                 throw new MrpRunException("A readOnly entity cannot be changed anymore.");
             }
+
             _productionOrderOperation.Resource = resource.GetValue();
         }
 
@@ -51,9 +50,10 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             {
                 if (_productionOrderOperation.ResourceId == null)
                 {
-                    throw new MrpRunException("Cannot load Machine, if this operation is not yet planned.");
+                    throw new MrpRunException(
+                        "Cannot load Machine, if this operation is not yet planned.");
                 }
-                
+
                 Id resourceId = new Id(_productionOrderOperation.ResourceId.GetValueOrDefault());
                 IDbMasterDataCache dbMasterDataCache =
                     ZppConfiguration.CacheManager.GetMasterDataCache();
@@ -61,13 +61,15 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
                 _productionOrderOperation.Resource = resource.GetValue();
             }
         }
-        
+
         public Id GetMachineId()
         {
             if (_productionOrderOperation.ResourceId == null)
             {
-                throw new MrpRunException("Cannot get Machine, if this operation is not yet planned.");
+                throw new MrpRunException(
+                    "Cannot get Machine, if this operation is not yet planned.");
             }
+
             return new Id(_productionOrderOperation.ResourceId.GetValueOrDefault());
         }
 
@@ -125,10 +127,11 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             return new Id(_productionOrderOperation.ProductionOrderId);
         }
 
-        public override string ToString()
+        public string AsString()
         {
             string state = Enum.GetName(typeof(State), GetState());
-            return $"{_productionOrderOperation.GetId()}: {_productionOrderOperation.Name}; {state}; IsReadOnly: {IsReadOnly()}";
+            return
+                $"{_productionOrderOperation.GetId()}: {_productionOrderOperation.Name}; {state}; IsReadOnly: {IsReadOnly()}";
         }
 
         public void SetPriority(Priority priority)
@@ -137,6 +140,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             {
                 throw new MrpRunException("A readOnly entity cannot be changed anymore.");
             }
+
             _priority = priority;
         }
 
@@ -158,24 +162,23 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
          */
         public DueTime GetEarliestPossibleStartTime()
         {
-           
             DueTime maxDueTime = null;
             IAggregator aggregator = ZppConfiguration.CacheManager.GetAggregator();
-            
-            foreach (var productionOrderBom in 
-                aggregator.GetAllProductionOrderBomsBy(this))
+
+            foreach (var productionOrderBom in aggregator.GetAllProductionOrderBomsBy(this))
             {
-                DueTime earliestDueTime = aggregator.GetEarliestPossibleStartTimeOf((ProductionOrderBom)productionOrderBom);
+                DueTime earliestDueTime =
+                    aggregator.GetEarliestPossibleStartTimeOf(
+                        (ProductionOrderBom) productionOrderBom);
                 if (maxDueTime == null || earliestDueTime.IsGreaterThan(maxDueTime))
                 {
                     maxDueTime = earliestDueTime;
-
                 }
             }
 
             return maxDueTime;
         }
-        
+
         public void SetFinished()
         {
             _productionOrderOperation.State = State.Finished;
@@ -187,29 +190,30 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             {
                 throw new MrpRunException("Impossible, the operation is already finished.");
             }
+
             _productionOrderOperation.State = State.InProgress;
         }
-        
+
         public DueTime GetEndTimeBackward()
         {
             if (_productionOrderOperation.EndBackward == null)
             {
                 throw new MrpRunException("Cannot request endTime before operation is scheduled.");
             }
+
             return new DueTime(_productionOrderOperation.EndBackward.GetValueOrDefault());
         }
-        
-        
-        
+
+
         public DueTime GetStartTimeBackward()
         {
             if (_productionOrderOperation.StartBackward == null)
             {
                 return null;
             }
+
             DueTime transitionTime =
-                new DueTime(
-                    TransitionTimer.CalculateTransitionTime(GetDuration()));
+                new DueTime(TransitionTimer.CalculateTransitionTime(GetDuration()));
             DueTime startTimeOfOperation =
                 new DueTime(_productionOrderOperation.StartBackward.GetValueOrDefault());
             DueTime startTime = startTimeOfOperation.Minus(transitionTime);
@@ -222,14 +226,15 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             {
                 throw new MrpRunException("A readOnly entity cannot be changed anymore.");
             }
+
             DueTime transitionTime =
-                new DueTime(
-                    TransitionTimer.CalculateTransitionTime(GetDuration()));
+                new DueTime(TransitionTimer.CalculateTransitionTime(GetDuration()));
             // startBackwards
             DueTime startTimeOfOperation = startTime.Plus(transitionTime);
             _productionOrderOperation.StartBackward = startTimeOfOperation.GetValue();
             // endBackwards
-            _productionOrderOperation.EndBackward = startTimeOfOperation.GetValue() + GetDuration().GetValue();
+            _productionOrderOperation.EndBackward =
+                startTimeOfOperation.GetValue() + GetDuration().GetValue();
         }
 
         Duration IScheduleNode.GetDuration()
@@ -251,12 +256,12 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
         {
             return _productionOrderOperation.Start;
         }
-        
+
         public int GetEndTime()
         {
             return _productionOrderOperation.End;
         }
-        
+
         public void SetStartTime(int startTime)
         {
             if (_productionOrderOperation.IsReadOnly)
@@ -283,6 +288,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             {
                 throw new MrpRunException("A readOnly entity cannot be changed anymore.");
             }
+
             // endBackwards
             _productionOrderOperation.EndBackward = endTime.GetValue();
             // startBackwards
@@ -296,6 +302,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             {
                 throw new MrpRunException("A readOnly entity cannot be changed anymore.");
             }
+
             _productionOrderOperation.StartBackward = null;
         }
 
@@ -305,9 +312,10 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
             {
                 throw new MrpRunException("A readOnly entity cannot be changed anymore.");
             }
+
             _productionOrderOperation.EndBackward = null;
         }
-        
+
         /**
          * This is only for initial scheduling within mrp1
          */

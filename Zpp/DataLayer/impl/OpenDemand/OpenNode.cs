@@ -6,7 +6,7 @@ namespace Zpp.DataLayer.impl.OpenDemand
     /**
      * Represents an node, which quantity is not yet exceeded and can satisfy more demands/providers.
      */
-    public class OpenNode<T>
+    public class OpenNode<T>: IId where T: IId
     {
         private readonly T _openNode;
         private readonly Quantity _openQuantity;
@@ -34,7 +34,12 @@ namespace Zpp.DataLayer.impl.OpenDemand
             return _article;
         }
 
-        public override string ToString()
+        public Id GetId()
+        {
+            return _openNode.GetId();
+        }
+
+        public string AsString()
         {
             return $"{_openQuantity} open of '{_openNode}'";
         }

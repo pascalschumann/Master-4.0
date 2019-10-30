@@ -70,6 +70,12 @@ namespace Master40.DB
         {
             return Id.GetHashCode();
         }
+
+        public string AsString()
+        {
+            string fullName = GetType().FullName; 
+            return $"{Id}: {fullName}";
+        }
     }
 
 }

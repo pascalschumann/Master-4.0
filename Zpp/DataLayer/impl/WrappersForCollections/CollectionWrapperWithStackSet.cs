@@ -75,14 +75,14 @@ namespace Zpp.DataLayer.impl.WrappersForCollections
             StackSet.Remove(t);
         }
 
-        public override string ToString()
-        {
-            return StackSet.ToString();
-        }
-
         public T GetById(Id id)
         {
             return StackSet.GetById(id);
+        }
+
+        public string AsString()
+        {
+            return StackSet.AsString();
         }
     }
 }

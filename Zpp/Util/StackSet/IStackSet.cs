@@ -41,5 +41,8 @@ namespace Zpp.Util.StackSet
         int Count();
 
         T GetById(Id id);
+
+        // replaces ToString() since debugger is unusable
+        string AsString();
     }
 }

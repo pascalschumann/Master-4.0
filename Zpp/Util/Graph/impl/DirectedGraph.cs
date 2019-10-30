@@ -147,7 +147,7 @@ namespace Zpp.Util.Graph.impl
             return new StackSet<IEdge>(edges);
         }
 
-        public override string ToString()
+        public virtual string AsString()
         {
             string mystring = "";
             List<IEdge> edges = GetAllEdges();

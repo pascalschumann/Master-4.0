@@ -174,7 +174,7 @@ namespace Zpp.Test.Integration_Tests
             IDirectedGraph<INode> demandToProviderGraph = new DemandToProviderGraph();
 
             
-            string actualDemandToProviderGraph = demandToProviderGraph.ToString();
+            string actualDemandToProviderGraph = demandToProviderGraph.AsString();
             if (File.Exists(demandToProviderGraphFileName) == false)
             {
                 File.WriteAllText(demandToProviderGraphFileName, actualDemandToProviderGraph,

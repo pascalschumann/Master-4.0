@@ -28,5 +28,10 @@ namespace Zpp.DataLayer.impl.WrapperForEntities
         {
             return _purchaseOrder.GetId();
         }
+
+        public string AsString()
+        {
+            return _purchaseOrder.AsString();
+        }
     }
 }

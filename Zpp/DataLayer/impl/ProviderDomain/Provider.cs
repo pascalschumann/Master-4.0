@@ -93,7 +93,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain
             return _id;
         }
 
-        public override string ToString()
+        public string AsString()
         {
             string state = "";
             if (GetState() != null)
@@ -101,7 +101,8 @@ namespace Zpp.DataLayer.impl.ProviderDomain
                 state = Enum.GetName(typeof(State), GetState());
             }
 
-            return $"{GetId()}: {GetArticle().Name};{GetQuantity()}; {state}; IsReadOnly: {IsReadOnly()}";
+            return
+                $"{GetId()}: {GetArticle().Name};{GetQuantity()}; {state}; IsReadOnly: {IsReadOnly()}";
         }
 
         public NodeType GetNodeType()

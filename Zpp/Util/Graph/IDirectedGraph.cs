@@ -77,5 +77,8 @@ namespace Zpp.Util.Graph
         void RemoveTopDown(INode node);
 
         bool IsEmpty();
+        
+        // replaces ToString() since debugger is unusable
+        string AsString();
     }
 }

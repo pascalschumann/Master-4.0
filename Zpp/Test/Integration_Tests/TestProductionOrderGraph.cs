@@ -48,7 +48,7 @@ namespace Zpp.Test.Integration_Tests
             IDirectedGraph<INode> orderDirectedGraph = new ProductionOrderGraph();
 
             
-            string actualOrderGraph = orderDirectedGraph.ToString();
+            string actualOrderGraph = orderDirectedGraph.AsString();
             if (File.Exists(orderGraphFileName) == false)
             {
                 File.WriteAllText(orderGraphFileName, actualOrderGraph,

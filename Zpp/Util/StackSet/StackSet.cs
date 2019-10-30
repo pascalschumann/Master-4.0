@@ -139,13 +139,13 @@ namespace Zpp.Util.StackSet
             _indexId = new Dictionary<Id, int>();
         }
 
-        public override string ToString()
+        public string AsString()
         {
             string result = "";
             
             foreach (var item in _list)
             {
-                result += item.ToString() + Environment.NewLine;
+                result += item.AsString() + Environment.NewLine;
             }
 
             return result;

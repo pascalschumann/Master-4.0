@@ -79,5 +79,10 @@ namespace Zpp.DataLayer.impl.WrappersForCollections
         {
             throw new System.NotImplementedException();
         }
+
+        public string AsString()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

@@ -25,6 +25,9 @@ namespace Master40.DB.Data.WrappersForPrimitives
 
         T AbsoluteValue();
         
+        // replaces ToString() since debugger is unusable
+        string AsString();
+        
         bool IsNull();
 
         bool IsNegative();

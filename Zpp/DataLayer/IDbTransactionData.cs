@@ -132,6 +132,7 @@ namespace Zpp.DataLayer
         
         void AddA(ILinkDemandAndProvider demandAndProviderLink);
         
-        
+        // replaces ToString() since debugger is unusable
+        string AsString();
     }
 }

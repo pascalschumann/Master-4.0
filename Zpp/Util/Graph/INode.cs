@@ -3,10 +3,9 @@ using Zpp.Util.Graph.impl;
 
 namespace Zpp.Util.Graph
 {
-    public interface INode
+    public interface INode: IId
     {
-        Id GetId();
-        
+    
         NodeType GetNodeType();
 
         IScheduleNode GetEntity();

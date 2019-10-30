@@ -2,14 +2,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Master40.DB.Data.WrappersForPrimitives;
+using Zpp.Util.Graph;
 
 namespace Zpp.Util.StackSet
 {
-    public class StackSet<T> : IStackSet<T>
+    public class StackSet<T> : IStackSet<T> where T : IId
     {
         private List<T> _list = new List<T>();
         private int _count = 0;
-        private Dictionary<T, int> _indices = new Dictionary<T, int>();
+        // index to find Element in list via the element itself
+        private Dictionary<T, int> _indexElement = new Dictionary<T, int>();
+        // index to find Element in list via the it's id
+        private Dictionary<Id, int> _indexId = new Dictionary<Id, int>();
 
         public StackSet()
         {
@@ -28,10 +33,11 @@ namespace Zpp.Util.StackSet
             }
 
             // a set contains the element only once, else skip adding
-            if (_indices.ContainsKey(element) == false)
+            if (_indexElement.ContainsKey(element) == false)
             {
                 _list.Add(element);
-                _indices.Add(element, _count);
+                _indexElement.Add(element, _count);
+                _indexId.Add(element.GetId(), _count);
                 _count++;
             }
         }
@@ -43,18 +49,21 @@ namespace Zpp.Util.StackSet
                 return;
             }
 
-            _list.RemoveAt(_indices[element]);
+            _list.RemoveAt(_indexElement[element]);
             _count--;
             reIndexList();
         }
 
         private void reIndexList()
         {
-            _indices = new Dictionary<T, int>();
+            _indexElement = new Dictionary<T, int>();
+            _indexId = new Dictionary<Id, int>();
             for (int i = 0; i < _count; i++)
             {
-                _indices.Add(_list[i], i);
+                _indexElement.Add(_list[i], i);
+                _indexId.Add(_list[i].GetId(), i);
             }
+            
         }
 
         public bool Any()
@@ -126,7 +135,8 @@ namespace Zpp.Util.StackSet
         {
             _list = new List<T>();
             _count = 0;
-            _indices = new Dictionary<T, int>();
+            _indexElement = new Dictionary<T, int>();
+            _indexId = new Dictionary<Id, int>();
         }
 
         public override string ToString()
@@ -139,6 +149,18 @@ namespace Zpp.Util.StackSet
             }
 
             return result;
+        }
+
+        public T GetById(Id id)
+        {
+            if (_indexId.ContainsKey(id))
+            {
+                return _list[_indexId[id]];    
+            }
+            else
+            {
+                return default(T);
+            }
         }
     }
 }

@@ -4,7 +4,7 @@ using Zpp.Util.Graph.impl;
 
 namespace Zpp.Util.Graph
 {
-    public interface IScheduleNode
+    public interface IScheduleNode: IId
     {
         DueTime GetEndTimeBackward();
 
@@ -32,8 +32,6 @@ namespace Zpp.Util.Graph
         bool IsFinished();
 
         NodeType GetNodeType();
-
-        Id GetId();
 
         void ClearStartTimeBackward();
 

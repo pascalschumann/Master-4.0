@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using Master40.DB.Data.WrappersForPrimitives;
+using Zpp.Util.Graph;
 using Zpp.Util.StackSet;
 
 namespace Zpp.DataLayer.impl.WrappersForCollections
 {
-    public class CollectionWrapperWithStackSet<T>: ICollectionWrapper<T>
+    public class CollectionWrapperWithStackSet<T>: ICollectionWrapper<T> where T: IId
     {
         protected readonly IStackSet<T> StackSet = new StackSet<T>();
 
@@ -60,7 +62,7 @@ namespace Zpp.DataLayer.impl.WrappersForCollections
 
         public IStackSet<T> ToStackSet()
         {
-            return new StackSet<T>(StackSet);
+            return StackSet;
         }
 
         public void Clear()
@@ -76,6 +78,11 @@ namespace Zpp.DataLayer.impl.WrappersForCollections
         public override string ToString()
         {
             return StackSet.ToString();
+        }
+
+        public T GetById(Id id)
+        {
+            return StackSet.GetById(id);
         }
     }
 }

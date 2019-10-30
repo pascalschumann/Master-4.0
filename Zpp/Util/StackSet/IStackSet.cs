@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Master40.DB.Data.WrappersForPrimitives;
+using Zpp.Util.Graph;
 
 namespace Zpp.Util.StackSet
 {
@@ -8,9 +10,10 @@ namespace Zpp.Util.StackSet
      * - pop any element with O(1)
      * - remove O(n), since list must be reindexed
      * - push() O(1)
+     * - GetById(): O(1)
      * but remains the idea of a mathematical set: every item exists only once
      */
-    public interface IStackSet<T>: IEnumerable<T>
+    public interface IStackSet<T>: IEnumerable<T> where T: IId
     {
         void Push(T element);
         
@@ -36,5 +39,7 @@ namespace Zpp.Util.StackSet
         IStackSet<T2> As<T2>() where T2: T;
 
         int Count();
+
+        T GetById(Id id);
     }
 }

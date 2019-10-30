@@ -12,11 +12,15 @@ namespace Zpp.Test.Unit_Tests
     public class DummyNode:IScheduleNode
     {
         
-        private Id _id;
+        private readonly Id _id;
 
         public DummyNode(Id id)
         {
             _id = id;
+        }
+        public DummyNode(int id)
+        {
+            _id = new Id(id);
         }
 
         public Id GetId()
@@ -102,6 +106,17 @@ namespace Zpp.Test.Unit_Tests
         public bool IsReadOnly()
         {
             throw new System.NotImplementedException();
+        }
+
+        public override bool Equals(object obj)
+        {
+            DummyNode other = (DummyNode)obj;
+            return _id.Equals(other._id);
+        }
+
+        public override int GetHashCode()
+        {
+            return _id.GetHashCode();
         }
     }
 }

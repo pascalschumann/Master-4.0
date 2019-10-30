@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using Master40.DB.Data.WrappersForPrimitives;
+using Zpp.Util.Graph;
 using Zpp.Util.StackSet;
 
 namespace Zpp.DataLayer.impl.WrappersForCollections
 {
-    public class CollectionWrapperWithList<T>: ICollectionWrapper<T>
+    public class CollectionWrapperWithList<T>: ICollectionWrapper<T> where T: IScheduleNode
     {
         protected readonly List<T> List = new List<T>();
 
@@ -71,6 +73,11 @@ namespace Zpp.DataLayer.impl.WrappersForCollections
         public void Remove(T t)
         {
             List.Remove(t);
+        }
+
+        public T GetById(Id id)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

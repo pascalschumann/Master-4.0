@@ -1,8 +1,9 @@
+using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.Interfaces;
 
 namespace Zpp.Util.Graph
 {
-    public interface IEdge
+    public interface IEdge: IId
     {
         INode GetTailNode();
 

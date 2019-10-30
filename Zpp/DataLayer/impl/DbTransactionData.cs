@@ -416,12 +416,33 @@ namespace Zpp.DataLayer.impl
 
         public Demand DemandsGetById(Id id)
         {
-            return DemandsGetAll().GetAll().Find(x => x.GetId().Equals(id));
+
+                Demand demand = _productionOrderBoms.GetById(id);
+                if (demand == null)
+                {
+                    demand = _stockExchangeDemands.GetById(id);
+                    if (demand == null)
+                    {
+                        demand = _customerOrderParts.GetById(id);
+                    }
+                }
+
+                return demand;
         }
 
         public Provider ProvidersGetById(Id id)
         {
-            return ProvidersGetAll().GetAll().Find(x => x.GetId().Equals(id));
+            Provider provider = _productionOrders.GetById(id);
+            if (provider == null)
+            {
+                provider = _purchaseOrderParts.GetById(id);
+                if (provider == null)
+                {
+                    provider = _stockExchangeProviders.GetById(id);
+                }
+            }
+
+            return provider;
         }
 
         public IProviderToDemandTable ProviderToDemandGetAll()

@@ -8,7 +8,7 @@ using Master40.DB.Data.WrappersForPrimitives;
 
 namespace Master40.DB
 {
-    public class BaseEntity : IBaseEntity
+    public class BaseEntity : IBaseEntity, IId
     {
         // [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]

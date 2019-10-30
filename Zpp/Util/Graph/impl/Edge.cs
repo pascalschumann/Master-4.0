@@ -1,3 +1,5 @@
+using Master40.DB.Data.Helper;
+using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.Interfaces;
 
 namespace Zpp.Util.Graph.impl
@@ -7,6 +9,7 @@ namespace Zpp.Util.Graph.impl
         private readonly ILinkDemandAndProvider _demandToProvider;
         private readonly INode _tailNode;
         private readonly INode _headNode;
+        private readonly Id _id = IdGeneratorHolder.GetIdGenerator().GetNewId();
 
         public Edge(ILinkDemandAndProvider demandToProvider, INode tailNode, INode toNode)
         {
@@ -59,6 +62,11 @@ namespace Zpp.Util.Graph.impl
         public override int GetHashCode()
         {
             return _headNode.GetHashCode() + _tailNode.GetHashCode();
+        }
+
+        public Id GetId()
+        {
+            return _id;
         }
     }
 }

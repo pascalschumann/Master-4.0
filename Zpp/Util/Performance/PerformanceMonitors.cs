@@ -9,14 +9,19 @@ namespace Zpp.Util.Performance
         private readonly Dictionary<InstanceToTrack, PerformanceMonitor> _monitors =
             new Dictionary<InstanceToTrack, PerformanceMonitor>();
 
-        private readonly PerformanceMonitor _performanceMonitor =
-            new PerformanceMonitor(InstanceToTrack.Global);
+        private readonly PerformanceMonitor _performanceMonitor;
 
         public PerformanceMonitors()
         {
-            foreach (InstanceToTrack instancesToTrack in Enum.GetValues(typeof(InstanceToTrack)))
+            _performanceMonitor =
+                new PerformanceMonitor(InstanceToTrack.Global);
+            
+            foreach (InstanceToTrack instanceToTrack in Enum.GetValues(typeof(InstanceToTrack)))
             {
-                _monitors.Add(instancesToTrack, new PerformanceMonitor(instancesToTrack));
+                if (instanceToTrack.Equals(InstanceToTrack.Global) == false)
+                {
+                    _monitors.Add(instanceToTrack, new PerformanceMonitor(instanceToTrack));   
+                }
             }
         }
 

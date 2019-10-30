@@ -16,6 +16,6 @@ namespace Zpp
         // if true, no log info or files are created (e.g. PrintState() etc.)
         public static bool IsInPerformanceMode = false;
         
-        public static PerformanceMonitors PerformanceMonitors = new PerformanceMonitors();
+        public static readonly PerformanceMonitors PerformanceMonitors = new PerformanceMonitors();
     }
 }

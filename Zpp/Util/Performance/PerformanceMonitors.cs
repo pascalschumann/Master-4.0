@@ -9,19 +9,12 @@ namespace Zpp.Util.Performance
         private readonly Dictionary<InstanceToTrack, PerformanceMonitor> _monitors =
             new Dictionary<InstanceToTrack, PerformanceMonitor>();
 
-        private readonly PerformanceMonitor _performanceMonitor;
-
         public PerformanceMonitors()
         {
-            _performanceMonitor =
-                new PerformanceMonitor(InstanceToTrack.Global);
             
             foreach (InstanceToTrack instanceToTrack in Enum.GetValues(typeof(InstanceToTrack)))
             {
-                if (instanceToTrack.Equals(InstanceToTrack.Global) == false)
-                {
                     _monitors.Add(instanceToTrack, new PerformanceMonitor(instanceToTrack));   
-                }
             }
         }
 
@@ -37,12 +30,12 @@ namespace Zpp.Util.Performance
 
         public void Start()
         {
-            _performanceMonitor.Start();
+            _monitors[InstanceToTrack.Global].Start();
         }
 
         public void Stop()
         {
-            _performanceMonitor.Stop();
+            _monitors[InstanceToTrack.Global].Stop();
         }
         
         // replaces ToString() since debugger is unusable
@@ -56,8 +49,7 @@ namespace Zpp.Util.Performance
                 report += _monitors[instancesToTrack].AsString() + Environment.NewLine +
                           Environment.NewLine;
             }
-
-            report += _performanceMonitor.AsString() + Environment.NewLine + Environment.NewLine;
+            
             // long currentMemoryUsage = GC.GetTotalMemory(false);
             long currentMemoryUsage = Process.GetCurrentProcess().WorkingSet64;
             report +=

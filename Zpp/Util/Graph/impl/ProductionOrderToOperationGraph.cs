@@ -22,7 +22,7 @@ namespace Zpp.Util.Graph.impl
             foreach (var productionOrderNode in _productionOrderGraph.GetAllUniqueNodes())
             {
                 IDirectedGraph<INode> productionOrderOperationGraph =
-                    new ProductionOrderOperationGraph((ProductionOrder) productionOrderNode.GetEntity());
+                    new OperationGraph((ProductionOrder) productionOrderNode.GetEntity());
                 
                 // connect
                 _productionOrderGraph.ReplaceNodeByDirectedGraph(productionOrderNode,

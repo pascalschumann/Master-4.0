@@ -90,7 +90,7 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
                         new Node(provider);
 
                     IDirectedGraph<INode> productionOrderOperationGraph =
-                        new ProductionOrderOperationGraph(
+                        new OperationGraph(
                             (ProductionOrder) productionOrderNode.GetEntity());
                     if (productionOrderOperations.Count.Equals(productionOrderOperationGraph
                             .CountEdges()) == false)

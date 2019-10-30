@@ -10,12 +10,11 @@ namespace Zpp
         // public static ProductionType ProductionType = ProductionType.AssemblyLine;
         // public static ProductionType ProductionType = ProductionType.WorkshopProduction;
         public static ProductionType ProductionType = ProductionType.WorkshopProductionClassic;
-        
+
         public static readonly ICacheManager CacheManager = new CacheManager();
 
         // if true, no log info or files are created (e.g. PrintState() etc.)
         public static bool IsInPerformanceMode = false;
         
-        public static readonly PerformanceMonitors PerformanceMonitors = new PerformanceMonitors();
     }
 }

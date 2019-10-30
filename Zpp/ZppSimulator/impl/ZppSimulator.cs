@@ -20,11 +20,17 @@ namespace Zpp.ZppSimulator.impl
     public class ZppSimulator : IZppSimulator
     {
         const int _interval = 1440;
+        private readonly PerformanceMonitors _performanceMonitors;
         
-
-        private readonly IMrp2 _mrp2 = new Mrp2.impl.Mrp2();
+        private readonly IMrp2 _mrp2;
         private readonly IConfirmationManager _confirmationManager = new ConfirmationManager();
         private ICustomerOrderCreator _customerOrderCreator = null;
+
+        public ZppSimulator()
+        {
+            _performanceMonitors = new PerformanceMonitors();
+            _mrp2 = new Mrp2.impl.Mrp2(_performanceMonitors);
+        }
 
         public void StartOneCycle(SimulationInterval simulationInterval)
         {
@@ -37,26 +43,26 @@ namespace Zpp.ZppSimulator.impl
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.GetDbTransactionData();
 
-            ZppConfiguration.PerformanceMonitors.Start(InstanceToTrack.CreateCustomerOrders);
+            _performanceMonitors.Start(InstanceToTrack.CreateCustomerOrders);
             _customerOrderCreator.CreateCustomerOrders(simulationInterval, customerOrderQuantity);
-            ZppConfiguration.PerformanceMonitors.Stop(InstanceToTrack.CreateCustomerOrders);
+            _performanceMonitors.Stop(InstanceToTrack.CreateCustomerOrders);
 
             // Mrp2
-            ZppConfiguration.PerformanceMonitors.Start(InstanceToTrack.Mrp2);
+            _performanceMonitors.Start(InstanceToTrack.Mrp2);
             _mrp2.StartMrp2();
-            ZppConfiguration.PerformanceMonitors.Stop(InstanceToTrack.Mrp2);
+            _performanceMonitors.Stop(InstanceToTrack.Mrp2);
             DebuggingTools.PrintStateToFiles(simulationInterval, dbTransactionData, 0);
 
             // CreateConfirmations
-            ZppConfiguration.PerformanceMonitors.Start(InstanceToTrack.CreateConfirmations);
+            _performanceMonitors.Start(InstanceToTrack.CreateConfirmations);
             _confirmationManager.CreateConfirmations(simulationInterval);
-            ZppConfiguration.PerformanceMonitors.Stop(InstanceToTrack.CreateConfirmations);
+            _performanceMonitors.Stop(InstanceToTrack.CreateConfirmations);
             DebuggingTools.PrintStateToFiles(simulationInterval, dbTransactionData, 1);
 
             // ApplyConfirmations
-            ZppConfiguration.PerformanceMonitors.Start(InstanceToTrack.ApplyConfirmations);
+            _performanceMonitors.Start(InstanceToTrack.ApplyConfirmations);
             _confirmationManager.ApplyConfirmations();
-            ZppConfiguration.PerformanceMonitors.Stop(InstanceToTrack.ApplyConfirmations);
+            _performanceMonitors.Stop(InstanceToTrack.ApplyConfirmations);
             DebuggingTools.PrintStateToFiles(simulationInterval, dbTransactionData, 2);
         }
 
@@ -75,8 +81,7 @@ namespace Zpp.ZppSimulator.impl
         {
             Quantity customerOrderQuantity = new Quantity(ZppConfiguration.CacheManager
                 .GetTestConfiguration().CustomerOrderPartQuantity);
-
-            IMrp2 mrp2 = new Mrp2.impl.Mrp2();
+            
 
             // init transactionData
             ZppConfiguration.CacheManager.ReloadTransactionData();
@@ -85,7 +90,7 @@ namespace Zpp.ZppSimulator.impl
             _customerOrderCreator.CreateCustomerOrders(simulationInterval, customerOrderQuantity);
 
             // execute mrp2
-            mrp2.StartMrp2();
+            _mrp2.StartMrp2();
 
             DebuggingTools.PrintStateToFiles(simulationInterval,
                 ZppConfiguration.CacheManager.GetDbTransactionData(), 0);
@@ -112,7 +117,7 @@ namespace Zpp.ZppSimulator.impl
             IDbTransactionData dbTransactionData = ZppConfiguration.CacheManager.ReloadTransactionData();
             
             string performanceLog = "";
-            ZppConfiguration.PerformanceMonitors.Start();
+            _performanceMonitors.Start();
 
             for (int i = 0; i * _interval < maxSimulatingTime; i++)
             {
@@ -128,10 +133,10 @@ namespace Zpp.ZppSimulator.impl
                     break;
                 }
 
-                performanceLog += ZppConfiguration.PerformanceMonitors.AsString();
+                performanceLog += _performanceMonitors.AsString();
             }
-            ZppConfiguration.PerformanceMonitors.Stop();
-            performanceLog += $"{ZppConfiguration.PerformanceMonitors.AsString()}";
+            _performanceMonitors.Stop();
+            performanceLog += $"{_performanceMonitors.AsString()}";
             
             // TODO: enable this again
             // DebuggingTools.PrintStateToFiles(dbTransactionData, true);

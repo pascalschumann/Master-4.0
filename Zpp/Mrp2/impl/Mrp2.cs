@@ -22,10 +22,11 @@ namespace Zpp.Mrp2.impl
     {
         
         private readonly IJobShopScheduler _jobShopScheduler = new JobShopScheduler();
+        private readonly PerformanceMonitors _performanceMonitors;
 
-
-        public Mrp2()
+        public Mrp2(PerformanceMonitors performanceMonitors)
         {
+            _performanceMonitors = performanceMonitors;
         }
 
         private void ManufacturingResourcePlanning(IDemands dbDemands)
@@ -37,13 +38,13 @@ namespace Zpp.Mrp2.impl
             }
 
             // MaterialRequirementsPlanning
-            ZppConfiguration.PerformanceMonitors.Start(InstanceToTrack.Mrp1);
+            _performanceMonitors.Start(InstanceToTrack.Mrp1);
             IMrp1 mrp1 = new Mrp1.impl.Mrp1(dbDemands);
             mrp1.StartMrp1();
-            ZppConfiguration.PerformanceMonitors.Stop(InstanceToTrack.Mrp1);
+            _performanceMonitors.Stop(InstanceToTrack.Mrp1);
             
             // BackwardForwardBackwardScheduling
-            ZppConfiguration.PerformanceMonitors.Start(InstanceToTrack.BackwardForwardBackwardScheduling);
+            _performanceMonitors.Start(InstanceToTrack.BackwardForwardBackwardScheduling);
             OrderOperationGraph orderOperationGraph = new OrderOperationGraph();
             AssertGraphsAreNotEmpty(orderOperationGraph);
 
@@ -67,12 +68,12 @@ namespace Zpp.Mrp2.impl
             }
 
             ScheduleBackward(childRootNodes.ToStack(), orderOperationGraph, false);
-            ZppConfiguration.PerformanceMonitors.Stop(InstanceToTrack.BackwardForwardBackwardScheduling);
+            _performanceMonitors.Stop(InstanceToTrack.BackwardForwardBackwardScheduling);
 
             // job shop scheduling
-            ZppConfiguration.PerformanceMonitors.Start(InstanceToTrack.JobShopScheduling);
+            _performanceMonitors.Start(InstanceToTrack.JobShopScheduling);
             JobShopScheduling();
-            ZppConfiguration.PerformanceMonitors.Stop(InstanceToTrack.JobShopScheduling);
+            _performanceMonitors.Stop(InstanceToTrack.JobShopScheduling);
             
         }
 

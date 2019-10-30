@@ -88,7 +88,9 @@ namespace Zpp.DataLayer.impl
                 }
             }
 
-            else if(Constants.IsLocalDb == false && Constants.IsWindows)
+            /*
+             // random name currently, this doesn't work on linux/unix anyway
+             else if(Constants.IsLocalDb == false && Constants.IsWindows)
             {
                 bool wasDropped = Dbms.DropDatabase(
                     Constants.GetDbName(),
@@ -97,7 +99,7 @@ namespace Zpp.DataLayer.impl
                 {
                     // pass
                 }
-            }
+            }*/
 
             if (InitData)
             {

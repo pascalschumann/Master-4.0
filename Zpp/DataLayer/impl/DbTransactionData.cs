@@ -53,7 +53,9 @@ namespace Zpp.DataLayer.impl
         private readonly ProductionOrders _productionOrders;
 
         // others
-        private readonly IStackSet<T_PurchaseOrder> _purchaseOrders = new StackSet<T_PurchaseOrder>();
+        private readonly IStackSet<T_PurchaseOrder> _purchaseOrders =
+            new StackSet<T_PurchaseOrder>();
+
         private readonly ProductionOrderOperations _productionOrderOperations;
 
         private readonly CustomerOrderParts _customerOrderParts;
@@ -154,18 +156,26 @@ namespace Zpp.DataLayer.impl
             List<T_CustomerOrder> tCustomerOrders = _customerOrders.GetAllAsTCustomerOrders();
 
             // Insert all T_* entities
-            InsertOrUpdateRange(tProductionOrders, _productionDomainContext.ProductionOrders, _productionDomainContext);
+            InsertOrUpdateRange(tProductionOrders, _productionDomainContext.ProductionOrders,
+                _productionDomainContext);
             InsertOrUpdateRange(tProductionOrderOperations,
                 _productionDomainContext.ProductionOrderOperations, _productionDomainContext);
-            InsertOrUpdateRange(tProductionOrderBoms, _productionDomainContext.ProductionOrderBoms, _productionDomainContext);
-            InsertOrUpdateRange(tStockExchangeDemands, _productionDomainContext.StockExchanges, _productionDomainContext);
-            InsertOrUpdateRange(tCustomerOrders, _productionDomainContext.CustomerOrders, _productionDomainContext);
-            InsertOrUpdateRange(tCustomerOrderParts, _productionDomainContext.CustomerOrderParts, _productionDomainContext);
+            InsertOrUpdateRange(tProductionOrderBoms, _productionDomainContext.ProductionOrderBoms,
+                _productionDomainContext);
+            InsertOrUpdateRange(tStockExchangeDemands, _productionDomainContext.StockExchanges,
+                _productionDomainContext);
+            InsertOrUpdateRange(tCustomerOrders, _productionDomainContext.CustomerOrders,
+                _productionDomainContext);
+            InsertOrUpdateRange(tCustomerOrderParts, _productionDomainContext.CustomerOrderParts,
+                _productionDomainContext);
 
             // providers
-            InsertOrUpdateRange(tStockExchangesProviders, _productionDomainContext.StockExchanges, _productionDomainContext);
-            InsertOrUpdateRange(tPurchaseOrderParts, _productionDomainContext.PurchaseOrderParts, _productionDomainContext);
-            InsertOrUpdateRange(_purchaseOrders, _productionDomainContext.PurchaseOrders, _productionDomainContext);
+            InsertOrUpdateRange(tStockExchangesProviders, _productionDomainContext.StockExchanges,
+                _productionDomainContext);
+            InsertOrUpdateRange(tPurchaseOrderParts, _productionDomainContext.PurchaseOrderParts,
+                _productionDomainContext);
+            InsertOrUpdateRange(_purchaseOrders, _productionDomainContext.PurchaseOrders,
+                _productionDomainContext);
 
             // at the end: T_DemandToProvider & T_ProviderToDemand
             InsertOrUpdateRange(DemandToProviderGetAll(),
@@ -192,9 +202,8 @@ namespace Zpp.DataLayer.impl
             _customerOrders.Add(customerOrder);
         }
 
-        public static void InsertRange<TEntity>(IEnumerable<TEntity> entities,
-            DbSet<TEntity> dbSet, ProductionDomainContext productionDomainContext)
-            where TEntity : BaseEntity
+        public static void InsertRange<TEntity>(IEnumerable<TEntity> entities, DbSet<TEntity> dbSet,
+            ProductionDomainContext productionDomainContext) where TEntity : BaseEntity
         {
             foreach (var entity in entities)
             {
@@ -207,7 +216,8 @@ namespace Zpp.DataLayer.impl
         }
 
         public static void InsertOrUpdateRange<TEntity>(IEnumerable<TEntity> entities,
-            DbSet<TEntity> dbSet, ProductionDomainContext productionDomainContext) where TEntity : BaseEntity
+            DbSet<TEntity> dbSet, ProductionDomainContext productionDomainContext)
+            where TEntity : BaseEntity
         {
             // dbSet.AddRange(entities);
             foreach (var entity in entities)
@@ -227,8 +237,8 @@ namespace Zpp.DataLayer.impl
             dbSet.Add(entity);
         }
 
-        private static void InsertOrUpdate<TEntity>(TEntity entity, DbSet<TEntity> dbSet, ProductionDomainContext productionDomainContext)
-            where TEntity : BaseEntity
+        private static void InsertOrUpdate<TEntity>(TEntity entity, DbSet<TEntity> dbSet,
+            ProductionDomainContext productionDomainContext) where TEntity : BaseEntity
         {
             TEntity foundEntity = dbSet.Find(entity.Id);
             if (foundEntity == null
@@ -264,7 +274,7 @@ namespace Zpp.DataLayer.impl
             }
             else if (demand.GetType() == typeof(CustomerOrderPart))
             {
-                _customerOrderParts.Add((CustomerOrderPart)demand);
+                _customerOrderParts.Add((CustomerOrderPart) demand);
             }
             else
             {
@@ -374,8 +384,7 @@ namespace Zpp.DataLayer.impl
             _productionOrderOperations.AddAll(tProductionOrderOperations);
         }
 
-        public void ProductionOrderOperationAdd(
-            ProductionOrderOperation productionOrderOperation)
+        public void ProductionOrderOperationAdd(ProductionOrderOperation productionOrderOperation)
         {
             // this (productionOrderOperation was already added) can happen,
             // since an operation can be used multiple times for ProductionorderBoms
@@ -416,18 +425,17 @@ namespace Zpp.DataLayer.impl
 
         public Demand DemandsGetById(Id id)
         {
-
-                Demand demand = _productionOrderBoms.GetById(id);
+            Demand demand = _productionOrderBoms.GetById(id);
+            if (demand == null)
+            {
+                demand = _stockExchangeDemands.GetById(id);
                 if (demand == null)
                 {
-                    demand = _stockExchangeDemands.GetById(id);
-                    if (demand == null)
-                    {
-                        demand = _customerOrderParts.GetById(id);
-                    }
+                    demand = _customerOrderParts.GetById(id);
                 }
+            }
 
-                return demand;
+            return demand;
         }
 
         public Provider ProvidersGetById(Id id)
@@ -452,15 +460,7 @@ namespace Zpp.DataLayer.impl
 
         public T_PurchaseOrder PurchaseOrderGetById(Id id)
         {
-            try
-            {
-                return _purchaseOrders.Single(x => x.Id.Equals(id.GetValue()));
-            }
-            catch (InvalidOperationException e)
-            {
-                return null;
-            }
-            
+            return _purchaseOrders.Single(x => x.Id.Equals(id.GetValue()));
         }
 
         public List<T_PurchaseOrder> PurchaseOrderGetAll()
@@ -470,14 +470,7 @@ namespace Zpp.DataLayer.impl
 
         public ProductionOrderOperation ProductionOrderOperationGetById(Id id)
         {
-            try
-            {
-                return _productionOrderOperations.GetAll()
-                    .SingleOrDefault(x => x.GetId().Equals(id));
-            }
-            catch (InvalidOperationException e)
-            {
-            }
+            return _productionOrderOperations.GetAll().SingleOrDefault(x => x.GetId().Equals(id));
 
             return null;
         }
@@ -634,7 +627,7 @@ namespace Zpp.DataLayer.impl
             }
             else if (demand.GetType() == typeof(CustomerOrderPart))
             {
-                _customerOrderParts.Remove((CustomerOrderPart)demand);
+                _customerOrderParts.Remove((CustomerOrderPart) demand);
             }
             else
             {

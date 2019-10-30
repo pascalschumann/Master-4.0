@@ -250,18 +250,9 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
 
         public override State? GetState()
         {
-            try
-            {
                 EnsureOperationIsLoadedIfExists();
                 return _productionOrderBom.ProductionOrderOperation.State;
-            }
-            catch (NullReferenceException e)
-            {
-                // the archive is the requester
-                EnsureOperationIsLoadedIfExists(ZppConfiguration.CacheManager
-                    .GetDbTransactionDataArchive());
-                return _productionOrderBom.ProductionOrderOperation.State;
-            }
+
         }
     }
 }

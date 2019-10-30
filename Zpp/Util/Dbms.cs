@@ -10,8 +10,8 @@ namespace Zpp.Util
     public static class Dbms
     {
         
-
-        public static readonly LoggerFactory MyLoggerFactory = new LoggerFactory();
+        // In case you need detail ef log, reAdd Nlog and enable following statement
+        // public static readonly LoggerFactory MyLoggerFactory = new LoggerFactory();
 
         
         

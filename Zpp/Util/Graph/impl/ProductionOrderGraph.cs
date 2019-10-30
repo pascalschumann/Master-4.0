@@ -117,7 +117,7 @@ namespace Zpp.Util.Graph.impl
                 // popped is a leaf, remove it from path if it was a PrO
                 else
                 {
-                    if (popped.Equals(lastProductionOrder))
+                    if (lastProductionOrder != null && lastProductionOrder.Equals(popped))
                     {
                         pathProductionOrders.Pop();
                         if (pathProductionOrders.Any())

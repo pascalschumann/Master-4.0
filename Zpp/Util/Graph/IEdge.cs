@@ -5,6 +5,10 @@ namespace Zpp.Util.Graph
 {
     public interface IEdge: IId
     {
+        INode TailNode { get;  }
+        
+        INode HeadNode { get;  }
+        
         INode GetTailNode();
 
         INode GetHeadNode();

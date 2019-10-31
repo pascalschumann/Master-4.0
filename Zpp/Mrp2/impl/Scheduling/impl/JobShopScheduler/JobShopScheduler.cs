@@ -188,7 +188,7 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
                         }
 
                         // prepare for next round
-                        productionOrderToOperationGraph.RemoveNode(o1AsNode);
+                        productionOrderToOperationGraph.RemoveNode(o1AsNode, true);
                     }
 
                     S = CreateS(productionOrderToOperationGraph);

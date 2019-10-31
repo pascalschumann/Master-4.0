@@ -107,7 +107,15 @@ namespace Zpp.Util.Graph.impl
         {
             _predecessors.Remove(node);
         }
-        
-        
+
+        public void RemoveAllSuccessors()
+        {
+            _successors.Clear();
+        }
+
+        public void RemoveAllPredecessors()
+        {
+            _predecessors.Clear();
+        }
     }
 }

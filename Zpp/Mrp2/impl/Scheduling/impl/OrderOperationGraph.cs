@@ -12,6 +12,7 @@ using Zpp.DataLayer.impl.ProviderDomain.WrappersForCollections;
 using Zpp.Util;
 using Zpp.Util.Graph;
 using Zpp.Util.Graph.impl;
+using Zpp.Util.StackSet;
 
 namespace Zpp.Mrp2.impl.Scheduling.impl
 {
@@ -52,18 +53,23 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
          */
         private void CreateGraph2()
         {
+            IStackSet<INode> visitedProductionOrders = new StackSet<INode>();
             foreach (var rootNode in GetRootNodes())
             {
-                TraverseDemandToProviderGraph(rootNode);
+                TraverseDemandToProviderGraph(rootNode, visitedProductionOrders);
             }
         }
 
-        private void TraverseDemandToProviderGraph(INode node)
+        private void TraverseDemandToProviderGraph(INode node, IStackSet<INode> visitedProductionOrders)
         {
+            if (visitedProductionOrders.Contains(node))
+            {
+                return;
+            }
             if (node.GetEntity().GetType() == typeof(ProductionOrderBom))
             {
                 // remove, ProductionOrderBoms will be ignored and replaced by operations
-                RemoveNode(node);
+                RemoveNode(node, true);
             }
             else if (node.GetEntity().GetType() == typeof(ProductionOrder))
             {
@@ -72,11 +78,12 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
                 OperationGraph operationGraph =
                     new OperationGraph((ProductionOrder) node.GetEntity());
                 ReplaceNodeByDirectedGraph(node, operationGraph);
+                visitedProductionOrders.Push(node);
             }
 
             foreach (var successor in node.GetSuccessors())
             {
-                TraverseDemandToProviderGraph(successor);
+                TraverseDemandToProviderGraph(successor, visitedProductionOrders);
             }
         }
 

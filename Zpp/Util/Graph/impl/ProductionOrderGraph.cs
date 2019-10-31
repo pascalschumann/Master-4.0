@@ -141,7 +141,7 @@ namespace Zpp.Util.Graph.impl
                     // && uniqueNode.GetEntity().GetType() != typeof(ProductionOrderBom)
                 )
                 {
-                    RemoveNode(uniqueNode);
+                    RemoveNode(uniqueNode, true);
                 }
                 /*else
                 {

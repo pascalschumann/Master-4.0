@@ -197,6 +197,22 @@ namespace Zpp.Test.Unit_Tests
             }
         }
 
+        [Fact]
+        public void TestRemoveNode()
+        {
+            INode[] nodes = EntityFactory.CreateDummyNodes(6);
+            IDirectedGraph<INode> directedGraph = CreateBinaryDirectedGraph(nodes);
+            INode nodeToRemove = nodes[2];
+            directedGraph.RemoveNode(nodeToRemove, false);
+            INodes actualNodes = directedGraph.GetNodes();
+            Assert.True(actualNodes.Contains(nodeToRemove) == false);
+            foreach (var actualNode in actualNodes)
+            {
+                Assert.True(actualNode.GetSuccessors().Contains(nodeToRemove) == false);
+                Assert.True(actualNode.GetPredecessors().Contains(nodeToRemove) == false);
+            }
+        }
+
         private IDirectedGraph<INode> CreateBinaryDirectedGraph(INode[] nodes)
         {
             IDirectedGraph<INode> directedGraph = new DirectedGraph();

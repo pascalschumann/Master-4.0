@@ -28,5 +28,8 @@ namespace Zpp.Util.Graph
         
         void RemovePredecessor(INode node);
         
+        void RemoveAllSuccessors();
+        
+        void RemoveAllPredecessors();
     }
 }

@@ -82,6 +82,8 @@ namespace Zpp.Util.Graph.impl
             INode head = edge.HeadNode;
             if (Nodes.Contains(tail) == false)
             {
+                tail.RemoveAllPredecessors();
+                tail.RemoveAllSuccessors();
                 Nodes.Push(tail);
                 
             }
@@ -91,6 +93,8 @@ namespace Zpp.Util.Graph.impl
             }
             if (Nodes.Contains(head) == false)
             {
+                head.RemoveAllPredecessors();
+                head.RemoveAllSuccessors();
                 Nodes.Push(head);
             }
             else
@@ -196,7 +200,7 @@ namespace Zpp.Util.Graph.impl
             return uniqueNodes;
         }
 
-        public void RemoveNode(INode node)
+        public void RemoveNode(INode node, bool connectParentsWithChilds)
         {
             // e.g. A -> B --> C, B is removed
             
@@ -204,26 +208,46 @@ namespace Zpp.Util.Graph.impl
             INodes predecessors = node.GetPredecessors();
             // holds C
             INodes successors = node.GetSuccessors();
-            
-            
-            foreach (var predecessor in predecessors)
+
+            if (connectParentsWithChilds)
             {
-                // predecessor is A
+                foreach (var predecessor in predecessors)
+                {
+                    // predecessor is A
                 
-                // remove edge A -> B
-                predecessor.RemoveSuccessor(node);
-                // add edge A -> C
-                predecessor.AddSuccessors(successors);
+                    // remove edge A -> B
+                    predecessor.RemoveSuccessor(node);
+                    // add edge A -> C
+                    predecessor.AddSuccessors(successors);
+                }
+                foreach (var successor in successors)
+                {
+                    // successor is C
+                
+                    // remove edge B -> C
+                    successor.RemovePredecessor(node);
+                    // add edge A -> C
+                    successor.AddPredecessors(predecessors);
+                }
             }
-            foreach (var successor in successors)
+            else
             {
-                // successor is C
+                foreach (var predecessor in predecessors)
+                {
+                    // predecessor is A
                 
-                // remove edge B -> C
-                successor.RemovePredecessor(node);
-                // add edge A -> C
-                successor.AddPredecessors(predecessors);
+                    // remove edge A -> B
+                    predecessor.RemoveSuccessor(node);
+                }
+                foreach (var successor in successors)
+                {
+                    // successor is C
+                
+                    // remove edge B -> C
+                    successor.RemovePredecessor(node);
+                }
             }
+            
             // remove node
             Nodes.Remove(node);
         }
@@ -279,7 +303,7 @@ namespace Zpp.Util.Graph.impl
         {
             INodes predecessors = GetPredecessorNodes(node);
             INodes successors = GetSuccessorNodes(node);
-            RemoveNode(node);
+            RemoveNode(node, false);
             // predecessors --> roots
             if (predecessors != null)
             {
@@ -312,12 +336,24 @@ namespace Zpp.Util.Graph.impl
         {
             INodes nodes = new Nodes();
             nodes.AddAll(Nodes);
+            if (nodes.Any() == false)
+            {
+                return null;
+            }
             return nodes;
         }
 
         public List<IEdge> GetAllEdges()
         {
-            return GetEdges().ToList();
+            IStackSet<IEdge> edges = GetEdges();
+            if (edges == null)
+            {
+                return null;
+            }
+            else
+            {
+                return edges.ToList();
+            }
         }
 
         public IStackSet<IEdge> GetEdges()
@@ -347,7 +383,7 @@ namespace Zpp.Util.Graph.impl
         public void RemoveTopDown(INode node)
         {
             INodes successors = GetSuccessorNodes(node);
-            RemoveNode(node);
+            RemoveNode(node, false);
             if (successors == null)
             {
                 return;

@@ -35,10 +35,13 @@ namespace Zpp.Util.Graph
 
         INodes TraverseDepthFirst(Action<TNode, INodes, INodes> action, CustomerOrderPart startNode);
      
-        /**
-         * This removes the node, the edges towards it will point to its childs afterwards
-         */
-        void RemoveNode(TNode node);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="connectParentsWithChilds"> if true this removes the node,
+        /// the parents will point to its childs afterwards</param>
+        void RemoveNode(TNode node, bool connectParentsWithChilds);
 
         INodes GetLeafNodes();
         

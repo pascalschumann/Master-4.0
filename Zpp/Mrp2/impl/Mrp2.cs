@@ -4,6 +4,7 @@ using Master40.DB.Data.Context;
 using Zpp.DataLayer;
 using Zpp.DataLayer.impl;
 using Zpp.DataLayer.impl.DemandDomain;
+using Zpp.DataLayer.impl.DemandDomain.Wrappers;
 using Zpp.DataLayer.impl.DemandDomain.WrappersForCollections;
 using Zpp.DataLayer.impl.ProviderDomain.Wrappers;
 using Zpp.DataLayer.impl.ProviderDomain.WrappersForCollections;
@@ -48,14 +49,28 @@ namespace Zpp.Mrp2.impl
             OrderOperationGraph orderOperationGraph = new OrderOperationGraph();
             AssertGraphsAreNotEmpty(orderOperationGraph);
 
-            ScheduleBackward(orderOperationGraph.GetRootNodes().ToStack(), orderOperationGraph,
+            INodes rootNodes = new Nodes();
+            foreach (var rootNode in orderOperationGraph.GetRootNodes())
+            {
+                if (rootNode.GetType() == typeof(CustomerOrderPart))
+                {
+                    rootNodes.Add(rootNode);
+                }
+
+            }
+
+            ScheduleBackward(rootNodes.ToStack(), orderOperationGraph,
                 true);
 
             ScheduleForward(orderOperationGraph);
 
             INodes childRootNodes = new Nodes();
-            foreach (var rootNode in orderOperationGraph.GetRootNodes().ToStackSet())
+            foreach (var rootNode in orderOperationGraph.GetRootNodes())
             {
+                if (rootNode.GetType() != typeof(CustomerOrderPart))
+                {
+                    continue;
+                }
                 IProviders childProviders = ZppConfiguration.CacheManager.GetAggregator()
                     .GetAllChildProvidersOf((Demand) rootNode.GetEntity());
                 if (childProviders.Count() != 1)

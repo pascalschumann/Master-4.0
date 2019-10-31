@@ -64,6 +64,8 @@ namespace Zpp.Util.Graph
         void RemoveTopDown(INode node);
 
         bool IsEmpty();
-        
-        }
+
+        bool Contains(INode node);
+
+    }
 }

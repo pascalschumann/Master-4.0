@@ -167,5 +167,10 @@ namespace Zpp.Util.StackSet
         {
             return _indexElement.ContainsKey(t);
         }
+
+        public bool Contains(Id id)
+        {
+            return _indexId.ContainsKey(id);
+        }
     }
 }

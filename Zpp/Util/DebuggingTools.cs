@@ -18,23 +18,16 @@ namespace Zpp.Util
         public static void PrintStateToFiles(IDbTransactionData dbTransactionData, bool forcePrint)
         {
             // interval and end is not used anyway, so the second 1 is here a random number
-            PrintStateToFiles( new SimulationInterval(0, 1),
-             dbTransactionData,  0, forcePrint);
+            PrintStateToFiles(new SimulationInterval(0, 1), dbTransactionData, "", false, forcePrint);
         }
 
-        public static void PrintStateToFiles(SimulationInterval simulationInterval,
-            IDbTransactionData dbTransactionData, int countOfPrintsInOneCycle)
-        {
-            PrintStateToFiles( simulationInterval,
-             dbTransactionData,  countOfPrintsInOneCycle,false);
-        }
-        
         /**
          * includes demandToProviderGraph, OrderOperationGraph and dbTransactionData
          * forcePrint: force printing even if in performanceMode
          */
         public static void PrintStateToFiles(SimulationInterval simulationInterval,
-            IDbTransactionData dbTransactionData, int countOfPrintsInOneCycle, bool forcePrint)
+            IDbTransactionData dbTransactionData, string stageName, bool includeOrderOperationGraph,
+            bool forcePrint = false)
         {
             if (Constants.IsWindows == false || ZppConfiguration.IsInPerformanceMode)
             {
@@ -44,22 +37,26 @@ namespace Zpp.Util
                     return;
                 }
             }
+
             CleanupOldFiles();
 
             WriteToFile(
-                $"{SimulationFolder}dbTransactionData_interval_{simulationInterval.StartAt}_{countOfPrintsInOneCycle}.txt",
+                $"{SimulationFolder}dbTransactionData_interval_{simulationInterval.StartAt}_{stageName}.txt",
                 dbTransactionData.ToString());
             WriteToFile(
-                $"{SimulationFolder}dbTransactionDataArchive_interval_{simulationInterval.StartAt}_{countOfPrintsInOneCycle}.txt",
+                $"{SimulationFolder}dbTransactionDataArchive_interval_{simulationInterval.StartAt}_{stageName}.txt",
                 ZppConfiguration.CacheManager.GetDbTransactionDataArchive().ToString());
             DemandToProviderGraph demandToProviderGraph = new DemandToProviderGraph();
             WriteToFile(
-                $"{SimulationFolder}demandToProviderGraph_interval_{simulationInterval.StartAt}_{countOfPrintsInOneCycle}.txt",
+                $"{SimulationFolder}demandToProviderGraph_interval_{simulationInterval.StartAt}_{stageName}.txt",
                 demandToProviderGraph.ToString());
-            OrderOperationGraph orderOperationGraph = new OrderOperationGraph();
-
-            WriteToFile($"orderOperationGraph_interval_{simulationInterval.StartAt}_{countOfPrintsInOneCycle}.log",
-                orderOperationGraph.ToString());
+            if (includeOrderOperationGraph)
+            {
+                OrderOperationGraph orderOperationGraph = new OrderOperationGraph();    
+                WriteToFile(
+                    $"orderOperationGraph_interval_{simulationInterval.StartAt}_{stageName}.log",
+                    orderOperationGraph.ToString());
+            }
         }
 
         private static void CleanupOldFiles()
@@ -82,13 +79,12 @@ namespace Zpp.Util
         public static void WriteToFile(string fileName, string content)
         {
             Directory.CreateDirectory(SimulationFolder);
-            File.WriteAllText($"{SimulationFolder}{fileName}", content,
-                Encoding.UTF8);
+            File.WriteAllText($"{SimulationFolder}{fileName}", content, Encoding.UTF8);
         }
 
         public static void WritePerformanceLog(string content)
         {
-            WriteToFile( performanceLogFileName, content);
+            WriteToFile(performanceLogFileName, content);
         }
 
         public static string Prettify(long value)
@@ -103,6 +99,7 @@ namespace Zpp.Util
                 {
                     newValue = "." + newValue;
                 }
+
                 newValue = valueAsString[i] + newValue;
             }
 

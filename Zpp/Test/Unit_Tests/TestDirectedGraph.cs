@@ -102,15 +102,11 @@ namespace Zpp.Test.Unit_Tests
             IEdge bc = new Edge(b, c);
             directedGraph.AddEdge(ab);
             directedGraph.AddEdge(bc);
-            
+
             INodes expectedNodes = new Nodes();
             INode expectedA = new Node(new DummyNode(a.GetId()));
             INode expectedB = new Node(new DummyNode(b.GetId()));
             INode expectedC = new Node(new DummyNode(c.GetId()));
-            expectedA.AddSuccessor(expectedB);
-            expectedB.AddSuccessor(expectedC);
-            expectedC.AddPredecessor(expectedB);
-            expectedB.AddPredecessor(expectedA);
             expectedNodes.Add(expectedA);
             expectedNodes.Add(expectedB);
             expectedNodes.Add(expectedC);
@@ -118,51 +114,14 @@ namespace Zpp.Test.Unit_Tests
             INodes actualNodes = directedGraph.GetNodes();
             foreach (var actualNode in actualNodes)
             {
-                Assert.True(expectedNodes.Contains(actualNode), 
+                Assert.True(expectedNodes.Contains(actualNode),
                     $"I have not added this node {actualNode}. Where comes that from?");
             }
 
             foreach (var expectedNode in expectedNodes)
             {
-                Assert.True(actualNodes.Contains(expectedNode), 
+                Assert.True(actualNodes.Contains(expectedNode),
                     $"This node {expectedNode} was not added.");
-            }
-            
-            // assert, every returned node has correct predecessor/successor
-            foreach (var expectedNode in expectedNodes)
-            {
-                foreach (var actualNode in actualNodes)
-                {
-                    if (expectedNode.Equals(actualNode))
-                    {
-                        // check predecessors
-                        INodes expectedPredecessors = expectedNode.GetPredecessors();
-                        INodes actualPredecessors = actualNode.GetPredecessors();
-                        
-                        
-                        foreach (var expectedPredecessor in expectedPredecessors)
-                        {
-                            Assert.True(actualPredecessors.Contains(expectedPredecessor));
-                        }
-                        foreach (var actualPredecessor in actualPredecessors)
-                        {
-                            Assert.True(expectedPredecessors.Contains(actualPredecessor));
-                        }
-                        
-                        // check successors
-                        INodes expectedSuccessors = expectedNode.GetSuccessors();
-                        INodes actualSuccessors = actualNode.GetSuccessors();
-                        
-                        foreach (var expectedPredecessor in expectedSuccessors)
-                        {
-                            Assert.True(actualSuccessors.Contains(expectedPredecessor));
-                        }
-                        foreach (var actualSuccessor in actualSuccessors)
-                        {
-                            Assert.True(expectedSuccessors.Contains(actualSuccessor));
-                        }
-                    }
-                }
             }
         }
 
@@ -186,13 +145,13 @@ namespace Zpp.Test.Unit_Tests
             IStackSet<IEdge> actualEdges = directedGraph.GetEdges();
             foreach (var actualEdge in actualEdges)
             {
-                Assert.True(expectedEdges.Contains(actualEdge), 
+                Assert.True(expectedEdges.Contains(actualEdge),
                     $"I have not added this edge {actualEdge}. Where comes that from?");
             }
 
             foreach (var expectedEdge in expectedEdges)
             {
-                Assert.True(actualEdges.Contains(expectedEdge), 
+                Assert.True(actualEdges.Contains(expectedEdge),
                     $"This edge {expectedEdge} was not returned.");
             }
         }
@@ -204,12 +163,25 @@ namespace Zpp.Test.Unit_Tests
             IDirectedGraph<INode> directedGraph = CreateBinaryDirectedGraph(nodes);
             INode nodeToRemove = nodes[2];
             directedGraph.RemoveNode(nodeToRemove, false);
+            
             INodes actualNodes = directedGraph.GetNodes();
             Assert.True(actualNodes.Contains(nodeToRemove) == false);
+            
             foreach (var actualNode in actualNodes)
             {
-                Assert.True(actualNode.GetSuccessors().Contains(nodeToRemove) == false);
-                Assert.True(actualNode.GetPredecessors().Contains(nodeToRemove) == false);
+                INodes successorNodes = directedGraph.GetSuccessorNodes(actualNode);
+                if (successorNodes != null)
+                {
+                    Assert.True(successorNodes.Contains(nodeToRemove) ==
+                                false);    
+                }
+                
+                INodes predecessorNodes = directedGraph.GetPredecessorNodes(actualNode);
+                if (predecessorNodes!=null)
+                {
+                    Assert.True(predecessorNodes.Contains(nodeToRemove) ==
+                                false);
+                }
             }
         }
 

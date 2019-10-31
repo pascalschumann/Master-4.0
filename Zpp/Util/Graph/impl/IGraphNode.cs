@@ -1,0 +1,30 @@
+using System.Collections.Generic;
+using Master40.DB.Data.WrappersForPrimitives;
+
+namespace Zpp.Util.Graph.impl
+{
+    internal interface IGraphNode: IId
+    {
+        void AddSuccessor(IGraphNode node);
+        
+        void AddSuccessors(GraphNodes nodes);
+        
+        void AddPredecessor(IGraphNode node);
+        
+        void AddPredecessors(GraphNodes nodes);
+        
+        GraphNodes GetPredecessors();
+        
+        GraphNodes GetSuccessors();
+
+        void RemoveSuccessor(IGraphNode node);
+        
+        void RemovePredecessor(IGraphNode node);
+        
+        void RemoveAllSuccessors();
+        
+        void RemoveAllPredecessors();
+
+        INode GetNode();
+    }
+}

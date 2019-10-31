@@ -43,6 +43,8 @@ namespace Zpp.Util.StackSet
         T GetById(Id id);
 
         bool Contains(T t);
+        
+        bool Contains(Id id);
 
     }
 }

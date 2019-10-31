@@ -25,11 +25,6 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
     {
         public OrderOperationGraph() : base()
         {
-            IDbTransactionData dbTransactionData =
-                ZppConfiguration.CacheManager.GetDbTransactionData();
-            IAggregator aggregator = ZppConfiguration.CacheManager.GetAggregator();
-
-
             // remove subgraphs that has roots != customerOrderPart
             foreach (var root in GetRootNodes())
             {
@@ -40,11 +35,43 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
             }
 
             // CreateGraph(dbTransactionData, aggregator);
-            CreateGraph2();
-            
+            CreateGraph3();
+
             if (IsEmpty())
             {
                 return;
+            }
+        }
+
+        /**
+         * No need to traverse --> graph is ready, just do some modifications:
+         * remove ProductionOrderBoms, replace ProductionOrder by operationGraph
+         */
+        private void CreateGraph3()
+        {
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
+
+            // remove ProductionOrderBoms
+            foreach (var productionOrderBom in dbTransactionData.ProductionOrderBomGetAll())
+            {
+                var productionOrderBomNode = new Node(productionOrderBom);
+                if (Contains(productionOrderBomNode))
+                {
+                    RemoveNode(productionOrderBomNode, true);
+                }
+            }
+
+            // replace ProductionOrder by operationGraph
+            foreach (var productionOrder in dbTransactionData.ProductionOrderGetAll())
+            {
+                var productionOrderBomNode = new Node(productionOrder);
+                if (Contains(productionOrderBomNode))
+                {
+                    OperationGraph operationGraph =
+                        new OperationGraph((ProductionOrder) productionOrder);
+                    ReplaceNodeByDirectedGraph(productionOrderBomNode, operationGraph);
+                }
             }
         }
 
@@ -60,18 +87,16 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
             }
         }
 
-        private void TraverseDemandToProviderGraph(INode node, IStackSet<INode> visitedProductionOrders)
+        private void TraverseDemandToProviderGraph(INode node,
+            IStackSet<INode> visitedProductionOrders)
         {
-            if (visitedProductionOrders.Contains(node))
-            {
-                return;
-            }
             if (node.GetEntity().GetType() == typeof(ProductionOrderBom))
             {
                 // remove, ProductionOrderBoms will be ignored and replaced by operations
                 RemoveNode(node, true);
             }
-            else if (node.GetEntity().GetType() == typeof(ProductionOrder))
+            else if (node.GetEntity().GetType() == typeof(ProductionOrder) &&
+                     visitedProductionOrders.Contains(node) == false)
             {
                 // insert it like it is in ProductionOrderToOperationGraph
 
@@ -81,7 +106,13 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
                 visitedProductionOrders.Push(node);
             }
 
-            foreach (var successor in node.GetSuccessors())
+            INodes successorNodes = GetSuccessorNodes(node);
+            if (successorNodes == null)
+            {
+                return;
+            }
+
+            foreach (var successor in successorNodes)
             {
                 TraverseDemandToProviderGraph(successor, visitedProductionOrders);
             }
@@ -148,8 +179,7 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
 
             IDirectedGraph<INode> operationGraph =
                 new OperationGraph((ProductionOrder) productionOrderNode.GetEntity());
-            if (productionOrderOperations.Count.Equals(operationGraph
-                    .CountEdges()) == false)
+            if (productionOrderOperations.Count.Equals(operationGraph.CountEdges()) == false)
             {
                 throw new MrpRunException(
                     "One of the compared collections do not have all operations.");

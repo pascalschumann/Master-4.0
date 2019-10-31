@@ -62,6 +62,12 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
                         INodes predecessorNodes =
                             _orderOperationGraph.GetPredecessorNodes(successor);
                         DueTime minStartTime = iAsScheduleNode.GetStartTimeBackward();
+                        if (minStartTime == null)
+                        {
+                            throw new MrpRunException(
+                                "How can the StartTime of an already scheduled node be null ?");
+                        }
+
                         foreach (var predecessorNode in predecessorNodes)
                         {
                             DueTime predecessorsStartTime =

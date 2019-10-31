@@ -48,6 +48,7 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
                     foreach (var predecessor in predecessors)
                     {
                         IScheduleNode predecessorScheduleNode = predecessor.GetEntity();
+                        
                         // if predecessor starts before endTime of current d/p --> change that
                         if (predecessorScheduleNode.IsReadOnly() == false && predecessorScheduleNode
                                 .GetStartTimeBackward().IsSmallerThan(iAsScheduleNode.GetEndTimeBackward()))

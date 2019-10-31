@@ -422,7 +422,12 @@ namespace Zpp.Util.Graph.impl
 
             foreach (var successor in successors)
             {
-                RemoveTopDown(successor);
+                // check if node still exists (could be already removed, since recursion
+                // and items as glue have many predecessors)
+                if (Contains(successor))
+                {
+                    RemoveTopDown(successor);
+                }
             }
         }
 

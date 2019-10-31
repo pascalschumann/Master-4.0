@@ -25,15 +25,9 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
     {
         public OrderOperationGraph() : base()
         {
-            // remove subgraphs that has roots != customerOrderPart
-            foreach (var root in GetRootNodes())
-            {
-                if (root.GetEntity().GetType() != typeof(CustomerOrderPart))
-                {
-                    RemoveTopDown(root);
-                }
-            }
-
+            // Don't try to remove subgraphs that rootType != customerOrderPart,
+            // it's nearly impossible to correctly identify those (with performance in mind)
+            
             // CreateGraph(dbTransactionData, aggregator);
             CreateGraph3();
 
@@ -65,12 +59,15 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
             // replace ProductionOrder by operationGraph
             foreach (var productionOrder in dbTransactionData.ProductionOrderGetAll())
             {
-                var productionOrderBomNode = new Node(productionOrder);
-                if (Contains(productionOrderBomNode))
+                if (productionOrder.IsReadOnly() == false)
                 {
-                    OperationGraph operationGraph =
-                        new OperationGraph((ProductionOrder) productionOrder);
-                    ReplaceNodeByDirectedGraph(productionOrderBomNode, operationGraph);
+                    var productionOrderBomNode = new Node(productionOrder);
+                    if (Contains(productionOrderBomNode))
+                    {
+                        OperationGraph operationGraph =
+                            new OperationGraph((ProductionOrder) productionOrder);
+                        ReplaceNodeByDirectedGraph(productionOrderBomNode, operationGraph);
+                    }
                 }
             }
         }

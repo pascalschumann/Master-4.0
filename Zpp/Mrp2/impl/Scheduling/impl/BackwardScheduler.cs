@@ -54,8 +54,15 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
                 {
                     foreach (var successor in successorNodes)
                     {
+                        _S.Push(successor);
+                        
                         IScheduleNode successorScheduleNode = successor.GetEntity();
-
+                        if (successorScheduleNode.IsReadOnly())
+                        {
+                            continue;
+                        }
+                        
+                        
                         // Konservativ vorwärtsterminieren ist korrekt,
                         // aber rückwärts muss wenn immer möglich terminiert werden
                         // (prüfe parents und ermittle minStart und setze das)
@@ -89,8 +96,6 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
                         {
                             successorScheduleNode.SetEndTimeBackward(minStartTime);
                         }
-
-                        _S.Push(successor);
                     }
                 }
             }

@@ -83,15 +83,23 @@ namespace Zpp.Util.Graph.impl
             if (Nodes.Contains(tail) == false)
             {
                 Nodes.Push(tail);
-            }
-            tail.AddSuccessor(head);
                 
+            }
+            else
+            {
+                tail = Nodes.GetById(tail.GetId());
+            }
             if (Nodes.Contains(head) == false)
             {
                 Nodes.Push(head);
             }
+            else
+            {
+                head = Nodes.GetById(head.GetId());
+            }
+            
             head.AddPredecessor(tail);
-
+            tail.AddSuccessor(head);
             _edgeCount++;
         }
 

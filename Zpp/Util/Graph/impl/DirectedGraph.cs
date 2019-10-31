@@ -220,7 +220,7 @@ namespace Zpp.Util.Graph.impl
             return graphNode != null;
         }
 
-        public void RemoveNode(INode node, bool connectParentsWithChilds)
+        public void RemoveNode(INode node, bool connectParentsWithChilds, bool removeEdges = true)
         {
             // e.g. A -> B --> C, B is removed
 
@@ -258,7 +258,7 @@ namespace Zpp.Util.Graph.impl
                     successor.AddPredecessors(predecessors);
                 }
             }
-            else
+            else if (removeEdges)
             {
                 foreach (var predecessor in predecessors)
                 {
@@ -414,7 +414,7 @@ namespace Zpp.Util.Graph.impl
         public void RemoveTopDown(INode node)
         {
             INodes successors = GetSuccessorNodes(node);
-            RemoveNode(node, false);
+            RemoveNode(node, false, false);
             if (successors == null)
             {
                 return;

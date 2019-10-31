@@ -17,13 +17,13 @@ namespace Zpp.Util.Graph
          * @return: toNodes
          */
         INodes GetSuccessorNodes(TNode node);
-        
+
         INodes GetPredecessorNodes(INode node);
 
         void AddEdges(IEnumerable<IEdge> edges);
-        
+
         void AddEdges(TNode fromNode, INodes nodes);
-        
+
         void AddEdge(IEdge edge);
 
         int CountEdges();
@@ -33,18 +33,21 @@ namespace Zpp.Util.Graph
          */
         IStackSet<INode> GetAllUniqueNodes();
 
-        INodes TraverseDepthFirst(Action<TNode, INodes, INodes> action, CustomerOrderPart startNode);
-     
+        INodes TraverseDepthFirst(Action<TNode, INodes, INodes> action,
+            CustomerOrderPart startNode);
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="node"></param>
         /// <param name="connectParentsWithChilds"> if true this removes the node,
         /// the parents will point to its childs afterwards</param>
-        void RemoveNode(TNode node, bool connectParentsWithChilds);
+        /// /// <param name="removeEdges">take false if all predecessors/successors
+        /// are also removed</param>
+        void RemoveNode(TNode node, bool connectParentsWithChilds, bool removeEdges = true);
 
         INodes GetLeafNodes();
-        
+
         INodes GetRootNodes();
 
         void ReplaceNodeByDirectedGraph(TNode node, IDirectedGraph<INode> graphToInsert);
@@ -66,6 +69,5 @@ namespace Zpp.Util.Graph
         bool IsEmpty();
 
         bool Contains(INode node);
-
     }
 }

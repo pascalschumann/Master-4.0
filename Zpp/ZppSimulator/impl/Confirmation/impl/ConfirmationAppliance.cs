@@ -416,19 +416,5 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                 }
             }
         }
-
-        private static void RemoveAllArrowsOnFinishedPurchaseOrderParts(
-            IDbTransactionData dbTransactionData, IAggregator aggregator)
-        {
-            foreach (var purchaseOrderPart in dbTransactionData.PurchaseOrderPartGetAll())
-            {
-                if (purchaseOrderPart.IsFinished())
-                {
-                    List<ILinkDemandAndProvider> demandAndProviderLinks =
-                        aggregator.GetArrowsToAndFrom(purchaseOrderPart);
-                    dbTransactionData.DeleteAllFrom(demandAndProviderLinks);
-                }
-            }
-        }
     }
 }

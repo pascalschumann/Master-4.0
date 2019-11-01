@@ -12,8 +12,9 @@ namespace Zpp.Util
     public static class DebuggingTools
     {
         private static readonly string SimulationFolder = $"../../../Test/Ordergraphs/Simulation/";
-        private static readonly string performanceLogFileName = "performance.log";
+        private static readonly string performanceLogFileName = "performance";
         private static bool _isCleanedUp = false;
+        private static string defaultFileExtension = ".log";
 
         public static void PrintStateToFiles(IDbTransactionData dbTransactionData, bool forcePrint)
         {
@@ -82,9 +83,9 @@ namespace Zpp.Util
             File.WriteAllText($"{SimulationFolder}{fileName}", content, Encoding.UTF8);
         }
 
-        public static void WritePerformanceLog(string content)
+        public static void WritePerformanceLog(string content, string type="")
         {
-            WriteToFile(performanceLogFileName, content);
+            WriteToFile($"{performanceLogFileName}{type}{defaultFileExtension}", content);
         }
 
         public static string Prettify(long value)
@@ -108,7 +109,7 @@ namespace Zpp.Util
 
         private static string ReadFile(string pathToFile)
         {
-            return File.ReadAllText(pathToFile, Encoding.UTF8);
+            return File.ReadAllText($"{pathToFile}{defaultFileExtension}", Encoding.UTF8);
         }
 
         public static string ReadPerformanceLog()

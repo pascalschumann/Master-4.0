@@ -75,6 +75,8 @@ namespace Zpp.Test.Integration_Tests
                 // TODO: set this to true once the dbPersisting is terminating in a practical time (rename method)
                 zppSimulator.StartPerformanceStudy(false);
                 stopwatch.Stop();
+                string performanceLog = DebuggingTools.ReadPerformanceLog();
+                DebuggingTools.WritePerformanceLog(performanceLog, $"_{customerOrderCount}");
 
                 elapsedMinutes = stopwatch.Elapsed.Minutes;
                 elapsedSeconds = stopwatch.Elapsed.Seconds;
@@ -90,7 +92,7 @@ namespace Zpp.Test.Integration_Tests
                     $"{testConfigurationFileName}, without Db persistence: " + 
                     $"simulation needs  with {elapsedMinutes}:{elapsedSeconds} min longer than {maxTime} min for " +
                     $"CustomerOrderCount ({customerOrderCount}) " +
-                    $"per interval (0-{testConfiguration.SimulationInterval}) in {cycles} cycles.");
+                    $"per interval (0-{testConfiguration.SimulationInterval}) in {cycles} cycle(s).");
             }
         }
 

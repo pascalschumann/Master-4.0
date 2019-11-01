@@ -19,7 +19,6 @@ namespace Zpp.ZppSimulator.impl
 {
     public class ZppSimulator : IZppSimulator
     {
-        const int _interval = 1440;
         private readonly PerformanceMonitors _performanceMonitors;
 
         private readonly IMrp2 _mrp2;
@@ -51,7 +50,8 @@ namespace Zpp.ZppSimulator.impl
             _performanceMonitors.Start(InstanceToTrack.Mrp2);
             _mrp2.StartMrp2();
             _performanceMonitors.Stop(InstanceToTrack.Mrp2);
-            DebuggingTools.PrintStateToFiles(simulationInterval, dbTransactionData, "1_after_mrp2", true);
+            DebuggingTools.PrintStateToFiles(simulationInterval, dbTransactionData, "1_after_mrp2",
+                true);
 
             // CreateConfirmations
             _performanceMonitors.Start(InstanceToTrack.CreateConfirmations);
@@ -73,7 +73,9 @@ namespace Zpp.ZppSimulator.impl
          */
         public void StartTestCycle()
         {
-            StartTestCycle(new SimulationInterval(0, _interval));
+            int simulationInterval =
+                ZppConfiguration.CacheManager.GetTestConfiguration().SimulationInterval;
+            StartTestCycle(new SimulationInterval(0, simulationInterval));
         }
 
         /**
@@ -108,10 +110,12 @@ namespace Zpp.ZppSimulator.impl
             // TODO: disable if log files
             ZppConfiguration.IsInPerformanceMode = true;
 
-            const int maxSimulatingTime = 20160;
+            int maxSimulatingTime =
+                ZppConfiguration.CacheManager.GetTestConfiguration().SimulationMaximumDuration;
+            int defaultInterval =
+                ZppConfiguration.CacheManager.GetTestConfiguration().SimulationInterval;
             Quantity customerOrderQuantity = new Quantity(ZppConfiguration.CacheManager
                 .GetTestConfiguration().CustomerOrderPartQuantity);
-
 
             _customerOrderCreator = new CustomerOrderCreator(customerOrderQuantity);
 
@@ -119,13 +123,14 @@ namespace Zpp.ZppSimulator.impl
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.ReloadTransactionData();
 
-            string performanceLog = $"Number of cops: {ZppConfiguration.CacheManager.GetTestConfiguration().CustomerOrderPartQuantity}";
+            string performanceLog =
+                $"Number of cops: {ZppConfiguration.CacheManager.GetTestConfiguration().CustomerOrderPartQuantity}";
             _performanceMonitors.Start();
 
-            for (int i = 0; i * _interval < maxSimulatingTime; i++)
+            for (int i = 0; i * defaultInterval <= maxSimulatingTime; i++)
             {
                 SimulationInterval simulationInterval =
-                    new SimulationInterval(i * _interval, _interval - 1);
+                    new SimulationInterval(i * defaultInterval, defaultInterval - 1);
 
                 StartOneCycle(simulationInterval, customerOrderQuantity);
 
@@ -158,12 +163,14 @@ namespace Zpp.ZppSimulator.impl
         public void StartMultipleTestCycles()
         {
             const int maxSimulatingTime = 5000;
+            int defaultInterval =
+                ZppConfiguration.CacheManager.GetTestConfiguration().SimulationInterval;
 
             // for (int i = 0; i * _interval < maxSimulatingTime; i++)
-            for (int i = 0; i * _interval < maxSimulatingTime; i++)
+            for (int i = 0; i * defaultInterval < maxSimulatingTime; i++)
             {
                 SimulationInterval simulationInterval =
-                    new SimulationInterval(i * _interval, _interval - 1);
+                    new SimulationInterval(i * defaultInterval, defaultInterval - 1);
                 StartTestCycle(simulationInterval);
             }
         }

@@ -12,5 +12,9 @@ namespace Zpp.Test.Configuration
         
         // classname as full AssemblyQualifiedName see MSDoc AssemblyQualifiedName
         public string DbSetInitializer { get; set; }
+
+        public int SimulationMaximumDuration { get; set; } = 20160;
+        
+        public int SimulationInterval { get; set; } = 1440;
     }
 }

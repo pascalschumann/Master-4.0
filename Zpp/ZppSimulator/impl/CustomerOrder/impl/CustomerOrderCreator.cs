@@ -36,28 +36,33 @@ namespace Zpp.ZppSimulator.impl.CustomerOrder.impl
         {
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.GetDbTransactionData();
-            var creationTime = interval.StartAt;
-            var endOrderCreation = interval.EndAt;
 
-            while (creationTime < endOrderCreation)
+            while (dbTransactionData.CustomerOrderGetAll().Count < customerOrderQuantity.GetValue())
             {
-                var order = _orderGenerator.GetNewRandomOrder(time: creationTime);
-                foreach (var orderPart in order.CustomerOrderParts)
+                var creationTime = interval.StartAt;
+                var endOrderCreation = interval.EndAt;
+                
+                while (creationTime < endOrderCreation)
                 {
-                    orderPart.CustomerOrder = order;
-                    orderPart.CustomerOrderId = order.Id;
-                    dbTransactionData.CustomerOrderPartAdd(orderPart);
-                }
+                    var order = _orderGenerator.GetNewRandomOrder(time: creationTime);
+                    foreach (var orderPart in order.CustomerOrderParts)
+                    {
+                        orderPart.CustomerOrder = order;
+                        orderPart.CustomerOrderId = order.Id;
+                        dbTransactionData.CustomerOrderPartAdd(orderPart);
+                    }
 
-                dbTransactionData.CustomerOrderAdd(order);
+                    dbTransactionData.CustomerOrderAdd(order);
 
-                // TODO : Handle this another way
-                creationTime = order.CreationTime;
+                    // TODO : Handle this another way
+                    creationTime = order.CreationTime;
 
-                if (customerOrderQuantity != null && dbTransactionData.CustomerOrderGetAll().Count >=
-                    customerOrderQuantity.GetValue())
-                {
-                    break;
+                    if (customerOrderQuantity != null &&
+                        dbTransactionData.CustomerOrderGetAll().Count >=
+                        customerOrderQuantity.GetValue())
+                    {
+                        break;
+                    }
                 }
             }
         }

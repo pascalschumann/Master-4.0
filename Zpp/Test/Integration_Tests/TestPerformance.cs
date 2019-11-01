@@ -84,7 +84,7 @@ namespace Zpp.Test.Integration_Tests
                 Assert.True(customerOrderCount < maxPossibleCops,
                     $"{testConfigurationFileName}, without Db persistence: customerOrderCount ({customerOrderCount}) " +
                     $"per interval (0-{testConfiguration.SimulationInterval}) in {cycles} cycles cannot be greater (int.max)." +
-                    $"(Simulation needed  with {elapsedMinutes}:{elapsedSeconds} minutes.)");
+                    $"(Simulation needed  {elapsedMinutes}:{elapsedSeconds} minutes.)");
                 
                 Assert.True(elapsedMinutes < maxTime,
                     $"{testConfigurationFileName}, without Db persistence: " + 

@@ -78,7 +78,11 @@ namespace Zpp.DataLayer.impl
          */
         private void InitDb(string testConfiguration, ProductionDomainContext productionDomainContext, bool InitData)
         {
-            ReadInTestConfiguration(testConfiguration);
+            if (ZppConfiguration.CacheManager.GetTestConfiguration() == null)
+            {
+                ReadInTestConfiguration(testConfiguration);    
+            }
+            
             if (Constants.IsLocalDb)
             {
                 bool isDeleted = productionDomainContext.Database.EnsureDeleted();

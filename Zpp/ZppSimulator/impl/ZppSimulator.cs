@@ -110,8 +110,8 @@ namespace Zpp.ZppSimulator.impl
             // TODO: disable if log files
             ZppConfiguration.IsInPerformanceMode = true;
 
-            int maxSimulatingTime =
-                ZppConfiguration.CacheManager.GetTestConfiguration().SimulationMaximumDuration;
+            int maxSimulatingTime = ZppConfiguration.CacheManager.GetTestConfiguration()
+                .SimulationMaximumDuration;
             int defaultInterval =
                 ZppConfiguration.CacheManager.GetTestConfiguration().SimulationInterval;
             Quantity customerOrderQuantity = new Quantity(ZppConfiguration.CacheManager
@@ -120,11 +120,9 @@ namespace Zpp.ZppSimulator.impl
             _customerOrderCreator = new CustomerOrderCreator(customerOrderQuantity);
 
             // init transactionData
-            IDbTransactionData dbTransactionData =
-                ZppConfiguration.CacheManager.ReloadTransactionData();
+            ZppConfiguration.CacheManager.ReloadTransactionData();
 
-            string performanceLog =
-                $"Number of cops: {ZppConfiguration.CacheManager.GetTestConfiguration().CustomerOrderPartQuantity}";
+            string performanceLog = "";
             _performanceMonitors.Start();
 
             for (int i = 0; i * defaultInterval <= maxSimulatingTime; i++)

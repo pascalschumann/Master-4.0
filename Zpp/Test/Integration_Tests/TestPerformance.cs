@@ -67,29 +67,21 @@ namespace Zpp.Test.Integration_Tests
             {
                 InitThisTest(testConfigurationFileName);
 
-                customerOrderCount *= 10;
-                testConfiguration.CustomerOrderPartQuantity =
-                    customerOrderCount;
+                customerOrderCount = 100000000;
+                testConfiguration.CustomerOrderPartQuantity = customerOrderCount;
                 IZppSimulator zppSimulator = new ZppSimulator.impl.ZppSimulator();
                 stopwatch.Start();
                 // TODO: set this to true once the dbPersisting is terminating in a practical time (rename method)
                 zppSimulator.StartPerformanceStudy(false);
                 stopwatch.Stop();
-                string performanceLog = DebuggingTools.ReadPerformanceLog();
-                DebuggingTools.WritePerformanceLog(performanceLog, $"_{customerOrderCount}");
 
                 elapsedMinutes = stopwatch.Elapsed.Minutes;
                 elapsedSeconds = stopwatch.Elapsed.Seconds;
 
                 stopwatch.Reset();
 
-                Assert.True(customerOrderCount < maxPossibleCops,
-                    $"{testConfigurationFileName}, without Db persistence: customerOrderCount ({customerOrderCount}) " +
-                    $"per interval (0-{testConfiguration.SimulationInterval}) in {cycles} cycles cannot be greater (int.max)." +
-                    $"(Simulation needed  {elapsedMinutes}:{elapsedSeconds} minutes.)");
-                
                 Assert.True(elapsedMinutes < maxTime,
-                    $"{testConfigurationFileName}, without Db persistence: " + 
+                    $"{testConfigurationFileName}, without Db persistence: " +
                     $"simulation needs  with {elapsedMinutes}:{elapsedSeconds} min longer than {maxTime} min for " +
                     $"CustomerOrderCount ({customerOrderCount}) " +
                     $"per interval (0-{testConfiguration.SimulationInterval}) in {cycles} cycle(s).");

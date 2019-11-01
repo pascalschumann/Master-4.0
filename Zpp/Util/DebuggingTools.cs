@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Text;
 using Zpp.DataLayer;
 using Zpp.Mrp2.impl.Scheduling.impl;
+using Zpp.Test.Configuration;
 using Zpp.Util.Graph.impl;
 using Zpp.ZppSimulator.impl;
 
@@ -85,7 +86,13 @@ namespace Zpp.Util
 
         public static void WritePerformanceLog(string content, string type="")
         {
+            TestConfiguration testConfiguration =
+                ZppConfiguration.CacheManager.GetTestConfiguration();
+            int cycles = testConfiguration.SimulationMaximumDuration /
+                         testConfiguration.SimulationInterval;
+            type = $"_cycles_{cycles}_COs_{testConfiguration.CustomerOrderPartQuantity}";
             WriteToFile($"{performanceLogFileName}{type}{defaultFileExtension}", content);
+            
         }
 
         public static string Prettify(long value)

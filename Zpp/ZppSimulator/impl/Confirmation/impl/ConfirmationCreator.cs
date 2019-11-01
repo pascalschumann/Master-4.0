@@ -101,7 +101,11 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                 productionOrder.SetReadOnly();
             }
             
-            
+            // future seds are still not readonly, set it so
+            foreach (var stockExchangeDemand in dbTransactionData.StockExchangeDemandsGetAll())
+            {
+                stockExchangeDemand.SetReadOnly();
+            }
         }
     }
 }

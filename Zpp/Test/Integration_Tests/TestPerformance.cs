@@ -57,6 +57,7 @@ namespace Zpp.Test.Integration_Tests
             int customerOrderCount = ZppConfiguration.CacheManager.GetTestConfiguration()
                 .CustomerOrderPartQuantity;
             int elapsedMinutes = 0;
+            int elapsedSeconds = 0;
             int maxTime = 5;
             int cycles = testConfiguration.SimulationMaximumDuration /
                          testConfiguration.SimulationInterval;
@@ -76,13 +77,14 @@ namespace Zpp.Test.Integration_Tests
                 stopwatch.Stop();
 
                 elapsedMinutes = stopwatch.Elapsed.Minutes;
+                elapsedSeconds = stopwatch.Elapsed.Seconds;
 
                 stopwatch.Reset();
 
                 Assert.True(customerOrderCount < maxPossibleCops && elapsedMinutes < maxTime,
                     $"{testConfigurationFileName}, without Db persistence: customerOrderCount ({customerOrderCount}) " +
-                    $"per interval (0-{testConfiguration.SimulationInterval}) in {cycles} cannot be greater (int.max) OR " + 
-                    $"simulation needs  with {elapsedMinutes}min longer than {maxTime} min.");
+                    $"per interval (0-{testConfiguration.SimulationInterval}) in {cycles} cycles cannot be greater (int.max) OR " + 
+                    $"simulation needs  with {elapsedMinutes}:{elapsedSeconds} min longer than {maxTime} min.");
             }
         }
 

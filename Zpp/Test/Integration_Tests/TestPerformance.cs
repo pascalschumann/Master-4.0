@@ -44,10 +44,22 @@ namespace Zpp.Test.Integration_Tests
         }
 
         [Theory]
-        // [InlineData(TestConfigurationFileNames.DESK_COP_500_LOTSIZE_2)]
         [InlineData(TestConfigurationFileNames.TRUCK_COP_100_LOTSIZE_2)]
         [InlineData(TestConfigurationFileNames.TRUCK_INTERVAL_20160_COP_100_LOTSIZE_2)]
         public void TestPerformanceStudyWithoutDbPersist(string testConfigurationFileName)
+        {
+            ExecutePerformanceStudy(testConfigurationFileName, false);
+        }
+        
+          [Theory]
+        [InlineData(TestConfigurationFileNames.TRUCK_COP_1_LOTSIZE_2)]
+        [InlineData(TestConfigurationFileNames.TRUCK_INTERVAL_20160_COP_1_LOTSIZE_2)]
+        public void TestPerformanceStudyWithDbPersist(string testConfigurationFileName)
+        {
+            ExecutePerformanceStudy(testConfigurationFileName, true);
+        }
+
+        private void ExecutePerformanceStudy(string testConfigurationFileName, bool shouldPersist)
         {
             Stopwatch stopwatch = new Stopwatch();
             int maxPossibleCops = int.MaxValue / 100;
@@ -66,13 +78,10 @@ namespace Zpp.Test.Integration_Tests
             while (customerOrderCount <= maxPossibleCops && elapsedMinutes < 5)
             {
                 InitThisTest(testConfigurationFileName);
-
-                customerOrderCount = 100000000;
-                testConfiguration.CustomerOrderPartQuantity = customerOrderCount;
+                
                 IZppSimulator zppSimulator = new ZppSimulator.impl.ZppSimulator();
                 stopwatch.Start();
-                // TODO: set this to true once the dbPersisting is terminating in a practical time (rename method)
-                zppSimulator.StartPerformanceStudy(false);
+                zppSimulator.StartPerformanceStudy(shouldPersist);
                 stopwatch.Stop();
 
                 elapsedMinutes = stopwatch.Elapsed.Minutes;
@@ -85,6 +94,9 @@ namespace Zpp.Test.Integration_Tests
                     $"simulation needs  with {elapsedMinutes}:{elapsedSeconds} min longer than {maxTime} min for " +
                     $"CustomerOrderCount ({customerOrderCount}) " +
                     $"per interval (0-{testConfiguration.SimulationInterval}) in {cycles} cycle(s).");
+                
+                customerOrderCount *= 10;
+                testConfiguration.CustomerOrderPartQuantity = customerOrderCount;
             }
         }
 

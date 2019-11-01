@@ -35,7 +35,7 @@ namespace Zpp.Test.Integration_Tests
         [InlineData(TestConfigurationFileNames.DESK_COP_5_LOTSIZE_2)]
         
         [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
-        [InlineData(TestConfigurationFileNames.TRUCK_COP_1_LOTSIZE_1)]
+        [InlineData(TestConfigurationFileNames.TRUCK_COP_1_LOTSIZE_2)]
         public void TestOperationGraphStaysTheSame(string testConfigurationFileName)
         {
             InitThisTest(testConfigurationFileName);

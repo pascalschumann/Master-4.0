@@ -81,10 +81,16 @@ namespace Zpp.Test.Integration_Tests
 
                 stopwatch.Reset();
 
-                Assert.True(customerOrderCount < maxPossibleCops && elapsedMinutes < maxTime,
+                Assert.True(customerOrderCount < maxPossibleCops,
                     $"{testConfigurationFileName}, without Db persistence: customerOrderCount ({customerOrderCount}) " +
-                    $"per interval (0-{testConfiguration.SimulationInterval}) in {cycles} cycles cannot be greater (int.max) OR " + 
-                    $"simulation needs  with {elapsedMinutes}:{elapsedSeconds} min longer than {maxTime} min.");
+                    $"per interval (0-{testConfiguration.SimulationInterval}) in {cycles} cycles cannot be greater (int.max)." +
+                    $"(Simulation needed  with {elapsedMinutes}:{elapsedSeconds} minutes.)");
+                
+                Assert.True(elapsedMinutes < maxTime,
+                    $"{testConfigurationFileName}, without Db persistence: " + 
+                    $"simulation needs  with {elapsedMinutes}:{elapsedSeconds} min longer than {maxTime} min for " +
+                    $"CustomerOrderCount ({customerOrderCount}) " +
+                    $"per interval (0-{testConfiguration.SimulationInterval}) in {cycles} cycles.");
             }
         }
 

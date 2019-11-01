@@ -52,7 +52,7 @@ namespace Zpp.Mrp2.impl
             INodes rootNodes = new Nodes();
             foreach (var rootNode in orderOperationGraph.GetRootNodes())
             {
-                if (rootNode.GetType() == typeof(CustomerOrderPart))
+                if (rootNode.GetEntity().GetType() == typeof(CustomerOrderPart))
                 {
                     rootNodes.Add(rootNode);
                 }
@@ -67,7 +67,7 @@ namespace Zpp.Mrp2.impl
             INodes childRootNodes = new Nodes();
             foreach (var rootNode in orderOperationGraph.GetRootNodes())
             {
-                if (rootNode.GetType() != typeof(CustomerOrderPart))
+                if (rootNode.GetEntity().GetType() != typeof(CustomerOrderPart))
                 {
                     continue;
                 }

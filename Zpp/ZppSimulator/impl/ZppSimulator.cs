@@ -119,7 +119,7 @@ namespace Zpp.ZppSimulator.impl
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.ReloadTransactionData();
 
-            string performanceLog = "";
+            string performanceLog = $"Number of cops: {ZppConfiguration.CacheManager.GetTestConfiguration().CustomerOrderPartQuantity}";
             _performanceMonitors.Start();
 
             for (int i = 0; i * _interval < maxSimulatingTime; i++)

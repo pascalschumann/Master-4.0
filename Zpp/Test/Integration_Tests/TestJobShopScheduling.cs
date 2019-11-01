@@ -24,6 +24,7 @@ namespace Zpp.Test.Integration_Tests
 
         [Theory]
         [InlineData(TestConfigurationFileNames.TRUCK_COP_500_LOTSIZE_2)]
+        [InlineData(TestConfigurationFileNames.TRUCK_COP_10000_LOTSIZE_2)]
         [InlineData(TestConfigurationFileNames.TRUCK_COP_2_LOTSIZE_2)]
         public void TestEveryMachineHasOnlyOneOperationAtAnyTime(string testConfigurationFileName)
         {

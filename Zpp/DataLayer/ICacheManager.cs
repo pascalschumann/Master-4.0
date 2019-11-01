@@ -44,5 +44,7 @@ namespace Zpp.DataLayer
         void Dispose();
 
         IAggregator GetAggregator();
+
+        void ReadInTestConfiguration(string testConfigurationFileNames);
     }
 }

@@ -78,7 +78,7 @@ namespace Zpp.DataLayer.impl
          */
         private void InitDb(string testConfiguration, ProductionDomainContext productionDomainContext, bool InitData)
         {
-            _testConfiguration = ReadTestConfiguration(testConfiguration);
+            ReadInTestConfiguration(testConfiguration);
             if (Constants.IsLocalDb)
             {
                 bool isDeleted = productionDomainContext.Database.EnsureDeleted();
@@ -118,9 +118,9 @@ namespace Zpp.DataLayer.impl
             LotSize.SetLotSizeType(_testConfiguration.LotSizeType);
         }
         
-        private static TestConfiguration ReadTestConfiguration(string testConfigurationFileNames)
+        public void ReadInTestConfiguration(string testConfigurationFileNames)
         {
-            return JsonConvert.DeserializeObject<TestConfiguration>(
+            _testConfiguration = JsonConvert.DeserializeObject<TestConfiguration>(
                 File.ReadAllText(testConfigurationFileNames));
         }
 

@@ -12,8 +12,8 @@ namespace Master40.DB.DataModel
     {
         public int DemandId { get; set; }
         public int ProviderId { get; set; }
-        
-        public decimal Quantity { get; set; }
+
+        public decimal? Quantity { get; set; } = null;
 
         public T_DemandToProvider()
         {
@@ -23,7 +23,10 @@ namespace Master40.DB.DataModel
         {
             ProviderId = providerId.GetValue();
             DemandId = demandId.GetValue();
-            Quantity = quantity.GetValue();
+            if (quantity != null)
+            {
+                Quantity = quantity.GetValue();   
+            }
         }
 
         public override string ToString()

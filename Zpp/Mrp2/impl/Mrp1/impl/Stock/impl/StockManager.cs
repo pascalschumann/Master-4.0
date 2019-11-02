@@ -58,10 +58,14 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Stock.impl
         private Provider CreateStockExchangeProvider(M_Article article, DueTime dueTime,
             Quantity demandedQuantity)
         {
+            if (demandedQuantity == null || demandedQuantity.GetValue() == null)
+            {
+                throw new MrpRunException("Quantity is not set.");
+            }
             M_Stock stock = _dbMasterDataCache.M_StockGetByArticleId(article.GetId());
             T_StockExchange stockExchange = new T_StockExchange();
             stockExchange.StockExchangeType = StockExchangeType.Provider;
-            stockExchange.Quantity = demandedQuantity.GetValue();
+            stockExchange.Quantity = demandedQuantity.GetValue().GetValueOrDefault();
             stockExchange.State = State.Created;
 
             stockExchange.Stock = stock;

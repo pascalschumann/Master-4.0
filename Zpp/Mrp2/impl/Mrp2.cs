@@ -46,13 +46,13 @@ namespace Zpp.Mrp2.impl
             
             DemandToProviderGraph demandToProviderGraph = new DemandToProviderGraph();
             // TODO: remove this
-            string demandToProviderGraphString = demandToProviderGraph.ToString();
+            // string demandToProviderGraphString = demandToProviderGraph.ToString();
             
             // BackwardForwardBackwardScheduling
             _performanceMonitors.Start(InstanceToTrack.BackwardForwardBackwardScheduling);
             OrderOperationGraph orderOperationGraph = new OrderOperationGraph();
             // TODO: remove this
-            string orderOperationGraphString = orderOperationGraph.ToString();
+            // string orderOperationGraphString = orderOperationGraph.ToString();
             
             ZppConfiguration.CacheManager.SetAggregator(demandToProviderGraph, orderOperationGraph);
             AssertGraphsAreNotEmpty(orderOperationGraph);

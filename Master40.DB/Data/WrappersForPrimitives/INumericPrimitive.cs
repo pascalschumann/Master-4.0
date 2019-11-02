@@ -2,7 +2,7 @@ using System;
 
 namespace Master40.DB.Data.WrappersForPrimitives
 {
-    public interface INumericPrimitive<T>: IComparable<T>,IComparable 
+    public interface INumericPrimitive<T>// : IComparable<T>,IComparable 
     {
         void IncrementBy(T t);
 

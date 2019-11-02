@@ -58,11 +58,15 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
         
         public static Demand CreateStockExchangeStockDemand(Id articleId, DueTime dueTime, Quantity quantity)
         {
+            if (quantity == null || quantity.GetValue() == null)
+            {
+                throw new MrpRunException("Quantity is not set.");
+            }
             IDbMasterDataCache dbMasterDataCache =
                 ZppConfiguration.CacheManager.GetMasterDataCache();
             T_StockExchange stockExchange = new T_StockExchange();
             stockExchange.StockExchangeType = StockExchangeType.Demand;
-            stockExchange.Quantity = quantity.GetValue();
+            stockExchange.Quantity = quantity.GetValue().GetValueOrDefault();
             stockExchange.State = State.Created;
             M_Stock stock = dbMasterDataCache.M_StockGetByArticleId(articleId);
             stockExchange.Stock = stock;

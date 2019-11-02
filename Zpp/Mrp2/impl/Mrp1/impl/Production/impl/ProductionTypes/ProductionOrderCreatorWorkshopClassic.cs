@@ -23,13 +23,17 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Production.impl.ProductionTypes
 
         public override EntityCollector CreateProductionOrder(Demand demand, Quantity quantity)
         {
+            if (quantity == null || quantity.GetValue() == null)
+            {
+                throw new MrpRunException("Quantity is not set.");
+            }
             T_ProductionOrder tProductionOrder = new T_ProductionOrder();
             // [ArticleId],[Quantity],[Name],[DueTime],[ProviderId]
             tProductionOrder.DueTime = demand.GetStartTimeBackward().GetValue();
             tProductionOrder.Article = demand.GetArticle();
             tProductionOrder.ArticleId = demand.GetArticle().Id;
             tProductionOrder.Name = $"ProductionOrder for Demand {demand.GetArticle()}";
-            tProductionOrder.Quantity = quantity.GetValue();
+            tProductionOrder.Quantity = quantity.GetValue().GetValueOrDefault();
 
             ProductionOrder productionOrder =
                 new ProductionOrder(tProductionOrder);

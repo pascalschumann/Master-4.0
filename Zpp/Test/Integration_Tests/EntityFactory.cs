@@ -8,6 +8,7 @@ using Zpp.DataLayer;
 using Zpp.DataLayer.impl.DemandDomain;
 using Zpp.DataLayer.impl.DemandDomain.Wrappers;
 using Zpp.DataLayer.impl.ProviderDomain.Wrappers;
+using Zpp.Util;
 using Zpp.Util.Graph;
 
 namespace Zpp.Test.Integration_Tests
@@ -30,6 +31,10 @@ namespace Zpp.Test.Integration_Tests
             
             Demand demand, Quantity quantity)
         {
+            if (quantity == null || quantity.GetValue() == null)
+            {
+                throw new MrpRunException("Quantity is not set.");
+            }
             T_ProductionOrder tProductionOrder = new T_ProductionOrder();
             // [ArticleId],[Quantity],[Name],[DueTime],[ProviderId]
             tProductionOrder.DueTime = demand.GetStartTimeBackward().GetValue();
@@ -37,7 +42,7 @@ namespace Zpp.Test.Integration_Tests
             tProductionOrder.ArticleId = demand.GetArticle().Id;
             tProductionOrder.Name = $"ProductionOrder for Demand {demand.GetArticle()}";
             // connects this provider with table T_Provider
-            tProductionOrder.Quantity = quantity.GetValue();
+            tProductionOrder.Quantity = quantity.GetValue().GetValueOrDefault();
 
             return new ProductionOrder(tProductionOrder);
         }

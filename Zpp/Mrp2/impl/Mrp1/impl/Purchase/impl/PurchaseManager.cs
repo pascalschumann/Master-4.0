@@ -86,8 +86,12 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Purchase.impl
         private static int CalculateQuantity(M_ArticleToBusinessPartner articleToBusinessPartner,
             Quantity demandQuantity)
         {
+            if (demandQuantity == null || demandQuantity.GetValue() == null)
+            {
+                throw new MrpRunException("Quantity is not set.");
+            }
             // force round up the decimal demandQuantity
-            int demandQuantityInt = (int) decimal.Truncate(demandQuantity.GetValue());
+            int demandQuantityInt = (int) decimal.Truncate(demandQuantity.GetValue().GetValueOrDefault());
             if (demandQuantityInt < demandQuantity.GetValue())
             {
                 demandQuantityInt++;

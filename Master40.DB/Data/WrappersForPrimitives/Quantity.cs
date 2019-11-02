@@ -10,7 +10,7 @@ namespace Master40.DB.Data.WrappersForPrimitives
         {
         }
 
-        public Quantity(decimal quantity):base(quantity)
+        public Quantity(decimal? quantity):base(quantity)
         {
         }
 

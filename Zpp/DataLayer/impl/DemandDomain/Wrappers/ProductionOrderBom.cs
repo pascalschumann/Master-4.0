@@ -36,8 +36,11 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
             Quantity quantity)
         {
             T_ProductionOrderBom productionOrderBom = new T_ProductionOrderBom();
-            // TODO: Terminierung+Maschinenbelegung
-            productionOrderBom.Quantity = articleBom.Quantity * quantity.GetValue();
+            if (quantity == null || quantity.GetValue() == null)
+            {
+                throw new MrpRunException("Quantity is not set.");
+            }
+            productionOrderBom.Quantity = articleBom.Quantity * quantity.GetValue().GetValueOrDefault();
             productionOrderBom.ProductionOrderParent =
                 (T_ProductionOrder) parentProductionOrder.ToIProvider();
             productionOrderBom.ProductionOrderParentId =

@@ -4,9 +4,9 @@ namespace Master40.DB.Data.WrappersForPrimitives
 {
     public class DecimalPrimitive<T>: INumericPrimitive<T> where T : DecimalPrimitive<T>, new()
     {
-        private decimal _decimal;
+        private decimal? _decimal;
 
-        public DecimalPrimitive(decimal @decimal)
+        public DecimalPrimitive(decimal? @decimal)
         {
             _decimal = @decimal;
         }
@@ -15,7 +15,7 @@ namespace Master40.DB.Data.WrappersForPrimitives
         {
         }
 
-        public decimal GetValue()
+        public decimal? GetValue()
         {
             return _decimal;
         }
@@ -63,7 +63,7 @@ namespace Master40.DB.Data.WrappersForPrimitives
         
         public T Minus(T t)
         {
-            decimal newValue = _decimal - t._decimal;
+            decimal? newValue = _decimal - t._decimal;
             T newObject = (T) Activator.CreateInstance(typeof(T));
             newObject._decimal = newValue;
             return newObject;
@@ -71,7 +71,7 @@ namespace Master40.DB.Data.WrappersForPrimitives
         
         public T Plus(T t)
         {
-            decimal newValue = _decimal + t._decimal;
+            decimal? newValue = _decimal + t._decimal;
             T newObject = (T) Activator.CreateInstance(typeof(T));
             newObject._decimal = newValue;
             return newObject;
@@ -79,7 +79,11 @@ namespace Master40.DB.Data.WrappersForPrimitives
 
         public T AbsoluteValue()
         {
-            decimal newValue = Math.Abs(_decimal);
+            if (_decimal == null)
+            {
+                return null;
+            }
+            decimal? newValue = Math.Abs(_decimal.GetValueOrDefault());
             T newObject = (T) Activator.CreateInstance(typeof(T));
             newObject._decimal = newValue;
             return newObject;
@@ -103,7 +107,7 @@ namespace Master40.DB.Data.WrappersForPrimitives
             return newObject;
         }
         
-        public int CompareTo(T that)
+        /*public int CompareTo(T that)
         {
             return _decimal.CompareTo(that.GetValue());
         }
@@ -112,7 +116,7 @@ namespace Master40.DB.Data.WrappersForPrimitives
         {
             T other = (T)obj;
             return _decimal.CompareTo(other.GetValue());
-        }
+        }*/
         
         public override bool Equals(object obj)
         {

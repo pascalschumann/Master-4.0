@@ -76,7 +76,7 @@ namespace Zpp.Test.Integration_Tests
                 Quantity satisfiedQuantity = Quantity.Null();
                 dbTransactionData.DemandToProviderGetAll().Select(x =>
                 {
-                    satisfiedQuantity.IncrementBy(x.Quantity);
+                    satisfiedQuantity.IncrementBy(x.Quantity.GetValueOrDefault());
                     return x;
                 }).Where(x => x.GetDemandId().Equals(demand.GetId()));
                 Assert.True(satisfiedQuantity.Equals(demand.GetQuantity()),

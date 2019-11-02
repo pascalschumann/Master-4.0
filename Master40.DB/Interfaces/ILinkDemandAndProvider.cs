@@ -8,7 +8,7 @@ namespace Master40.DB.Interfaces
         int DemandId { get; set; }
         int ProviderId { get; set; }
         
-        decimal Quantity { get; set; }
+        decimal? Quantity { get; set; }
         
         Id GetProviderId();
 

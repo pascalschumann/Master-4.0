@@ -60,9 +60,9 @@ namespace Zpp.DataLayer.impl
 
         private readonly CustomerOrders _customerOrders;
 
-        private readonly DemandToProviderTable _demandToProviderTable;
+        private readonly LinkDemandAndProviderTable _demandToProviderTable;
 
-        private readonly ProviderToDemandTable _providerToDemandTable;
+        private readonly LinkDemandAndProviderTable _providerToDemandTable;
 
         public DbTransactionData(ProductionDomainContext productionDomainContext)
         {
@@ -105,9 +105,9 @@ namespace Zpp.DataLayer.impl
             // demandToProvider
 
             _demandToProviderTable =
-                new DemandToProviderTable(_productionDomainContext.DemandToProviders.ToList());
+                new LinkDemandAndProviderTable(_productionDomainContext.DemandToProviders);
             _providerToDemandTable =
-                new ProviderToDemandTable(_productionDomainContext.ProviderToDemand.ToList());
+                new LinkDemandAndProviderTable(_productionDomainContext.ProviderToDemand);
         }
 
         public List<M_BusinessPartner> M_BusinessPartnerGetAll()
@@ -176,11 +176,11 @@ namespace Zpp.DataLayer.impl
                 _productionDomainContext);
 
             // at the end: T_DemandToProvider & T_ProviderToDemand
-            InsertOrUpdateRange(DemandToProviderGetAll(),
+            InsertOrUpdateRange(DemandToProviderGetAll().Select(x => (T_DemandToProvider) x),
                 _productionDomainContext.DemandToProviders, _productionDomainContext);
             if (ProviderToDemandGetAll().Any())
             {
-                InsertOrUpdateRange(ProviderToDemandGetAll(),
+                InsertOrUpdateRange(ProviderToDemandGetAll().Select(x => (T_ProviderToDemand) x),
                     _productionDomainContext.ProviderToDemand, _productionDomainContext);
             }
 
@@ -292,7 +292,7 @@ namespace Zpp.DataLayer.impl
             }
         }
 
-        public IDemands DemandsGetAll()
+        public Demands DemandsGetAll()
         {
             Demands demands = new Demands();
 
@@ -314,9 +314,9 @@ namespace Zpp.DataLayer.impl
             return demands;
         }
 
-        public IProviders ProvidersGetAll()
+        public Providers ProvidersGetAll()
         {
-            IProviders providers = new Providers();
+            Providers providers = new Providers();
             providers.AddAll(_productionOrders);
             providers.AddAll(_purchaseOrderParts);
             providers.AddAll(_stockExchangeProviders);
@@ -343,7 +343,7 @@ namespace Zpp.DataLayer.impl
             return _productionOrders;
         }
 
-        public void DemandsAddAll(IDemands demands)
+        public void DemandsAddAll(Demands demands)
         {
             foreach (var demand in demands)
             {
@@ -384,7 +384,7 @@ namespace Zpp.DataLayer.impl
             }
         }
 
-        public void ProvidersAddAll(IProviders providers)
+        public void ProvidersAddAll(Providers providers)
         {
             foreach (var provider in providers)
             {
@@ -408,7 +408,7 @@ namespace Zpp.DataLayer.impl
             _purchaseOrders.Remove(purchaseOrder);
         }
 
-        public IDemandToProviderTable DemandToProviderGetAll()
+        public LinkDemandAndProviderTable DemandToProviderGetAll()
         {
             return _demandToProviderTable;
         }
@@ -443,7 +443,7 @@ namespace Zpp.DataLayer.impl
             return provider;
         }
 
-        public IProviderToDemandTable ProviderToDemandGetAll()
+        public LinkDemandAndProviderTable ProviderToDemandGetAll()
         {
             return _providerToDemandTable;
         }
@@ -512,7 +512,7 @@ namespace Zpp.DataLayer.impl
             _demandToProviderTable.Add(demandToProvider);
         }
 
-        public void ProviderToDemandAddAll(ProviderToDemandTable providerToDemandTable)
+        public void ProviderToDemandAddAll(LinkDemandAndProviderTable providerToDemandTable)
         {
             _providerToDemandTable.AddAll(providerToDemandTable);
         }
@@ -552,9 +552,9 @@ namespace Zpp.DataLayer.impl
                 _demandToProviderTable.AddAll(otherEntityCollector.GetDemandToProviderTable());
             }
 
-            if (otherEntityCollector.GetProviderToDemandTable().Any())
+            if (otherEntityCollector.GetLinkDemandAndProviderTable().Any())
             {
-                _providerToDemandTable.AddAll(otherEntityCollector.GetProviderToDemandTable());
+                _providerToDemandTable.AddAll(otherEntityCollector.GetLinkDemandAndProviderTable());
             }
         }
 

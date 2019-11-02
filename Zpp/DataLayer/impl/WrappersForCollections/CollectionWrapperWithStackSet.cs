@@ -6,7 +6,7 @@ using Zpp.Util.StackSet;
 
 namespace Zpp.DataLayer.impl.WrappersForCollections
 {
-    public class CollectionWrapperWithStackSet<T>: ICollectionWrapper<T> where T: IId
+    public class CollectionWrapperWithStackSet<T>: ICollectionWrapper<T> where T: class, IId
     {
         protected readonly IStackSet<T> StackSet = new StackSet<T>();
 
@@ -45,7 +45,7 @@ namespace Zpp.DataLayer.impl.WrappersForCollections
             return StackSet.GetAll();
         }
 
-        public void Add(T item)
+        public virtual void Add(T item)
         {
             StackSet.Push(item);
         }
@@ -65,12 +65,12 @@ namespace Zpp.DataLayer.impl.WrappersForCollections
             return StackSet;
         }
 
-        public void Clear()
+        public virtual void Clear()
         {
             StackSet.Clear();
         }
 
-        public void Remove(T t)
+        public virtual void Remove(T t)
         {
             StackSet.Remove(t);
         }

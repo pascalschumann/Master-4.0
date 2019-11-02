@@ -12,7 +12,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.WrappersForCollections
     /**
      * wraps the collection with all providers
      */
-    public class Providers : CollectionWrapperWithStackSet<Provider>, IProviders
+    public class Providers : CollectionWrapperWithStackSet<Provider>
     {
         public Providers(IEnumerable<Provider> list) : base(list)
         {
@@ -74,7 +74,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.WrappersForCollections
             return missingQuantity;
         }
 
-        public IDemands CalculateUnsatisfiedDemands(IDemands demands)
+        public Demands CalculateUnsatisfiedDemands(Demands demands)
         {
             List<Demand> unSatisfiedDemands = new List<Demand>();
             Dictionary<Provider, Quantity> reservableQuantityToProvider =

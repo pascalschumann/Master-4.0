@@ -25,10 +25,10 @@ namespace Zpp.DataLayer.impl.ProviderDomain.WrappersForCollections
         {
         }
 
-        private static List<Provider> ToProviders(List<T_ProductionOrder> iProviders)
+        private static List<Provider> ToProviders(List<T_ProductionOrder> Providers)
         {
             List<Provider> providers = new List<Provider>();
-            foreach (var iProvider in iProviders)
+            foreach (var iProvider in Providers)
             {
                 providers.Add(new ProductionOrder(iProvider));
             }

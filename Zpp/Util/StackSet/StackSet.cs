@@ -33,7 +33,7 @@ namespace Zpp.Util.StackSet
             }
 
             // a set contains the element only once, else skip adding
-            if (_index.ContainsKey(element) == false)
+            if (Contains(element) == false)
             {
                 Id id = element.GetId();
                 _dictionary.Add(id, element);

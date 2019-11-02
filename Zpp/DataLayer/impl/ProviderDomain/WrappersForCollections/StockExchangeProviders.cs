@@ -14,10 +14,10 @@ namespace Zpp.DataLayer.impl.ProviderDomain.WrappersForCollections
         {
         }
 
-        private static List<Provider> ToProviders(List<T_StockExchange> iProviders)
+        private static List<Provider> ToProviders(List<T_StockExchange> Providers)
         {
             List<Provider> providers = new List<Provider>();
-            foreach (var iProvider in iProviders)
+            foreach (var iProvider in Providers)
             {
                 if (iProvider.StockExchangeType.Equals(StockExchangeType.Demand))
                 {

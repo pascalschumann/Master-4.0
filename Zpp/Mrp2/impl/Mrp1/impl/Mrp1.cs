@@ -10,9 +10,9 @@ namespace Zpp.Mrp2.impl.Mrp1.impl
 {
     public class Mrp1 : IMrp1
     {
-        private readonly IDemands dbDemands;
+        private readonly Demands dbDemands;
 
-        public Mrp1(IDemands dbDemands)
+        public Mrp1(Demands dbDemands)
         {
             this.dbDemands = dbDemands;
         }

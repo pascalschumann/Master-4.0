@@ -8,14 +8,15 @@ using Zpp.DataLayer.impl.DemandDomain.WrappersForCollections;
 using Zpp.DataLayer.impl.ProviderDomain;
 using Zpp.DataLayer.impl.ProviderDomain.WrappersForCollections;
 using Zpp.DataLayer.impl.WrappersForCollections;
+using Zpp.Util;
 using Zpp.Util.Graph.impl;
 
 namespace Zpp.DataLayer.impl.WrapperForEntities
 {
     public class EntityCollector
     {
-        private readonly DemandToProviderTable _demandToProviderTable = new DemandToProviderTable();
-        private readonly ProviderToDemandTable _providerToDemandTable = new ProviderToDemandTable();
+        private readonly LinkDemandAndProviderTable _demandToProviderTable = new LinkDemandAndProviderTable();
+        private readonly LinkDemandAndProviderTable _providerToDemandTable = new LinkDemandAndProviderTable();
         private readonly Demands _demands = new Demands();
         private readonly Providers _providers = new Providers();
 
@@ -46,14 +47,25 @@ namespace Zpp.DataLayer.impl.WrapperForEntities
             }
         }
 
-        public void AddAll(DemandToProviderTable demandToProviderTable)
+        public void AddAll(LinkDemandAndProviderTable linkDemandAndProviderTable)
         {
-            _demandToProviderTable.AddAll(demandToProviderTable);
-        }
-
-        public void AddAll(ProviderToDemandTable providerToDemandTable)
-        {
-            _providerToDemandTable.AddAll(providerToDemandTable);
+            if (linkDemandAndProviderTable.Any())
+            {
+                ILinkDemandAndProvider linkDemandAndProvider = linkDemandAndProviderTable.GetAny();
+                if (linkDemandAndProvider.GetType() == typeof(T_DemandToProvider))
+                {
+                    _demandToProviderTable.AddAll(linkDemandAndProviderTable);        
+                }
+                else if (linkDemandAndProvider.GetType() == typeof(T_ProviderToDemand))
+                {
+                    _providerToDemandTable.AddAll(linkDemandAndProviderTable);     
+                }
+                else
+                {
+                    throw new MrpRunException("Unexpected type.");
+                }
+            }
+            
         }
 
         public void AddAll(Demands demands)
@@ -86,12 +98,12 @@ namespace Zpp.DataLayer.impl.WrapperForEntities
             _providerToDemandTable.Add(providerToDemand);
         }
 
-        public DemandToProviderTable GetDemandToProviderTable()
+        public LinkDemandAndProviderTable GetDemandToProviderTable()
         {
             return _demandToProviderTable;
         }
 
-        public ProviderToDemandTable GetProviderToDemandTable()
+        public LinkDemandAndProviderTable GetLinkDemandAndProviderTable()
         {
             return _providerToDemandTable;
         }

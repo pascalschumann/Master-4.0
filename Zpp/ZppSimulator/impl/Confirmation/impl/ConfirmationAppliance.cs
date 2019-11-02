@@ -26,7 +26,7 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             IAggregator aggregator = ZppConfiguration.CacheManager.GetAggregator();
 
             // ProductionOrder: 3 Zustände siehe DA
-            IProviders copyOfProductionOrders = new Providers();
+            Providers copyOfProductionOrders = new Providers();
             copyOfProductionOrders.AddAll(dbTransactionData.ProductionOrderGetAll());
 
             foreach (var productionOrder in copyOfProductionOrders)
@@ -211,7 +211,7 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
 
             if (includeStockExchanges)
             {
-                IDemands stockExchangeDemands = aggregator.GetAllParentDemandsOf(productionOrder);
+                Demands stockExchangeDemands = aggregator.GetAllParentDemandsOf(productionOrder);
                 if (stockExchangeDemands.Count() > 1)
                 {
                     throw new MrpRunException(
@@ -221,14 +221,14 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                 demandOrProvidersOfProductionOrderSubGraph.AddRange(stockExchangeDemands);
             }
 
-            IDemands productionOrderBoms = aggregator.GetAllChildDemandsOf(productionOrder);
+            Demands productionOrderBoms = aggregator.GetAllChildDemandsOf(productionOrder);
             demandOrProvidersOfProductionOrderSubGraph.AddRange(productionOrderBoms);
 
             if (includeStockExchanges)
             {
                 foreach (var productionOrderBom in productionOrderBoms)
                 {
-                    IProviders stockExchangeProvider =
+                    Providers stockExchangeProvider =
                         aggregator.GetAllChildProvidersOf(productionOrderBom);
                     if (stockExchangeProvider.Count() > 1)
                     {
@@ -259,7 +259,7 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             foreach (var demandOrProvider in demandOrProvidersToDelete)
             {
                 List<ILinkDemandAndProvider> demandAndProviders =
-                    aggregator.GetArrowsToAndFrom(demandOrProvider);
+                    aggregator.GetArrowsToAndFrom(demandOrProvider); // TODO: why
                 dbTransactionData.DeleteAllFrom(demandAndProviders);
 
                 dbTransactionData.DeleteA(demandOrProvider);
@@ -386,7 +386,7 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
         private static void RemoveAllArrowsAndStockExchangeProviderOnNotFinishedCustomerOrderParts(
             IDbTransactionData dbTransactionData, IAggregator aggregator)
         {
-            IDemands copyOfCustomerOrderParts = new Demands();
+            Demands copyOfCustomerOrderParts = new Demands();
             copyOfCustomerOrderParts.AddAll(dbTransactionData.CustomerOrderPartGetAll());
             foreach (var customerOrderPart in copyOfCustomerOrderParts)
             {
@@ -397,7 +397,7 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
 
 
                     // remove child (stockExchangeProvider) on COP
-                    IProviders stockExchangeProviders =
+                    Providers stockExchangeProviders =
                         aggregator.GetAllChildProvidersOf(customerOrderPart);
                     if (stockExchangeProviders.Count() > 1)
                     {

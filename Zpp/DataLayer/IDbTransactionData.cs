@@ -30,13 +30,13 @@ namespace Zpp.DataLayer
 
         void DemandsAdd(Demand demand);
         
-        void DemandsAddAll(IDemands demands);
+        void DemandsAddAll(Demands demands);
 
-        IProviders ProvidersGetAll();
+        Providers ProvidersGetAll();
 
         void ProvidersAdd(Provider provider);
         
-        void ProvidersAddAll(IProviders providers);
+        void ProvidersAddAll(Providers providers);
         
         ProductionOrderBoms ProductionOrderBomGetAll();
         
@@ -58,11 +58,11 @@ namespace Zpp.DataLayer
         
         ProductionOrder ProductionOrderGetById(Id id);
 
-        IDemands DemandsGetAll();
+        Demands DemandsGetAll();
 
-        IProviderToDemandTable ProviderToDemandGetAll();
+        LinkDemandAndProviderTable ProviderToDemandGetAll();
         
-        IDemandToProviderTable DemandToProviderGetAll();
+        LinkDemandAndProviderTable DemandToProviderGetAll();
 
         Demand DemandsGetById(Id id);
         
@@ -86,7 +86,7 @@ namespace Zpp.DataLayer
 
         void DemandToProviderAdd(T_DemandToProvider demandToProvider);
 
-        void ProviderToDemandAddAll(ProviderToDemandTable providerToDemandTable);
+        void ProviderToDemandAddAll(LinkDemandAndProviderTable providerToDemandTable);
         
         void ProviderToDemandAdd(T_ProviderToDemand providerToDemand);
         

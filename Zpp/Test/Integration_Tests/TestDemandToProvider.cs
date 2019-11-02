@@ -26,8 +26,8 @@ namespace Zpp.Test.Integration_Tests
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.ReloadTransactionData();
 
-            IDemands allDbDemands = dbTransactionData.DemandsGetAll();
-            IDemandToProviderTable demandToProviderTable =
+            Demands allDbDemands = dbTransactionData.DemandsGetAll();
+            LinkDemandAndProviderTable demandToProviderTable =
                 dbTransactionData.DemandToProviderGetAll();
 
             foreach (var demand in allDbDemands)
@@ -51,9 +51,9 @@ namespace Zpp.Test.Integration_Tests
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.ReloadTransactionData();
 
-            IDemands demands = dbTransactionData.DemandsGetAll();
-            IProviders providers = dbTransactionData.ProvidersGetAll();
-            IDemands unsatisfiedDemands = providers.CalculateUnsatisfiedDemands(demands);
+            Demands demands = dbTransactionData.DemandsGetAll();
+            Providers providers = dbTransactionData.ProvidersGetAll();
+            Demands unsatisfiedDemands = providers.CalculateUnsatisfiedDemands(demands);
             foreach (var unsatisfiedDemand in unsatisfiedDemands)
             {
                 Assert.True(false,
@@ -70,7 +70,7 @@ namespace Zpp.Test.Integration_Tests
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.ReloadTransactionData();
 
-            IDemands allDbDemands = dbTransactionData.DemandsGetAll();
+            Demands allDbDemands = dbTransactionData.DemandsGetAll();
             foreach (var demand in allDbDemands)
             {
                 Quantity satisfiedQuantity = Quantity.Null();

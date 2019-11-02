@@ -26,17 +26,11 @@ namespace Zpp.DataLayer.impl
         private readonly IDbMasterDataCache _dbMasterDataCache =
             ZppConfiguration.CacheManager.GetMasterDataCache();
 
-        private readonly DemandToProviderGraph _demandToProviderGraph;
-        private readonly OrderOperationGraph _orderOperationGraph;
-
         private readonly IDbTransactionData _dbTransactionData;
 
-        public Aggregator(IDbTransactionData dbTransactionData,
-            DemandToProviderGraph demandToProviderGraph, OrderOperationGraph orderOperationGraph)
+        public Aggregator(IDbTransactionData dbTransactionData)
         {
             _dbTransactionData = dbTransactionData;
-            _demandToProviderGraph = demandToProviderGraph;
-            _orderOperationGraph = orderOperationGraph;
         }
 
         public ProductionOrderBoms GetProductionOrderBomsOfProductionOrder(

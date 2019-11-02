@@ -30,7 +30,7 @@ namespace Zpp.Mrp2.impl
             _performanceMonitors = performanceMonitors;
         }
 
-        private void ManufacturingResourcePlanning(IDemands dbDemands)
+        private void ManufacturingResourcePlanning(Demands dbDemands)
         {
             if (dbDemands == null || dbDemands.Any() == false)
             {
@@ -79,7 +79,7 @@ namespace Zpp.Mrp2.impl
                 {
                     continue;
                 }
-                IProviders childProviders = ZppConfiguration.CacheManager.GetAggregator()
+                Providers childProviders = ZppConfiguration.CacheManager.GetAggregator()
                     .GetAllChildProvidersOf((Demand) rootNode.GetEntity());
                 if (childProviders.Count() != 1)
                 {

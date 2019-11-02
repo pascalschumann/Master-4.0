@@ -8,7 +8,7 @@ namespace Zpp.DataLayer.impl.DemandDomain.WrappersForCollections
     /**
      * wraps the collection with all demands, earlier named "DemandManager"
      */
-    public class Demands : CollectionWrapperWithStackSet<Demand>, IDemands
+    public class Demands : CollectionWrapperWithStackSet<Demand>
     {
         private readonly HierarchyNumber _hierarchyNumber;
 

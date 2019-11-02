@@ -16,7 +16,7 @@ namespace Zpp.DataLayer.impl.OpenDemand
     public class OpenDemandManager : IOpenDemandManager
     {
         // This is only for remembering already added demands !!! (not to persist or anything else)
-        private readonly IDemands _demands = new Demands();
+        private readonly Demands _demands = new Demands();
 
         private readonly OpenNodes<Demand> _openDemands = new OpenNodes<Demand>();
 

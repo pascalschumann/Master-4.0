@@ -38,11 +38,11 @@ namespace Zpp.DataLayer.impl.OpenDemand
          */
         Demands GetNextDemands();
 
-        IDemandToProviderTable GetDemandToProviderTable();
+        LinkDemandAndProviderTable GetDemandToProviderTable();
 
-        IProviderToDemandTable GetProviderToDemandTable();
+        LinkDemandAndProviderTable GetLinkDemandAndProviderTable();
 
-        IProviders GetProviders();
+        Providers GetProviders();
 
         void AddDemandToProvider(T_DemandToProvider demandToProvider);
      

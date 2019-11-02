@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Zpp.DataLayer;
+using Zpp.DataLayer.impl;
 using Zpp.DataLayer.impl.ProviderDomain.Wrappers;
 
 namespace Zpp.Util.Graph.impl
@@ -18,24 +19,26 @@ namespace Zpp.Util.Graph.impl
 
         private void CreateGraph2(ProductionOrder productionOrder)
         {
-            IAggregator aggregator = ZppConfiguration.CacheManager.GetAggregator();
-            IEnumerable<ProductionOrderOperation> productionOrderOperations =
-                aggregator.GetProductionOrderOperationsOfProductionOrder(productionOrder);
-            if (productionOrderOperations == null)
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
+            IEnumerable<ProductionOrderOperation> productionOrderOperations = dbTransactionData
+                .ProductionOrderOperationGetAll().GetAll().Where(x =>
+                    x.GetValue().ProductionOrderId.Equals(productionOrder.GetId().GetValue()))
+                .OrderBy(x => x.GetHierarchyNumber().GetValue());
+            ;
+            if (productionOrderOperations.Any() == false)
             {
                 Clear();
                 return;
             }
 
-            productionOrderOperations =
-                productionOrderOperations.OrderBy(x => x.GetHierarchyNumber().GetValue());
             // root is always the productionOrder
             INode predecessor = new Node(productionOrder);
             foreach (var operation in productionOrderOperations)
             {
                 INode operationNode = new Node(operation);
-                    AddEdge(new Edge(predecessor, operationNode));
-                    predecessor = operationNode;
+                AddEdge(new Edge(predecessor, operationNode));
+                predecessor = operationNode;
             }
         }
 

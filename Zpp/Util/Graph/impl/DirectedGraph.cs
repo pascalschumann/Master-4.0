@@ -141,7 +141,7 @@ namespace Zpp.Util.Graph.impl
         public override string ToString()
         {
             string mystring = "";
-            List<IEdge> edges = GetAllEdges();
+            IStackSet<IEdge> edges = GetEdges();
 
             if (edges == null)
             {
@@ -399,19 +399,6 @@ namespace Zpp.Util.Graph.impl
             return nodes;
         }
 
-        public List<IEdge> GetAllEdges()
-        {
-            IStackSet<IEdge> edges = GetEdges();
-            if (edges == null)
-            {
-                return null;
-            }
-            else
-            {
-                return edges.ToList();
-            }
-        }
-
         public INode GetNode(Id id)
         {
             IGraphNode graphNode = _nodes.GetById(id); 
@@ -523,6 +510,7 @@ namespace Zpp.Util.Graph.impl
         public void AddNode(INode node)
         {
             _nodes.Push(new GraphNode(node));
+            _edgeCount++;
         }
     }
 }

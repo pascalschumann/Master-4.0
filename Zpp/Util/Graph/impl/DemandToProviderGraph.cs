@@ -5,6 +5,7 @@ using Zpp.DataLayer;
 using Zpp.DataLayer.impl.DemandDomain;
 using Zpp.DataLayer.impl.DemandDomain.Wrappers;
 using Zpp.DataLayer.impl.ProviderDomain;
+using Zpp.Util.StackSet;
 
 namespace Zpp.Util.Graph.impl
 {
@@ -64,7 +65,7 @@ namespace Zpp.Util.Graph.impl
         public override string ToString()
         {
             string mystring = "";
-            List<IEdge> edges = GetAllEdges();
+            IStackSet<IEdge> edges = GetEdges();
 
             if (edges == null)
             {

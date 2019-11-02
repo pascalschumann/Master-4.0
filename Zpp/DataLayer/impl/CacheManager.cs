@@ -185,17 +185,5 @@ namespace Zpp.DataLayer.impl
             _aggregator = new Aggregator(_dbTransactionData, demandToProviderGraph,
                 orderOperationGraph);
         }
-
-        public void UpdateAggregator(DemandToProviderGraph demandToProviderGraph)
-        {
-            OrderOperationGraph orderOperationGraph = ((Aggregator)_aggregator).GetOrderOperationGraph();
-            _aggregator = new Aggregator(_dbTransactionData, demandToProviderGraph, orderOperationGraph);
-        }
-
-        public void UpdateAggregator(OrderOperationGraph orderOperationGraph)
-        {
-            DemandToProviderGraph demandToProviderGraph = ((Aggregator)_aggregator).GetDemandToProviderGraph();
-            _aggregator = new Aggregator(_dbTransactionData, demandToProviderGraph, orderOperationGraph);
-        }
     }
 }

@@ -50,9 +50,5 @@ namespace Zpp.DataLayer
         void ReadInTestConfiguration(string testConfigurationFileNames);
 
         void SetAggregator(DemandToProviderGraph demandToProviderGraph, OrderOperationGraph orderOperationGraph);
-        
-        void UpdateAggregator(DemandToProviderGraph demandToProviderGraph);
-        
-        void UpdateAggregator(OrderOperationGraph orderOperationGraph);
     }
 }

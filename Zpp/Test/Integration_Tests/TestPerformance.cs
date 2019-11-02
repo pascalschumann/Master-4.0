@@ -44,6 +44,7 @@ namespace Zpp.Test.Integration_Tests
         }
 
         [Theory]
+        [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
         [InlineData(TestConfigurationFileNames.TRUCK_COP_100_LOTSIZE_2)]
         [InlineData(TestConfigurationFileNames.TRUCK_INTERVAL_20160_COP_100_LOTSIZE_2)]
         public void TestPerformanceStudyWithoutDbPersist(string testConfigurationFileName)
@@ -63,8 +64,8 @@ namespace Zpp.Test.Integration_Tests
         {
             Stopwatch stopwatch = new Stopwatch();
             // todo rvert this
-            // int maxPossibleCops = int.MaxValue / 100;
-            int maxPossibleCops = 300;
+            int maxPossibleCops = int.MaxValue / 100;
+            // int maxPossibleCops = 300;
             
             ZppConfiguration.CacheManager.ReadInTestConfiguration(testConfigurationFileName);
             TestConfiguration testConfiguration =
@@ -100,8 +101,8 @@ namespace Zpp.Test.Integration_Tests
                     $"per interval (0-{testConfiguration.SimulationInterval}) in {cycles} cycle(s).");
                 
                 // TODO: revert this
-                // customerOrderCount *= 10;
-                customerOrderCount += customerOrderCountOriginal;
+                customerOrderCount *= 10;
+                // customerOrderCount += customerOrderCountOriginal;
                 testConfiguration.CustomerOrderPartQuantity = customerOrderCount;
             }
         }

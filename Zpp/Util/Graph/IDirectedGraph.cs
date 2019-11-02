@@ -62,8 +62,6 @@ namespace Zpp.Util.Graph
         
         void ReplaceNodeByDirectedGraph(Id nodeId, IDirectedGraph<INode> graphToInsert);
 
-        List<IEdge> GetAllEdges();
-
         IStackSet<IEdge> GetEdges();
         
         List<ILinkDemandAndProvider> GetEdgesOn(Id nodeId);

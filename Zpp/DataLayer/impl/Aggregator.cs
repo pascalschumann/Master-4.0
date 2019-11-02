@@ -3,6 +3,7 @@ using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Master40.DB.Interfaces;
+using Microsoft.EntityFrameworkCore.Internal;
 using Zpp.DataLayer.impl.DemandDomain;
 using Zpp.DataLayer.impl.DemandDomain.Wrappers;
 using Zpp.DataLayer.impl.DemandDomain.WrappersForCollections;
@@ -69,7 +70,7 @@ namespace Zpp.DataLayer.impl
                 return null;
             }
 
-            return successorNodes.Select(x=>(ProductionOrderOperation)x.GetEntity()).ToList();
+            return successorNodes.Select(x => (ProductionOrderOperation) x.GetEntity()).ToList();
         }
 
         public ProductionOrderBom GetAnyProductionOrderBomByProductionOrderOperation(
@@ -95,7 +96,8 @@ namespace Zpp.DataLayer.impl
             {
                 return null;
             }
-            return new Providers(successors.Select(x=>(Provider)x.GetEntity()));
+
+            return new Providers(successors.Select(x => (Provider) x.GetEntity()));
         }
 
         public Providers GetAllParentProvidersOf(Demand demand)
@@ -105,7 +107,8 @@ namespace Zpp.DataLayer.impl
             {
                 return null;
             }
-            return new Providers(predecessors.Select(x=>(Provider)x.GetEntity()));
+
+            return new Providers(predecessors.Select(x => (Provider) x.GetEntity()));
         }
 
         public List<Provider> GetProvidersForInterval(DueTime from, DueTime to)
@@ -124,7 +127,8 @@ namespace Zpp.DataLayer.impl
             {
                 return null;
             }
-            return new Demands(predecessors.Select(x=>(Demand)x.GetEntity()));
+
+            return new Demands(predecessors.Select(x => (Demand) x.GetEntity()));
         }
 
         public Demands GetAllChildDemandsOf(Provider provider)
@@ -134,28 +138,54 @@ namespace Zpp.DataLayer.impl
             {
                 return null;
             }
-            return new Demands(successors.Select(x=>(Demand)x.GetEntity()));
+
+            return new Demands(successors.Select(x => (Demand) x.GetEntity()));
         }
 
-        public Providers GetAllChildProvidersOf(ProductionOrderOperation operation)
+        public Providers GetAllChildStockExchangeProvidersOf(ProductionOrderOperation operation)
         {
             INodes successors = _orderOperationGraph.GetSuccessorNodes(operation.GetId());
             if (successors == null)
             {
                 return null;
             }
-            return new Providers(successors.Select(x=>(Provider)x.GetEntity()));
+
+            Providers providers = new Providers();
+            foreach (var successor in successors)
+            {
+                if (successor.GetEntity().GetType() == typeof(StockExchangeProvider))
+                {
+                    providers.Add((StockExchangeProvider)successor.GetEntity());
+                }
+                else if (successor.GetEntity().GetType() == typeof(ProductionOrderOperation))
+                {
+                    // pass
+                }
+                else
+                {
+                    throw new MrpRunException(
+                        "A child of an operation can only be an operation or " +
+                        "a StockExchangeProvider");
+                }
+            }
+
+            if (providers.Any() == false)
+            {
+                return null;
+            }
+
+            return providers;
         }
 
-        public DueTime GetEarliestPossibleStartTimeOf(ProductionOrderOperation productionOrderOperation)
+        public DueTime GetEarliestPossibleStartTimeOf(
+            ProductionOrderOperation productionOrderOperation)
         {
             DueTime maximumOfEarliestStartTimes = null;
             Providers providers = ZppConfiguration.CacheManager.GetAggregator()
-                .GetAllChildProvidersOf(productionOrderOperation);
+                .GetAllChildStockExchangeProvidersOf(productionOrderOperation);
 
             foreach (var stockExchangeProvider in providers)
             {
-                
                 DueTime earliestStartTime = productionOrderOperation.GetStartTimeBackward();
                 if (earliestStartTime.IsGreaterThanOrEqualTo(stockExchangeProvider
                     .GetStartTimeBackward()))
@@ -194,7 +224,8 @@ namespace Zpp.DataLayer.impl
                     }
                 }
 
-                if (maximumOfEarliestStartTimes == null || earliestStartTime.IsGreaterThan(maximumOfEarliestStartTimes))
+                if (maximumOfEarliestStartTimes == null ||
+                    earliestStartTime.IsGreaterThan(maximumOfEarliestStartTimes))
                 {
                     maximumOfEarliestStartTimes = earliestStartTime;
                 }
@@ -202,7 +233,7 @@ namespace Zpp.DataLayer.impl
 
             return maximumOfEarliestStartTimes;
         }
-        
+
 
         public Demands GetUnsatisifedCustomerOrderParts()
         {
@@ -386,7 +417,7 @@ namespace Zpp.DataLayer.impl
         {
             return _orderOperationGraph;
         }
-        
+
         internal DemandToProviderGraph GetDemandToProviderGraph()
         {
             return _demandToProviderGraph;

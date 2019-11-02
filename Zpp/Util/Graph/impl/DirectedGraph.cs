@@ -24,8 +24,7 @@ namespace Zpp.Util.Graph.impl
      */
     public class DirectedGraph : IDirectedGraph<INode>
     {
-        private IStackSet<IGraphNode> _nodes = new StackSet<IGraphNode>();
-        private int _edgeCount = 0;
+        protected IStackSet<IGraphNode> _nodes = new StackSet<IGraphNode>();
 
         protected readonly IGraphviz Graphviz = new Graphviz();
 
@@ -130,12 +129,11 @@ namespace Zpp.Util.Graph.impl
 
             head.AddPredecessor(tail);
             tail.AddSuccessor(head);
-            _edgeCount++;
         }
 
         public int CountEdges()
         {
-            return _edgeCount;
+            return _nodes.Count();
         }
 
         public override string ToString()
@@ -355,6 +353,38 @@ namespace Zpp.Util.Graph.impl
             ReplaceNodeByDirectedGraph(node.GetId(), graphToInsert);
         }
 
+        public void ReplaceNodeByOtherNode(Id nodeId, INode otherNode)
+        {
+            if (Contains(otherNode))
+            {
+                otherNode = GetNode(otherNode.GetId());
+            }
+            INodes predecessors = GetPredecessorNodes(nodeId);
+            INodes successors = GetSuccessorNodes(nodeId);
+            RemoveNode(nodeId, false);
+            // predecessors --> roots
+            if (predecessors != null)
+            {
+                foreach (var predecessor in predecessors)
+                {
+
+                        AddEdge(new Edge(predecessor, otherNode));
+
+                }
+            }
+
+            // leafs --> successors 
+            if (successors != null)
+            {
+
+                    foreach (var successor in successors)
+                    {
+                        AddEdge(new Edge(otherNode, successor));
+                    }
+            }
+            
+        }
+
         public void ReplaceNodeByDirectedGraph(Id nodeId, IDirectedGraph<INode> graphToInsert)
         {
             INodes predecessors = GetPredecessorNodes(nodeId);
@@ -386,17 +416,6 @@ namespace Zpp.Util.Graph.impl
 
             // add all edges from graphToInsert
             AddEdges(graphToInsert.GetEdges().GetAll());
-        }
-
-        public INodes GetNodes()
-        {
-            INodes nodes = new Nodes(_nodes.Select(x => x.GetNode()));
-            if (nodes.Any() == false)
-            {
-                return null;
-            }
-
-            return nodes;
         }
 
         public INode GetNode(Id id)
@@ -499,18 +518,9 @@ namespace Zpp.Util.Graph.impl
             _nodes.Clear();
         }
 
-        public void AddNodes(INodes nodes)
+        public IStackSet<IGraphNode> GetNodes()
         {
-            foreach (var node in nodes)
-            {
-                AddNode(node);
-            }
-        }
-
-        public void AddNode(INode node)
-        {
-            _nodes.Push(new GraphNode(node));
-            _edgeCount++;
+            return _nodes;
         }
     }
 }

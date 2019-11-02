@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.Interfaces;
 using Zpp.DataLayer.impl.DemandDomain.Wrappers;
+using Zpp.Util.Graph.impl;
 using Zpp.Util.StackSet;
 
 namespace Zpp.Util.Graph
@@ -61,6 +62,8 @@ namespace Zpp.Util.Graph
         void ReplaceNodeByDirectedGraph(TNode node, IDirectedGraph<INode> graphToInsert);
         
         void ReplaceNodeByDirectedGraph(Id nodeId, IDirectedGraph<INode> graphToInsert);
+        
+        void ReplaceNodeByOtherNode(Id nodeId, INode otherNode);
 
         IStackSet<IEdge> GetEdges();
         
@@ -69,12 +72,6 @@ namespace Zpp.Util.Graph
         List<ILinkDemandAndProvider> GetEdgesTo(Id nodeId);
         
         List<ILinkDemandAndProvider> GetEdgesFrom(Id nodeId);
-
-        INodes GetNodes();
-
-        void AddNodes(INodes nodes);
-
-        void AddNode(INode node);
 
         void Clear();
 
@@ -85,5 +82,7 @@ namespace Zpp.Util.Graph
         bool Contains(Id nodeId);
 
         INode GetNode(Id id);
+
+        IStackSet<IGraphNode> GetNodes();
     }
 }

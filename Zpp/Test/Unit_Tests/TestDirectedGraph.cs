@@ -103,26 +103,10 @@ namespace Zpp.Test.Unit_Tests
             directedGraph.AddEdge(ab);
             directedGraph.AddEdge(bc);
 
-            INodes expectedNodes = new Nodes();
-            INode expectedA = new Node(new DummyNode(a.GetId()));
-            INode expectedB = new Node(new DummyNode(b.GetId()));
-            INode expectedC = new Node(new DummyNode(c.GetId()));
-            expectedNodes.Add(expectedA);
-            expectedNodes.Add(expectedB);
-            expectedNodes.Add(expectedC);
 
-            INodes actualNodes = directedGraph.GetNodes();
-            foreach (var actualNode in actualNodes)
-            {
-                Assert.True(expectedNodes.Contains(actualNode),
-                    $"I have not added this node {actualNode}. Where comes that from?");
-            }
-
-            foreach (var expectedNode in expectedNodes)
-            {
-                Assert.True(actualNodes.Contains(expectedNode),
-                    $"This node {expectedNode} was not added.");
-            }
+            Assert.True(directedGraph.Contains(a) && directedGraph.Contains(b) && directedGraph.Contains(c),
+                    $"Not every node was added..");
+            
         }
 
         [Fact]
@@ -164,25 +148,8 @@ namespace Zpp.Test.Unit_Tests
             INode nodeToRemove = nodes[2];
             directedGraph.RemoveNode(nodeToRemove, false);
             
-            INodes actualNodes = directedGraph.GetNodes();
-            Assert.True(actualNodes.Contains(nodeToRemove) == false);
+            Assert.True(directedGraph.Contains(nodeToRemove) == false);
             
-            foreach (var actualNode in actualNodes)
-            {
-                INodes successorNodes = directedGraph.GetSuccessorNodes(actualNode);
-                if (successorNodes != null)
-                {
-                    Assert.True(successorNodes.Contains(nodeToRemove) ==
-                                false);    
-                }
-                
-                INodes predecessorNodes = directedGraph.GetPredecessorNodes(actualNode);
-                if (predecessorNodes!=null)
-                {
-                    Assert.True(predecessorNodes.Contains(nodeToRemove) ==
-                                false);
-                }
-            }
         }
 
         private IDirectedGraph<INode> CreateBinaryDirectedGraph(INode[] nodes)

@@ -28,9 +28,8 @@ namespace Zpp.Util.Graph.impl
                 _productionOrderGraph.ReplaceNodeByDirectedGraph(productionOrderNode,
                     operationGraph);
             }
-
-            Clear();
-            AddNodes(_productionOrderGraph.GetNodes());
+            
+            _nodes = _productionOrderGraph.GetNodes();
 
         }
 

@@ -36,7 +36,7 @@ namespace Zpp.DataLayer
 
         Providers GetAllChildProvidersOf(Demand demand);
         
-        Providers GetAllChildProvidersOf(ProductionOrderOperation operation);
+        Providers GetAllChildStockExchangeProvidersOf(ProductionOrderOperation operation);
 
         Providers GetAllParentProvidersOf(Demand demand);
 

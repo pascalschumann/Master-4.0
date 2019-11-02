@@ -3,7 +3,7 @@ using Master40.DB.Data.WrappersForPrimitives;
 
 namespace Zpp.Util.Graph.impl
 {
-    internal interface IGraphNode: IId
+    public interface IGraphNode: IId
     {
         void AddSuccessor(IGraphNode node);
         

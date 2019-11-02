@@ -27,9 +27,10 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
         {
             // Don't try to remove subgraphs that rootType != customerOrderPart,
             // it's nearly impossible to correctly identify those (with performance in mind)
-            
+
             // CreateGraph(dbTransactionData, aggregator);
-            CreateGraph3();
+            DemandToProviderGraph demandToProviderGraph = CreateGraph3();
+            _nodes = demandToProviderGraph.GetNodes();
 
             if (IsEmpty())
             {
@@ -41,22 +42,13 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
          * No need to traverse --> graph is ready, just do some modifications:
          * remove ProductionOrderBoms, replace ProductionOrder by operationGraph
          */
-        private void CreateGraph3()
+        private DemandToProviderGraph CreateGraph3()
         {
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.GetDbTransactionData();
             DemandToProviderGraph demandToProviderGraph = new DemandToProviderGraph();
 
-            // remove ProductionOrderBoms
-            foreach (var productionOrderBom in dbTransactionData.ProductionOrderBomGetAll())
-            {
-                var productionOrderBomNode = new Node(productionOrderBom);
-                if (demandToProviderGraph.Contains(productionOrderBomNode))
-                {
-                    demandToProviderGraph.RemoveNode(productionOrderBomNode, true);
-                }
-            }
-
+            
             // replace ProductionOrder by operationGraph
             foreach (var productionOrder in dbTransactionData.ProductionOrderGetAll())
             {
@@ -71,7 +63,24 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
                     }
                 }
             }
-            AddNodes(demandToProviderGraph.GetNodes());
+            
+            // change for every ProductionOrderBom predecessor to its operation
+            foreach (var productionOrderBom in dbTransactionData.ProductionOrderBomGetAll())
+            {
+                var productionOrderBomNode = new Node(productionOrderBom);
+                if (demandToProviderGraph.Contains(productionOrderBomNode))
+                {
+                    ProductionOrderOperation productionOrderOperation =
+                        ((ProductionOrderBom) productionOrderBom).GetProductionOrderOperation();
+                    INodes successorNodes = demandToProviderGraph.GetSuccessorNodes(productionOrderBom.GetId());
+                    demandToProviderGraph.RemoveNode(productionOrderBomNode.GetId(), false);
+                    foreach (var successor in successorNodes)
+                    {
+                        demandToProviderGraph.AddEdge(new Edge(new Node(productionOrderOperation), successor));
+                    }
+                }
+            }
+            return demandToProviderGraph;
         }
 
         /**

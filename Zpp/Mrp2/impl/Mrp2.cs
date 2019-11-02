@@ -44,9 +44,12 @@ namespace Zpp.Mrp2.impl
             mrp1.StartMrp1();
             _performanceMonitors.Stop(InstanceToTrack.Mrp1);
             
+            DemandToProviderGraph demandToProviderGraph = new DemandToProviderGraph();
+            
             // BackwardForwardBackwardScheduling
             _performanceMonitors.Start(InstanceToTrack.BackwardForwardBackwardScheduling);
             OrderOperationGraph orderOperationGraph = new OrderOperationGraph();
+            ZppConfiguration.CacheManager.SetAggregator(demandToProviderGraph, orderOperationGraph);
             AssertGraphsAreNotEmpty(orderOperationGraph);
 
             INodes rootNodes = new Nodes();

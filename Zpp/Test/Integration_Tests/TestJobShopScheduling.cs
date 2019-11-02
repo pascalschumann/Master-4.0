@@ -36,7 +36,7 @@ namespace Zpp.Test.Integration_Tests
            ZppConfiguration.CacheManager.ReloadTransactionData();
             IDbMasterDataCache dbMasterDataCache =
                 ZppConfiguration.CacheManager.GetMasterDataCache();
-            IAggregator aggregator = new Aggregator(ZppConfiguration.CacheManager.GetDbTransactionDataArchive());
+            IAggregator aggregator = new Aggregator(ZppConfiguration.CacheManager.GetDbTransactionDataArchive(), null, null);
 
             foreach (var resource in dbMasterDataCache.ResourceGetAll())
             {

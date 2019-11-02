@@ -28,14 +28,11 @@ namespace Zpp.DataLayer.impl.OpenDemand
         /// <param name="considerInitialStockLevel">for every initial stock:
         /// a stockExchangeDemand will be created with time -100000,
         /// quantity: initialStockLevel=M_Stock.current</param>
-        public OpenDemandManager(bool considerInitialStockLevel)
+        public OpenDemandManager()
         {
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.GetDbTransactionData();
-            if (considerInitialStockLevel)
-            {
-                ConsiderInitialStockLevels(dbTransactionData);
-            }
+
             
             foreach (var stockExchangeDemand in dbTransactionData.StockExchangeDemandsGetAll())
             {
@@ -54,7 +51,7 @@ namespace Zpp.DataLayer.impl.OpenDemand
          * There initial stock levels defined in M_Stock, to avoid modelling stocks,
          * the initial stock levels are simulated as stockExchangeDemands
          */
-        private void ConsiderInitialStockLevels(IDbTransactionData dbTransactionData)
+        public static void AddInitialStockLevels(IDbTransactionData dbTransactionData)
         {
             foreach (var stock in ZppConfiguration.CacheManager.GetMasterDataCache().M_StockGetAll())
             {
@@ -71,8 +68,12 @@ namespace Zpp.DataLayer.impl.OpenDemand
         private static Quantity CalculateReservedQuantity(Demand demand)
         {
             IAggregator aggregator = ZppConfiguration.CacheManager.GetAggregator();
-            IEnumerable<ILinkDemandAndProvider> arrowsToDemand = aggregator.GetArrowsTo(demand);
             Quantity reservedQuantity = Quantity.Null();
+            if (aggregator.ExistsInDemandToProviderGraph(demand.GetId()) == false)
+            {
+                return reservedQuantity;
+            }
+            IEnumerable<ILinkDemandAndProvider> arrowsToDemand = aggregator.GetArrowsTo(demand);
             foreach (var arrowToDemand in arrowsToDemand)
             {
                 reservedQuantity.IncrementBy(arrowToDemand.GetQuantity());

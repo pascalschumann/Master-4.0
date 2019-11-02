@@ -34,7 +34,7 @@ namespace Zpp.Util.Graph.impl
 
         public override string ToString()
         {
-            return $"{_node.GetEntity().ToString()}";
+            return $"{_node.ToString()}";
         }
 
         public Id GetId()

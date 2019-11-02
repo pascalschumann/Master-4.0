@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Master40.DB.Data.WrappersForPrimitives;
+using Master40.DB.Interfaces;
 using Zpp.DataLayer.impl.DemandDomain.Wrappers;
 using Zpp.Util.StackSet;
 
@@ -17,8 +19,12 @@ namespace Zpp.Util.Graph
          * @return: toNodes
          */
         INodes GetSuccessorNodes(TNode node);
+        
+        INodes GetSuccessorNodes(Id nodeId);
 
         INodes GetPredecessorNodes(INode node);
+        
+        INodes GetPredecessorNodes(Id nodeId);
 
         void AddEdges(IEnumerable<IEdge> edges);
 
@@ -45,16 +51,26 @@ namespace Zpp.Util.Graph
         /// /// <param name="removeEdges">take false if all predecessors/successors
         /// are also removed</param>
         void RemoveNode(TNode node, bool connectParentsWithChilds, bool removeEdges = true);
+        
+        void RemoveNode(Id nodeId, bool connectParentsWithChilds, bool removeEdges = true);
 
         INodes GetLeafNodes();
 
         INodes GetRootNodes();
 
         void ReplaceNodeByDirectedGraph(TNode node, IDirectedGraph<INode> graphToInsert);
+        
+        void ReplaceNodeByDirectedGraph(Id nodeId, IDirectedGraph<INode> graphToInsert);
 
         List<IEdge> GetAllEdges();
 
         IStackSet<IEdge> GetEdges();
+        
+        List<ILinkDemandAndProvider> GetEdgesOn(Id nodeId);
+        
+        List<ILinkDemandAndProvider> GetEdgesTo(Id nodeId);
+        
+        List<ILinkDemandAndProvider> GetEdgesFrom(Id nodeId);
 
         INodes GetNodes();
 
@@ -64,10 +80,12 @@ namespace Zpp.Util.Graph
 
         void Clear();
 
-        void RemoveTopDown(INode node);
-
         bool IsEmpty();
 
         bool Contains(INode node);
+        
+        bool Contains(Id nodeId);
+
+        INode GetNode(Id id);
     }
 }

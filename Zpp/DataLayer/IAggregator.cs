@@ -34,10 +34,9 @@ namespace Zpp.DataLayer
         ProductionOrderBom GetAnyProductionOrderBomByProductionOrderOperation(
             ProductionOrderOperation productionOrderOperation);
 
-        ProductionOrderBoms GetAllProductionOrderBomsBy(
-            ProductionOrderOperation productionOrderOperation);
-
         Providers GetAllChildProvidersOf(Demand demand);
+        
+        Providers GetAllChildProvidersOf(ProductionOrderOperation operation);
 
         Providers GetAllParentProvidersOf(Demand demand);
 
@@ -47,11 +46,11 @@ namespace Zpp.DataLayer
 
 
         List<Provider> GetProvidersForInterval(DueTime from, DueTime to);
-
+        
         /**
          * Traverse down till including StockExchangeDemands and calculate max endTime of the children
          */
-        DueTime GetEarliestPossibleStartTimeOf(ProductionOrderBom productionOrderBom);
+        DueTime GetEarliestPossibleStartTimeOf(ProductionOrderOperation productionOrderOperation);
 
         Demands GetUnsatisifedCustomerOrderParts();
 
@@ -96,5 +95,7 @@ namespace Zpp.DataLayer
         List<ILinkDemandAndProvider> GetArrowsToAndFrom(IDemandOrProvider demandOrProvider);
 
         List<ProductionOrderOperation> GetAllOperationsOnResource(M_Resource resource);
+
+        bool ExistsInDemandToProviderGraph(Id nodeId);
     }
 }

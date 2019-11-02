@@ -62,12 +62,16 @@ namespace Zpp.Test.Integration_Tests
         private void ExecutePerformanceStudy(string testConfigurationFileName, bool shouldPersist)
         {
             Stopwatch stopwatch = new Stopwatch();
-            int maxPossibleCops = int.MaxValue / 100;
+            // todo rvert this
+            // int maxPossibleCops = int.MaxValue / 100;
+            int maxPossibleCops = 300;
+            
             ZppConfiguration.CacheManager.ReadInTestConfiguration(testConfigurationFileName);
             TestConfiguration testConfiguration =
                 ZppConfiguration.CacheManager.GetTestConfiguration();
             int customerOrderCount = ZppConfiguration.CacheManager.GetTestConfiguration()
                 .CustomerOrderPartQuantity;
+            int customerOrderCountOriginal = customerOrderCount;
             int elapsedMinutes = 0;
             int elapsedSeconds = 0;
             int maxTime = 5;
@@ -95,7 +99,9 @@ namespace Zpp.Test.Integration_Tests
                     $"CustomerOrderCount ({customerOrderCount}) " +
                     $"per interval (0-{testConfiguration.SimulationInterval}) in {cycles} cycle(s).");
                 
-                customerOrderCount *= 10;
+                // TODO: revert this
+                // customerOrderCount *= 10;
+                customerOrderCount += customerOrderCountOriginal;
                 testConfiguration.CustomerOrderPartQuantity = customerOrderCount;
             }
         }

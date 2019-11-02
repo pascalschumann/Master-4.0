@@ -2,8 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
+using Master40.DB.DataModel;
 using Master40.DB.Interfaces;
+using Zpp.DataLayer.impl.DemandDomain;
 using Zpp.DataLayer.impl.DemandDomain.Wrappers;
+using Zpp.DataLayer.impl.ProviderDomain;
 using Zpp.GraphicalRepresentation;
 using Zpp.GraphicalRepresentation.impl;
 using Zpp.Util.StackSet;
@@ -24,7 +27,6 @@ namespace Zpp.Util.Graph.impl
         private IStackSet<IGraphNode> _nodes = new StackSet<IGraphNode>();
         private int _edgeCount = 0;
 
-
         protected readonly IGraphviz Graphviz = new Graphviz();
 
         public DirectedGraph()
@@ -36,13 +38,13 @@ namespace Zpp.Util.Graph.impl
             AddEdges(edges);
         }
 
-        public INodes GetSuccessorNodes(INode node)
+        public INodes GetSuccessorNodes(Id nodeId)
         {
-            IGraphNode graphNode = _nodes.GetById(node.GetId());
+            IGraphNode graphNode = _nodes.GetById(nodeId);
             if (graphNode == null)
             {
                 // node doesn't exists
-                throw new MrpRunException($"Given node ({node}) doesn't exists in graph.");
+                throw new MrpRunException($"Given node ({graphNode}) doesn't exists in graph.");
             }
 
             GraphNodes successors = graphNode.GetSuccessors();
@@ -55,13 +57,23 @@ namespace Zpp.Util.Graph.impl
             return new Nodes(successors.Select(x => x.GetNode()));
         }
 
+        public INodes GetSuccessorNodes(INode node)
+        {
+            return GetSuccessorNodes(node.GetId());
+        }
+
         public INodes GetPredecessorNodes(INode node)
         {
-            IGraphNode graphNode = _nodes.GetById(node.GetId());
+            return GetPredecessorNodes(node.GetId());
+        }
+
+        public INodes GetPredecessorNodes(Id nodeId)
+        {
+            IGraphNode graphNode = _nodes.GetById(nodeId);
             if (graphNode == null)
             {
                 // node doesn't exists
-                throw new MrpRunException($"Given node ({node}) doesn't exists in graph.");
+                throw new MrpRunException($"Given node ({graphNode}) doesn't exists in graph.");
             }
 
             GraphNodes predecessors = graphNode.GetPredecessors();
@@ -216,19 +228,29 @@ namespace Zpp.Util.Graph.impl
 
         public bool Contains(INode node)
         {
-            IGraphNode graphNode = _nodes.GetById(node.GetId());
+            return Contains(node.GetId());
+        }
+
+        public bool Contains(Id nodeId)
+        {
+            IGraphNode graphNode = _nodes.GetById(nodeId);
             return graphNode != null;
         }
 
         public void RemoveNode(INode node, bool connectParentsWithChilds, bool removeEdges = true)
         {
+            RemoveNode(node.GetId(), connectParentsWithChilds, removeEdges);
+        }
+
+        public void RemoveNode(Id nodeId, bool connectParentsWithChilds, bool removeEdges = true)
+        {
             // e.g. A -> B --> C, B is removed
 
-            IGraphNode graphNode = _nodes.GetById(node.GetId());
+            IGraphNode graphNode = _nodes.GetById(nodeId);
             if (graphNode == null)
             {
                 // node doesn't exists
-                throw new MrpRunException($"Given node ({node}) doesn't exists in graph.");
+                throw new MrpRunException($"Given node ({graphNode}) doesn't exists in graph.");
             }
 
             // holds A
@@ -330,9 +352,14 @@ namespace Zpp.Util.Graph.impl
 
         public void ReplaceNodeByDirectedGraph(INode node, IDirectedGraph<INode> graphToInsert)
         {
-            INodes predecessors = GetPredecessorNodes(node);
-            INodes successors = GetSuccessorNodes(node);
-            RemoveNode(node, false);
+            ReplaceNodeByDirectedGraph(node.GetId(), graphToInsert);
+        }
+
+        public void ReplaceNodeByDirectedGraph(Id nodeId, IDirectedGraph<INode> graphToInsert)
+        {
+            INodes predecessors = GetPredecessorNodes(nodeId);
+            INodes successors = GetSuccessorNodes(nodeId);
+            RemoveNode(nodeId, false);
             // predecessors --> roots
             if (predecessors != null)
             {
@@ -385,6 +412,80 @@ namespace Zpp.Util.Graph.impl
             }
         }
 
+        public INode GetNode(Id id)
+        {
+            IGraphNode graphNode = _nodes.GetById(id); 
+            if (graphNode == null)
+            {
+                throw new MrpRunException($"A with id {id} doesn't exist.");
+            }
+            return graphNode.GetNode();
+        }
+
+        private ILinkDemandAndProvider GetDemandOrProviderLink(INode tailGraphNode,
+            INode headGraphNode)
+        {
+            ILinkDemandAndProvider demandAndProviderLink;
+            IScheduleNode tail = tailGraphNode.GetEntity();
+            if (tail is Demand)
+            {
+                demandAndProviderLink = new T_DemandToProvider(tail.GetId(),
+                    headGraphNode.GetEntity().GetId(), null);
+            }
+            else if (tail is Provider)
+            {
+                demandAndProviderLink = new T_ProviderToDemand(tail.GetId(),
+                    headGraphNode.GetEntity().GetId(), null);
+            }
+            else
+            {
+                throw new MrpRunException("Not expected type.");
+            }
+
+            return demandAndProviderLink;
+        }
+
+        public List<ILinkDemandAndProvider> GetEdgesTo(Id nodeId)
+        {
+            List<ILinkDemandAndProvider> demandAndProviders = new List<ILinkDemandAndProvider>();
+            INode node = GetNode(nodeId);
+            INodes predecessors = GetPredecessorNodes(nodeId);
+
+            foreach (var predecessor in predecessors)
+            {
+                ILinkDemandAndProvider demandAndProviderLink =
+                    GetDemandOrProviderLink(predecessor, node);
+                demandAndProviders.Add(demandAndProviderLink);
+            }
+
+            return demandAndProviders;
+        }
+
+        public List<ILinkDemandAndProvider> GetEdgesFrom(Id nodeId)
+        {
+            List<ILinkDemandAndProvider> demandAndProviders = new List<ILinkDemandAndProvider>();
+            INode node = GetNode(nodeId);
+            INodes successors = GetSuccessorNodes(nodeId);
+            
+            foreach (var successor in successors)
+            {
+                ILinkDemandAndProvider demandAndProviderLink =
+                    GetDemandOrProviderLink(node, successor);
+                demandAndProviders.Add(demandAndProviderLink);
+            }
+
+            return demandAndProviders;
+        }
+
+        public List<ILinkDemandAndProvider> GetEdgesOn(Id nodeId)
+        {
+            List<ILinkDemandAndProvider> demandAndProviders = new List<ILinkDemandAndProvider>();
+            demandAndProviders.AddRange(GetEdgesFrom(nodeId));
+            demandAndProviders.AddRange(GetEdgesTo(nodeId));
+
+            return demandAndProviders;
+        }
+
         public IStackSet<IEdge> GetEdges()
         {
             IStackSet<IEdge> edges = new StackSet<IEdge>();
@@ -409,26 +510,6 @@ namespace Zpp.Util.Graph.impl
         public void Clear()
         {
             _nodes.Clear();
-        }
-
-        public void RemoveTopDown(INode node)
-        {
-            INodes successors = GetSuccessorNodes(node);
-            RemoveNode(node, false, false);
-            if (successors == null)
-            {
-                return;
-            }
-
-            foreach (var successor in successors)
-            {
-                // check if node still exists (could be already removed, since recursion
-                // and items as glue have many predecessors)
-                if (Contains(successor))
-                {
-                    RemoveTopDown(successor);
-                }
-            }
         }
 
         public void AddNodes(INodes nodes)

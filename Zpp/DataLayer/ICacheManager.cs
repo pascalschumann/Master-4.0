@@ -1,5 +1,7 @@
 using Master40.DB.Data.Context;
+using Zpp.Mrp2.impl.Scheduling.impl;
 using Zpp.Test.Configuration;
+using Zpp.Util.Graph.impl;
 
 namespace Zpp.DataLayer
 {
@@ -8,7 +10,7 @@ namespace Zpp.DataLayer
      */
     public interface ICacheManager
     {
-        void InitByReadingFromDatabase(string testConfiguration);
+        void InitByReadingFromDatabase(string testConfiguration, bool addInitialStockLevels);
         
         IDbTransactionData ReloadTransactionData();
 
@@ -46,5 +48,11 @@ namespace Zpp.DataLayer
         IAggregator GetAggregator();
 
         void ReadInTestConfiguration(string testConfigurationFileNames);
+
+        void SetAggregator(DemandToProviderGraph demandToProviderGraph, OrderOperationGraph orderOperationGraph);
+        
+        void UpdateAggregator(DemandToProviderGraph demandToProviderGraph);
+        
+        void UpdateAggregator(OrderOperationGraph orderOperationGraph);
     }
 }

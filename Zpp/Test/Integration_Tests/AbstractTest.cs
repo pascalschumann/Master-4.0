@@ -57,7 +57,7 @@ namespace Zpp.Test.Integration_Tests
          */
         protected void InitTestScenario(string testConfiguration)
         {
-            ZppConfiguration.CacheManager.InitByReadingFromDatabase(testConfiguration);
+            ZppConfiguration.CacheManager.InitByReadingFromDatabase(testConfiguration, true);
             TestConfiguration = ZppConfiguration.CacheManager.GetTestConfiguration();
             ProductionDomainContext = ZppConfiguration.CacheManager.GetProductionDomainContext();
         }

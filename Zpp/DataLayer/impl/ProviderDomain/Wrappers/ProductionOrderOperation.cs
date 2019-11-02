@@ -164,19 +164,12 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
         {
             DueTime maxDueTime = null;
             IAggregator aggregator = ZppConfiguration.CacheManager.GetAggregator();
-
-            foreach (var productionOrderBom in aggregator.GetAllProductionOrderBomsBy(this))
-            {
+            
                 DueTime earliestDueTime =
                     aggregator.GetEarliestPossibleStartTimeOf(
-                        (ProductionOrderBom) productionOrderBom);
-                if (maxDueTime == null || earliestDueTime.IsGreaterThan(maxDueTime))
-                {
-                    maxDueTime = earliestDueTime;
-                }
-            }
+                        this);
 
-            return maxDueTime;
+            return earliestDueTime;
         }
 
         public void SetFinished()

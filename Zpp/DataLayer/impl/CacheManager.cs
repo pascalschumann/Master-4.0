@@ -6,12 +6,14 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Zpp.DataLayer.impl.OpenDemand;
 using Zpp.Mrp2.impl.Mrp1.impl.LotSize.Impl;
+using Zpp.Mrp2.impl.Scheduling.impl;
 using Zpp.Test.Configuration;
 using Zpp.Util;
+using Zpp.Util.Graph.impl;
 
 namespace Zpp.DataLayer.impl
 {
-    public class CacheManager: ICacheManager
+    public class CacheManager : ICacheManager
     {
         private DbTransactionData _dbTransactionData;
         private DbTransactionData _dbTransactionDataArchive;
@@ -22,32 +24,39 @@ namespace Zpp.DataLayer.impl
         private TestConfiguration _testConfiguration;
         private IAggregator _aggregator;
 
-        public void InitByReadingFromDatabase(string testConfiguration)
+        public void InitByReadingFromDatabase(string testConfiguration, bool addInitialStockLevels)
         {
             ProductionDomainContexts productionDomainContexts = Dbms.GetDbContext();
             _productionDomainContext = productionDomainContexts.ProductionDomainContext;
-            
-            _productionDomainContextArchive = productionDomainContexts.ProductionDomainContextArchive;
-            
+
+            _productionDomainContextArchive =
+                productionDomainContexts.ProductionDomainContextArchive;
+
             InitDb(testConfiguration, _productionDomainContext, true);
             InitDb(testConfiguration, _productionDomainContextArchive, false);
-            
+
             _dbMasterDataCache = new DbMasterDataCache(_productionDomainContext);
             // duplicate masterData for archive
             _dbMasterDataCache.Clone(_productionDomainContextArchive);
-            
+
             _dbTransactionData = new DbTransactionData(_productionDomainContext);
             _dbTransactionDataArchive = new DbTransactionData(_productionDomainContextArchive);
-            _aggregator = new Aggregator(_dbTransactionData);
-            _openDemandManager = new OpenDemandManager(true);
+
+            if (addInitialStockLevels)
+            {
+                OpenDemandManager.AddInitialStockLevels(_dbTransactionData);
+            }
+
+            _aggregator = new Aggregator(_dbTransactionData, new DemandToProviderGraph(), null);
+            _openDemandManager = new OpenDemandManager();
         }
 
         public IDbTransactionData ReloadTransactionData()
         {
             _dbTransactionData = new DbTransactionData(_productionDomainContext);
             _dbTransactionDataArchive = new DbTransactionData(_productionDomainContextArchive);
-            _openDemandManager = new OpenDemandManager(false);
-            _aggregator = new Aggregator(_dbTransactionData);
+            _aggregator = new Aggregator(_dbTransactionData, new DemandToProviderGraph(), null);
+            _openDemandManager = new OpenDemandManager();
             return _dbTransactionData;
         }
 
@@ -70,19 +79,20 @@ namespace Zpp.DataLayer.impl
         {
             return _openDemandManager;
         }
-        
+
         /**
          * Initialize the db:
          * - deletes current
          * - creates db according to given configuration
          */
-        private void InitDb(string testConfiguration, ProductionDomainContext productionDomainContext, bool InitData)
+        private void InitDb(string testConfiguration,
+            ProductionDomainContext productionDomainContext, bool InitData)
         {
             if (ZppConfiguration.CacheManager.GetTestConfiguration() == null)
             {
-                ReadInTestConfiguration(testConfiguration);    
+                ReadInTestConfiguration(testConfiguration);
             }
-            
+
             if (Constants.IsLocalDb)
             {
                 bool isDeleted = productionDomainContext.Database.EnsureDeleted();
@@ -117,11 +127,11 @@ namespace Zpp.DataLayer.impl
             {
                 productionDomainContext.Database.EnsureCreated();
             }
-            
+
             LotSize.SetDefaultLotSize(new Quantity(_testConfiguration.LotSize));
             LotSize.SetLotSizeType(_testConfiguration.LotSizeType);
         }
-        
+
         public void ReadInTestConfiguration(string testConfigurationFileNames)
         {
             _testConfiguration = JsonConvert.DeserializeObject<TestConfiguration>(
@@ -144,21 +154,20 @@ namespace Zpp.DataLayer.impl
             _openDemandManager = null;
             _dbMasterDataCache = null;
             _testConfiguration = null;
-            
+
             _productionDomainContext.Database.CloseConnection();
             _dbTransactionData.Dispose();
-            
+
             _productionDomainContextArchive.Database.CloseConnection();
             _dbTransactionDataArchive.Dispose();
-            
+
             _productionDomainContext = null;
             _productionDomainContextArchive = null;
-            
+
             _dbTransactionData = null;
             _dbTransactionDataArchive = null;
-
         }
-        
+
         public IAggregator GetAggregator()
         {
             return _aggregator;
@@ -168,6 +177,25 @@ namespace Zpp.DataLayer.impl
         {
             _dbTransactionData.PersistDbCache();
             _dbTransactionDataArchive.PersistDbCache();
+        }
+
+        public void SetAggregator(DemandToProviderGraph demandToProviderGraph,
+            OrderOperationGraph orderOperationGraph)
+        {
+            _aggregator = new Aggregator(_dbTransactionData, demandToProviderGraph,
+                orderOperationGraph);
+        }
+
+        public void UpdateAggregator(DemandToProviderGraph demandToProviderGraph)
+        {
+            OrderOperationGraph orderOperationGraph = ((Aggregator)_aggregator).GetOrderOperationGraph();
+            _aggregator = new Aggregator(_dbTransactionData, demandToProviderGraph, orderOperationGraph);
+        }
+
+        public void UpdateAggregator(OrderOperationGraph orderOperationGraph)
+        {
+            DemandToProviderGraph demandToProviderGraph = ((Aggregator)_aggregator).GetDemandToProviderGraph();
+            _aggregator = new Aggregator(_dbTransactionData, demandToProviderGraph, orderOperationGraph);
         }
     }
 }

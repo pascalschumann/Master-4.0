@@ -14,7 +14,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.WrappersForCollections
      */
     public class Providers : CollectionWrapperWithStackSet<Provider>, IProviders
     {
-        public Providers(List<Provider> list) : base(list)
+        public Providers(IEnumerable<Provider> list) : base(list)
         {
         }
         

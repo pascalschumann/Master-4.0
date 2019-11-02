@@ -45,5 +45,16 @@ namespace Master40.DB.DataModel
         {
             return new Quantity(Quantity);
         }
+
+        public override bool Equals(object obj)
+        {
+            T_DemandToProvider other = (T_DemandToProvider) obj;
+            return DemandId.Equals(other.DemandId) && ProviderId.Equals(other.ProviderId);
+        }
+
+        public override int GetHashCode()
+        {
+            return DemandId.GetHashCode() + ProviderId.GetHashCode();
+        }
     }
 }

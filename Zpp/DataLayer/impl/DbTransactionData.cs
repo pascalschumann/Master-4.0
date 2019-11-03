@@ -477,8 +477,7 @@ namespace Zpp.DataLayer.impl
 
         public ProductionOrder ProductionOrderGetById(Id id)
         {
-            return new ProductionOrder(_productionOrders.GetAllAs<T_ProductionOrder>()
-                .Single(x => x.GetId().Equals(id)));
+            return (ProductionOrder)_productionOrders.GetById(id);
         }
 
         public T_CustomerOrder CustomerOrderGetById(Id id)

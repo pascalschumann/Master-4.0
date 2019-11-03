@@ -18,10 +18,9 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
         private readonly IDbMasterDataCache _dbMasterDataCache =
             ZppConfiguration.CacheManager.GetMasterDataCache();
 
-        public void ScheduleWithGifflerThompsonAsZaepfel(IPriorityRule priorityRule)
+        public void ScheduleWithGifflerThompsonAsZaepfel(IPriorityRule priorityRule,
+            IProductionOrderToOperationGraph<INode> productionOrderToOperationGraph)
         {
-            IProductionOrderToOperationGraph<INode> productionOrderToOperationGraph =
-                new ProductionOrderToOperationGraph();
 
             Dictionary<Id, List<Resource>> resourcesByResourceSkillId =
                 new Dictionary<Id, List<Resource>>();
@@ -148,7 +147,7 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
                         if (dueTimeOfOperationMaterial.GetValue() > o1.GetStartTime())
                         {
                             int newStart = dueTimeOfOperationMaterial.GetValue();
-                            o1.SetStartTime(newStart) ;
+                            o1.SetStartTime(newStart);
                             int newEnd = o1.GetStartTime() + o1.GetValue().Duration;
                             o1.SetEndTime(newEnd);
                         }

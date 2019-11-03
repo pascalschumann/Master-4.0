@@ -3,30 +3,38 @@ using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Zpp.DataLayer;
 using Zpp.DataLayer.impl.ProviderDomain.Wrappers;
+using Zpp.Util.Graph;
 
 namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
 {
     public class PriorityRule : IPriorityRule
     {
+        private readonly IProductionOrderToOperationGraph<INode> _productionOrderToOperationGraph;
+
+        public PriorityRule(IProductionOrderToOperationGraph<INode> productionOrderToOperationGraph)
+        {
+            _productionOrderToOperationGraph = productionOrderToOperationGraph;
+        }
+
         public ProductionOrderOperation GetHighestPriorityOperation(DueTime now,
             List<ProductionOrderOperation> productionOrderOperations)
         {
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.GetDbTransactionData();
-            
-            if (productionOrderOperations.Any()==false)
+
+            if (productionOrderOperations.Any() == false)
             {
                 return null;
             }
+
             foreach (var productionOrderOperation in productionOrderOperations)
             {
                 ProductionOrder productionOrder =
                     dbTransactionData.ProductionOrderGetById(productionOrderOperation
                         .GetProductionOrderId());
                 // TODO: This is different from specification
-                DueTime minStartNextOfParentProvider =
-                    productionOrder.GetStartTimeBackward();
-                
+                DueTime minStartNextOfParentProvider = productionOrder.GetStartTimeBackward();
+
                 Priority priority = GetPriorityOfProductionOrderOperation(now,
                     productionOrderOperation, minStartNextOfParentProvider);
                 productionOrderOperation.SetPriority(priority);
@@ -39,17 +47,20 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
             ProductionOrderOperation givenProductionOrderOperation,
             DueTime minStartNextOfParentProvider)
         {
-            IAggregator aggregator =
-                ZppConfiguration.CacheManager.GetAggregator();
-            
+            IAggregator aggregator = ZppConfiguration.CacheManager.GetAggregator();
+
             Dictionary<HierarchyNumber, DueTime> alreadySummedHierarchyNumbers =
                 new Dictionary<HierarchyNumber, DueTime>();
             DueTime sumDurationsOfOperations = DueTime.Null();
-            List<ProductionOrderOperation> productionOrderOperations = aggregator
-                .GetProductionOrderOperationsOfProductionOrder(givenProductionOrderOperation
+            // use graph to get operations in O(1)
+            INodes operations =
+                _productionOrderToOperationGraph.GetSuccessorNodes(givenProductionOrderOperation
                     .GetProductionOrderId());
-            foreach (var productionOrderOperation in productionOrderOperations)
+
+            foreach (var operation in operations)
             {
+                ProductionOrderOperation productionOrderOperation =
+                    (ProductionOrderOperation) operation.GetEntity();
                 // only later operations, which have a smaller hierarchyNumber, have to be considered
                 if (productionOrderOperation.GetHierarchyNumber()
                     .IsSmallerThan(givenProductionOrderOperation.GetHierarchyNumber()))
@@ -66,8 +77,8 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
                     if (productionOrderOperation.GetDuration().ToDueTime()
                         .IsGreaterThan(alreadySummedHierarchyNumber))
                     {
-                        sumDurationsOfOperations.IncrementBy(productionOrderOperation.GetDuration().ToDueTime()
-                            .Minus(alreadySummedHierarchyNumber));
+                        sumDurationsOfOperations.IncrementBy(productionOrderOperation.GetDuration()
+                            .ToDueTime().Minus(alreadySummedHierarchyNumber));
                     }
                 }
                 else

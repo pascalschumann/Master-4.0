@@ -1,4 +1,5 @@
 using Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler;
+using Zpp.Util.Graph;
 
 namespace Zpp.Mrp2.impl.Scheduling
 {
@@ -7,8 +8,7 @@ namespace Zpp.Mrp2.impl.Scheduling
         /**
          * Giffler-Thomson
          */
-        void ScheduleWithGifflerThompsonAsZaepfel(IPriorityRule priorityRule);
-        
-        
+        void ScheduleWithGifflerThompsonAsZaepfel(IPriorityRule priorityRule,
+            IProductionOrderToOperationGraph<INode> productionOrderToOperationGraph);
     }
 }

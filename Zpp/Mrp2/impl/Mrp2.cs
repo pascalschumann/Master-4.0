@@ -21,7 +21,6 @@ namespace Zpp.Mrp2.impl
 {
     public class Mrp2 : IMrp2
     {
-        
         private readonly IJobShopScheduler _jobShopScheduler = new JobShopScheduler();
         private readonly PerformanceMonitors _performanceMonitors;
 
@@ -43,12 +42,12 @@ namespace Zpp.Mrp2.impl
             IMrp1 mrp1 = new Mrp1.impl.Mrp1(dbDemands);
             mrp1.StartMrp1();
             _performanceMonitors.Stop(InstanceToTrack.Mrp1);
-            
+
 
             // TODO: remove this
-            DemandToProviderGraph demandToProviderGraph = new DemandToProviderGraph();
-            string demandToProviderGraphString = demandToProviderGraph.ToString();
-            
+            // DemandToProviderGraph demandToProviderGraph = new DemandToProviderGraph();
+            // string demandToProviderGraphString = demandToProviderGraph.ToString();
+
             // BackwardForwardBackwardScheduling
             _performanceMonitors.Start(InstanceToTrack.BackwardForwardBackwardScheduling);
             OrderOperationGraph orderOperationGraph = new OrderOperationGraph();
@@ -62,11 +61,9 @@ namespace Zpp.Mrp2.impl
                 {
                     rootNodes.Add(rootNode);
                 }
-
             }
 
-            ScheduleBackward(rootNodes.ToStack(), orderOperationGraph,
-                true);
+            ScheduleBackward(rootNodes.ToStack(), orderOperationGraph, true);
 
             ScheduleForward(orderOperationGraph);
 
@@ -77,11 +74,13 @@ namespace Zpp.Mrp2.impl
                 {
                     continue;
                 }
+
                 Providers childProviders = ZppConfiguration.CacheManager.GetAggregator()
                     .GetAllChildProvidersOf((Demand) rootNode.GetEntity());
                 if (childProviders == null || childProviders.Count() > 1)
                 {
-                    throw new MrpRunException("After Mrp1 a CustomerOrderPart MUST have exact one child.");
+                    throw new MrpRunException(
+                        "After Mrp1 a CustomerOrderPart MUST have exact one child.");
                 }
 
                 childRootNodes.AddAll(childProviders.ToNodes());
@@ -94,7 +93,6 @@ namespace Zpp.Mrp2.impl
             _performanceMonitors.Start(InstanceToTrack.JobShopScheduling);
             JobShopScheduling();
             _performanceMonitors.Stop(InstanceToTrack.JobShopScheduling);
-            
         }
 
         private void AssertGraphsAreNotEmpty(OrderOperationGraph orderOperationGraph)
@@ -106,7 +104,7 @@ namespace Zpp.Mrp2.impl
                 {
                     throw new MrpRunException("How could the demandToProviderGraph be empty ?");
                 }
-                
+
                 if (orderOperationGraph.IsEmpty())
                 {
                     throw new MrpRunException("How could the orderOperationGraph be empty ?");
@@ -134,6 +132,7 @@ namespace Zpp.Mrp2.impl
                 ZppConfiguration.CacheManager.GetDbTransactionData();
             IAggregator aggregator = ZppConfiguration.CacheManager.GetAggregator();
 
+            // some validations
             if (dbTransactionData.ProductionOrderGetAll().Any() == false)
             {
                 // no JobShopScheduling needed, all Demands were satisfied without the need for a productionOrder
@@ -152,7 +151,11 @@ namespace Zpp.Mrp2.impl
                 }
             }
 
-            _jobShopScheduler.ScheduleWithGifflerThompsonAsZaepfel(new PriorityRule());
+            // start !
+            IProductionOrderToOperationGraph<INode> productionOrderToOperationGraph =
+                new ProductionOrderToOperationGraph();
+            _jobShopScheduler.ScheduleWithGifflerThompsonAsZaepfel(
+                new PriorityRule(productionOrderToOperationGraph), productionOrderToOperationGraph);
         }
 
         public void StartMrp2()

@@ -460,7 +460,7 @@ namespace Zpp.DataLayer.impl
 
         public ProductionOrderOperation ProductionOrderOperationGetById(Id id)
         {
-            return _productionOrderOperations.GetAll().SingleOrDefault(x => x.GetId().Equals(id));
+            return _productionOrderOperations.GetById(id);
 
             return null;
         }

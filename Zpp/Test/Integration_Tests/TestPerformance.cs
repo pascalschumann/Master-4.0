@@ -64,8 +64,8 @@ namespace Zpp.Test.Integration_Tests
         {
             Stopwatch stopwatch = new Stopwatch();
             // todo rvert this
-            // int maxPossibleCops = int.MaxValue / 100;
-            int maxPossibleCops = 300;
+            int maxPossibleCops = int.MaxValue / 100;
+            // int maxPossibleCops = 300;
             
             ZppConfiguration.CacheManager.ReadInTestConfiguration(testConfigurationFileName);
             TestConfiguration testConfiguration =
@@ -101,8 +101,8 @@ namespace Zpp.Test.Integration_Tests
                     $"per interval (0-{testConfiguration.SimulationInterval}) in {cycles} cycle(s).");
                 
                 // TODO: revert this
-                // customerOrderCount *= 10;
-                customerOrderCount += customerOrderCountOriginal;
+                customerOrderCount *= 10;
+                // customerOrderCount += customerOrderCountOriginal;
                 testConfiguration.CustomerOrderPartQuantity = customerOrderCount;
             }
         }

@@ -5,6 +5,7 @@ using Master40.DB.DataModel;
 using Master40.DB.Interfaces;
 using Zpp.DataLayer.impl.DemandDomain;
 using Zpp.DataLayer.impl.ProviderDomain;
+using Zpp.Util;
 
 namespace Zpp.DataLayer.impl.WrappersForCollections
 {
@@ -80,6 +81,11 @@ namespace Zpp.DataLayer.impl.WrappersForCollections
             if (item == null)
             {
                 return;
+            }
+
+            if (item.Quantity == null || item.Quantity <= 0)
+            {
+                throw new MrpRunException($"Quantity is not correct: {item.Quantity}");
             }
 
             // a set contains the element only once, else skip adding

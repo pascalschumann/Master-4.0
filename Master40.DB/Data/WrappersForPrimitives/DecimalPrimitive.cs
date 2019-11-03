@@ -91,7 +91,7 @@ namespace Master40.DB.Data.WrappersForPrimitives
         
         public bool IsNull()
         {
-            return _decimal.Equals(0);
+            return _decimal.Equals(new decimal(0));
         }
 
         public bool IsNegative()

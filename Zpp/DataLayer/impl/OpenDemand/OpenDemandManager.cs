@@ -115,36 +115,57 @@ namespace Zpp.DataLayer.impl.OpenDemand
                 // ths is needed, because openDemands will be removed once they are consumed
                 List<OpenNode<Demand>> copyOfOpenDemands = new List<OpenNode<Demand>>();
                 copyOfOpenDemands.AddRange(_openDemands.GetOpenProvider(provider.GetArticle()));
+                
+                Quantity remainingQuantity = new Quantity(demandedQuantity);
+                bool isLastIteration = false;
+                
                 foreach (var openDemand in copyOfOpenDemands)
                 {
+                    if (isLastIteration || remainingQuantity.IsNegative() ||
+                        remainingQuantity.IsNull())
+                    {
+                        throw new MrpRunException("This is one iteration too many.");
+                    }
                     if (openDemand != null && provider.GetStartTimeBackward()
                             .IsGreaterThanOrEqualTo(openDemand.GetOpenNode().GetStartTimeBackward()))
                     {
-                        Quantity remainingQuantity =
-                            demandedQuantity.Minus(openDemand.GetOpenQuantity());
-                        openDemand.GetOpenQuantity().DecrementBy(demandedQuantity);
+                        // 3 cases
+                        Quantity quantityOfOpenDemandToReserve;
 
-                        if (openDemand.GetOpenQuantity().IsNegative() ||
-                            openDemand.GetOpenQuantity().IsNull())
+                        if (remainingQuantity.IsGreaterThan(openDemand.GetOpenQuantity()))
                         {
+                            quantityOfOpenDemandToReserve = openDemand.GetOpenQuantity();
                             _openDemands.Remove(openDemand);
+                            remainingQuantity.DecrementBy(quantityOfOpenDemandToReserve);
                         }
-
-                        if (remainingQuantity.IsNegative())
+                        else if (remainingQuantity.Equals(openDemand.GetOpenQuantity()))
                         {
-                            remainingQuantity = Quantity.Null();
+                            // last iteration
+                            isLastIteration = true;
+                            quantityOfOpenDemandToReserve = openDemand.GetOpenQuantity();
+                            _openDemands.Remove(openDemand);
+                            remainingQuantity.DecrementBy(quantityOfOpenDemandToReserve);
+                        }
+                        else
+                        {
+                            // last iteration, remaining < openQuantity
+                            isLastIteration = true;
+                            quantityOfOpenDemandToReserve = new Quantity(remainingQuantity);
+                            // adapt openDemand
+                            openDemand.GetOpenQuantity().DecrementBy(remainingQuantity);
+                            remainingQuantity.DecrementBy(quantityOfOpenDemandToReserve);
                         }
 
                         T_ProviderToDemand providerToDemand = new T_ProviderToDemand()
                         {
                             ProviderId = provider.GetId().GetValue(),
                             DemandId = openDemand.GetOpenNode().GetId().GetValue(),
-                            Quantity = demandedQuantity.Minus(remainingQuantity).GetValue()
+                            Quantity = quantityOfOpenDemandToReserve.GetValue()
                         };
 
                         entityCollector.Add(providerToDemand);
 
-                        if (remainingQuantity.IsNull())
+                        if (remainingQuantity.IsNull() || remainingQuantity.IsNegative())
                         {
                             break;
                         }

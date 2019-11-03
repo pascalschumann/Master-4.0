@@ -124,7 +124,7 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Stock.impl
                             provider.GetStartTimeBackward(), lotSize);
                     entityCollector.Add(stockExchangeDemand);
 
-                    // idea (3 cases)
+                    // 3 cases
                     Quantity quantityOfNewCreatedDemandToReserve;
                     if (remainingQuantity.IsGreaterThan(lotSize))
                     {

@@ -411,8 +411,15 @@ namespace Zpp.DataLayer.impl
             IEnumerable<ILinkDemandAndProvider> demandToProviders = GetArrowsTo(provider);
             IEnumerable<ILinkDemandAndProvider> providerToDemands = GetArrowsFrom(provider);
 
-            demandAndProviderLinks.AddRange(demandToProviders);
-            demandAndProviderLinks.AddRange(providerToDemands);
+            if (demandToProviders != null)
+            {
+                demandAndProviderLinks.AddRange(demandToProviders);    
+            }
+
+            if (providerToDemands != null)
+            {
+                demandAndProviderLinks.AddRange(providerToDemands);
+            }
 
             return demandAndProviderLinks;
         }

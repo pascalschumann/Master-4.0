@@ -46,8 +46,8 @@ namespace Zpp.Mrp2.impl
             
 
             // TODO: remove this
-            // DemandToProviderGraph demandToProviderGraph = new DemandToProviderGraph();
-            // string demandToProviderGraphString = demandToProviderGraph.ToString();
+            DemandToProviderGraph demandToProviderGraph = new DemandToProviderGraph();
+            string demandToProviderGraphString = demandToProviderGraph.ToString();
             
             // BackwardForwardBackwardScheduling
             _performanceMonitors.Start(InstanceToTrack.BackwardForwardBackwardScheduling);

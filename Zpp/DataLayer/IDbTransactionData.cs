@@ -40,6 +40,8 @@ namespace Zpp.DataLayer
         
         ProductionOrderBoms ProductionOrderBomGetAll();
         
+        Demand ProductionOrderBomGetById(Id id);
+        
         StockExchangeProviders StockExchangeProvidersGetAll();
         
         StockExchangeDemands StockExchangeDemandsGetAll();

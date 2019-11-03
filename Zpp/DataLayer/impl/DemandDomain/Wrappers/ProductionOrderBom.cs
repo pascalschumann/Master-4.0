@@ -90,6 +90,15 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
             return _productionOrderBom.ProductionOrderOperationId != null;
         }
 
+        public Id GetProductionOrderOperationId()
+        {
+            if (_productionOrderBom.ProductionOrderOperationId == null)
+            {
+                return null;
+            }
+            return new Id(_productionOrderBom.ProductionOrderOperationId.GetValueOrDefault());
+        }
+
         public ProductionOrderOperation GetProductionOrderOperation()
         {
             if (_productionOrderBom.ProductionOrderOperationId == null)

@@ -15,8 +15,8 @@ namespace Zpp.DataLayer.impl.WrappersForCollections
     {
         private readonly Dictionary<Id, Ids> _indexDemandId = new Dictionary<Id, Ids>();
         private readonly Dictionary<Id, Ids> _indexProviderId = new Dictionary<Id, Ids>();
-        
-        
+
+
         public LinkDemandAndProviderTable(IEnumerable<ILinkDemandAndProvider> list) : base(list)
         {
         }
@@ -46,10 +46,11 @@ namespace Zpp.DataLayer.impl.WrappersForCollections
             {
                 return null;
             }
+
             Ids ids = _indexDemandId[demandId];
             return ids;
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -61,6 +62,7 @@ namespace Zpp.DataLayer.impl.WrappersForCollections
             {
                 return null;
             }
+
             Ids ids = _indexProviderId[providerId];
             return ids;
         }
@@ -85,21 +87,19 @@ namespace Zpp.DataLayer.impl.WrappersForCollections
             {
                 if (_indexDemandId.ContainsKey(item.GetDemandId()) == false)
                 {
-                    _indexDemandId.Add(item.GetDemandId(), new Ids());    
+                    _indexDemandId.Add(item.GetDemandId(), new Ids());
                 }
-                else
-                {
-                    _indexDemandId[item.GetDemandId()].Add(item.GetId());
-                }
+
+                _indexDemandId[item.GetDemandId()].Add(item.GetId());
+
                 if (_indexProviderId.ContainsKey(item.GetProviderId()) == false)
                 {
-                    _indexProviderId.Add(item.GetProviderId(), new Ids());    
+                    _indexProviderId.Add(item.GetProviderId(), new Ids());
                 }
-                else
-                {
-                    _indexProviderId[item.GetProviderId()].Add(item.GetId());
-                }
-                
+
+                _indexProviderId[item.GetProviderId()].Add(item.GetId());
+
+
                 base.Add(item);
             }
         }
@@ -113,8 +113,12 @@ namespace Zpp.DataLayer.impl.WrappersForCollections
 
         public override void Remove(ILinkDemandAndProvider t)
         {
+            if (base.Contains(t) == false)
+            {
+                return;
+            }
             _indexProviderId[t.GetProviderId()].Remove(t.GetId());
-            _indexProviderId[t.GetDemandId()].Remove(t.GetId());
+            _indexDemandId[t.GetDemandId()].Remove(t.GetId());
             base.Remove(t);
         }
     }

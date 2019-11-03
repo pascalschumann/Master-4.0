@@ -43,9 +43,9 @@ namespace Zpp.Util.Graph.impl
 
             foreach (var providerToDemand in dbTransactionData.ProviderToDemandGetAll())
             {
-                Demand demand = dbTransactionData.DemandsGetById(new Id(providerToDemand.DemandId));
+                Demand demand = dbTransactionData.DemandsGetById(providerToDemand.GetDemandId());
                 Provider provider =
-                    dbTransactionData.ProvidersGetById(new Id(providerToDemand.ProviderId));
+                    dbTransactionData.ProvidersGetById(providerToDemand.GetProviderId());
                 if (demand == null || provider == null)
                 {
                     throw new MrpRunException("Demand/Provider should not be null.");

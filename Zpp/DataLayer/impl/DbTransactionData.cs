@@ -806,5 +806,10 @@ namespace Zpp.DataLayer.impl
         {
             return (T_ProviderToDemand)_providerToDemandTable.GetById(id);
         }
+
+        public Demand ProductionOrderBomGetById(Id id)
+        {
+            return _productionOrderBoms.GetById(id);
+        }
     }
 }

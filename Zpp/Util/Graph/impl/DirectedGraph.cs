@@ -4,6 +4,7 @@ using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Master40.DB.Interfaces;
+using Microsoft.EntityFrameworkCore.Internal;
 using Zpp.DataLayer.impl.DemandDomain;
 using Zpp.DataLayer.impl.DemandDomain.Wrappers;
 using Zpp.DataLayer.impl.ProviderDomain;
@@ -66,6 +67,35 @@ namespace Zpp.Util.Graph.impl
             return GetPredecessorNodes(node.GetId());
         }
 
+        public INodes GetPredecessorNodesRecursive(INode node)
+        {
+            INodes allPredecessors = new Nodes();
+            Stack<INode> stack = new Stack<INode>();
+            stack.Push(node);
+
+            while (stack.Any())
+            {
+                INode poppedNode = stack.Pop();
+                allPredecessors.Add(poppedNode);
+                
+                INodes predecessors = GetPredecessorNodes(poppedNode.GetId());
+                if (predecessors != null)
+                {
+                    foreach (var predecessor in predecessors)
+                    {
+                        stack.Push(predecessor);
+                    }
+                }
+               
+            }
+
+            if (allPredecessors.Any() == false)
+            {
+                return null;
+            }
+            return allPredecessors;
+        }
+        
         public INodes GetPredecessorNodes(Id nodeId)
         {
             IGraphNode graphNode = _nodes.GetById(nodeId);
@@ -415,7 +445,7 @@ namespace Zpp.Util.Graph.impl
             }
 
             // add all edges from graphToInsert
-            AddEdges(graphToInsert.GetEdges().GetAll());
+            AddEdges(graphToInsert.GetEdges());
         }
 
         public INode GetNode(Id id)

@@ -35,13 +35,12 @@ namespace Zpp.Test.Integration_Tests
 
         [Theory]
         [InlineData(TestConfigurationFileNames.DESK_COP_5_LOTSIZE_2)]
-        
         [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
         public void TestBackwardScheduling(string testConfigurationFileName)
         {
             InitThisTest(testConfigurationFileName);
 
-            
+
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.ReloadTransactionData();
 
@@ -57,13 +56,12 @@ namespace Zpp.Test.Integration_Tests
 
         [Theory]
         [InlineData(TestConfigurationFileNames.DESK_COP_5_LOTSIZE_2)]
-        
         [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
         public void TestForwardScheduling(string testConfigurationFileName)
         {
             InitThisTest(testConfigurationFileName);
 
-            
+
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.ReloadTransactionData();
 
@@ -107,7 +105,7 @@ namespace Zpp.Test.Integration_Tests
         public void TestJobShopScheduling(string testConfigurationFileName)
         {
             InitThisTest(testConfigurationFileName);
-            
+
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.ReloadTransactionData();
             foreach (var productionOrderOperation in dbTransactionData
@@ -134,7 +132,7 @@ namespace Zpp.Test.Integration_Tests
         {
             // init
             InitThisTest(testConfigurationFileName);
-            
+
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.ReloadTransactionData();
 
@@ -180,26 +178,24 @@ namespace Zpp.Test.Integration_Tests
             string testConfigurationFileName)
         {
             InitThisTest(testConfigurationFileName);
-            
+
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.ReloadTransactionData();
 
-            foreach (var productionOrderBomAsDemand in dbTransactionData
-                .ProductionOrderBomGetAll())
+            foreach (var productionOrderBomAsDemand in dbTransactionData.ProductionOrderBomGetAll())
             {
-                ProductionOrderBom productionOrderBom = (ProductionOrderBom)productionOrderBomAsDemand;
-                int expectedStartBackward =
-                    productionOrderBom.GetStartTimeBackward().GetValue() +
-                    TransitionTimer.GetTransitionTimeFactor() *
-                    productionOrderBom.GetDurationOfOperation().GetValue();
+                ProductionOrderBom productionOrderBom =
+                    (ProductionOrderBom) productionOrderBomAsDemand;
+                int expectedStartBackward = productionOrderBom.GetStartTimeBackward().GetValue() +
+                                            TransitionTimer.GetTransitionTimeFactor() *
+                                            productionOrderBom.GetDurationOfOperation().GetValue();
                 int actualStartBackward = productionOrderBom.GetStartTimeOfOperation().GetValue();
                 Assert.True(expectedStartBackward.Equals(actualStartBackward),
                     $"The transition time before operationStart is not correct: " +
                     $"expectedStartBackward: {expectedStartBackward}, actualStartBackward {actualStartBackward}");
 
-                int expectedEndBackward =
-                    productionOrderBom.GetStartTimeOfOperation().GetValue() + 
-                    productionOrderBom.GetDurationOfOperation().GetValue();
+                int expectedEndBackward = productionOrderBom.GetStartTimeOfOperation().GetValue() +
+                                          productionOrderBom.GetDurationOfOperation().GetValue();
                 int actualEndBackward = productionOrderBom.GetEndTimeBackward().GetValue();
                 Assert.True(expectedEndBackward.Equals(actualEndBackward),
                     $"EndBackward is not correct: " +
@@ -214,7 +210,7 @@ namespace Zpp.Test.Integration_Tests
             string testConfigurationFileName)
         {
             InitThisTest(testConfigurationFileName);
-            
+
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.ReloadTransactionData();
 
@@ -226,12 +222,17 @@ namespace Zpp.Test.Integration_Tests
             IStackSet<INode> traversedNodes = new StackSet<INode>();
             foreach (var leaf in innerLeafs)
             {
-                IStackSet<ProductionOrderOperation> newPredecessorNodes = new StackSet<ProductionOrderOperation>();
-                productionOrderToOperationGraph.DeterminePredecessorOperations(newPredecessorNodes, leaf);
-                ProductionOrderOperation lastOperation = (ProductionOrderOperation) leaf.GetEntity();
+                INodes predecessorNodesRecursive =
+                    productionOrderToOperationGraph.GetPredecessorNodesRecursive(leaf);
+                IStackSet<ProductionOrderOperation> newPredecessorNodes =
+                    new StackSet<ProductionOrderOperation>(
+                        predecessorNodesRecursive.Select(x =>
+                            (ProductionOrderOperation) x.GetEntity()));
+
+                ProductionOrderOperation
+                    lastOperation = (ProductionOrderOperation) leaf.GetEntity();
                 ValidatePredecessorOperationsTransitionTimeIsCorrect(newPredecessorNodes,
-                    lastOperation, productionOrderToOperationGraph,
-                    traversedNodes);
+                    lastOperation, productionOrderToOperationGraph, traversedNodes);
                 traversedNodes.Push(leaf);
             }
 
@@ -244,12 +245,13 @@ namespace Zpp.Test.Integration_Tests
                 $"expectedTraversedOperationCount {expectedTraversedOperationCount} " +
                 $"doesn't equal actualTraversedOperationCount {actualTraversedOperationCount}'");
         }
+
         /**
          * Bottom-Up-Traversal
          */
         private void ValidatePredecessorOperationsTransitionTimeIsCorrect(
-            IStackSet<ProductionOrderOperation> predecessorOperations, ProductionOrderOperation lastOperation,
-            
+            IStackSet<ProductionOrderOperation> predecessorOperations,
+            ProductionOrderOperation lastOperation,
             ProductionOrderToOperationGraph productionOrderToOperationGraph,
             IStackSet<INode> traversedOperations)
         {
@@ -262,8 +264,7 @@ namespace Zpp.Test.Integration_Tests
             {
                 if (currentPredecessor.GetType() == typeof(ProductionOrderOperation))
                 {
-                    ProductionOrderOperation currentOperation =
-                        currentPredecessor;
+                    ProductionOrderOperation currentOperation = currentPredecessor;
                     traversedOperations.Push(new Node(currentPredecessor));
 
                     // transition time MUST be before the start of Operation
@@ -277,12 +278,14 @@ namespace Zpp.Test.Integration_Tests
                         $"The transition time between the operations is not correct: " +
                         $"expectedStartBackward: {expectedStartBackward}, actualStartBackward {actualStartBackward}");
 
-                    IStackSet<ProductionOrderOperation> newPredecessorNodes = new StackSet<ProductionOrderOperation>();
-                    productionOrderToOperationGraph.DeterminePredecessorOperations(newPredecessorNodes,
-                        new Node(currentPredecessor));
+                    INodes predecessorNodesRecursive =
+                        productionOrderToOperationGraph.GetPredecessorNodesRecursive(new Node(currentPredecessor));
+                    IStackSet<ProductionOrderOperation> newPredecessorNodes =
+                        new StackSet<ProductionOrderOperation>(
+                            predecessorNodesRecursive.Select(x =>
+                                (ProductionOrderOperation) x.GetEntity()));
                     ValidatePredecessorOperationsTransitionTimeIsCorrect(newPredecessorNodes,
-                        currentOperation, productionOrderToOperationGraph,
-                        traversedOperations);
+                        currentOperation, productionOrderToOperationGraph, traversedOperations);
                 }
                 else
                 {
@@ -295,18 +298,22 @@ namespace Zpp.Test.Integration_Tests
         [Theory]
         [InlineData(TestConfigurationFileNames.DESK_COP_5_LOTSIZE_2)]
         [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
-        public void TestEndMinusStartBackwardsEqualsDuration(
-            string testConfigurationFileName)
+        public void TestEndMinusStartBackwardsEqualsDuration(string testConfigurationFileName)
         {
             InitThisTest(testConfigurationFileName);
-            
+
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.ReloadTransactionData();
 
-            foreach (var productionOrderOperation in dbTransactionData.ProductionOrderOperationGetAll().GetAll())
+            foreach (var productionOrderOperation in dbTransactionData
+                .ProductionOrderOperationGetAll().GetAll())
             {
-                int EndMinusStartBackwards = productionOrderOperation.GetValue().EndBackward.GetValueOrDefault() - productionOrderOperation.GetValue().StartBackward.GetValueOrDefault(); 
-                Assert.True(EndMinusStartBackwards.Equals(productionOrderOperation.GetValue().Duration),  "EndMinusStartBackwards does not equals the duration.");
+                int EndMinusStartBackwards =
+                    productionOrderOperation.GetValue().EndBackward.GetValueOrDefault() -
+                    productionOrderOperation.GetValue().StartBackward.GetValueOrDefault();
+                Assert.True(
+                    EndMinusStartBackwards.Equals(productionOrderOperation.GetValue().Duration),
+                    "EndMinusStartBackwards does not equals the duration.");
             }
         }
     }

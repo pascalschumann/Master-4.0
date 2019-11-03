@@ -19,9 +19,8 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
             ZppConfiguration.CacheManager.GetMasterDataCache();
 
         public void ScheduleWithGifflerThompsonAsZaepfel(IPriorityRule priorityRule,
-            IProductionOrderToOperationGraph<INode> productionOrderToOperationGraph)
+            IDirectedGraph<INode> productionOrderToOperationGraph)
         {
-
             Dictionary<Id, List<Resource>> resourcesByResourceSkillId =
                 new Dictionary<Id, List<Resource>>();
             foreach (var resourceSkill in _dbMasterDataCache.M_ResourceSkillGetAll())
@@ -169,21 +168,18 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
                     {
                         INode o1AsNode = new Node(o1);
 
-                        IStackSet<ProductionOrderOperation> predecessorOperations =
-                            new StackSet<ProductionOrderOperation>();
-                        productionOrderToOperationGraph.DeterminePredecessorOperations(
-                            predecessorOperations, o1AsNode);
+                        INodes allPredecessorsRecursive =
+                            productionOrderToOperationGraph.GetPredecessorNodesRecursive(o1AsNode);
 
-                        IStackSet<ProductionOrderOperation> N = predecessorOperations
-                            .As<ProductionOrderOperation>();
+                        IStackSet<ProductionOrderOperation> N =
+                            new StackSet<ProductionOrderOperation>(
+                                allPredecessorsRecursive.Select(x =>
+                                    (ProductionOrderOperation) x.GetEntity()));
 
                         // t(o) = d(o1) für alle o aus N(o1)
-                        if (N != null)
+                        foreach (var n in N)
                         {
-                            foreach (var n in N)
-                            {
-                                n.SetStartTime(o1.GetEndTime());
-                            }
+                            n.SetStartTime(o1.GetEndTime());
                         }
 
                         // prepare for next round
@@ -199,10 +195,17 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
          * @return: all leafs of all operationGraphs
          */
         private IStackSet<ProductionOrderOperation> CreateS(
-            IProductionOrderToOperationGraph<INode> productionOrderToOperationGraph)
+            IDirectedGraph<INode> productionOrderToOperationGraph)
         {
+            INodes leafs = productionOrderToOperationGraph.GetLeafNodes();
             IStackSet<ProductionOrderOperation> S = new StackSet<ProductionOrderOperation>();
-            productionOrderToOperationGraph.GetLeafOperations(S);
+            if (leafs != null)
+            {
+                foreach (var leaf in leafs)
+                {
+                    S.Push((ProductionOrderOperation) leaf.GetEntity());
+                }   
+            }
 
             return S;
         }

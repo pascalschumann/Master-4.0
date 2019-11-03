@@ -152,7 +152,7 @@ namespace Zpp.Mrp2.impl
             }
 
             // start !
-            IProductionOrderToOperationGraph<INode> productionOrderToOperationGraph =
+            IDirectedGraph<INode> productionOrderToOperationGraph =
                 new ProductionOrderToOperationGraph();
             _jobShopScheduler.ScheduleWithGifflerThompsonAsZaepfel(
                 new PriorityRule(productionOrderToOperationGraph), productionOrderToOperationGraph);

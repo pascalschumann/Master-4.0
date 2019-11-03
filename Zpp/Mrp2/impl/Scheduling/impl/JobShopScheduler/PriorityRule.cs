@@ -9,9 +9,9 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
 {
     public class PriorityRule : IPriorityRule
     {
-        private readonly IProductionOrderToOperationGraph<INode> _productionOrderToOperationGraph;
+        private readonly IDirectedGraph<INode> _productionOrderToOperationGraph;
 
-        public PriorityRule(IProductionOrderToOperationGraph<INode> productionOrderToOperationGraph)
+        public PriorityRule(IDirectedGraph<INode> productionOrderToOperationGraph)
         {
             _productionOrderToOperationGraph = productionOrderToOperationGraph;
         }
@@ -52,15 +52,13 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
             Dictionary<HierarchyNumber, DueTime> alreadySummedHierarchyNumbers =
                 new Dictionary<HierarchyNumber, DueTime>();
             DueTime sumDurationsOfOperations = DueTime.Null();
-            // use graph to get operations in O(1)
-            INodes operations =
-                _productionOrderToOperationGraph.GetSuccessorNodes(givenProductionOrderOperation
+            // O(1)
+            List<ProductionOrderOperation> productionOrderOperations =
+                aggregator.GetProductionOrderOperationsOfProductionOrder(givenProductionOrderOperation
                     .GetProductionOrderId());
 
-            foreach (var operation in operations)
+            foreach (var productionOrderOperation in productionOrderOperations)
             {
-                ProductionOrderOperation productionOrderOperation =
-                    (ProductionOrderOperation) operation.GetEntity();
                 // only later operations, which have a smaller hierarchyNumber, have to be considered
                 if (productionOrderOperation.GetHierarchyNumber()
                     .IsSmallerThan(givenProductionOrderOperation.GetHierarchyNumber()))

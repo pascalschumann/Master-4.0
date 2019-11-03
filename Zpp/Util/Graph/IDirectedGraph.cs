@@ -27,6 +27,8 @@ namespace Zpp.Util.Graph
         
         INodes GetPredecessorNodes(Id nodeId);
 
+        INodes GetPredecessorNodesRecursive(INode node);
+
         void AddEdges(IEnumerable<IEdge> edges);
 
         void AddEdges(TNode fromNode, INodes nodes);

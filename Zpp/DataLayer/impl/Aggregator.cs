@@ -54,9 +54,16 @@ namespace Zpp.DataLayer.impl
         public List<ProductionOrderOperation> GetProductionOrderOperationsOfProductionOrder(
             Id productionOrderId)
         {
-            List<ProductionOrderOperation> productionOrderOperations = _dbTransactionData
-                .ProductionOrderOperationGetAll()
-                .Where(x => x.GetProductionOrderId().Equals(productionOrderId)).ToList();
+            List<ProductionOrderOperation> productionOrderOperations =
+                new List<ProductionOrderOperation>();
+            Ids ids = _dbTransactionData.ProductionOrderOperationGetAll()
+                .GetProductionOrderOperationsBy(productionOrderId);
+            foreach (var id in ids)
+            {
+                productionOrderOperations.Add(
+                    _dbTransactionData.ProductionOrderOperationGetById(id));
+            }
+
             if (productionOrderOperations.Any() == false)
             {
                 return null;
@@ -413,7 +420,7 @@ namespace Zpp.DataLayer.impl
 
             if (demandToProviders != null)
             {
-                demandAndProviderLinks.AddRange(demandToProviders);    
+                demandAndProviderLinks.AddRange(demandToProviders);
             }
 
             if (providerToDemands != null)
@@ -436,7 +443,7 @@ namespace Zpp.DataLayer.impl
             IEnumerable<ILinkDemandAndProvider> providerToDemands = GetArrowsFrom(demand);
             if (demandToProviders != null)
             {
-                demandAndProviderLinks.AddRange(demandToProviders);    
+                demandAndProviderLinks.AddRange(demandToProviders);
             }
 
             if (providerToDemands != null)

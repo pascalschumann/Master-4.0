@@ -41,19 +41,11 @@ namespace Zpp.Test.Integration_Tests
 
             ProductionOrderOperations productionOrderOperations =
                 productionOrderToOperationGraph.GetAllOperations();
-            ProductionOrders productionOrders =
-                productionOrderToOperationGraph.GetAllProductionOrders();
             foreach (var productionOrderOperation in dbTransactionData
                 .ProductionOrderOperationGetAll())
             {
                 Assert.True(productionOrderOperations.Contains(productionOrderOperation),
                     $"{productionOrderOperation} is missing.");
-            }
-
-            foreach (var productionOrder in dbTransactionData.ProductionOrderGetAll())
-            {
-                Assert.True(productionOrders.Contains(productionOrder),
-                    $"{productionOrder} is missing.");
             }
         }
 

@@ -48,7 +48,7 @@ namespace Zpp.Test.Integration_Tests
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.ReloadTransactionData();
            
-            IProductionOrderToOperationGraph<INode> productionOrderToOperationGraph =
+            IDirectedGraph<INode> productionOrderToOperationGraph =
                 new ProductionOrderToOperationGraph();
             
             

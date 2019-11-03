@@ -65,7 +65,10 @@ namespace Zpp.DataLayer.impl.DemandDomain.WrappersForCollections
 
         public override void AddAll(IEnumerable<Demand> items)
         {
-            AddAll(items);
+            foreach (var item in items)
+            {
+                Add(item);    
+            }
         }
 
         public override void Clear()

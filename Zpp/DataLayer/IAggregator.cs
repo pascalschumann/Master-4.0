@@ -52,7 +52,7 @@ namespace Zpp.DataLayer
          */
         DueTime GetEarliestPossibleStartTimeOf(ProductionOrderOperation productionOrderOperation);
 
-        Demands GetUnsatisifedCustomerOrderParts();
+        Demands GetUnsatisfiedCustomerOrderParts();
 
         /**
          * return DemandsOrProviders' EndTime within given interval AND EndTime BEFORE the startOfInterval
@@ -95,7 +95,5 @@ namespace Zpp.DataLayer
         List<ILinkDemandAndProvider> GetArrowsToAndFrom(IDemandOrProvider demandOrProvider);
 
         List<ProductionOrderOperation> GetAllOperationsOnResource(M_Resource resource);
-
-        bool ExistsInDemandToProviderGraph(Id nodeId);
     }
 }

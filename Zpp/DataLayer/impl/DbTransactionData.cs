@@ -796,5 +796,15 @@ namespace Zpp.DataLayer.impl
         {
             _customerOrders.Remove(customerOrder);
         }
+
+        public T_DemandToProvider DemandToProviderGetById(Id id)
+        {
+            return (T_DemandToProvider)_demandToProviderTable.GetById(id);
+        }
+
+        public T_ProviderToDemand ProviderToDemandGetById(Id id)
+        {
+            return (T_ProviderToDemand)_providerToDemandTable.GetById(id);
+        }
     }
 }

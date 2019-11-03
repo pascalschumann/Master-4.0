@@ -47,7 +47,7 @@ namespace Zpp.DataLayer.impl
                 OpenDemandManager.AddInitialStockLevels(_dbTransactionData);
             }
 
-            _aggregator = new Aggregator(_dbTransactionData, new DemandToProviderGraph(), null);
+            _aggregator = new Aggregator(_dbTransactionData);
             _openDemandManager = new OpenDemandManager();
         }
 
@@ -55,7 +55,7 @@ namespace Zpp.DataLayer.impl
         {
             _dbTransactionData = new DbTransactionData(_productionDomainContext);
             _dbTransactionDataArchive = new DbTransactionData(_productionDomainContextArchive);
-            _aggregator = new Aggregator(_dbTransactionData, new DemandToProviderGraph(), null);
+            _aggregator = new Aggregator(_dbTransactionData);
             _openDemandManager = new OpenDemandManager();
             return _dbTransactionData;
         }
@@ -177,13 +177,6 @@ namespace Zpp.DataLayer.impl
         {
             _dbTransactionData.PersistDbCache();
             _dbTransactionDataArchive.PersistDbCache();
-        }
-
-        public void SetAggregator(DemandToProviderGraph demandToProviderGraph,
-            OrderOperationGraph orderOperationGraph)
-        {
-            _aggregator = new Aggregator(_dbTransactionData, demandToProviderGraph,
-                orderOperationGraph);
         }
     }
 }

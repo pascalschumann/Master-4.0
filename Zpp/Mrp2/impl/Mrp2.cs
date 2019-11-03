@@ -44,8 +44,9 @@ namespace Zpp.Mrp2.impl
             mrp1.StartMrp1();
             _performanceMonitors.Stop(InstanceToTrack.Mrp1);
             
-            DemandToProviderGraph demandToProviderGraph = new DemandToProviderGraph();
+
             // TODO: remove this
+            // DemandToProviderGraph demandToProviderGraph = new DemandToProviderGraph();
             // string demandToProviderGraphString = demandToProviderGraph.ToString();
             
             // BackwardForwardBackwardScheduling
@@ -53,9 +54,6 @@ namespace Zpp.Mrp2.impl
             OrderOperationGraph orderOperationGraph = new OrderOperationGraph();
             // TODO: remove this
             // string orderOperationGraphString = orderOperationGraph.ToString();
-            
-            ZppConfiguration.CacheManager.SetAggregator(demandToProviderGraph, orderOperationGraph);
-            AssertGraphsAreNotEmpty(orderOperationGraph);
 
             INodes rootNodes = new Nodes();
             foreach (var rootNode in orderOperationGraph.GetRootNodes())
@@ -81,10 +79,9 @@ namespace Zpp.Mrp2.impl
                 }
                 Providers childProviders = ZppConfiguration.CacheManager.GetAggregator()
                     .GetAllChildProvidersOf((Demand) rootNode.GetEntity());
-                if (childProviders.Count() != 1)
+                if (childProviders == null || childProviders.Count() > 1)
                 {
-                    throw new MrpRunException(
-                        "A CustomerOrderPart is only allowed to have exact one provider.");
+                    throw new MrpRunException("After Mrp1 a CustomerOrderPart MUST have exact one child.");
                 }
 
                 childRootNodes.AddAll(childProviders.ToNodes());
@@ -162,7 +159,7 @@ namespace Zpp.Mrp2.impl
         {
             // execute mrp2
             Demands unsatisfiedCustomerOrderParts = ZppConfiguration.CacheManager.GetAggregator()
-                .GetUnsatisifedCustomerOrderParts();
+                .GetUnsatisfiedCustomerOrderParts();
             ManufacturingResourcePlanning(unsatisfiedCustomerOrderParts);
         }
     }

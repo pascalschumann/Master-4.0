@@ -13,8 +13,8 @@ namespace Zpp.DataLayer.impl.WrappersForCollections
      */
     public class LinkDemandAndProviderTable : CollectionWrapperWithStackSet<ILinkDemandAndProvider>
     {
-        private readonly Dictionary<Id, Id> _indexDemandId = new Dictionary<Id, Id>();
-        private readonly Dictionary<Id, Id> _indexProviderId = new Dictionary<Id, Id>();
+        private readonly Dictionary<Id, Ids> _indexDemandId = new Dictionary<Id, Ids>();
+        private readonly Dictionary<Id, Ids> _indexProviderId = new Dictionary<Id, Ids>();
         
         
         public LinkDemandAndProviderTable(IEnumerable<ILinkDemandAndProvider> list) : base(list)
@@ -27,26 +27,50 @@ namespace Zpp.DataLayer.impl.WrappersForCollections
 
         public bool Contains(Demand demand)
         {
-            Id id = _indexProviderId[demand.GetId()];
-            return StackSet.Contains(id);
+            return _indexDemandId.ContainsKey(demand.GetId());
         }
 
         public bool Contains(Provider provider)
         {
-            Id id = _indexProviderId[provider.GetId()];
-            return StackSet.Contains(id);
+            return _indexProviderId.ContainsKey(provider.GetId());
         }
 
-        public ILinkDemandAndProvider GetByDemandId(Id demandId)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="demandId"></param>
+        /// <returns>demandToProvider ids</returns>
+        public Ids GetByDemandId(Id demandId)
         {
-            Id id = _indexDemandId[demandId];
-            return StackSet.GetById(id);
+            if (_indexDemandId.ContainsKey(demandId) == false)
+            {
+                return null;
+            }
+            Ids ids = _indexDemandId[demandId];
+            return ids;
         }
         
-        public ILinkDemandAndProvider GetByProviderId(Id providerId)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="providerId"></param>
+        /// <returns>demandToProvider ids</returns>
+        public Ids GetByProviderId(Id providerId)
         {
-            Id id = _indexProviderId[providerId];
-            return StackSet.GetById(id);
+            if (_indexProviderId.ContainsKey(providerId) == false)
+            {
+                return null;
+            }
+            Ids ids = _indexProviderId[providerId];
+            return ids;
+        }
+
+        public override void AddAll(IEnumerable<ILinkDemandAndProvider> items)
+        {
+            foreach (var item in items)
+            {
+                Add(item);
+            }
         }
 
         public override void Add(ILinkDemandAndProvider item)
@@ -59,8 +83,23 @@ namespace Zpp.DataLayer.impl.WrappersForCollections
             // a set contains the element only once, else skip adding
             if (StackSet.Contains(item) == false)
             {
-                _indexDemandId.Add(item.GetDemandId(), item.GetId());
-                _indexProviderId.Add(item.GetProviderId(), item.GetId());
+                if (_indexDemandId.ContainsKey(item.GetDemandId()) == false)
+                {
+                    _indexDemandId.Add(item.GetDemandId(), new Ids());    
+                }
+                else
+                {
+                    _indexDemandId[item.GetDemandId()].Add(item.GetId());
+                }
+                if (_indexProviderId.ContainsKey(item.GetProviderId()) == false)
+                {
+                    _indexProviderId.Add(item.GetProviderId(), new Ids());    
+                }
+                else
+                {
+                    _indexProviderId[item.GetProviderId()].Add(item.GetId());
+                }
+                
                 base.Add(item);
             }
         }
@@ -74,8 +113,8 @@ namespace Zpp.DataLayer.impl.WrappersForCollections
 
         public override void Remove(ILinkDemandAndProvider t)
         {
-            _indexDemandId.Remove(t.GetDemandId());
-            _indexProviderId.Remove(t.GetProviderId());
+            _indexProviderId[t.GetProviderId()].Remove(t.GetId());
+            _indexProviderId[t.GetDemandId()].Remove(t.GetId());
             base.Remove(t);
         }
     }

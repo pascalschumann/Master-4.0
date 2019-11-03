@@ -131,6 +131,10 @@ namespace Zpp.DataLayer
         void AddAllFrom(List<ILinkDemandAndProvider> demandOrProviders);
         
         void AddA(ILinkDemandAndProvider demandAndProviderLink);
+
+        T_DemandToProvider DemandToProviderGetById(Id id);
         
-        }
+        T_ProviderToDemand ProviderToDemandGetById(Id id);
+
+    }
 }

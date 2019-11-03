@@ -3,7 +3,6 @@ using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Master40.DB.Interfaces;
-using Microsoft.EntityFrameworkCore.Internal;
 using Zpp.DataLayer.impl.DemandDomain;
 using Zpp.DataLayer.impl.DemandDomain.Wrappers;
 using Zpp.DataLayer.impl.DemandDomain.WrappersForCollections;
@@ -12,11 +11,8 @@ using Zpp.DataLayer.impl.ProviderDomain.Wrappers;
 using Zpp.DataLayer.impl.ProviderDomain.WrappersForCollections;
 using Zpp.DataLayer.impl.WrapperForEntities;
 using Zpp.DataLayer.impl.WrappersForCollections;
-using Zpp.Mrp2.impl.Scheduling.impl;
 using Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler;
 using Zpp.Util;
-using Zpp.Util.Graph;
-using Zpp.Util.Graph.impl;
 using Zpp.ZppSimulator.impl;
 
 namespace Zpp.DataLayer.impl
@@ -58,13 +54,15 @@ namespace Zpp.DataLayer.impl
         public List<ProductionOrderOperation> GetProductionOrderOperationsOfProductionOrder(
             Id productionOrderId)
         {
-            INodes successorNodes = _orderOperationGraph.GetSuccessorNodes(productionOrderId);
-            if (successorNodes.Any() == false)
+            List<ProductionOrderOperation> productionOrderOperations = _dbTransactionData
+                .ProductionOrderOperationGetAll()
+                .Where(x => x.GetProductionOrderId().Equals(productionOrderId)).ToList();
+            if (productionOrderOperations.Any() == false)
             {
                 return null;
             }
 
-            return successorNodes.Select(x => (ProductionOrderOperation) x.GetEntity()).ToList();
+            return productionOrderOperations;
         }
 
         public ProductionOrderBom GetAnyProductionOrderBomByProductionOrderOperation(
@@ -83,26 +81,56 @@ namespace Zpp.DataLayer.impl
             return new ProductionOrderBom(productionOrderBom);
         }
 
-        public Providers GetAllChildProvidersOf(Demand demand)
+        public ProductionOrderBoms GetAllProductionOrderBomsBy(
+            ProductionOrderOperation productionOrderOperation)
         {
-            INodes successors = _demandToProviderGraph.GetSuccessorNodes(demand.GetId());
-            if (successors == null)
+            List<T_ProductionOrderBom> productionOrderBoms = _dbTransactionData
+                .ProductionOrderBomGetAll().GetAllAs<T_ProductionOrderBom>().FindAll(x =>
+                    x.ProductionOrderOperationId.Equals(productionOrderOperation.GetId()
+                        .GetValue()));
+            if (productionOrderBoms == null || productionOrderBoms.Any() == false)
             {
-                return null;
+                throw new MrpRunException(
+                    $"How could an productionOrderOperation({productionOrderOperation}) without an T_ProductionOrderBom exists?");
             }
 
-            return new Providers(successors.Select(x => (Provider) x.GetEntity()));
+            return new ProductionOrderBoms(productionOrderBoms);
         }
 
-        public Providers GetAllParentProvidersOf(Demand demand)
+        /**
+         * DemandToProvider
+         */
+        public Providers GetAllChildProvidersOf(Demand demand)
         {
-            INodes predecessors = _demandToProviderGraph.GetPredecessorNodes(demand.GetId());
-            if (predecessors == null)
+            Providers providers = new Providers();
+            Ids ids = _dbTransactionData.DemandToProviderGetAll().GetByDemandId(demand.GetId());
+            if (ids == null)
             {
                 return null;
             }
+            foreach (var id in ids)
+            {
+                T_DemandToProvider demandToProvider = _dbTransactionData.DemandToProviderGetById(id);
+                providers.Add(_dbTransactionData.ProvidersGetById(demandToProvider.GetProviderId()));
+            }
 
-            return new Providers(predecessors.Select(x => (Provider) x.GetEntity()));
+            return providers;
+        }
+
+        /**
+         * ProviderToDemand
+         */
+        public Providers GetAllParentProvidersOf(Demand demand)
+        {
+            Providers providers = new Providers();
+            Ids ids = _dbTransactionData.ProviderToDemandGetAll().GetByDemandId(demand.GetId());
+            foreach (var id in ids)
+            {
+                T_ProviderToDemand providerToDemand = _dbTransactionData.ProviderToDemandGetById(id);
+                providers.Add(_dbTransactionData.ProvidersGetById(providerToDemand.GetProviderId()));
+            }
+
+            return providers;
         }
 
         public List<Provider> GetProvidersForInterval(DueTime from, DueTime to)
@@ -114,124 +142,91 @@ namespace Zpp.DataLayer.impl
             return currentProviders;
         }
 
+        /**
+         * DemandToProvider
+         * D --> P
+         */
         public Demands GetAllParentDemandsOf(Provider provider)
         {
-            INodes predecessors = _demandToProviderGraph.GetPredecessorNodes(provider.GetId());
-            if (predecessors == null)
+            Demands demands = new Demands();
+            Ids ids = _dbTransactionData.DemandToProviderGetAll().GetByProviderId(provider.GetId());
+            foreach (var id in ids)
             {
-                return null;
+                T_DemandToProvider demandToProvider = _dbTransactionData.DemandToProviderGetById(id);
+                demands.Add(_dbTransactionData.DemandsGetById(demandToProvider.GetDemandId()));
             }
 
-            return new Demands(predecessors.Select(x => (Demand) x.GetEntity()));
+            return demands;
         }
 
+        /**
+         * ProviderToDemand
+         */
         public Demands GetAllChildDemandsOf(Provider provider)
         {
-            INodes successors = _demandToProviderGraph.GetSuccessorNodes(provider.GetId());
-            if (successors == null)
+            Demands demands = new Demands();
+            Ids ids = _dbTransactionData.ProviderToDemandGetAll().GetByProviderId(provider.GetId());
+            foreach (var id in ids)
             {
-                return null;
+                T_ProviderToDemand providerToDemand = _dbTransactionData.ProviderToDemandGetById(id);
+                demands.Add(_dbTransactionData.DemandsGetById(providerToDemand.GetDemandId()));
             }
 
-            return new Demands(successors.Select(x => (Demand) x.GetEntity()));
+            return demands;
         }
 
-        public Providers GetAllChildStockExchangeProvidersOf(ProductionOrderOperation operation)
+        public DueTime GetEarliestPossibleStartTimeOf(ProductionOrderBom productionOrderBom)
         {
-            INodes successors = _orderOperationGraph.GetSuccessorNodes(operation.GetId());
-            if (successors == null)
-            {
-                return null;
-            }
-
-            Providers providers = new Providers();
-            foreach (var successor in successors)
-            {
-                if (successor.GetEntity().GetType() == typeof(StockExchangeProvider))
-                {
-                    providers.Add((StockExchangeProvider)successor.GetEntity());
-                }
-                else if (successor.GetEntity().GetType() == typeof(ProductionOrderOperation))
-                {
-                    // pass
-                }
-                else
-                {
-                    throw new MrpRunException(
-                        "A child of an operation can only be an operation or " +
-                        "a StockExchangeProvider");
-                }
-            }
-
-            if (providers.Any() == false)
-            {
-                return null;
-            }
-
-            return providers;
-        }
-
-        public DueTime GetEarliestPossibleStartTimeOf(
-            ProductionOrderOperation productionOrderOperation)
-        {
-            DueTime maximumOfEarliestStartTimes = null;
+            DueTime earliestStartTime = productionOrderBom.GetStartTimeBackward();
             Providers providers = ZppConfiguration.CacheManager.GetAggregator()
-                .GetAllChildStockExchangeProvidersOf(productionOrderOperation);
-
-            foreach (var stockExchangeProvider in providers)
+                .GetAllChildProvidersOf(productionOrderBom);
+            if (providers.Count() > 1)
             {
-                DueTime earliestStartTime = productionOrderOperation.GetStartTimeBackward();
-                if (earliestStartTime.IsGreaterThanOrEqualTo(stockExchangeProvider
-                    .GetStartTimeBackward()))
-                {
-                    earliestStartTime = stockExchangeProvider.GetStartTimeBackward();
-                }
-                else
-                {
-                    throw new MrpRunException(
-                        "A provider of a demand cannot have a later dueTime.");
-                }
+                throw new MrpRunException("A productionOrderBom can only have one provider !");
+            }
 
-                Demands stockExchangeDemands = ZppConfiguration.CacheManager.GetAggregator()
-                    .GetAllChildDemandsOf(stockExchangeProvider);
-                if (stockExchangeDemands.Any() == false)
-                    // StockExchangeProvider has no childs (stockExchangeDemands),
-                    // take that from stockExchangeProvider
-                {
-                    DueTime childDueTime = stockExchangeProvider.GetStartTimeBackward();
-                    if (childDueTime.IsGreaterThan(earliestStartTime))
-                    {
-                        earliestStartTime = childDueTime;
-                    }
-                }
-                else
-                    // StockExchangeProvider has childs (stockExchangeDemands)
-                {
-                    foreach (var stockExchangeDemand in stockExchangeDemands)
-                    {
-                        DueTime stockExchangeDemandDueTime =
-                            stockExchangeDemand.GetStartTimeBackward();
-                        if (stockExchangeDemandDueTime.IsGreaterThan(earliestStartTime))
-                        {
-                            earliestStartTime = stockExchangeDemandDueTime;
-                        }
-                    }
-                }
 
-                if (maximumOfEarliestStartTimes == null ||
-                    earliestStartTime.IsGreaterThan(maximumOfEarliestStartTimes))
+            Provider stockExchangeProvider = providers.GetAny();
+            if (earliestStartTime.IsGreaterThanOrEqualTo(stockExchangeProvider.GetStartTimeBackward()))
+            {
+                earliestStartTime = stockExchangeProvider.GetStartTimeBackward();
+            }
+            else
+            {
+                throw new MrpRunException("A provider of a demand cannot have a later dueTime.");
+            }
+
+            Demands stockExchangeDemands = ZppConfiguration.CacheManager.GetAggregator()
+                .GetAllChildDemandsOf(stockExchangeProvider);
+            if (stockExchangeDemands.Any() == false)
+                // StockExchangeProvider has no childs (stockExchangeDemands),
+                // take that from stockExchangeProvider
+            {
+                DueTime childDueTime = stockExchangeProvider.GetStartTimeBackward();
+                if (childDueTime.IsGreaterThan(earliestStartTime))
                 {
-                    maximumOfEarliestStartTimes = earliestStartTime;
+                    earliestStartTime = childDueTime;
+                }
+            }
+            else
+                // StockExchangeProvider has childs (stockExchangeDemands)
+            {
+                foreach (var stockExchangeDemand in stockExchangeDemands)
+                {
+                    DueTime stockExchangeDemandDueTime = stockExchangeDemand.GetStartTimeBackward();
+                    if (stockExchangeDemandDueTime.IsGreaterThan(earliestStartTime))
+                    {
+                        earliestStartTime = stockExchangeDemandDueTime;
+                    }
                 }
             }
 
-            return maximumOfEarliestStartTimes;
+            return earliestStartTime;
         }
 
-
-        public Demands GetUnsatisifedCustomerOrderParts()
+        public Demands GetUnsatisfiedCustomerOrderParts()
         {
-            Demands unsatisifedCustomerOrderParts = new Demands();
+            Demands unsatisfiedCustomerOrderParts = new Demands();
 
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.GetDbTransactionData();
@@ -241,21 +236,23 @@ namespace Zpp.DataLayer.impl
 
             foreach (var customerOrderPart in customerOrderParts)
             {
-                if (aggregator.ExistsInDemandToProviderGraph(customerOrderPart.GetId()) == false)
+                Providers customerOrderPartChilds =
+                    aggregator.GetAllChildProvidersOf(customerOrderPart); 
+                if (customerOrderPartChilds == null || customerOrderPartChilds.Any() == false)
                 {
-                    unsatisifedCustomerOrderParts.Add(customerOrderPart);
+                    unsatisfiedCustomerOrderParts.Add(customerOrderPart);
                 }
             }
 
-            return unsatisifedCustomerOrderParts;
+            return unsatisfiedCustomerOrderParts;
         }
 
         public DemandOrProviders GetDemandsOrProvidersWhereStartTimeIsWithinInterval(
             SimulationInterval simulationInterval, DemandOrProviders demandOrProviders)
         {
             // startTime within interval
-            return new DemandOrProviders(demandOrProviders.GetAll().Where(x =>
-                simulationInterval.IsWithinInterval(x.GetStartTimeBackward())));
+            return new DemandOrProviders(demandOrProviders.GetAll()
+                .Where(x => simulationInterval.IsWithinInterval(x.GetStartTimeBackward())));
         }
 
         public DemandOrProviders GetDemandsOrProvidersWhereEndTimeIsWithinIntervalOrBefore(
@@ -275,7 +272,18 @@ namespace Zpp.DataLayer.impl
          */
         public IEnumerable<ILinkDemandAndProvider> GetArrowsTo(Provider provider)
         {
-            return _demandToProviderGraph.GetEdgesTo(provider.GetId());
+            if (_dbTransactionData.DemandToProviderGetAll().Contains(provider) ==false)
+            {
+                return null;
+            }
+            List<ILinkDemandAndProvider> demandToProviders = new List<ILinkDemandAndProvider>();
+            Ids ids = _dbTransactionData.DemandToProviderGetAll().GetByProviderId(provider.GetId());
+            foreach (var id in ids)
+            {
+                demandToProviders.Add(_dbTransactionData.DemandToProviderGetById(id));
+            }
+
+            return demandToProviders;
         }
 
         /**
@@ -283,7 +291,18 @@ namespace Zpp.DataLayer.impl
          */
         public IEnumerable<ILinkDemandAndProvider> GetArrowsFrom(Provider provider)
         {
-            return _demandToProviderGraph.GetEdgesFrom(provider.GetId());
+            if (_dbTransactionData.ProviderToDemandGetAll().Contains(provider) ==false)
+            {
+                return null;
+            }
+            List<ILinkDemandAndProvider> providerToDemands = new List<ILinkDemandAndProvider>();
+            Ids ids = _dbTransactionData.ProviderToDemandGetAll().GetByProviderId(provider.GetId());
+            foreach (var id in ids)
+            {
+                providerToDemands.Add(_dbTransactionData.ProviderToDemandGetById(id));
+            }
+
+            return providerToDemands;
         }
 
         /**
@@ -291,7 +310,18 @@ namespace Zpp.DataLayer.impl
          */
         public IEnumerable<ILinkDemandAndProvider> GetArrowsTo(Demand demand)
         {
-            return _demandToProviderGraph.GetEdgesTo(demand.GetId());
+            if (_dbTransactionData.ProviderToDemandGetAll().Contains(demand) ==false)
+            {
+                return null;
+            }
+            List<ILinkDemandAndProvider> providerToDemands = new List<ILinkDemandAndProvider>();
+            Ids ids = _dbTransactionData.ProviderToDemandGetAll().GetByDemandId(demand.GetId());
+            foreach (var id in ids)
+            {
+                providerToDemands.Add(_dbTransactionData.ProviderToDemandGetById(id));
+            }
+
+            return providerToDemands;
         }
 
         /**
@@ -299,7 +329,18 @@ namespace Zpp.DataLayer.impl
          */
         public IEnumerable<ILinkDemandAndProvider> GetArrowsFrom(Demand demand)
         {
-            return _demandToProviderGraph.GetEdgesFrom(demand.GetId());
+            if (_dbTransactionData.DemandToProviderGetAll().Contains(demand) ==false)
+            {
+                return null;
+            }
+            List<ILinkDemandAndProvider> demandToProviders = new List<ILinkDemandAndProvider>();
+            Ids ids = _dbTransactionData.DemandToProviderGetAll().GetByDemandId(demand.GetId());
+            foreach (var id in ids)
+            {
+                demandToProviders.Add(_dbTransactionData.DemandToProviderGetById(id));
+            }
+
+            return demandToProviders;
         }
 
         public IEnumerable<ILinkDemandAndProvider> GetArrowsTo(Providers providers)
@@ -402,19 +443,14 @@ namespace Zpp.DataLayer.impl
                 .Where(x => x.GetMachineId().GetValue().Equals(resource.Id)).ToList();
         }
 
-        public bool ExistsInDemandToProviderGraph(Id nodeId)
+        public Providers GetAllChildStockExchangeProvidersOf(ProductionOrderOperation operation)
         {
-            return _demandToProviderGraph.Contains(nodeId);
+            throw new System.NotImplementedException();
         }
 
-        internal OrderOperationGraph GetOrderOperationGraph()
+        public DueTime GetEarliestPossibleStartTimeOf(ProductionOrderOperation productionOrderOperation)
         {
-            return _orderOperationGraph;
-        }
-
-        internal DemandToProviderGraph GetDemandToProviderGraph()
-        {
-            return _demandToProviderGraph;
+            throw new System.NotImplementedException();
         }
     }
 }

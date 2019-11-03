@@ -50,7 +50,7 @@ namespace Zpp.DataLayer.impl.WrappersForCollections
             StackSet.Push(item);
         }
 
-        public void AddAll(IEnumerable<T> items)
+        public virtual void AddAll(IEnumerable<T> items)
         {
             StackSet.PushAll(items);
         }

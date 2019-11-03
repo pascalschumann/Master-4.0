@@ -69,14 +69,14 @@ namespace Zpp.DataLayer.impl.OpenDemand
         {
             IAggregator aggregator = ZppConfiguration.CacheManager.GetAggregator();
             Quantity reservedQuantity = Quantity.Null();
-            if (aggregator.ExistsInDemandToProviderGraph(demand.GetId()) == false)
-            {
-                return reservedQuantity;
-            }
+
             IEnumerable<ILinkDemandAndProvider> arrowsToDemand = aggregator.GetArrowsTo(demand);
-            foreach (var arrowToDemand in arrowsToDemand)
+            if (arrowsToDemand != null)
             {
-                reservedQuantity.IncrementBy(arrowToDemand.GetQuantity());
+                foreach (var arrowToDemand in arrowsToDemand)
+                {
+                    reservedQuantity.IncrementBy(arrowToDemand.GetQuantity());
+                }
             }
 
             return reservedQuantity;

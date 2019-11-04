@@ -15,8 +15,8 @@ namespace Zpp.Test.Unit_Tests
         [Fact]
         public void TestGeneratedQuantity()
         {
-            CustomerOrderCreator og = new CustomerOrderCreator(new Quantity(500));
-            og.CreateCustomerOrders( new SimulationInterval(0, 20160));
+            CustomerOrderCreator og = new CustomerOrderCreator(null);
+            og.CreateCustomerOrders( new SimulationInterval(0, 20160), new Quantity(500));
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.GetDbTransactionData();
             var orders = dbTransactionData.CustomerOrderGetAll();

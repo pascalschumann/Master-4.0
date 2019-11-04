@@ -8,10 +8,6 @@ namespace Zpp.ZppSimulator.impl.CustomerOrder
          * Exact order generating
          */
         void CreateCustomerOrders(SimulationInterval interval, Quantity customerOrderQuantity);
-
-        /**
-         * This is Martin's original cop creator
-         */
-        void CreateCustomerOrders(SimulationInterval interval);
+        
     }
 }

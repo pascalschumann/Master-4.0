@@ -48,45 +48,5 @@ namespace Zpp.Test.Integration_Tests
                     $"{productionOrderOperation} is missing.");
             }
         }
-
-        [Theory]
-        [InlineData(TestConfigurationFileNames.DESK_COP_5_LOTSIZE_2)]
-        [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
-        public void TestAllOperationsGraphStaysTheSame(string testConfigurationFileName)
-        {
-            InitThisTest(testConfigurationFileName);
-
-            string operationGraphFileName =
-                $"../../../Test/Ordergraphs/productionOrderToOperation_graph_{TestConfiguration.Name}.txt";
-
-            // build operationGraph up
-            IDirectedGraph<INode> operationDirectedGraph =
-                new ProductionOrderToOperationGraph();
-            
-            string actualOperationGraph = operationDirectedGraph.ToString();
-            if (File.Exists(operationGraphFileName) == false)
-            {
-                File.WriteAllText(operationGraphFileName, actualOperationGraph, Encoding.UTF8);
-            }
-
-            string expectedOperationGraph = File.ReadAllText(operationGraphFileName, Encoding.UTF8);
-
-            bool operationGraphHasNotChanged = expectedOperationGraph.Equals(actualOperationGraph);
-            // for debugging: write the changed graphs to files
-            if (operationGraphHasNotChanged == false)
-            {
-                File.WriteAllText(operationGraphFileName, actualOperationGraph, Encoding.UTF8);
-            }
-
-            if (Constants.IsWindows)
-            {
-                Assert.True(operationGraphHasNotChanged, "The AllOperationGraph has changed.");
-            }
-            else
-            {
-                // On linux the graph is always different so the test would always fail here.
-                Assert.True(true);
-            }
-        }
     }
 }

@@ -151,58 +151,7 @@ namespace Zpp.Test.Integration_Tests
                 }, (CustomerOrderPart) customerOrderPart);
             }
         }
-
-        /**
-         * In case of failing (and the demandToProviderGraph change is expected by you):
-         * delete corresponding ordergraph_cop_*.txt files ind Folder Test/DemandToProviderGraphs
-         */
-        [Theory]
         
-        
-        [InlineData(TestConfigurationFileNames.DESK_COP_5_LOTSIZE_2)]
-        [InlineData(TestConfigurationFileNames.DESK_COP_2_LOTSIZE_2)]
-        [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
-        public void TestDemandToProviderGraphStaysTheSame(string testConfigurationFileName)
-        {
-            InitThisTest(testConfigurationFileName);
-            
-            string demandToProviderGraphFileName =
-                $"../../../Test/Ordergraphs/demandToProvider_graph_{TestConfiguration.Name}.txt";
-
-            // build demandToProviderGraph up
-            
-            IDirectedGraph<INode> demandToProviderGraph = new DemandToProviderGraph();
-
-            
-            string actualDemandToProviderGraph = demandToProviderGraph.ToString();
-            if (File.Exists(demandToProviderGraphFileName) == false)
-            {
-                File.WriteAllText(demandToProviderGraphFileName, actualDemandToProviderGraph,
-                    Encoding.UTF8);
-            }
-            
-            string expectedDemandToProviderGraph =
-                File.ReadAllText(demandToProviderGraphFileName, Encoding.UTF8);
-            
-            bool demandToProviderGraphHasNotChanged =
-                expectedDemandToProviderGraph.Equals(actualDemandToProviderGraph);
-            // for debugging: write the changed graphs to files
-            if (demandToProviderGraphHasNotChanged == false)
-            {
-                File.WriteAllText(demandToProviderGraphFileName, actualDemandToProviderGraph,
-                    Encoding.UTF8);
-            }
-
-            if (Constants.IsWindows)
-            {
-                Assert.True(demandToProviderGraphHasNotChanged, "DemandToProviderGraph has changed.");
-            }
-            else
-            {
-                // On linux the graph is always different so the test would always fail here.
-                Assert.True(true);
-            }
-        }
 
         public static string RemoveIdsFromDemandToProviderGraph(string demandToProviderGraph)
         {

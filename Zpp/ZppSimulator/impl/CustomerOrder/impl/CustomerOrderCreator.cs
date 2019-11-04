@@ -12,11 +12,11 @@ namespace Zpp.ZppSimulator.impl.CustomerOrder.impl
         private IOrderGenerator _orderGenerator = null;
         private readonly Quantity _defaultCustomerOrderQuantityPerCycle = new Quantity(10);
 
-        public CustomerOrderCreator(Quantity customerOrderQuantity)
+        public CustomerOrderCreator(Quantity defaultCustomerOrderQuantityPerCycle)
         {
-            if (customerOrderQuantity.IsSmallerThan(_defaultCustomerOrderQuantityPerCycle))
+            if (defaultCustomerOrderQuantityPerCycle != null && defaultCustomerOrderQuantityPerCycle.IsSmallerThan(_defaultCustomerOrderQuantityPerCycle))
             {
-                _defaultCustomerOrderQuantityPerCycle = customerOrderQuantity;
+                _defaultCustomerOrderQuantityPerCycle = defaultCustomerOrderQuantityPerCycle;
             }
 
             var orderArrivalRate = new OrderArrivalRate(0.025);
@@ -25,12 +25,6 @@ namespace Zpp.ZppSimulator.impl.CustomerOrder.impl
                 new MaxDeliveryTime(1430), orderArrivalRate, masterDataCache.M_ArticleGetAll(),
                 masterDataCache.M_BusinessPartnerGetAll());
         }
-
-        public void CreateCustomerOrders(SimulationInterval interval)
-        {
-            CreateCustomerOrders(interval, null);
-        }
-
         public void CreateCustomerOrders(SimulationInterval interval,
             Quantity customerOrderQuantity)
         {

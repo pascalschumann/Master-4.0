@@ -285,7 +285,7 @@ namespace Zpp.DataLayer.impl
         /**
          * DemandToProvider
          */
-        public IEnumerable<ILinkDemandAndProvider> GetArrowsTo(Provider provider)
+        public List<ILinkDemandAndProvider> GetArrowsTo(Provider provider)
         {
             if (_dbTransactionData.DemandToProviderGetAll().Contains(provider) == false)
             {
@@ -305,7 +305,7 @@ namespace Zpp.DataLayer.impl
         /**
          * ProviderToDemand
          */
-        public IEnumerable<ILinkDemandAndProvider> GetArrowsFrom(Provider provider)
+        public List<ILinkDemandAndProvider> GetArrowsFrom(Provider provider)
         {
             if (_dbTransactionData.ProviderToDemandGetAll().Contains(provider) == false)
             {
@@ -325,7 +325,7 @@ namespace Zpp.DataLayer.impl
         /**
          * ProviderToDemand
          */
-        public IEnumerable<ILinkDemandAndProvider> GetArrowsTo(Demand demand)
+        public List<ILinkDemandAndProvider> GetArrowsTo(Demand demand)
         {
             if (_dbTransactionData.ProviderToDemandGetAll().Contains(demand) == false)
             {
@@ -345,7 +345,7 @@ namespace Zpp.DataLayer.impl
         /**
          * DemandToProvider
          */
-        public IEnumerable<ILinkDemandAndProvider> GetArrowsFrom(Demand demand)
+        public List<ILinkDemandAndProvider> GetArrowsFrom(Demand demand)
         {
             if (_dbTransactionData.DemandToProviderGetAll().Contains(demand) == false)
             {
@@ -362,7 +362,7 @@ namespace Zpp.DataLayer.impl
             return demandToProviders;
         }
 
-        public IEnumerable<ILinkDemandAndProvider> GetArrowsTo(Providers providers)
+        public List<ILinkDemandAndProvider> GetArrowsTo(Providers providers)
         {
             List<ILinkDemandAndProvider> list = new List<ILinkDemandAndProvider>();
             foreach (var provider in providers)
@@ -373,7 +373,7 @@ namespace Zpp.DataLayer.impl
             return list;
         }
 
-        public IEnumerable<ILinkDemandAndProvider> GetArrowsFrom(Providers providers)
+        public List<ILinkDemandAndProvider> GetArrowsFrom(Providers providers)
         {
             List<ILinkDemandAndProvider> list = new List<ILinkDemandAndProvider>();
             foreach (var provider in providers)
@@ -384,7 +384,7 @@ namespace Zpp.DataLayer.impl
             return list;
         }
 
-        public IEnumerable<ILinkDemandAndProvider> GetArrowsTo(Demands demands)
+        public List<ILinkDemandAndProvider> GetArrowsTo(Demands demands)
         {
             List<ILinkDemandAndProvider> list = new List<ILinkDemandAndProvider>();
             foreach (var demand in demands)
@@ -395,7 +395,7 @@ namespace Zpp.DataLayer.impl
             return list;
         }
 
-        public IEnumerable<ILinkDemandAndProvider> GetArrowsFrom(Demands demands)
+        public List<ILinkDemandAndProvider> GetArrowsFrom(Demands demands)
         {
             List<ILinkDemandAndProvider> list = new List<ILinkDemandAndProvider>();
             foreach (var demand in demands)
@@ -415,8 +415,8 @@ namespace Zpp.DataLayer.impl
             List<ILinkDemandAndProvider>
                 demandAndProviderLinks = new List<ILinkDemandAndProvider>();
 
-            IEnumerable<ILinkDemandAndProvider> demandToProviders = GetArrowsTo(provider);
-            IEnumerable<ILinkDemandAndProvider> providerToDemands = GetArrowsFrom(provider);
+            List<ILinkDemandAndProvider> demandToProviders = GetArrowsTo(provider);
+            List<ILinkDemandAndProvider> providerToDemands = GetArrowsFrom(provider);
 
             if (demandToProviders != null)
             {
@@ -439,8 +439,8 @@ namespace Zpp.DataLayer.impl
             List<ILinkDemandAndProvider>
                 demandAndProviderLinks = new List<ILinkDemandAndProvider>();
 
-            IEnumerable<ILinkDemandAndProvider> demandToProviders = GetArrowsTo(demand);
-            IEnumerable<ILinkDemandAndProvider> providerToDemands = GetArrowsFrom(demand);
+            List<ILinkDemandAndProvider> demandToProviders = GetArrowsTo(demand);
+            List<ILinkDemandAndProvider> providerToDemands = GetArrowsFrom(demand);
             if (demandToProviders != null)
             {
                 demandAndProviderLinks.AddRange(demandToProviders);
@@ -463,6 +463,38 @@ namespace Zpp.DataLayer.impl
             else if (demandOrProvider is Provider)
             {
                 return GetArrowsToAndFrom((Provider) demandOrProvider);
+            }
+            else
+            {
+                throw new MrpRunException("This type is not expected.");
+            }
+        }
+        
+        public List<ILinkDemandAndProvider> GetArrowsTo(IDemandOrProvider demandOrProvider)
+        {
+            if (demandOrProvider is Demand)
+            {
+                return GetArrowsTo((Demand) demandOrProvider);
+            }
+            else if (demandOrProvider is Provider)
+            {
+                return GetArrowsTo((Provider) demandOrProvider);
+            }
+            else
+            {
+                throw new MrpRunException("This type is not expected.");
+            }
+        }
+
+        public List<ILinkDemandAndProvider> GetArrowsFrom(IDemandOrProvider demandOrProvider)
+        {
+            if (demandOrProvider is Demand)
+            {
+                return GetArrowsFrom((Demand) demandOrProvider);
+            }
+            else if (demandOrProvider is Provider)
+            {
+                return GetArrowsFrom((Provider) demandOrProvider);
             }
             else
             {

@@ -68,21 +68,25 @@ namespace Zpp.DataLayer
          */
         List<ILinkDemandAndProvider> GetArrowsToAndFrom(Provider provider);
         
-        IEnumerable<ILinkDemandAndProvider> GetArrowsTo(Provider provider);
+        List<ILinkDemandAndProvider> GetArrowsTo(Provider provider);
         
-        IEnumerable<ILinkDemandAndProvider> GetArrowsFrom(Provider provider);
+        List<ILinkDemandAndProvider> GetArrowsTo(IDemandOrProvider provider);
         
-        IEnumerable<ILinkDemandAndProvider> GetArrowsTo(Demand demand);
+        List<ILinkDemandAndProvider> GetArrowsFrom(IDemandOrProvider demandOrProvider);
         
-        IEnumerable<ILinkDemandAndProvider> GetArrowsFrom(Demand demand);
+        List<ILinkDemandAndProvider> GetArrowsFrom(Provider provider);
         
-        IEnumerable<ILinkDemandAndProvider> GetArrowsTo(Providers providers);
+        List<ILinkDemandAndProvider> GetArrowsTo(Demand demand);
         
-        IEnumerable<ILinkDemandAndProvider> GetArrowsFrom(Providers providers);
+        List<ILinkDemandAndProvider> GetArrowsFrom(Demand demand);
         
-        IEnumerable<ILinkDemandAndProvider> GetArrowsTo(Demands demands);
+        List<ILinkDemandAndProvider> GetArrowsTo(Providers providers);
         
-        IEnumerable<ILinkDemandAndProvider> GetArrowsFrom(Demands demands);
+        List<ILinkDemandAndProvider> GetArrowsFrom(Providers providers);
+        
+        List<ILinkDemandAndProvider> GetArrowsTo(Demands demands);
+        
+        List<ILinkDemandAndProvider> GetArrowsFrom(Demands demands);
 
         /**
          * Arrow equals DemandToProvider and ProviderToDemand

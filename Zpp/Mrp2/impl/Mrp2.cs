@@ -42,51 +42,17 @@ namespace Zpp.Mrp2.impl
             IMrp1 mrp1 = new Mrp1.impl.Mrp1(dbDemands);
             mrp1.StartMrp1();
             _performanceMonitors.Stop(InstanceToTrack.Mrp1);
-
-
-            // TODO: remove this
-            // DemandToProviderGraph demandToProviderGraph = new DemandToProviderGraph();
-            // string demandToProviderGraphString = demandToProviderGraph.ToString();
+            
 
             // BackwardForwardBackwardScheduling
             _performanceMonitors.Start(InstanceToTrack.BackwardForwardBackwardScheduling);
+            
             OrderOperationGraph orderOperationGraph = new OrderOperationGraph();
-            // TODO: remove this
-            // string orderOperationGraphString = orderOperationGraph.ToString();
 
-            INodes rootNodes = new Nodes();
-            foreach (var rootNode in orderOperationGraph.GetRootNodes())
-            {
-                if (rootNode.GetEntity().GetType() == typeof(CustomerOrderPart))
-                {
-                    rootNodes.Add(rootNode);
-                }
-            }
-
-            ScheduleBackward(rootNodes.ToStack(), orderOperationGraph, true);
-
+            ScheduleBackwardFirst(orderOperationGraph);
             ScheduleForward(orderOperationGraph);
-
-            INodes childRootNodes = new Nodes();
-            foreach (var rootNode in orderOperationGraph.GetRootNodes())
-            {
-                if (rootNode.GetEntity().GetType() != typeof(CustomerOrderPart))
-                {
-                    continue;
-                }
-
-                Providers childProviders = ZppConfiguration.CacheManager.GetAggregator()
-                    .GetAllChildProvidersOf((Demand) rootNode.GetEntity());
-                if (childProviders == null || childProviders.Count() > 1)
-                {
-                    throw new MrpRunException(
-                        "After Mrp1 a CustomerOrderPart MUST have exact one child.");
-                }
-
-                childRootNodes.AddAll(childProviders.ToNodes());
-            }
-
-            ScheduleBackward(childRootNodes.ToStack(), orderOperationGraph, false);
+            ScheduleBackwardSecond(orderOperationGraph);
+            
             _performanceMonitors.Stop(InstanceToTrack.BackwardForwardBackwardScheduling);
 
             // job shop scheduling
@@ -110,6 +76,48 @@ namespace Zpp.Mrp2.impl
                     throw new MrpRunException("How could the orderOperationGraph be empty ?");
                 }
             }
+        }
+        
+        private void ScheduleBackwardFirst(IDirectedGraph<INode> orderOperationGraph)
+        {
+            INodes rootNodes = new Nodes();
+            foreach (var rootNode in orderOperationGraph.GetRootNodes())
+            {
+                if (rootNode.GetEntity().GetType() == typeof(CustomerOrderPart))
+                {
+                    rootNodes.Add(rootNode);
+                }
+            }
+
+            IBackwardsScheduler backwardsScheduler =
+                new BackwardScheduler(rootNodes.ToStack(), orderOperationGraph, true);
+            backwardsScheduler.ScheduleBackward();
+        }
+        
+        private void ScheduleBackwardSecond(IDirectedGraph<INode> orderOperationGraph)
+        {
+            INodes childRootNodes = new Nodes();
+            foreach (var rootNode in orderOperationGraph.GetRootNodes())
+            {
+                if (rootNode.GetEntity().GetType() != typeof(CustomerOrderPart))
+                {
+                    continue;
+                }
+
+                Providers childProviders = ZppConfiguration.CacheManager.GetAggregator()
+                    .GetAllChildProvidersOf((Demand) rootNode.GetEntity());
+                if (childProviders == null || childProviders.Count() > 1)
+                {
+                    throw new MrpRunException(
+                        "After Mrp1 a CustomerOrderPart MUST have exact one child.");
+                }
+
+                childRootNodes.AddAll(childProviders.ToNodes());
+            }
+
+            IBackwardsScheduler backwardsScheduler =
+                new BackwardScheduler(childRootNodes.ToStack(), orderOperationGraph, false);
+            backwardsScheduler.ScheduleBackward();
         }
 
         private void ScheduleBackward(Stack<INode> rootNodes,

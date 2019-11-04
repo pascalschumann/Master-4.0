@@ -198,9 +198,9 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
 
         /**
          * Subgraph of a productionOrder includes:
-         * - parent (StockExchangeDemand)
+         * - parent (StockExchangeDemand) if includeStockExchanges true
          * - childs (ProductionOrderBoms)
-         * - childs of childs (StockExchangeProvider)
+         * - childs of childs (StockExchangeProvider) if includeStockExchanges true
          */
         private static List<IDemandOrProvider> CreateProductionOrderSubGraph(
             bool includeStockExchanges, ProductionOrder productionOrder, IAggregator aggregator)
@@ -284,13 +284,39 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             List<IDemandOrProvider> demandOrProvidersToArchive =
                 CreateProductionOrderSubGraph(false, productionOrder, aggregator);
 
-            // delete archive all collected entities
+            // delete & archive all collected entities
             foreach (var demandOrProvider in demandOrProvidersToArchive)
             {
-                List<ILinkDemandAndProvider> demandAndProviderLinks =
-                    aggregator.GetArrowsToAndFrom(demandOrProvider);
-                dbTransactionDataArchive.AddAllFrom(demandAndProviderLinks);
-                dbTransactionData.DeleteAllFrom(demandAndProviderLinks);
+                // arrow outside mus be removed
+                List<ILinkDemandAndProvider> demandAndProviderLinks;
+                if (demandOrProvider.GetType() == typeof(ProductionOrder))
+                {
+                    // archive only link from ProductionOrder
+                    demandAndProviderLinks =
+                        aggregator.GetArrowsFrom(demandOrProvider);
+                    dbTransactionDataArchive.AddAllFrom(demandAndProviderLinks);
+                    dbTransactionData.DeleteAllFrom(demandAndProviderLinks);
+                    demandAndProviderLinks =
+                        aggregator.GetArrowsTo(demandOrProvider);
+                    dbTransactionData.DeleteAllFrom(demandAndProviderLinks);
+                }
+                else if (demandOrProvider.GetType() == typeof(ProductionOrderBom))
+                {
+                    // archive only link to ProductionOrderBom
+                    demandAndProviderLinks =
+                        aggregator.GetArrowsTo(demandOrProvider);
+                    dbTransactionDataArchive.AddAllFrom(demandAndProviderLinks);
+                    dbTransactionData.DeleteAllFrom(demandAndProviderLinks);
+                    demandAndProviderLinks =
+                        aggregator.GetArrowsFrom(demandOrProvider);
+                    dbTransactionData.DeleteAllFrom(demandAndProviderLinks);
+                }
+                else
+                {
+                    throw new MrpRunException("In this case not possible");
+                }
+                
+                
 
                 dbTransactionDataArchive.AddA(demandOrProvider);
                 dbTransactionData.DeleteA(demandOrProvider);

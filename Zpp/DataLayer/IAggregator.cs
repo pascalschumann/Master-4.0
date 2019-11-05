@@ -99,5 +99,7 @@ namespace Zpp.DataLayer
         List<ILinkDemandAndProvider> GetArrowsToAndFrom(IDemandOrProvider demandOrProvider);
 
         List<ProductionOrderOperation> GetAllOperationsOnResource(M_Resource resource);
+
+        Demands GetProductionOrderBomsBy(ProductionOrderOperation operation);
     }
 }

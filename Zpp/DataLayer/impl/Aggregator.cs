@@ -596,5 +596,21 @@ namespace Zpp.DataLayer.impl
 
             return providers;
         }
+
+        public Demands GetProductionOrderBomsBy(ProductionOrderOperation operation)
+        {
+            Ids productionOrderBomIds = _dbTransactionData.ProductionOrderBomGetAll()
+                .GetProductionOrderBomsBy(operation);
+
+            Demands productionOrderBoms = new Demands();
+            foreach (var productionOrderBomId in productionOrderBomIds)
+            {
+                Demand productionOrderBom =
+                    _dbTransactionData.ProductionOrderBomGetById(productionOrderBomId);
+                productionOrderBoms.Add(productionOrderBom);
+            }
+
+            return productionOrderBoms;
+        }
     }
 }

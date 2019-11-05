@@ -1,4 +1,5 @@
 using Xunit;
+using Zpp.DataLayer;
 using Zpp.Test.Configuration;
 using Zpp.ZppSimulator;
 
@@ -14,6 +15,11 @@ namespace Zpp.Test.Integration_Tests.Verification
         public void TestBackwardForwardBackwardScheduling(string testConfigurationFileName)
         {
             InitThisTest(testConfigurationFileName);
+            
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
+            IDbTransactionData dbTransactionDataArchive =
+                ZppConfiguration.CacheManager.GetDbTransactionDataArchive();
         }
     }
 }

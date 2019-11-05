@@ -1,4 +1,5 @@
 using Xunit;
+using Zpp.DataLayer;
 using Zpp.Test.Configuration;
 
 namespace Zpp.Test.Integration_Tests.Verification
@@ -12,6 +13,11 @@ namespace Zpp.Test.Integration_Tests.Verification
         public void TestApplyConfirmations(string testConfigurationFileName)
         {
             InitThisTest(testConfigurationFileName);
+            
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
+            IDbTransactionData dbTransactionDataArchive =
+                ZppConfiguration.CacheManager.GetDbTransactionDataArchive();
         }
     }
 }

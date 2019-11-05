@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
-using Microsoft.EntityFrameworkCore.Internal;
 using Xunit;
 using Zpp.DataLayer;
 using Zpp.DataLayer.impl.DemandDomain;
@@ -10,29 +9,12 @@ using Zpp.DataLayer.impl.DemandDomain.Wrappers;
 using Zpp.DataLayer.impl.ProviderDomain;
 using Zpp.DataLayer.impl.ProviderDomain.Wrappers;
 using Zpp.Test.Configuration;
-using Zpp.Util.Graph;
-using Zpp.Util.Graph.impl;
 using Zpp.ZppSimulator;
 
-namespace Zpp.Test.Integration_Tests
+namespace Zpp.Test.Integration_Tests.Verification
 {
-    public class TestVerification : AbstractTest
+    public class VerifyMrp1 : AbstractVerification
     {
-        public TestVerification() : base(initDefaultTestConfig: false)
-        {
-        }
-
-        private void InitThisTest(string testConfiguration)
-        {
-            InitTestScenario(testConfiguration);
-
-            IZppSimulator zppSimulator = new ZppSimulator.impl.ZppSimulator();
-            // TODO: set to true once dbPersist() has an acceptable time and and enable ReloadTransactionData
-            zppSimulator.StartPerformanceStudy(false);
-            // IDbTransactionData dbTransactionData =
-            //    ZppConfiguration.CacheManager.ReloadTransactionData();
-        }
-
         [Theory]
         [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
         [InlineData(TestConfigurationFileNames.TRUCK_COP_100_LOTSIZE_2)]
@@ -187,42 +169,7 @@ namespace Zpp.Test.Integration_Tests
                     $"This is no valid edge: {provider.GetType()} --> {demand.GetType()}");
             }
         }
-
-        [Theory]
-        [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
-        [InlineData(TestConfigurationFileNames.TRUCK_COP_100_LOTSIZE_2)]
-        [InlineData(TestConfigurationFileNames.TRUCK_INTERVAL_20160_COP_100_LOTSIZE_2)]
-        public void TestBackwardForwardBackwardScheduling(string testConfigurationFileName)
-        {
-            InitThisTest(testConfigurationFileName);
-        }
-
-        [Theory]
-        [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
-        [InlineData(TestConfigurationFileNames.TRUCK_COP_100_LOTSIZE_2)]
-        [InlineData(TestConfigurationFileNames.TRUCK_INTERVAL_20160_COP_100_LOTSIZE_2)]
-        public void TestJobShopScheduling(string testConfigurationFileName)
-        {
-            InitThisTest(testConfigurationFileName);
-        }
-
-        [Theory]
-        [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
-        [InlineData(TestConfigurationFileNames.TRUCK_COP_100_LOTSIZE_2)]
-        [InlineData(TestConfigurationFileNames.TRUCK_INTERVAL_20160_COP_100_LOTSIZE_2)]
-        public void TestCreateConfirmations(string testConfigurationFileName)
-        {
-            InitThisTest(testConfigurationFileName);
-        }
-
-
-        [Theory]
-        [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
-        [InlineData(TestConfigurationFileNames.TRUCK_COP_100_LOTSIZE_2)]
-        [InlineData(TestConfigurationFileNames.TRUCK_INTERVAL_20160_COP_100_LOTSIZE_2)]
-        public void TestApplyConfirmations(string testConfigurationFileName)
-        {
-            InitThisTest(testConfigurationFileName);
-        }
+        
     }
+
 }

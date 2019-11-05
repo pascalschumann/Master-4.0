@@ -1,8 +1,11 @@
 using System;
+using System.Collections.Generic;
 using Master40.DB.Data.WrappersForPrimitives;
+using Master40.DB.DataModel;
 using Master40.SimulationCore.DistributionProvider;
 using Master40.SimulationCore.Environment.Options;
 using Zpp.DataLayer;
+using Zpp.Test.Configuration;
 using Zpp.Test.Configuration.Scenarios;
 
 namespace Zpp.ZppSimulator.impl.CustomerOrder.impl
@@ -14,7 +17,9 @@ namespace Zpp.ZppSimulator.impl.CustomerOrder.impl
 
         public CustomerOrderCreator(Quantity defaultCustomerOrderQuantityPerCycle)
         {
-            if (defaultCustomerOrderQuantityPerCycle != null && defaultCustomerOrderQuantityPerCycle.IsSmallerThan(_defaultCustomerOrderQuantityPerCycle))
+            if (defaultCustomerOrderQuantityPerCycle != null &&
+                defaultCustomerOrderQuantityPerCycle.IsSmallerThan(
+                    _defaultCustomerOrderQuantityPerCycle))
             {
                 _defaultCustomerOrderQuantityPerCycle = defaultCustomerOrderQuantityPerCycle;
             }
@@ -25,13 +30,33 @@ namespace Zpp.ZppSimulator.impl.CustomerOrder.impl
                 new MaxDeliveryTime(1430), orderArrivalRate, masterDataCache.M_ArticleGetAll(),
                 masterDataCache.M_BusinessPartnerGetAll());
         }
+
         public void CreateCustomerOrders(SimulationInterval interval,
             Quantity customerOrderQuantity)
         {
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.GetDbTransactionData();
+            TestConfiguration testConfiguration =
+                ZppConfiguration.CacheManager.GetTestConfiguration();
+            int cycles =
+                testConfiguration.SimulationMaximumDuration /
+                testConfiguration.SimulationInterval;
+            int customerOrdersToCreate;
+            int totalCustomerOrdersToCreate =
+                (int) customerOrderQuantity.GetValue().GetValueOrDefault();
+            if (totalCustomerOrdersToCreate < cycles)
+            {
+                customerOrdersToCreate = totalCustomerOrdersToCreate;
+            }
+            else
+            {
+                customerOrdersToCreate = totalCustomerOrdersToCreate / (cycles+1);// round up
+            }
 
-            while (dbTransactionData.CustomerOrderGetAll().Count < customerOrderQuantity.GetValue())
+            List<T_CustomerOrder> createdCustomerOrders = new List<T_CustomerOrder>();
+            List<T_CustomerOrderPart> createdCustomerOrderParts = new List<T_CustomerOrderPart>();
+
+            while (createdCustomerOrders.Count < customerOrdersToCreate)
             {
                 var creationTime = interval.StartAt;
                 var endOrderCreation = interval.EndAt;
@@ -43,22 +68,22 @@ namespace Zpp.ZppSimulator.impl.CustomerOrder.impl
                     {
                         orderPart.CustomerOrder = order;
                         orderPart.CustomerOrderId = order.Id;
-                        dbTransactionData.CustomerOrderPartAdd(orderPart);
+                        createdCustomerOrderParts.Add(orderPart);
                     }
 
-                    dbTransactionData.CustomerOrderAdd(order);
+                    createdCustomerOrders.Add(order);
 
                     // TODO : Handle this another way
                     creationTime = order.CreationTime;
 
-                    if (customerOrderQuantity != null &&
-                        dbTransactionData.CustomerOrderGetAll().Count >=
-                        customerOrderQuantity.GetValue())
+                    if (createdCustomerOrders.Count >= customerOrdersToCreate)
                     {
                         break;
                     }
                 }
             }
+            dbTransactionData.CustomerOrderPartAddAll(createdCustomerOrderParts);
+            dbTransactionData.CustomerOrderAddAll(createdCustomerOrders);
         }
     }
 }

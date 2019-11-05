@@ -41,8 +41,7 @@ namespace Zpp.Util.Performance
         public override string ToString()
         {
             // create report
-            string report = "---------------------------------------" + Environment.NewLine;
-
+            string report = "{" + Environment.NewLine;
             foreach (InstanceToTrack instancesToTrack in Enum.GetValues(typeof(InstanceToTrack)))
             {
                 report += _monitors[instancesToTrack].ToString() + Environment.NewLine +
@@ -52,8 +51,9 @@ namespace Zpp.Util.Performance
             // long currentMemoryUsage = GC.GetTotalMemory(false);
             long currentMemoryUsage = Process.GetCurrentProcess().WorkingSet64;
             report +=
-                $"CurrentMemoryUsage: {DebuggingTools.Prettify(currentMemoryUsage)}" +
+                $"\"CurrentMemoryUsage\": \"{DebuggingTools.Prettify(currentMemoryUsage)}\"" +
                 Environment.NewLine;
+            report += "}" + Environment.NewLine;
 
             return report;
         }

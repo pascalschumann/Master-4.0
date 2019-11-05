@@ -810,5 +810,19 @@ namespace Zpp.DataLayer.impl
         {
             return _productionOrderBoms.GetById(id);
         }
+
+        public void CustomerOrderPartAddAll(List<T_CustomerOrderPart> customerOrderParts)
+        {
+            foreach (var customerOrderPart in customerOrderParts)
+            {
+                CustomerOrderPartAdd(customerOrderPart);
+            }
+            
+        }
+
+        public void CustomerOrderAddAll(List<T_CustomerOrder> customerOrders)
+        {
+            _customerOrders.AddAll(customerOrders);
+        }
     }
 }

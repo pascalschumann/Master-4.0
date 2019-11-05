@@ -125,7 +125,7 @@ namespace Zpp.ZppSimulator.impl
             // init transactionData
             ZppConfiguration.CacheManager.ReloadTransactionData();
 
-            string performanceLog = "";
+            string performanceLog = "[";
             _performanceMonitors.Start();
 
             for (int i = 0; i * defaultInterval <= maxSimulatingTime; i++)
@@ -141,11 +141,11 @@ namespace Zpp.ZppSimulator.impl
                     break;
                 }
 
-                performanceLog += _performanceMonitors.ToString();
+                performanceLog += _performanceMonitors.ToString() + ",";
             }
 
             _performanceMonitors.Stop();
-            performanceLog += $"{_performanceMonitors.ToString()}";
+            performanceLog += $"{_performanceMonitors.ToString()}]";
 
             // TODO: enable this again
             // DebuggingTools.PrintStateToFiles(dbTransactionData, true);

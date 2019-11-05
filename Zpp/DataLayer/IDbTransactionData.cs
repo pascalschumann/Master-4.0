@@ -82,9 +82,13 @@ namespace Zpp.DataLayer
 
         Demands CustomerOrderPartGetAll();
 
+        void CustomerOrderPartAddAll(List<T_CustomerOrderPart> customerOrderParts);
+        
         void CustomerOrderPartAdd(T_CustomerOrderPart customerOrderPart);
         
         void CustomerOrderAdd(T_CustomerOrder customerOrder);
+        
+        void CustomerOrderAddAll(List<T_CustomerOrder> customerOrders);
 
         void DemandToProviderAdd(T_DemandToProvider demandToProvider);
 

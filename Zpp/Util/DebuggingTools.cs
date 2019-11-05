@@ -105,7 +105,7 @@ namespace Zpp.Util
             {
                 if (count > 0 && count % 3 == 0)
                 {
-                    newValue = "." + newValue;
+                    newValue = "," + newValue;
                 }
 
                 newValue = valueAsString[i] + newValue;

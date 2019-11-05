@@ -17,9 +17,9 @@ namespace Zpp.Util.Graph.impl
 
             // CreateGraphOld();
 
-            // CreateGraph();
+            CreateGraph();
 
-            CreateGraph2();
+            // CreateGraph2(); --> non-recursive, but doesn't works correctly
         }
         
         private void CreateGraph()

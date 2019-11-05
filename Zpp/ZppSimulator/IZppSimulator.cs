@@ -16,7 +16,7 @@ namespace Zpp.ZppSimulator
         /// be persisted at the end</param>
         void StartPerformanceStudy(bool shouldPersist);
 
-        void StartTestCycle();
+        void StartTestCycle(bool shouldPersist=true);
 
         void StartMultipleTestCycles();
     }

@@ -41,6 +41,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
                 throw new MrpRunException("A readOnly entity cannot be changed anymore.");
             }
 
+            _productionOrderOperation.ResourceId = resource.GetValue().Id;
             _productionOrderOperation.Resource = resource.GetValue();
         }
 
@@ -131,7 +132,9 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
         {
             string state = Enum.GetName(typeof(State), GetState());
             return
-                $"{_productionOrderOperation.GetId()}: {_productionOrderOperation.Name}; {state}; IsReadOnly: {IsReadOnly()}";
+                $"{_productionOrderOperation.GetId()}: {_productionOrderOperation.Name}; {state}; IsReadOnly: {IsReadOnly()}; "
+                + $"bs/be: {_productionOrderOperation.StartBackward}/{_productionOrderOperation.EndBackward}; " +
+                $"s/e: {_productionOrderOperation.Start}/{_productionOrderOperation.End}; ResourceId: {_productionOrderOperation.ResourceId}";
         }
 
         public void SetPriority(Priority priority)

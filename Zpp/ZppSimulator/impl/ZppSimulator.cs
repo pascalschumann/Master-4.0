@@ -71,17 +71,17 @@ namespace Zpp.ZppSimulator.impl
         /**
          * no confirmations are created and applied
          */
-        public void StartTestCycle()
+        public void StartTestCycle(bool shouldPersist=true)
         {
             int simulationInterval =
                 ZppConfiguration.CacheManager.GetTestConfiguration().SimulationInterval;
-            StartTestCycle(new SimulationInterval(0, simulationInterval));
+            StartTestCycle(new SimulationInterval(0, simulationInterval), shouldPersist);
         }
 
         /**
          * no confirmations are created and applied
          */
-        private void StartTestCycle(SimulationInterval simulationInterval)
+        private void StartTestCycle(SimulationInterval simulationInterval, bool shouldPersist)
         {
             Quantity customerOrderQuantity = new Quantity(ZppConfiguration.CacheManager
                 .GetTestConfiguration().CustomerOrderPartQuantity);
@@ -102,7 +102,10 @@ namespace Zpp.ZppSimulator.impl
             // no confirmations
 
             // persisting cached/created data
-            ZppConfiguration.CacheManager.Persist();
+            if (shouldPersist)
+            {
+                ZppConfiguration.CacheManager.Persist();   
+            }
         }
 
         public void StartPerformanceStudy(bool shouldPersist)
@@ -169,7 +172,7 @@ namespace Zpp.ZppSimulator.impl
             {
                 SimulationInterval simulationInterval =
                     new SimulationInterval(i * defaultInterval, defaultInterval - 1);
-                StartTestCycle(simulationInterval);
+                StartTestCycle(simulationInterval, true);
             }
         }
     }

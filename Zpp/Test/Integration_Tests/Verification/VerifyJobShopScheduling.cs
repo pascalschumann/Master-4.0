@@ -35,9 +35,7 @@ namespace Zpp.Test.Integration_Tests.Verification
             
             VerifyEveryMachineHasOnlyOneOperationAtAnyTime(aggregator);
             VerifyEveryMachineHasOnlyOneOperationAtAnyTime(aggregatorArchive);
-
-            VerifyEveryOperationHasNeededMaterialAtStart(dbTransactionData, aggregator);
-            VerifyEveryOperationHasNeededMaterialAtStart(dbTransactionDataArchive, aggregatorArchive);
+            
         }
 
         private void VerifyEveryOperationIsPlanned(IDbTransactionData dbTransactionData)
@@ -75,9 +73,28 @@ namespace Zpp.Test.Integration_Tests.Verification
             }
         }
 
-        private void VerifyEveryOperationHasNeededMaterialAtStart(
-            IDbTransactionData dbTransactionData, IAggregator aggregator)
+        /**
+         * Can only operate on one executed mrp2, simulation can not be used,
+         * since confirmations would be applied and therefore no connection between ProductionOrderBoms
+         * and its child StockExchangeProviders would exist anymore
+         */
+        [Theory]
+        [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
+        [InlineData(TestConfigurationFileNames.TRUCK_INTERVAL_20160_COP_100_LOTSIZE_2)]
+        public void TestEveryOperationHasNeededMaterialAtStart(string testConfigurationFileName
+            )
         {
+            InitTestScenario(testConfigurationFileName);
+
+            IZppSimulator zppSimulator = new ZppSimulator.impl.ZppSimulator();
+            // TODO: set to true once dbPersist() has an acceptable time
+            zppSimulator.StartTestCycle(false);
+
+            // TODO: replace this by ReloadTransactionData() once shouldPersist is enabled
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
+            IAggregator aggregator = ZppConfiguration.CacheManager.GetAggregator();
+            
             foreach (var operation in dbTransactionData.ProductionOrderOperationGetAll())
             {
                 Demands productionOrderBoms = aggregator.GetProductionOrderBomsBy(operation);

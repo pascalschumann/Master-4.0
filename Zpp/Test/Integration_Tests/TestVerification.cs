@@ -1,11 +1,17 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Microsoft.EntityFrameworkCore.Internal;
 using Xunit;
 using Zpp.DataLayer;
 using Zpp.DataLayer.impl.DemandDomain;
+using Zpp.DataLayer.impl.DemandDomain.Wrappers;
 using Zpp.DataLayer.impl.ProviderDomain;
+using Zpp.DataLayer.impl.ProviderDomain.Wrappers;
 using Zpp.Test.Configuration;
+using Zpp.Util.Graph;
+using Zpp.Util.Graph.impl;
 using Zpp.ZppSimulator;
 
 namespace Zpp.Test.Integration_Tests
@@ -39,13 +45,14 @@ namespace Zpp.Test.Integration_Tests
                 ZppConfiguration.CacheManager.GetDbTransactionData();
             IDbTransactionData dbTransactionDataArchive =
                 ZppConfiguration.CacheManager.GetDbTransactionDataArchive();
-
-            VerifyMrp1(dbTransactionData);
-            VerifyMrp1(dbTransactionDataArchive);
-
+            
+            VerifyQuantities(dbTransactionData);
+            VerifyQuantities(dbTransactionDataArchive);
+            VerifyEdgeTypes(dbTransactionData);
+            VerifyEdgeTypes(dbTransactionDataArchive);
         }
 
-        private void VerifyMrp1(IDbTransactionData dbTransactionData)
+        private void VerifyQuantities(IDbTransactionData dbTransactionData)
         {
             Assert.True(dbTransactionData.DemandToProviderGetAll().Any());
             foreach (var demandToProvider in dbTransactionData.DemandToProviderGetAll())
@@ -53,22 +60,20 @@ namespace Zpp.Test.Integration_Tests
                 Demand demand = dbTransactionData.DemandsGetById(demandToProvider.GetDemandId());
                 Provider provider =
                     dbTransactionData.ProvidersGetById(demandToProvider.GetProviderId());
-                
+
                 // every quantity > 0
                 Assert.True(demand.GetQuantity().IsGreaterThan(Quantity.Null()));
                 Assert.True(provider.GetQuantity().IsGreaterThan(Quantity.Null()));
                 Assert.True(demandToProvider.GetQuantity().IsGreaterThan(Quantity.Null()));
-                
-                // demand's quantity <= provider's quantity
-                Assert.True(demand.GetQuantity().IsSmallerThanOrEqualTo(provider.GetQuantity()));
-                // demand's quantity >= demandToProvider's quantity
-                Assert.True(demand.GetQuantity()
-                    .IsGreaterThanOrEqualTo(demandToProvider.GetQuantity()));
-                // provider's quantity >= demandToProvider's quantity
-                Assert.True(provider.GetQuantity()
-                    .IsGreaterThanOrEqualTo(demandToProvider.GetQuantity()));
+
+                // demand's quantity == provider's quantity
+                Assert.True(demand.GetQuantity().Equals(provider.GetQuantity()));
+                // demand's quantity == demandToProvider's quantity
+                Assert.True(demand.GetQuantity().Equals(demandToProvider.GetQuantity()));
+                // provider's quantity == demandToProvider's quantity
+                Assert.True(provider.GetQuantity().Equals(demandToProvider.GetQuantity()));
             }
-            
+
             Assert.True(dbTransactionData.ProviderToDemandGetAll().Any());
             foreach (var providerToDemand in dbTransactionData.ProviderToDemandGetAll())
             {
@@ -80,10 +85,106 @@ namespace Zpp.Test.Integration_Tests
                 Assert.True(demand.GetQuantity().IsGreaterThan(Quantity.Null()));
                 Assert.True(provider.GetQuantity().IsGreaterThan(Quantity.Null()));
                 Assert.True(providerToDemand.GetQuantity().IsGreaterThan(Quantity.Null()));
-                
-                // demand's quantity >= providerToDemand's quantity
-                Assert.True(demand.GetQuantity()
-                    .IsGreaterThanOrEqualTo(providerToDemand.GetQuantity()));
+
+                if (provider.GetType() == typeof(StockExchangeProvider))
+                {
+                    // stockExchangeProvider's quantity >= providerToDemand's quantity
+                    Assert.True(
+                        provider.GetQuantity().IsGreaterThanOrEqualTo(providerToDemand.GetQuantity()));
+                }
+                else if (provider.GetType() == typeof(ProductionOrder))
+                {
+                    // no condition
+                }
+                else if (provider.GetType() == typeof(PurchaseOrderPart))
+                {
+                    Assert.True(false, "This arrow is not allowed.");
+                }
+                else
+                {
+                    Assert.True(false, "Unexpected type.");
+                }
+            }
+        }
+        
+        /**
+         * Assumptions:
+         * - IDemand:   T_CustomerOrderPart (COP), T_ProductionOrderBom (PrOB), T_StockExchange (SE:I)
+         * - IProvider: T_PurchaseOrderPart (PuOP), T_ProductionOrder (PrO),    T_StockExchange (SE:W)
+         *
+         * Verifies that,
+         * for demand (parent) --> provider (child) direction following takes effect:
+         * - COP  --> SE:W
+         * - PrOB --> SE:W | NONE
+         * - SE:I --> PuOP | PrO
+         *
+         * for provider (parent) --> demand (child) direction following takes effect:
+         * - PuOP --> NONE
+         * - PrO  --> PrOB
+         * - SE:W --> SE:I | NONE
+         *
+         * where SE:I = StockExchangeDemand
+         * and SE:W = StockExchangeProvider
+         * TODO: remove StockExchangeType from T_StockExchange since it's exactly specified by Withdrawal/Insert
+         *
+         * TODO: add a new Quality to test: check that NONE is only if it's defined in upper connections
+         * (e.g. after a PrO MUST come another Demand )
+         */
+        private void VerifyEdgeTypes(IDbTransactionData dbTransactionData)
+        {
+           
+            IDictionary<Type, Type[]> allowedEdges = new Dictionary<Type, Type[]>()
+            {
+                // demand --> provider
+                {
+                    typeof(CustomerOrderPart),
+                    new Type[]
+                    {
+                        typeof(StockExchangeProvider)
+                    }
+                },
+                {
+                    typeof(ProductionOrderBom), new Type[]
+                    {
+                        typeof(StockExchangeProvider)
+                    }
+                },
+                {
+                    typeof(StockExchangeDemand),
+                    new Type[] {typeof(PurchaseOrderPart), typeof(ProductionOrder)}
+                },
+                // provider --> demand
+                {
+                    typeof(PurchaseOrderPart),
+                    new Type[] { }
+                },
+                {
+                    typeof(ProductionOrder),
+                    new Type[] {typeof(ProductionOrderBom)}
+                },
+                {
+                    typeof(StockExchangeProvider),
+                    new Type[] {typeof(StockExchangeDemand)}
+                }
+            };
+            
+            // verify edgeTypes
+            foreach (var demandToProvider in dbTransactionData.DemandToProviderGetAll())
+            {
+                Demand demand = dbTransactionData.DemandsGetById(demandToProvider.GetDemandId());
+                Provider provider =
+                    dbTransactionData.ProvidersGetById(demandToProvider.GetProviderId());
+                    Assert.True(allowedEdges[demand.GetType()].Contains(provider.GetType()),
+                        $"This is no valid edge: {demand.GetType()} --> {provider.GetType()}");
+            }
+
+            foreach (var providerToDemand in dbTransactionData.ProviderToDemandGetAll())
+            {
+                Demand demand = dbTransactionData.DemandsGetById(providerToDemand.GetDemandId());
+                Provider provider =
+                    dbTransactionData.ProvidersGetById(providerToDemand.GetProviderId());
+                Assert.True(allowedEdges[provider.GetType()].Contains(demand.GetType()),
+                    $"This is no valid edge: {provider.GetType()} --> {demand.GetType()}");
             }
         }
 

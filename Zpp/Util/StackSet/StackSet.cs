@@ -157,6 +157,17 @@ namespace Zpp.Util.StackSet
             }
         }
 
+        public void RemoveById(Id id)
+        {
+            if (_dictionary.ContainsKey(id) == false)
+            {
+                throw new  MrpRunException($"Id {id} doesn't exists.");
+            }
+
+            T t = _dictionary[id];
+            Remove(t);
+        }
+
         public bool Contains(T t)
         {
             return _index.ContainsKey(t);

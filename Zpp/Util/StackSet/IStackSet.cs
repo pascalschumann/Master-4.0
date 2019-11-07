@@ -46,5 +46,6 @@ namespace Zpp.Util.StackSet
         
         bool Contains(Id id);
 
+        void RemoveById(Id id);
     }
 }

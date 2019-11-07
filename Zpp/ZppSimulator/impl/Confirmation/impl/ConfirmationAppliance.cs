@@ -256,8 +256,14 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                 CreateProductionOrderSubGraph(true, productionOrder, aggregator);
 
             // delete all collected entities
+            IOpenDemandManager openDemandManager = ZppConfiguration.CacheManager.GetOpenDemandManager();
             foreach (var demandOrProvider in demandOrProvidersToDelete)
             {
+                // don't forget to delete it from openDemands
+                if (demandOrProvider.GetType() == typeof(StockExchangeDemand))
+                {
+                    openDemandManager.RemoveDemand((Demand)demandOrProvider);                
+                }
                 List<ILinkDemandAndProvider> demandAndProviders =
                     aggregator.GetArrowsToAndFrom(demandOrProvider); // TODO: why
                 dbTransactionData.DeleteAllFrom(demandAndProviders);

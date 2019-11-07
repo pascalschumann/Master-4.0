@@ -2,14 +2,16 @@ using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
+using Zpp.DataLayer.impl.DemandDomain;
 using Zpp.DataLayer.impl.DemandDomain.Wrappers;
 using Zpp.Util;
+using Zpp.Util.StackSet;
 
 namespace Zpp.DataLayer.impl.OpenDemand
 {
     public class OpenNodes<T> where T: IId
     {
-        private readonly Dictionary<M_Article, List<OpenNode<T>>> _openNodes = new Dictionary<M_Article, List<OpenNode<T>>>();
+        private readonly Dictionary<M_Article, IStackSet<OpenNode<T>>> _openNodes = new Dictionary<M_Article, IStackSet<OpenNode<T>>>();
 
         public void Add(M_Article article, OpenNode<T> openNode)
         {
@@ -18,7 +20,7 @@ namespace Zpp.DataLayer.impl.OpenDemand
                 throw new MrpRunException("An open provider can only be a StockExchangeDemand.");
             }
             InitOpenProvidersDictionary(article);
-            _openNodes[article].Add(openNode);
+            _openNodes[article].Push(openNode);
         }
 
         public bool AnyOpenProvider(M_Article article)
@@ -27,7 +29,7 @@ namespace Zpp.DataLayer.impl.OpenDemand
             return _openNodes[article].Any();
         }
 
-        public List<OpenNode<T>> GetOpenProvider(M_Article article)
+        public IEnumerable<OpenNode<T>> GetOpenProvider(M_Article article)
         {
             if (AnyOpenProvider(article) == false)
             {
@@ -39,14 +41,19 @@ namespace Zpp.DataLayer.impl.OpenDemand
 
         public void Remove(OpenNode<T> node)
         {
-            _openNodes[node.GetArticle()].RemoveAt(0);
+            _openNodes[node.GetArticle()].Remove(node);
+        }
+        
+        public void Remove(Demand demand)
+        {
+            _openNodes[demand.GetArticle()].RemoveById(demand.GetId());
         }
 
         private void InitOpenProvidersDictionary(M_Article article)
         {
             if (_openNodes.ContainsKey(article) == false)
             {
-                _openNodes.Add(article, new List<OpenNode<T>>());
+                _openNodes.Add(article, new StackSet<OpenNode<T>>());
             }
         }
 

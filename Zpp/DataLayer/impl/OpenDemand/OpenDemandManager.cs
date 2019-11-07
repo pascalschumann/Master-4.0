@@ -185,5 +185,11 @@ namespace Zpp.DataLayer.impl.OpenDemand
             _openDemands.Clear();
             _demands.Clear();
         }
+
+        public void RemoveDemand(Demand demand)
+        {
+            _demands.Remove(demand);
+            _openDemands.Remove(demand);
+        }
     }
 }

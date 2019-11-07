@@ -9,6 +9,8 @@ namespace Zpp.DataLayer
     {
         void AddDemand(Demand oneDemand, Quantity reservedQuantity);
 
+        void RemoveDemand(Demand demand);
+
         EntityCollector SatisfyProviderByOpenDemand(Provider provider, Quantity demandedQuantity);
         
         void Dispose();

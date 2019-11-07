@@ -191,5 +191,10 @@ namespace Zpp.DataLayer.impl.OpenDemand
             _demands.Remove(demand);
             _openDemands.Remove(demand);
         }
+
+        public bool Contains(Demand demand)
+        {
+            return _openDemands.Contains(demand);
+        }
     }
 }

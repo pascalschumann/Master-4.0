@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Master40.DB.Data.WrappersForPrimitives;
@@ -88,8 +89,8 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
 
         public override bool IsFinished()
         {
-            // has no state --> always true
-            return true;
+            // has no state
+            throw new NotImplementedException();
         }
 
         public override void SetEndTimeBackward(DueTime endTime)
@@ -122,6 +123,52 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
         public override State? GetState()
         {
             return null;
+        }
+        
+        /**
+         * determines state from all operations
+         */
+        public State DetermineProductionOrderState()
+        {
+            IAggregator aggregator = ZppConfiguration.CacheManager.GetAggregator();
+            bool atLeastOneIsInProgress = false;
+            bool atLeastOneIsFinished = false;
+            bool atLeastOneIsInStateCreated = false;
+            var productionOrderOperations =
+                aggregator.GetProductionOrderOperationsOfProductionOrder(this);
+            foreach (var productionOrderOperation in productionOrderOperations)
+            {
+                if (productionOrderOperation.IsInProgress())
+                {
+                    atLeastOneIsInProgress = true;
+                    break;
+                }
+                else if (productionOrderOperation.IsFinished())
+                {
+                    atLeastOneIsFinished = true;
+                }
+                else
+                {
+                    atLeastOneIsInStateCreated = true;
+                }
+            }
+
+            if (atLeastOneIsInProgress || atLeastOneIsInStateCreated && atLeastOneIsFinished)
+            {
+                return State.InProgress;
+            }
+            else if (atLeastOneIsInStateCreated && !atLeastOneIsInProgress && !atLeastOneIsFinished)
+            {
+                return State.Created;
+            }
+            else if (atLeastOneIsFinished && !atLeastOneIsInProgress && !atLeastOneIsInStateCreated)
+            {
+                return State.Finished;
+            }
+            else
+            {
+                throw new MrpRunException("This state is not expected.");
+            }
         }
     }
 }

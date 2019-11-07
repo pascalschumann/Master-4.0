@@ -11,6 +11,8 @@ namespace Zpp.DataLayer
 
         void RemoveDemand(Demand demand);
 
+        bool Contains(Demand demand);
+
         EntityCollector SatisfyProviderByOpenDemand(Provider provider, Quantity demandedQuantity);
         
         void Dispose();

@@ -42,17 +42,24 @@ namespace Zpp.Mrp2.impl
             IMrp1 mrp1 = new Mrp1.impl.Mrp1(dbDemands);
             mrp1.StartMrp1();
             _performanceMonitors.Stop(InstanceToTrack.Mrp1);
-            
+
 
             // BackwardForwardBackwardScheduling
             _performanceMonitors.Start(InstanceToTrack.BackwardForwardBackwardScheduling);
-            
+
             OrderOperationGraph orderOperationGraph = new OrderOperationGraph();
+            string orderOperationGraphString = "";
+            if (ZppConfiguration.IsInPerformanceMode == false)
+            {
+                orderOperationGraphString = orderOperationGraph.ToString();
+            }
 
             ScheduleBackwardFirst(orderOperationGraph);
+            AssertEveryDemandAndProviderIsScheduled();
+
             ScheduleForward(orderOperationGraph);
             ScheduleBackwardSecond(orderOperationGraph);
-            
+
             _performanceMonitors.Stop(InstanceToTrack.BackwardForwardBackwardScheduling);
 
             // job shop scheduling
@@ -61,23 +68,52 @@ namespace Zpp.Mrp2.impl
             _performanceMonitors.Stop(InstanceToTrack.JobShopScheduling);
         }
 
-        private void AssertGraphsAreNotEmpty(OrderOperationGraph orderOperationGraph)
+        private void AssertEveryDemandAndProviderIsScheduled()
         {
-            if (ZppConfiguration.IsInPerformanceMode == false)
+            if (ZppConfiguration.IsInPerformanceMode)
             {
-                DemandToProviderGraph demandToProviderGraph = new DemandToProviderGraph();
-                if (demandToProviderGraph.IsEmpty())
-                {
-                    throw new MrpRunException("How could the demandToProviderGraph be empty ?");
-                }
+                return;
+            }
 
-                if (orderOperationGraph.IsEmpty())
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
+            foreach (var demand in dbTransactionData.DemandsGetAll())
+            {
+                if (demand.GetStartTimeBackward() == null || demand.GetEndTimeBackward() == null)
                 {
-                    throw new MrpRunException("How could the orderOperationGraph be empty ?");
+                    throw new MrpRunException($"A demand ({demand} must scheduled.)");
+                }
+            }
+
+            foreach (var provider in dbTransactionData.ProvidersGetAll())
+            {
+                if (provider.GetStartTimeBackward() == null ||
+                    provider.GetEndTimeBackward() == null)
+                {
+                    throw new MrpRunException($"A demand ({provider} must scheduled.)");
                 }
             }
         }
-        
+
+        private void AssertGraphsAreNotEmpty(OrderOperationGraph orderOperationGraph)
+        {
+            if (ZppConfiguration.IsInPerformanceMode)
+            {
+                return;
+            }
+
+            DemandToProviderGraph demandToProviderGraph = new DemandToProviderGraph();
+            if (demandToProviderGraph.IsEmpty())
+            {
+                throw new MrpRunException("How could the demandToProviderGraph be empty ?");
+            }
+
+            if (orderOperationGraph.IsEmpty())
+            {
+                throw new MrpRunException("How could the orderOperationGraph be empty ?");
+            }
+        }
+
         private void ScheduleBackwardFirst(IDirectedGraph<INode> orderOperationGraph)
         {
             INodes rootNodes = new Nodes();
@@ -93,7 +129,7 @@ namespace Zpp.Mrp2.impl
                 new BackwardScheduler(rootNodes.ToStack(), orderOperationGraph, true);
             backwardsScheduler.ScheduleBackward();
         }
-        
+
         private void ScheduleBackwardSecond(IDirectedGraph<INode> orderOperationGraph)
         {
             INodes childRootNodes = new Nodes();

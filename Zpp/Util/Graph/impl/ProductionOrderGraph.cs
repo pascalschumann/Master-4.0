@@ -8,7 +8,7 @@ namespace Zpp.Util.Graph.impl
 {
     public class ProductionOrderGraph : DemandToProviderGraph
     {
-        public ProductionOrderGraph() : base()
+        public ProductionOrderGraph(bool includeReadOnlyProductionOrders) : base()
         {
             if (IsEmpty())
             {
@@ -20,6 +20,19 @@ namespace Zpp.Util.Graph.impl
             CreateGraph();
 
             // CreateGraph2(); --> non-recursive, but doesn't works correctly
+
+            if (includeReadOnlyProductionOrders == false)
+            {
+                List<IGraphNode> copyOfGraphNodes = new List<IGraphNode>();
+                copyOfGraphNodes.AddRange(_nodes);
+                foreach (var node in copyOfGraphNodes)
+                {
+                    if (node.GetNode().GetEntity().IsReadOnly())
+                    {
+                        RemoveNode(node.GetNode(), true);
+                    }
+                }
+            }
         }
         
         private void CreateGraph()

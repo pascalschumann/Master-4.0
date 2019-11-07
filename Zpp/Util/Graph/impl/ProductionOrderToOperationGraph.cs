@@ -17,7 +17,7 @@ namespace Zpp.Util.Graph.impl
 
         public ProductionOrderToOperationGraph() : base()
         {
-            IDirectedGraph<INode> productionOrderGraph = new ProductionOrderGraph();
+            IDirectedGraph<INode> productionOrderGraph = new ProductionOrderGraph(false);
             if (productionOrderGraph.IsEmpty())
             {
                 throw new MrpRunException("How could it happen, that the _productionOrderGraph is empty ?");

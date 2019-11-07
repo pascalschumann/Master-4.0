@@ -48,6 +48,11 @@ namespace Zpp.DataLayer.impl.OpenDemand
         {
             _openNodes[demand.GetArticle()].RemoveById(demand.GetId());
         }
+        
+        public bool Contains(Demand demand)
+        {
+            return _openNodes[demand.GetArticle()].Contains(demand.GetId());
+        }
 
         private void InitOpenProvidersDictionary(M_Article article)
         {
@@ -61,5 +66,7 @@ namespace Zpp.DataLayer.impl.OpenDemand
         {
             _openNodes.Clear();
         }
+
+       
     }
 }

@@ -29,21 +29,22 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             Providers copyOfProductionOrders = new Providers();
             copyOfProductionOrders.AddAll(dbTransactionData.ProductionOrderGetAll());
 
-            foreach (var productionOrder in copyOfProductionOrders)
+            foreach (var provider in copyOfProductionOrders)
             {
+                ProductionOrder productionOrder = (ProductionOrder)provider;
                 State state =
-                    DetermineProductionOrderState((ProductionOrder) productionOrder, aggregator);
+                    productionOrder.DetermineProductionOrderState();
                 switch (state)
                 {
                     case State.Created:
-                        HandleProductionOrderIsInStateCreated((ProductionOrder) productionOrder,
+                        HandleProductionOrderIsInStateCreated( productionOrder,
                             aggregator, dbTransactionData);
                         break;
                     case State.InProgress:
                         HandleProductionOrderIsInProgress();
                         break;
                     case State.Finished:
-                        HandleProductionOrderIsFinished((ProductionOrder) productionOrder,
+                        HandleProductionOrderIsFinished( productionOrder,
                             aggregator, dbTransactionData);
                         break;
                     default: throw new MrpRunException("This state is not expected.");
@@ -262,7 +263,10 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                 // don't forget to delete it from openDemands
                 if (demandOrProvider.GetType() == typeof(StockExchangeDemand))
                 {
-                    openDemandManager.RemoveDemand((Demand)demandOrProvider);                
+                    if (openDemandManager.Contains((Demand)demandOrProvider))
+                    {
+                        openDemandManager.RemoveDemand((Demand)demandOrProvider);   
+                    }
                 }
                 List<ILinkDemandAndProvider> demandAndProviders =
                     aggregator.GetArrowsToAndFrom(demandOrProvider); // TODO: why
@@ -326,49 +330,6 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
 
                 dbTransactionDataArchive.AddA(demandOrProvider);
                 dbTransactionData.DeleteA(demandOrProvider);
-            }
-        }
-
-        private static State DetermineProductionOrderState(ProductionOrder productionOrder,
-            IAggregator aggregator)
-        {
-            bool atLeastOneIsInProgress = false;
-            bool atLeastOneIsFinished = false;
-            bool atLeastOneIsInStateCreated = false;
-            var productionOrderOperations =
-                aggregator.GetProductionOrderOperationsOfProductionOrder(productionOrder);
-            foreach (var productionOrderOperation in productionOrderOperations)
-            {
-                if (productionOrderOperation.IsInProgress())
-                {
-                    atLeastOneIsInProgress = true;
-                    break;
-                }
-                else if (productionOrderOperation.IsFinished())
-                {
-                    atLeastOneIsFinished = true;
-                }
-                else
-                {
-                    atLeastOneIsInStateCreated = true;
-                }
-            }
-
-            if (atLeastOneIsInProgress || atLeastOneIsInStateCreated && atLeastOneIsFinished)
-            {
-                return State.InProgress;
-            }
-            else if (atLeastOneIsInStateCreated && !atLeastOneIsInProgress && !atLeastOneIsFinished)
-            {
-                return State.Created;
-            }
-            else if (atLeastOneIsFinished && !atLeastOneIsInProgress && !atLeastOneIsInStateCreated)
-            {
-                return State.Finished;
-            }
-            else
-            {
-                throw new MrpRunException("This state is not expected.");
             }
         }
 

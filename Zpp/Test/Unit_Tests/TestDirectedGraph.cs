@@ -176,5 +176,27 @@ namespace Zpp.Test.Unit_Tests
 
             return directedGraph;
         }
+
+        [Fact]
+        public void TestGetPredecessorNodesRecursive()
+        {
+            INode[] nodes = EntityFactory.CreateDummyNodes(6);
+            IDirectedGraph<INode> directedGraph = CreateBinaryDirectedGraph(nodes);
+            foreach (var node in nodes)
+            {
+                INodes predecessors = directedGraph.GetPredecessorNodes(node);
+                if (predecessors == null)
+                {
+                    continue;
+                }
+                INodes predecessorsRecursive = directedGraph.GetPredecessorNodesRecursive(node);
+                Assert.True(predecessorsRecursive.Contains(node) == false);
+                foreach (var predecessor in predecessors)
+                {
+                    Assert.True(predecessorsRecursive.Contains(predecessor));
+                }
+            }
+            
+        }
     }
 }

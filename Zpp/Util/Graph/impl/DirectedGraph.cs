@@ -67,17 +67,20 @@ namespace Zpp.Util.Graph.impl
             return GetPredecessorNodes(node.GetId());
         }
 
-        public INodes GetPredecessorNodesRecursive(INode node)
+        public INodes GetPredecessorNodesRecursive(INode startNode)
         {
             INodes allPredecessors = new Nodes();
             Stack<INode> stack = new Stack<INode>();
-            stack.Push(node);
+            stack.Push(startNode);
 
             while (stack.Any())
             {
                 INode poppedNode = stack.Pop();
-                allPredecessors.Add(poppedNode);
-                
+                if (poppedNode.Equals(startNode) == false)
+                {
+                    allPredecessors.Add(poppedNode);   
+                }
+
                 INodes predecessors = GetPredecessorNodes(poppedNode.GetId());
                 if (predecessors != null)
                 {

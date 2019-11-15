@@ -61,11 +61,15 @@ namespace Zpp.ZppSimulator.impl
                 "2_after_create_confirmations", false);
 
             // ApplyConfirmations
+            DemandToProviderGraph demandToProviderGraph = new DemandToProviderGraph();
+            string demandToProviderGraphString = demandToProviderGraph.ToString();
             _performanceMonitors.Start(InstanceToTrack.ApplyConfirmations);
             _confirmationManager.ApplyConfirmations();
             _performanceMonitors.Stop(InstanceToTrack.ApplyConfirmations);
             DebuggingTools.PrintStateToFiles(simulationInterval, dbTransactionData,
                 "3_after_apply_confirmations", false);
+            DemandToProviderGraph demandToProviderGraph2 = new DemandToProviderGraph();
+            string demandToProviderGraphString2 = demandToProviderGraph.ToString();
         }
 
         /**

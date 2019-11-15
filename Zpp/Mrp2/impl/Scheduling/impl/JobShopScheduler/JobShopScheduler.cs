@@ -170,18 +170,20 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
 
                         INodes allPredecessorsRecursive =
                             productionOrderToOperationGraph.GetPredecessorNodesRecursive(o1AsNode);
-
-                        IStackSet<ProductionOrderOperation> N =
-                            new StackSet<ProductionOrderOperation>(
-                                allPredecessorsRecursive.Select(x =>
-                                    (ProductionOrderOperation) x.GetEntity()));
-
-                        // t(o) = d(o1) für alle o aus N(o1)
-                        foreach (var n in N)
+                        if (allPredecessorsRecursive != null)
                         {
-                            n.SetStartTime(o1.GetEndTime());
-                        }
+                            IStackSet<ProductionOrderOperation> N =
+                                new StackSet<ProductionOrderOperation>(
+                                    allPredecessorsRecursive.Select(x =>
+                                        (ProductionOrderOperation) x.GetEntity()));
 
+                            // t(o) = d(o1) für alle o aus N(o1)
+                            foreach (var n in N)
+                            {
+                                n.SetStartTime(o1.GetEndTime());
+                            }
+                        }
+                        
                         // prepare for next round
                         productionOrderToOperationGraph.RemoveNode(o1AsNode, true);
                     }

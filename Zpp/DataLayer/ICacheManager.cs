@@ -48,5 +48,15 @@ namespace Zpp.DataLayer
         IAggregator GetAggregator();
 
         void ReadInTestConfiguration(string testConfigurationFileNames);
+
+        /**
+         * GetAggregator() and GetDbTransactionData() returns the archive, only for tests
+         */
+        void UseArchiveForGetters();
+        
+        /**
+         * GetAggregator() and GetDbTransactionData() behaves as before call UseArchiveForGetters()
+         */
+        void UseArchiveForGettersRevert();
     }
 }

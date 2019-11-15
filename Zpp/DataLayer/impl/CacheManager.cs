@@ -16,6 +16,7 @@ namespace Zpp.DataLayer.impl
     public class CacheManager : ICacheManager
     {
         private DbTransactionData _dbTransactionData;
+        private DbTransactionData _dbTransactionDataBackup;
         private DbTransactionData _dbTransactionDataArchive;
         private DbMasterDataCache _dbMasterDataCache;
         private ProductionDomainContext _productionDomainContext;
@@ -177,6 +178,24 @@ namespace Zpp.DataLayer.impl
         {
             _dbTransactionData.PersistDbCache();
             _dbTransactionDataArchive.PersistDbCache();
+        }
+
+        public void UseArchiveForGetters()
+        {
+            _dbTransactionDataBackup = _dbTransactionData; 
+            _dbTransactionData = _dbTransactionDataArchive;
+            _aggregator = new Aggregator(_dbTransactionDataArchive);
+        }
+
+        public void UseArchiveForGettersRevert()
+        {
+            if (_dbTransactionDataBackup == null)
+            {
+                return;
+            }
+
+            _dbTransactionData = _dbTransactionDataBackup;
+            _aggregator = new Aggregator(_dbTransactionData);
         }
     }
 }

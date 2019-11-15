@@ -64,14 +64,25 @@ namespace Zpp.ZppSimulator.impl
             // TODO: remove these two lines
             DemandToProviderGraph demandToProviderGraph = new DemandToProviderGraph();
             string demandToProviderGraphString = demandToProviderGraph.ToString();
+            ZppConfiguration.CacheManager.UseArchiveForGetters();
+            DemandToProviderGraph demandToProviderGraphArchive = new DemandToProviderGraph();
+            string demandToProviderGraphArchiveString = demandToProviderGraphArchive.ToString();
+            ZppConfiguration.CacheManager.UseArchiveForGettersRevert();
+            
             _performanceMonitors.Start(InstanceToTrack.ApplyConfirmations);
             _confirmationManager.ApplyConfirmations();
             _performanceMonitors.Stop(InstanceToTrack.ApplyConfirmations);
+            
             DebuggingTools.PrintStateToFiles(simulationInterval, dbTransactionData,
                 "3_after_apply_confirmations", false);
-            // TODO: remove these two lines
+            
+            // TODO: remove following lines
              DemandToProviderGraph demandToProviderGraph2 = new DemandToProviderGraph();
             string demandToProviderGraphString2 = demandToProviderGraph2.ToString();
+            ZppConfiguration.CacheManager.UseArchiveForGetters();
+            DemandToProviderGraph demandToProviderGraphArchive2 = new DemandToProviderGraph();
+            string demandToProviderGraphArchiveString2 = demandToProviderGraphArchive2.ToString();
+            ZppConfiguration.CacheManager.UseArchiveForGettersRevert();
         }
 
         /**

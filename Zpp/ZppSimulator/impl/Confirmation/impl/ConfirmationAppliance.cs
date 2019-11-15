@@ -4,6 +4,7 @@ using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Master40.DB.Enums;
 using Master40.DB.Interfaces;
+using Microsoft.EntityFrameworkCore.Internal;
 using Zpp.DataLayer;
 using Zpp.DataLayer.impl.DemandDomain;
 using Zpp.DataLayer.impl.DemandDomain.Wrappers;
@@ -12,8 +13,10 @@ using Zpp.DataLayer.impl.OpenDemand;
 using Zpp.DataLayer.impl.ProviderDomain;
 using Zpp.DataLayer.impl.ProviderDomain.Wrappers;
 using Zpp.DataLayer.impl.ProviderDomain.WrappersForCollections;
+using Zpp.DataLayer.impl.WrappersForCollections;
 using Zpp.Util;
 using Zpp.Util.Graph;
+using Zpp.Util.StackSet;
 
 namespace Zpp.ZppSimulator.impl.Confirmation.impl
 {
@@ -31,35 +34,89 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
 
             foreach (var provider in copyOfProductionOrders)
             {
-                ProductionOrder productionOrder = (ProductionOrder)provider;
-                State state =
-                    productionOrder.DetermineProductionOrderState();
+                ProductionOrder productionOrder = (ProductionOrder) provider;
+                State state = productionOrder.DetermineProductionOrderState();
                 switch (state)
                 {
                     case State.Created:
-                        HandleProductionOrderIsInStateCreated( productionOrder,
-                            aggregator, dbTransactionData);
+                        HandleProductionOrderIsInStateCreated(productionOrder, aggregator,
+                            dbTransactionData);
                         break;
                     case State.InProgress:
                         HandleProductionOrderIsInProgress();
                         break;
                     case State.Finished:
-                        HandleProductionOrderIsFinished( productionOrder,
-                            aggregator, dbTransactionData);
+                        HandleProductionOrderIsFinished(productionOrder, aggregator,
+                            dbTransactionData);
                         break;
                     default: throw new MrpRunException("This state is not expected.");
                 }
             }
 
-            // RemoveAllArrowsOnFinishedPurchaseOrderParts(dbTransactionData, aggregator);
 
             RemoveAllArrowsAndStockExchangeProviderOnNotFinishedCustomerOrderParts(
                 dbTransactionData, aggregator);
 
-            // ArchiveFinishedCustomerOrderParts(dbTransactionData, dbTransactionDataArchive);
 
+            // ArchiveSubGraphOfClosedFinishedStockExchangeDemands(dbTransactionData, aggregator);
+            /*
+                foreach sed in beendeten und geschlossenen StockExchangeDemands
+                    g := Subgraph von sed (enthält ggf. Kind-PurchaseOrderPart, 
+                      Elter-StockExchangeProviders 
+                      und ggf. deren Elter-CustomerOrderPart)
+                    Archiviere alle Knoten von g und deren Pfeile
+             */
+            IStackSet<IDemandOrProvider> demandOrProvidersToArchive = new StackSet<IDemandOrProvider>();
+            foreach (var stockExchangeDemand in dbTransactionData.StockExchangeDemandsGetAll())
+            {
+                bool isOpen = OpenDemandManager.IsOpen((StockExchangeDemand) stockExchangeDemand);
 
-            ArchiveSubGraphOfClosedFinishedStockExchangeDemands(dbTransactionData, aggregator);
+                if (isOpen == false && stockExchangeDemand.IsFinished())
+                {
+                    // child (PuOP)
+                    demandOrProvidersToArchive.Push(stockExchangeDemand);
+                    Providers childProviders =
+                        aggregator.GetAllChildProvidersOf(stockExchangeDemand);
+                    if (childProviders.Count() > 1)
+                    {
+                        throw new MrpRunException(
+                            "A StockExchangeDemand can only have one PurchaseOrderPart.");
+                    }
+
+                    if (childProviders.Any())
+                    {
+                        demandOrProvidersToArchive.Push(childProviders.GetAny());
+                    }
+
+                    // parent (StockExchangeProviders)
+                    Providers stockExchangeProviders =
+                        aggregator.GetAllParentProvidersOf(stockExchangeDemand);
+                    foreach (var stockExchangeProvider in stockExchangeProviders)
+                    {
+                        demandOrProvidersToArchive.Push(stockExchangeProvider);
+                        // parent of stockExchangeProvider (COP)
+                        Demands demands = aggregator.GetAllParentDemandsOf(stockExchangeProvider);
+                        if (demands.Count() > 1)
+                        {
+                            throw new MrpRunException(
+                                "A stockExchangeProvider can only have one COP.");
+                        }
+
+                        if (demands.Any())
+                        {
+                            demandOrProvidersToArchive.Push(demands.GetAny());   
+                        }
+                    }
+                }
+            }
+            
+            foreach (var demandOrProviderToArchive in demandOrProvidersToArchive)
+            {
+                ArchiveDemandOrProvider(demandOrProviderToArchive, dbTransactionData,
+                    aggregator, true);
+            }
+            
+            ArchiveFinishedCustomerOrderPartsWithArrow(dbTransactionData, aggregator);
         }
 
         /**
@@ -183,6 +240,10 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
         private static void ArchiveDemandOrProvider(IDemandOrProvider demandOrProvider,
             IDbTransactionData dbTransactionData, IAggregator aggregator, bool includeArrows)
         {
+            if (demandOrProvider == null)
+            {
+                throw new MrpRunException("Given demandOrProvider cannot be null.");
+            }
             IDbTransactionData dbTransactionDataArchive =
                 ZppConfiguration.CacheManager.GetDbTransactionDataArchive();
 
@@ -257,17 +318,19 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                 CreateProductionOrderSubGraph(true, productionOrder, aggregator);
 
             // delete all collected entities
-            IOpenDemandManager openDemandManager = ZppConfiguration.CacheManager.GetOpenDemandManager();
+            IOpenDemandManager openDemandManager =
+                ZppConfiguration.CacheManager.GetOpenDemandManager();
             foreach (var demandOrProvider in demandOrProvidersToDelete)
             {
                 // don't forget to delete it from openDemands
                 if (demandOrProvider.GetType() == typeof(StockExchangeDemand))
                 {
-                    if (openDemandManager.Contains((Demand)demandOrProvider))
+                    if (openDemandManager.Contains((Demand) demandOrProvider))
                     {
-                        openDemandManager.RemoveDemand((Demand)demandOrProvider);   
+                        openDemandManager.RemoveDemand((Demand) demandOrProvider);
                     }
                 }
+
                 List<ILinkDemandAndProvider> demandAndProviders =
                     aggregator.GetArrowsToAndFrom(demandOrProvider); // TODO: why
                 dbTransactionData.DeleteAllFrom(demandAndProviders);
@@ -288,7 +351,8 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                 ZppConfiguration.CacheManager.GetDbTransactionDataArchive();
 
             // archive operations
-            ArchiveOperations(dbTransactionData, dbTransactionDataArchive, aggregator, productionOrder);
+            ArchiveOperations(dbTransactionData, dbTransactionDataArchive, aggregator,
+                productionOrder);
 
             // collect demands Or providers
             List<IDemandOrProvider> demandOrProvidersToArchive =
@@ -302,31 +366,26 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                 if (demandOrProvider.GetType() == typeof(ProductionOrder))
                 {
                     // archive only link from ProductionOrder
-                    demandAndProviderLinks =
-                        aggregator.GetArrowsFrom(demandOrProvider);
+                    demandAndProviderLinks = aggregator.GetArrowsFrom(demandOrProvider);
                     dbTransactionDataArchive.AddAllFrom(demandAndProviderLinks);
                     dbTransactionData.DeleteAllFrom(demandAndProviderLinks);
-                    demandAndProviderLinks =
-                        aggregator.GetArrowsTo(demandOrProvider);
+                    demandAndProviderLinks = aggregator.GetArrowsTo(demandOrProvider);
                     dbTransactionData.DeleteAllFrom(demandAndProviderLinks);
                 }
                 else if (demandOrProvider.GetType() == typeof(ProductionOrderBom))
                 {
                     // archive only link to ProductionOrderBom
-                    demandAndProviderLinks =
-                        aggregator.GetArrowsTo(demandOrProvider);
+                    demandAndProviderLinks = aggregator.GetArrowsTo(demandOrProvider);
                     dbTransactionDataArchive.AddAllFrom(demandAndProviderLinks);
                     dbTransactionData.DeleteAllFrom(demandAndProviderLinks);
-                    demandAndProviderLinks =
-                        aggregator.GetArrowsFrom(demandOrProvider);
+                    demandAndProviderLinks = aggregator.GetArrowsFrom(demandOrProvider);
                     dbTransactionData.DeleteAllFrom(demandAndProviderLinks);
                 }
                 else
                 {
                     throw new MrpRunException("In this case not possible");
                 }
-                
-                
+
 
                 dbTransactionDataArchive.AddA(demandOrProvider);
                 dbTransactionData.DeleteA(demandOrProvider);
@@ -406,6 +465,22 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
 
                     // remove arrows on COP/stockExchangeProvider
                     dbTransactionData.DeleteAllFrom(demandAndProviderLinks);
+                }
+            }
+        }
+        
+        private static void ArchiveFinishedCustomerOrderPartsWithArrow(
+            IDbTransactionData dbTransactionData, IAggregator aggregator)
+        {
+            Demands copyOfCustomerOrderParts = new Demands();
+            copyOfCustomerOrderParts.AddAll(dbTransactionData.CustomerOrderPartGetAll());
+            foreach (var customerOrderPart in copyOfCustomerOrderParts)
+            {
+                if (customerOrderPart.IsFinished())
+                {
+
+                    // archive arrow on COP
+                    ArchiveDemandOrProvider(customerOrderPart, dbTransactionData, aggregator, true);
                 }
             }
         }

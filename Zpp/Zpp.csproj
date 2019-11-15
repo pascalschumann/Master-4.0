@@ -34,6 +34,6 @@
       <Folder Include="Test\Unit_Tests\Provider" />
       <Folder Include="Test\Unit_Tests\Provider\" />
       <Folder Include="Test\WrappersForPrimitives\" />
-      <Folder Include="Util\Queue\" />
+      <Folder Include="Utils\Queue\" />
     </ItemGroup>
 </Project>

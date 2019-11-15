@@ -94,6 +94,7 @@ namespace Zpp.Test.Unit_Tests
 
         /**
          * Rule no. 7
+         * TODO: This rule was misinterpreted here, therefore the test is testing the wrong things.
          */
         [Fact]
         public void TestConstructorsHaveMaximumTwoParameters()

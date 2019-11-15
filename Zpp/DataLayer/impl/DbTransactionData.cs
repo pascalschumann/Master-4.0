@@ -8,6 +8,7 @@ using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Master40.DB.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Zpp.DataLayer.impl.DemandDomain;
 using Zpp.DataLayer.impl.DemandDomain.Wrappers;
 using Zpp.DataLayer.impl.DemandDomain.WrappersForCollections;
@@ -482,6 +483,10 @@ namespace Zpp.DataLayer.impl
 
         public T_CustomerOrder CustomerOrderGetById(Id id)
         {
+            if (_customerOrders.Any() == false)
+            {
+                return null;
+            }
             return _customerOrders.Single(x => x.Id.Equals(id.GetValue()));
         }
 
@@ -791,11 +796,6 @@ namespace Zpp.DataLayer.impl
             return result;
         }
 
-        public void T_CustomerOrderDelete(T_CustomerOrder customerOrder)
-        {
-            _customerOrders.Remove(customerOrder);
-        }
-
         public T_DemandToProvider DemandToProviderGetById(Id id)
         {
             return (T_DemandToProvider)_demandToProviderTable.GetById(id);
@@ -823,6 +823,11 @@ namespace Zpp.DataLayer.impl
         public void CustomerOrderAddAll(List<T_CustomerOrder> customerOrders)
         {
             _customerOrders.AddAll(customerOrders);
+        }
+
+        public void CustomerOrderDelete(T_CustomerOrder customerOrder)
+        {
+            _customerOrders.Remove(customerOrder);
         }
     }
 }

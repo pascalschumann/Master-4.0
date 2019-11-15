@@ -55,8 +55,11 @@ namespace Zpp.Test.Integration_Tests.Verification
                     .Equals(State.Finished));
             }
 
-            foreach (var customerOrderPart in dbTransactionData.CustomerOrderPartGetAll())
+            Ids customerOrderIds = new Ids();
+            foreach (var demand in dbTransactionData.CustomerOrderPartGetAll())
             {
+                CustomerOrderPart customerOrderPart = (CustomerOrderPart)demand;
+                customerOrderIds.Add(customerOrderPart.GetCustomerOrderId());
                 if (customerOrderPart.IsFinished() == true)
                 {
                     Provider stockExchangeProvider = ZppConfiguration.CacheManager.GetAggregator()
@@ -94,6 +97,24 @@ namespace Zpp.Test.Integration_Tests.Verification
             {
                 Demands childs = aggregator.GetAllChildDemandsOf(stockExchangeProvider);
                 Assert.True(childs.Any());
+            }
+            
+            // Für jede CustomerOrder muss es mind. noch ein CustomerOrderPart geben.
+            foreach (var customerOrder in dbTransactionData.CustomerOrderGetAll())
+            {
+                Assert.True(customerOrderIds.Contains(customerOrder.GetId()));
+            }
+            // Für jede PurchaseOrder muss es mind. noch ein PurchaseOrderPart geben.
+            Ids purchaseOrderIds = new Ids();
+            foreach (var demand in dbTransactionData.PurchaseOrderPartGetAll())
+            {
+                PurchaseOrderPart purchaseOrderPart = (PurchaseOrderPart)demand;
+                purchaseOrderIds.Add(purchaseOrderPart.GetPurchaseOrderId());
+            }
+
+            foreach (var purchaseOrder in dbTransactionData.PurchaseOrderGetAll())
+            {
+                Assert.True(purchaseOrderIds.Contains(purchaseOrder.GetId()));
             }
         }
     }

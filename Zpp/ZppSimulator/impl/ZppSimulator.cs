@@ -71,7 +71,7 @@ namespace Zpp.ZppSimulator.impl
                 "3_after_apply_confirmations", false);
             // TODO: remove these two lines
              DemandToProviderGraph demandToProviderGraph2 = new DemandToProviderGraph();
-            string demandToProviderGraphString2 = demandToProviderGraph.ToString();
+            string demandToProviderGraphString2 = demandToProviderGraph2.ToString();
         }
 
         /**

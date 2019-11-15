@@ -66,7 +66,8 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                       und ggf. deren Elter-CustomerOrderPart)
                     Archiviere alle Knoten von g und deren Pfeile
              */
-            IStackSet<IDemandOrProvider> demandOrProvidersToArchive = new StackSet<IDemandOrProvider>();
+            IStackSet<IDemandOrProvider> demandOrProvidersToArchive =
+                new StackSet<IDemandOrProvider>();
             foreach (var stockExchangeDemand in dbTransactionData.StockExchangeDemandsGetAll())
             {
                 bool isOpen = OpenDemandManager.IsOpen((StockExchangeDemand) stockExchangeDemand);
@@ -104,19 +105,72 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
 
                         if (demands.Any())
                         {
-                            demandOrProvidersToArchive.Push(demands.GetAny());   
+                            demandOrProvidersToArchive.Push(demands.GetAny());
                         }
                     }
                 }
             }
-            
+
+            // archive collected demandAndProviders
             foreach (var demandOrProviderToArchive in demandOrProvidersToArchive)
             {
-                ArchiveDemandOrProvider(demandOrProviderToArchive, dbTransactionData,
-                    aggregator, true);
+                ArchiveDemandOrProvider(demandOrProviderToArchive, dbTransactionData, aggregator,
+                    true);
             }
-            
+
             ArchiveFinishedCustomerOrderPartsWithArrow(dbTransactionData, aggregator);
+
+
+            ArchivedCustomerOrdersWithoutCustomerOrderParts();
+            ArchivedPurchaseOrdersWithoutPurchaseOrderParts();
+        }
+
+        private static void ArchivedCustomerOrdersWithoutCustomerOrderParts()
+        {
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
+
+
+            Ids customerOrderIds = new Ids();
+            foreach (var demand in dbTransactionData.CustomerOrderPartGetAll())
+            {
+                CustomerOrderPart customerOrderPart = (CustomerOrderPart) demand;
+                customerOrderIds.Add(customerOrderPart.GetCustomerOrderId());
+            }
+
+            foreach (var customerOrder in dbTransactionData.CustomerOrderGetAll())
+            {
+                bool customerOrderHasNoCustomerOrderPart =
+                    customerOrderIds.Contains(customerOrder.GetId()) == false;
+                if (customerOrderHasNoCustomerOrderPart)
+                {
+                    ArchiveCustomerOrder(customerOrder.GetId());
+                }
+            }
+        }
+
+        private static void ArchivedPurchaseOrdersWithoutPurchaseOrderParts()
+        {
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
+
+
+            Ids purchaseOrderIds = new Ids();
+            foreach (var demand in dbTransactionData.PurchaseOrderPartGetAll())
+            {
+                PurchaseOrderPart purchaseOrderPart = (PurchaseOrderPart) demand;
+                purchaseOrderIds.Add(purchaseOrderPart.GetPurchaseOrderId());
+            }
+
+            foreach (var purchaseOrder in dbTransactionData.PurchaseOrderGetAll())
+            {
+                bool purchaseOrderHasNoPurchaseOrderParts =
+                    purchaseOrderIds.Contains(purchaseOrder.GetId()) == false;
+                if (purchaseOrderHasNoPurchaseOrderParts)
+                {
+                    ArchivePurchaseOrder(purchaseOrder);
+                }
+            }
         }
 
         /**
@@ -244,6 +298,7 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             {
                 throw new MrpRunException("Given demandOrProvider cannot be null.");
             }
+
             IDbTransactionData dbTransactionDataArchive =
                 ZppConfiguration.CacheManager.GetDbTransactionDataArchive();
 
@@ -429,7 +484,7 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             // archive customerOrder
             T_CustomerOrder customerOrder = dbTransactionData.CustomerOrderGetById(customerOrderId);
             dbTransactionDataArchive.CustomerOrderAdd(customerOrder);
-            dbTransactionData.T_CustomerOrderDelete(customerOrder);
+            dbTransactionData.CustomerOrderDelete(customerOrder);
         }
 
         /**
@@ -468,21 +523,43 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                 }
             }
         }
-        
+
         private static void ArchiveFinishedCustomerOrderPartsWithArrow(
             IDbTransactionData dbTransactionData, IAggregator aggregator)
         {
             Demands copyOfCustomerOrderParts = new Demands();
             copyOfCustomerOrderParts.AddAll(dbTransactionData.CustomerOrderPartGetAll());
-            foreach (var customerOrderPart in copyOfCustomerOrderParts)
+            foreach (var demand in copyOfCustomerOrderParts)
             {
+                CustomerOrderPart customerOrderPart = (CustomerOrderPart) demand;
                 if (customerOrderPart.IsFinished())
                 {
-
+                    ArchiveCustomerOrder(customerOrderPart.GetCustomerOrderId());
                     // archive arrow on COP
                     ArchiveDemandOrProvider(customerOrderPart, dbTransactionData, aggregator, true);
                 }
             }
+        }
+
+        private static void ArchiveCustomerOrder(Id customerOrderId)
+        {
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
+            IDbTransactionData dbTransactionDataArchive =
+                ZppConfiguration.CacheManager.GetDbTransactionDataArchive();
+            T_CustomerOrder customerOrder = dbTransactionData.CustomerOrderGetById(customerOrderId);
+            dbTransactionDataArchive.CustomerOrderAdd(customerOrder);
+            dbTransactionData.CustomerOrderDelete(customerOrder);
+        }
+
+        private static void ArchivePurchaseOrder(T_PurchaseOrder purchaseOrder)
+        {
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
+            IDbTransactionData dbTransactionDataArchive =
+                ZppConfiguration.CacheManager.GetDbTransactionDataArchive();
+            dbTransactionDataArchive.PurchaseOrderAdd(purchaseOrder);
+            dbTransactionData.PurchaseOrderDelete(purchaseOrder);
         }
     }
 }

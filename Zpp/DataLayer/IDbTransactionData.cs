@@ -75,9 +75,9 @@ namespace Zpp.DataLayer
         ProductionOrderOperations ProductionOrderOperationGetAll();
 
         T_CustomerOrder CustomerOrderGetById(Id id);
-        
-        void T_CustomerOrderDelete(T_CustomerOrder customerOrder);
-        
+
+        void CustomerOrderDelete(T_CustomerOrder customerOrder);
+
         List<T_CustomerOrder> CustomerOrderGetAll();
 
         Demands CustomerOrderPartGetAll();

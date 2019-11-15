@@ -129,5 +129,10 @@ namespace Zpp.DataLayer.impl.ProviderDomain.Wrappers
         {
             return _tPurchaseOrderPart;
         }
+
+        public Id GetPurchaseOrderId()
+        {
+            return new Id(_tPurchaseOrderPart.PurchaseOrderId);
+        }
     }
 }

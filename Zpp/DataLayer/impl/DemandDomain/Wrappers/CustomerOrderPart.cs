@@ -67,12 +67,15 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
             Id customerOrderId = new Id(_customerOrderPart.CustomerOrderId);
             _customerOrderPart.CustomerOrder =
                 dbTransactionData.CustomerOrderGetById(customerOrderId);
+            if (_customerOrderPart.CustomerOrder == null)
+            {
+                throw new MrpRunException($"A CustomerOrderPart{this} cannot exists without an CustomerOrder.");
+            }
         }
 
         public override DueTime GetEndTimeBackward()
         {
             EnsureCustomerOrderIsLoaded();
-
             DueTime dueTime = new DueTime(_customerOrderPart.CustomerOrder.DueTime);
             return dueTime;
         }
@@ -100,6 +103,11 @@ namespace Zpp.DataLayer.impl.DemandDomain.Wrappers
         public override State? GetState()
         {
             return _customerOrderPart.State;
+        }
+
+        public Id GetCustomerOrderId()
+        {
+            return new Id(_customerOrderPart.CustomerOrderId);
         }
     }
 }

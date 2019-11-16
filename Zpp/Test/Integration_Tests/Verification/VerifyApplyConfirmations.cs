@@ -70,18 +70,14 @@ namespace Zpp.Test.Integration_Tests.Verification
             foreach (var stockExchangeProvider in dbTransactionData.StockExchangeProvidersGetAll())
             {
                 Demands childs = aggregator.GetAllChildDemandsOf(stockExchangeProvider);
-                Assert.True(childs.Count() > 1);
+                Assert.True(childs.Any());
             }
             
-            // StockExchangeDemands muss mind. ein Elter haben und darf nicht beendet und
-            // geschlossen sein.
+            // Ein StockExchangeDemand darf nicht beendet und geschlossen sein.
             foreach (var stockExchangeDemand in dbTransactionData.StockExchangeDemandsGetAll())
             {
                 bool isOpen = OpenDemandManager.IsOpen((StockExchangeDemand) stockExchangeDemand);
                 Assert.False(stockExchangeDemand.IsFinished() && isOpen == false);
-                Providers stockExchangeProviders =
-                    aggregator.GetAllParentProvidersOf(stockExchangeDemand);
-                Assert.True(stockExchangeProviders.Any());
             }
 
             // Eine ProductionOrder darf nicht beendet sein und für eine ProductionOrder

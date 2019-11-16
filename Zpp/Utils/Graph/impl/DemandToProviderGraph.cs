@@ -48,6 +48,12 @@ namespace Zpp.Util.Graph.impl
                     dbTransactionData.ProvidersGetById(providerToDemand.GetProviderId());
                 if (demand == null || provider == null)
                 {
+                    // provider == null can be the case for archive of transactionData, when a
+                    // stockExchangeProvider has more than one child stockExchangeDemand
+                    // and one of the stockExchangeDemand is archived, but the
+                    // stockExchangeProvider cannot be archived yet (because the
+                    // stockExchangeProvider is still needed by the other stockExchangeDemand
+                    // to correctly calculate the open quantity of a stockExchangeDemand)
                     throw new MrpRunException("Demand/Provider should not be null.");
                 }
 

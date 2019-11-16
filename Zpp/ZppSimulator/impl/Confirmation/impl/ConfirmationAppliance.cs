@@ -57,8 +57,32 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             // Entferne alle Pfeile auf StockExchangeProvider zeigend
             // Entferne alle Pfeile von StockExchangeDemands weg zeigend
             //  --> übrig beleiben Pfeile zwischen StockExchangeProvider und StockExchangeDemands
-            List<ILinkDemandAndProvider>
-                stockExchangeLinks = new List<ILinkDemandAndProvider>();
+            RemoveArrowsBelowStockExchangeDemandsAndAboveStockExchangeProviders(dbTransactionData,
+                aggregator);
+
+            /*
+                foreach sed in beendeten und geschlossenen StockExchangeDemands
+                    Archiviere sed und seine parents (StockExchangeProvider) 
+                      und die Pfeile dazwischen                
+             */
+            ArchiveClosedStockExchangeDemandsAndItsParents(dbTransactionData, aggregator);
+
+            ArchiveFinishedCustomerOrderPartsAndDeleteTheirArrows(dbTransactionData, aggregator);
+            ArchiveFinishedPurchaseOrderPartsAndDeleteTheirArrows(dbTransactionData, aggregator);
+
+            ArchivedCustomerOrdersWithoutCustomerOrderParts();
+            ArchivedPurchaseOrdersWithoutPurchaseOrderParts();
+        }
+
+        /**
+         * // Entferne alle Pfeile auf StockExchangeProvider zeigend
+            // Entferne alle Pfeile von StockExchangeDemands weg zeigend
+            //  --> übrig beleiben Pfeile zwischen StockExchangeProvider und StockExchangeDemands
+         */
+        private static void RemoveArrowsBelowStockExchangeDemandsAndAboveStockExchangeProviders(
+            IDbTransactionData dbTransactionData, IAggregator aggregator)
+        {
+            List<ILinkDemandAndProvider> stockExchangeLinks = new List<ILinkDemandAndProvider>();
             foreach (var stockExchangeDemand in dbTransactionData.StockExchangeDemandsGetAll())
             {
                 List<ILinkDemandAndProvider> fromStockExchanges =
@@ -78,14 +102,19 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                     stockExchangeLinks.AddRange(toStockExchanges);
                 }
             }
-            dbTransactionData.DeleteAllFrom(stockExchangeLinks);
 
-            /*
-                foreach sed in beendeten und geschlossenen StockExchangeDemands
-                    Archiviere sed und seine parents (StockExchangeProvider) 
-                      und die Pfeile dazwischen                
-             */
-            IStackSet<IDemandOrProvider> demandOrProvidersToArchive =
+            dbTransactionData.DeleteAllFrom(stockExchangeLinks);
+        }
+
+        /*
+            foreach sed in beendeten und geschlossenen StockExchangeDemands
+                Archiviere sed und seine parents (StockExchangeProvider) 
+                  und die Pfeile dazwischen                
+         */
+        private static void ArchiveClosedStockExchangeDemandsAndItsParents(
+            IDbTransactionData dbTransactionData, IAggregator aggregator)
+        {
+            IStackSet<IDemandOrProvider> stockExchangesToArchive =
                 new StackSet<IDemandOrProvider>();
             foreach (var stockExchangeDemand in dbTransactionData.StockExchangeDemandsGetAll())
             {
@@ -93,28 +122,24 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
 
                 if (isOpen == false && stockExchangeDemand.IsFinished())
                 {
+                    stockExchangesToArchive.Push(stockExchangeDemand);
+
                     // parent (StockExchangeProviders)
                     Providers stockExchangeProviders =
                         aggregator.GetAllParentProvidersOf(stockExchangeDemand);
                     foreach (var stockExchangeProvider in stockExchangeProviders)
                     {
-                        demandOrProvidersToArchive.Push(stockExchangeProvider);
+                        stockExchangesToArchive.Push(stockExchangeProvider);
                     }
                 }
             }
 
             // archive collected stockexchanges
-            foreach (var demandOrProviderToArchive in demandOrProvidersToArchive)
+            foreach (var demandOrProviderToArchive in stockExchangesToArchive)
             {
                 ArchiveDemandOrProvider(demandOrProviderToArchive, dbTransactionData, aggregator,
                     true);
             }
-
-            ArchiveFinishedCustomerOrderPartsAndDeleteTheirArrows(dbTransactionData, aggregator);
-
-
-            ArchivedCustomerOrdersWithoutCustomerOrderParts();
-            ArchivedPurchaseOrdersWithoutPurchaseOrderParts();
         }
 
         private static void ArchivedCustomerOrdersWithoutCustomerOrderParts()
@@ -161,27 +186,6 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                 if (purchaseOrderHasNoPurchaseOrderParts)
                 {
                     ArchivePurchaseOrder(purchaseOrder);
-                }
-            }
-        }
-
-        /**
-         * Closed means, the stockExchangeDemand cannot server another StockExchangeProvider
-         */
-        private static void ArchiveSubGraphOfClosedFinishedStockExchangeDemands(
-            IDbTransactionData dbTransactionData, IAggregator aggregator)
-        {
-            List<Demand> copyOfStockExchangeDemands = new List<Demand>();
-            copyOfStockExchangeDemands.AddRange(dbTransactionData.StockExchangeDemandsGetAll());
-
-            foreach (var demand in copyOfStockExchangeDemands)
-            {
-                StockExchangeDemand stockExchangeDemand = (StockExchangeDemand) demand;
-                if (OpenDemandManager.IsOpen(stockExchangeDemand) == false &&
-                    stockExchangeDemand.IsFinished())
-                {
-                    ArchiveSubGraphOfStockExchangeDemand(stockExchangeDemand, dbTransactionData,
-                        aggregator);
                 }
             }
         }
@@ -236,40 +240,6 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             return items;
         }
 
-
-        private static void ArchiveSubGraphOfStockExchangeDemand(
-            StockExchangeDemand stockExchangeDemand, IDbTransactionData dbTransactionData,
-            IAggregator aggregator)
-        {
-            IDbTransactionData dbTransactionDataArchive =
-                ZppConfiguration.CacheManager.GetDbTransactionDataArchive();
-            List<IDemandOrProvider> demandOrProviders =
-                GetItemsOfStockExchangeDemandSubGraph(stockExchangeDemand, dbTransactionData,
-                    aggregator, false);
-
-            foreach (var demandOrProvider in demandOrProviders)
-            {
-                if (demandOrProvider.GetType() == typeof(PurchaseOrderPart))
-                {
-                    ArchivePurchaseOrderParts(dbTransactionData, dbTransactionDataArchive,
-                        (PurchaseOrderPart) demandOrProvider);
-                    ArchiveArrowsToAndFrom(demandOrProvider, dbTransactionData,
-                        dbTransactionDataArchive, aggregator);
-                }
-                else if (demandOrProvider.GetType() == typeof(CustomerOrderPart))
-                {
-                    ArchiveCustomerOrderPart(dbTransactionData, dbTransactionDataArchive,
-                        (CustomerOrderPart) demandOrProvider);
-                    ArchiveArrowsToAndFrom(demandOrProvider, dbTransactionData,
-                        dbTransactionDataArchive, aggregator);
-                }
-                else
-                {
-                    ArchiveDemandOrProvider(demandOrProvider, dbTransactionData, aggregator, true);
-                }
-            }
-        }
-
         private static void ArchiveArrowsToAndFrom(IDemandOrProvider demandOrProvider,
             IDbTransactionData dbTransactionData, IDbTransactionData dbTransactionDataArchive,
             IAggregator aggregator)
@@ -302,54 +272,6 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
 
             dbTransactionDataArchive.AddA(demandOrProvider);
             dbTransactionData.DeleteA(demandOrProvider);
-        }
-
-
-        /**
-         * Subgraph of a productionOrder includes:
-         * - parent (StockExchangeDemand) if includeStockExchanges true
-         * - childs (ProductionOrderBoms)
-         * - childs of childs (StockExchangeProvider) if includeStockExchanges true
-         */
-        private static List<IDemandOrProvider> CreateProductionOrderSubGraph(
-            bool includeStockExchanges, ProductionOrder productionOrder, IAggregator aggregator)
-        {
-            List<IDemandOrProvider> demandOrProvidersOfProductionOrderSubGraph =
-                new List<IDemandOrProvider>();
-            demandOrProvidersOfProductionOrderSubGraph.Add(productionOrder);
-
-            if (includeStockExchanges)
-            {
-                Demands stockExchangeDemands = aggregator.GetAllParentDemandsOf(productionOrder);
-                if (stockExchangeDemands.Count() > 1)
-                {
-                    throw new MrpRunException(
-                        "A productionOrder can only have one parentDemand (stockExchangeDemand).");
-                }
-
-                demandOrProvidersOfProductionOrderSubGraph.AddRange(stockExchangeDemands);
-            }
-
-            Demands productionOrderBoms = aggregator.GetAllChildDemandsOf(productionOrder);
-            demandOrProvidersOfProductionOrderSubGraph.AddRange(productionOrderBoms);
-
-            if (includeStockExchanges)
-            {
-                foreach (var productionOrderBom in productionOrderBoms)
-                {
-                    Providers stockExchangeProvider =
-                        aggregator.GetAllChildProvidersOf(productionOrderBom);
-                    if (stockExchangeProvider.Count() > 1)
-                    {
-                        throw new MrpRunException(
-                            "A ProductionOrderBom can only have one childProvider (stockExchangeProvider).");
-                    }
-
-                    demandOrProvidersOfProductionOrderSubGraph.AddRange(stockExchangeProvider);
-                }
-            }
-
-            return demandOrProvidersOfProductionOrderSubGraph;
         }
 
         private static void HandleProductionOrderIsInStateCreated(ProductionOrder productionOrder,
@@ -394,6 +316,7 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
         private static void HandleProductionOrderIsFinished(ProductionOrder productionOrder,
             IAggregator aggregator, IDbTransactionData dbTransactionData)
         {
+
             IDbTransactionData dbTransactionDataArchive =
                 ZppConfiguration.CacheManager.GetDbTransactionDataArchive();
 
@@ -439,21 +362,6 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             }
         }
 
-        private static void ArchivePurchaseOrderParts(IDbTransactionData dbTransactionData,
-            IDbTransactionData dbTransactionDataArchive, Provider purchaseOrderPart)
-        {
-            // archive purchaseOrderPart
-            Id purchaseOrderId = new Id(((PurchaseOrderPart) purchaseOrderPart).GetValue()
-                .PurchaseOrderId);
-            dbTransactionDataArchive.ProvidersAdd(purchaseOrderPart);
-            dbTransactionData.ProvidersDelete(purchaseOrderPart);
-
-            // archive purchaseOrder
-            T_PurchaseOrder purchaseOrder = dbTransactionData.PurchaseOrderGetById(purchaseOrderId);
-            dbTransactionDataArchive.PurchaseOrderAdd(purchaseOrder);
-            dbTransactionData.PurchaseOrderDelete(purchaseOrder);
-        }
-
         private static void ArchiveOperations(IDbTransactionData dbTransactionData,
             IDbTransactionData dbTransactionDataArchive, IAggregator aggregator,
             ProductionOrder productionOrder)
@@ -462,58 +370,6 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                 aggregator.GetProductionOrderOperationsOfProductionOrder(productionOrder);
             dbTransactionDataArchive.ProductionOrderOperationAddAll(operations);
             dbTransactionData.ProductionOrderOperationDeleteAll(operations);
-        }
-
-        private static void ArchiveCustomerOrderPart(IDbTransactionData dbTransactionData,
-            IDbTransactionData dbTransactionDataArchive, CustomerOrderPart customerOrderPart)
-        {
-            // archive customerOrderPart
-            Id customerOrderId = new Id(((CustomerOrderPart) customerOrderPart).GetValue()
-                .CustomerOrderId);
-            dbTransactionDataArchive.DemandsAdd(customerOrderPart);
-            dbTransactionData.DemandsDelete(customerOrderPart);
-
-            // archive customerOrder
-            T_CustomerOrder customerOrder = dbTransactionData.CustomerOrderGetById(customerOrderId);
-            dbTransactionDataArchive.CustomerOrderAdd(customerOrder);
-            dbTransactionData.CustomerOrderDelete(customerOrder);
-        }
-
-        /**
-         * inclusive arrows = DemandToProviders/ProviderToDemands
-         */
-        private static void RemoveAllArrowsAndStockExchangeProviderOnNotFinishedCustomerOrderParts(
-            IDbTransactionData dbTransactionData, IAggregator aggregator)
-        {
-            Demands copyOfCustomerOrderParts = new Demands();
-            copyOfCustomerOrderParts.AddAll(dbTransactionData.CustomerOrderPartGetAll());
-            foreach (var customerOrderPart in copyOfCustomerOrderParts)
-            {
-                if (customerOrderPart.IsFinished() == false)
-                {
-                    List<ILinkDemandAndProvider> demandAndProviderLinks =
-                        aggregator.GetArrowsToAndFrom(customerOrderPart);
-
-
-                    // remove child (stockExchangeProvider) on COP
-                    Providers stockExchangeProviders =
-                        aggregator.GetAllChildProvidersOf(customerOrderPart);
-                    if (stockExchangeProviders.Count() > 1)
-                    {
-                        throw new MrpRunException("A COP can only have one child.");
-                    }
-
-                    foreach (var stockExchangeProvider in stockExchangeProviders)
-                    {
-                        demandAndProviderLinks =
-                            aggregator.GetArrowsToAndFrom(stockExchangeProvider);
-                        dbTransactionData.DeleteA(stockExchangeProvider);
-                    }
-
-                    // remove arrows on COP/stockExchangeProvider
-                    dbTransactionData.DeleteAllFrom(demandAndProviderLinks);
-                }
-            }
         }
 
         private static void ArchiveFinishedCustomerOrderPartsAndDeleteTheirArrows(
@@ -532,6 +388,30 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                         aggregator.GetArrowsFrom(customerOrderPart);
                     dbTransactionData.DeleteAllFrom(arrows);
                     ArchiveDemandOrProvider(customerOrderPart, dbTransactionData, aggregator,
+                        false);
+                }
+            }
+        }
+
+        private static void ArchiveFinishedPurchaseOrderPartsAndDeleteTheirArrows(
+            IDbTransactionData dbTransactionData, IAggregator aggregator)
+        {
+            Providers copyOfPurchaseOrderParts = new Providers();
+            copyOfPurchaseOrderParts.AddAll(dbTransactionData.PurchaseOrderPartGetAll());
+            foreach (var purchaseOrderPart in copyOfPurchaseOrderParts)
+            {
+                if (purchaseOrderPart.IsFinished())
+                {
+                    // delete arrow
+                    List<ILinkDemandAndProvider> arrows =
+                        aggregator.GetArrowsFrom(purchaseOrderPart);
+                    if (arrows != null)
+                    {
+                        dbTransactionData.DeleteAllFrom(arrows);
+                    }
+
+                    // archive purchaseOrderPart
+                    ArchiveDemandOrProvider(purchaseOrderPart, dbTransactionData, aggregator,
                         false);
                 }
             }

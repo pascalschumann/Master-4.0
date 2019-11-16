@@ -248,7 +248,7 @@ namespace Zpp.DataLayer.impl
             }
         }
 
-        public static void CopyDbPropertiesTo<T>(T source, T dest)
+        private static void CopyDbPropertiesTo<T>(T source, T dest)
         {
             DbUtils.CopyDbPropertiesTo(source, dest);
         }
@@ -269,7 +269,7 @@ namespace Zpp.DataLayer.impl
             }
             else
             {
-                throw new MrpRunException("This type is unkown.");
+                throw new MrpRunException("This type is unknown.");
             }
         }
 

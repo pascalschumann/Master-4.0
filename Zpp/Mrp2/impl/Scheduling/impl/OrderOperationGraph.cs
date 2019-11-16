@@ -64,19 +64,24 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
                 }
             }
             
-            // change for every ProductionOrderBom predecessor to its operation
+            // connect every ProductionOrderBom successor to its operation
             foreach (var productionOrderBom in dbTransactionData.ProductionOrderBomGetAll())
             {
-                var productionOrderBomNode = new Node(productionOrderBom);
-                if (demandToProviderGraph.Contains(productionOrderBomNode))
+                if (productionOrderBom.IsReadOnly() == false)
                 {
-                    ProductionOrderOperation productionOrderOperation =
-                        ((ProductionOrderBom) productionOrderBom).GetProductionOrderOperation();
-                    INodes successorNodes = demandToProviderGraph.GetSuccessorNodes(productionOrderBom.GetId());
-                    demandToProviderGraph.RemoveNode(productionOrderBomNode.GetId(), false);
-                    foreach (var successor in successorNodes)
+                    var productionOrderBomNode = new Node(productionOrderBom);
+                    if (demandToProviderGraph.Contains(productionOrderBomNode))
                     {
-                        demandToProviderGraph.AddEdge(new Edge(new Node(productionOrderOperation), successor));
+                        ProductionOrderOperation productionOrderOperation =
+                            ((ProductionOrderBom) productionOrderBom).GetProductionOrderOperation();
+                        INodes successorNodes =
+                            demandToProviderGraph.GetSuccessorNodes(productionOrderBom.GetId());
+                        demandToProviderGraph.RemoveNode(productionOrderBomNode.GetId(), false);
+                        foreach (var successor in successorNodes)
+                        {
+                            demandToProviderGraph.AddEdge(
+                                new Edge(new Node(productionOrderOperation), successor));
+                        }
                     }
                 }
             }

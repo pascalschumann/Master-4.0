@@ -90,7 +90,7 @@ namespace Zpp.Mrp2.impl
                 if (provider.GetStartTimeBackward() == null ||
                     provider.GetEndTimeBackward() == null)
                 {
-                    throw new MrpRunException($"A demand ({provider} must scheduled.)");
+                    throw new MrpRunException($"A demand ({provider}) must scheduled.)");
                 }
             }
         }

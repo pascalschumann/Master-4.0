@@ -128,7 +128,7 @@ namespace Zpp.ZppSimulator.impl
         public void StartPerformanceStudy(bool shouldPersist)
         {
             // TODO: disable if log files
-            ZppConfiguration.IsInPerformanceMode = false;
+            ZppConfiguration.IsInPerformanceMode = true;
 
             int maxSimulatingTime = ZppConfiguration.CacheManager.GetTestConfiguration()
                 .SimulationMaximumDuration;

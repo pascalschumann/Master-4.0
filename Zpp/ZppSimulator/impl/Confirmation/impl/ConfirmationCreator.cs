@@ -1,6 +1,10 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using Master40.DB.Data.WrappersForPrimitives;
 using Zpp.DataLayer;
 using Zpp.DataLayer.impl.DemandDomain.Wrappers;
+using Zpp.DataLayer.impl.ProviderDomain.Wrappers;
 using Zpp.DataLayer.impl.WrappersForCollections;
 using Zpp.Util;
 using Zpp.Util.Graph;
@@ -11,6 +15,95 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
     public static class ConfirmationCreator
     {
         public static void CreateConfirmations(SimulationInterval simulationInterval)
+        {
+            /*ISimulator simulator = new Simulator();
+            simulator.ProcessCurrentInterval(simulationInterval, _orderGenerator);*/
+            // --> does not work correctly, use trivial impl instead TODO: Just an info for you Martin
+
+            IDbTransactionData dbTransactionData =
+                ZppConfiguration.CacheManager.GetDbTransactionData();
+            IAggregator aggregator = ZppConfiguration.CacheManager.GetAggregator();
+
+
+            // customerOrderParts: set finished if all childs are finished
+            DemandToProviderGraph demandToProviderGraph = new DemandToProviderGraph();
+            INodes rootNodes = demandToProviderGraph.GetRootNodes();
+            foreach (var rootNode in rootNodes)
+            {
+                if (rootNode.GetEntity().GetType() == typeof(CustomerOrderPart))
+                {
+                    CustomerOrderPart customerOrderPart = (CustomerOrderPart) rootNode.GetEntity();
+                    customerOrderPart.SetReadOnly();
+
+                    bool allChildsAreFinished = true;
+                    foreach (var stockExchangeProvider in aggregator.GetAllChildProvidersOf(
+                        customerOrderPart))
+                    {
+                        if (stockExchangeProvider.IsFinished() == false)
+                        {
+                            allChildsAreFinished = false;
+                            break;
+                        }
+                    }
+
+                    if (allChildsAreFinished)
+                    {
+                        customerOrderPart.SetFinished();
+                    }
+                }
+            }
+
+            // no confirmations: some nodes has no state (PrO) or must be adapted differently (COPs)
+            // confirmations only for: stockExchanges, purchaseOrderParts, operations
+            Type[] typesToAdapt = new Type[]
+            {
+                typeof(StockExchangeDemand), typeof(StockExchangeProvider),
+                typeof(PurchaseOrderPart), typeof(ProductionOrderOperation)
+            };
+
+            // operations
+            AdaptState(dbTransactionData.ProductionOrderOperationGetAll(), simulationInterval,
+                typesToAdapt);
+
+            // demands
+            AdaptState(dbTransactionData.DemandsGetAll(), simulationInterval, typesToAdapt);
+
+            // provider
+            AdaptState(dbTransactionData.ProvidersGetAll(), simulationInterval, typesToAdapt);
+        }
+
+        private static void AdaptState(IEnumerable<IScheduleNode> scheduleNodes,
+            SimulationInterval simulationInterval, Type[] typesToAdapt)
+        {
+            foreach (var scheduleNode in scheduleNodes)
+            {
+                // everyEntity must set read-only (to avoid future changes besides delete)
+                scheduleNode.SetReadOnly();
+                
+                if (typesToAdapt.Contains(scheduleNode.GetType()) == false)
+                {
+                    continue;
+                }
+
+                bool startIsWithinInterval =
+                    simulationInterval.IsWithinInterval(scheduleNode.GetStartTimeBackward());
+                DueTime endTime = scheduleNode.GetEndTimeBackward();
+                bool endTimeIsWithinIntervalOrBefore =
+                    simulationInterval.IsWithinInterval(endTime) ||
+                    simulationInterval.IsBeforeInterval(endTime);
+                if (startIsWithinInterval)
+                {
+                    scheduleNode.SetInProgress();
+                }
+
+                if (endTimeIsWithinIntervalOrBefore)
+                {
+                    scheduleNode.SetFinished();
+                }
+            }
+        }
+
+        public static void CreateConfirmationsOld(SimulationInterval simulationInterval)
         {
             /*ISimulator simulator = new Simulator();
             simulator.ProcessCurrentInterval(simulationInterval, _orderGenerator);*/
@@ -46,16 +139,20 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
             // set finished when endTime is within interval
             DemandOrProviders demandOrProvidersToSetFinished = new DemandOrProviders();
             demandOrProvidersToSetFinished.AddAll(
-                aggregator.GetDemandsOrProvidersWhereEndTimeIsWithinIntervalOrBefore(simulationInterval,
+                aggregator.GetDemandsOrProvidersWhereEndTimeIsWithinIntervalOrBefore(
+                    simulationInterval,
                     new DemandOrProviders(dbTransactionData.PurchaseOrderPartGetAll())));
             demandOrProvidersToSetFinished.AddAll(
-                aggregator.GetDemandsOrProvidersWhereEndTimeIsWithinIntervalOrBefore(simulationInterval,
+                aggregator.GetDemandsOrProvidersWhereEndTimeIsWithinIntervalOrBefore(
+                    simulationInterval,
                     new DemandOrProviders(dbTransactionData.StockExchangeDemandsGetAll())));
             demandOrProvidersToSetFinished.AddAll(
-                aggregator.GetDemandsOrProvidersWhereEndTimeIsWithinIntervalOrBefore(simulationInterval,
+                aggregator.GetDemandsOrProvidersWhereEndTimeIsWithinIntervalOrBefore(
+                    simulationInterval,
                     new DemandOrProviders(dbTransactionData.StockExchangeProvidersGetAll())));
             demandOrProvidersToSetFinished.AddAll(
-                aggregator.GetDemandsOrProvidersWhereEndTimeIsWithinIntervalOrBefore(simulationInterval,
+                aggregator.GetDemandsOrProvidersWhereEndTimeIsWithinIntervalOrBefore(
+                    simulationInterval,
                     new DemandOrProviders(dbTransactionData.ProductionOrderBomGetAll())));
             foreach (var demandOrProvider in demandOrProvidersToSetFinished)
             {
@@ -74,7 +171,8 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                     customerOrderPart.SetReadOnly();
 
                     bool allChildsAreFinished = true;
-                    foreach (var stockExchangeProvider in aggregator.GetAllChildProvidersOf(customerOrderPart))
+                    foreach (var stockExchangeProvider in aggregator.GetAllChildProvidersOf(
+                        customerOrderPart))
                     {
                         if (stockExchangeProvider.IsFinished() == false)
                         {
@@ -82,30 +180,32 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                             break;
                         }
                     }
+
                     if (allChildsAreFinished)
                     {
                         customerOrderPart.SetFinished();
                     }
                 }
             }
-            
+
             // set operations readonly
             foreach (var operation in dbTransactionData.ProductionOrderOperationGetAll())
             {
                 operation.SetReadOnly();
             }
-            
+
             // set productionOrders readonly
             foreach (var productionOrder in dbTransactionData.ProductionOrderGetAll())
             {
                 productionOrder.SetReadOnly();
             }
-            
+
             // future SEs are still not readonly, set it so
             foreach (var stockExchangeDemand in dbTransactionData.StockExchangeDemandsGetAll())
             {
                 stockExchangeDemand.SetReadOnly();
             }
+
             foreach (var stockExchangeProvider in dbTransactionData.StockExchangeProvidersGetAll())
             {
                 stockExchangeProvider.SetReadOnly();

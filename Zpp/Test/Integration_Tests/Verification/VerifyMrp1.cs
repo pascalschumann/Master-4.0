@@ -28,15 +28,14 @@ namespace Zpp.Test.Integration_Tests.Verification
             IDbTransactionData dbTransactionDataArchive =
                 ZppConfiguration.CacheManager.GetDbTransactionDataArchive();
             
-            VerifyQuantities(dbTransactionData);
-            VerifyQuantities(dbTransactionDataArchive);
-            VerifyEdgeTypes(dbTransactionData);
-            VerifyEdgeTypes(dbTransactionDataArchive);
+            VerifyQuantities(dbTransactionData, false);
+            VerifyQuantities(dbTransactionDataArchive, true);
+            VerifyEdgeTypes(dbTransactionData, false);
+            VerifyEdgeTypes(dbTransactionDataArchive, true);
         }
 
-        private void VerifyQuantities(IDbTransactionData dbTransactionData)
+        private void VerifyQuantities(IDbTransactionData dbTransactionData, bool isArchive)
         {
-            Assert.True(dbTransactionData.DemandToProviderGetAll().Any());
             foreach (var demandToProvider in dbTransactionData.DemandToProviderGetAll())
             {
                 Demand demand = dbTransactionData.DemandsGetById(demandToProvider.GetDemandId());
@@ -55,14 +54,19 @@ namespace Zpp.Test.Integration_Tests.Verification
                 // provider's quantity == demandToProvider's quantity
                 Assert.True(provider.GetQuantity().Equals(demandToProvider.GetQuantity()));
             }
-
-            Assert.True(dbTransactionData.ProviderToDemandGetAll().Any());
+            
             foreach (var providerToDemand in dbTransactionData.ProviderToDemandGetAll())
             {
                 Demand demand = dbTransactionData.DemandsGetById(providerToDemand.GetDemandId());
                 Provider provider =
                     dbTransactionData.ProvidersGetById(providerToDemand.GetProviderId());
 
+                // this is a special case, doc can be found at TODO
+                if (provider ==null && demand.GetType() == typeof(StockExchangeDemand) && isArchive )
+                {
+                    continue;
+                }
+                
                 // every quantity > 0
                 Assert.True(demand.GetQuantity().IsGreaterThan(Quantity.Null()));
                 Assert.True(provider.GetQuantity().IsGreaterThan(Quantity.Null()));
@@ -112,7 +116,7 @@ namespace Zpp.Test.Integration_Tests.Verification
          * TODO: add a new Quality to test: check that NONE is only if it's defined in upper connections
          * (e.g. after a PrO MUST come another Demand )
          */
-        private void VerifyEdgeTypes(IDbTransactionData dbTransactionData)
+        private void VerifyEdgeTypes(IDbTransactionData dbTransactionData, bool isArchive)
         {
            
             IDictionary<Type, Type[]> allowedEdges = new Dictionary<Type, Type[]>()
@@ -165,6 +169,13 @@ namespace Zpp.Test.Integration_Tests.Verification
                 Demand demand = dbTransactionData.DemandsGetById(providerToDemand.GetDemandId());
                 Provider provider =
                     dbTransactionData.ProvidersGetById(providerToDemand.GetProviderId());
+                
+                // this is a special case, doc can be found at TODO
+                if (provider ==null && demand.GetType() == typeof(StockExchangeDemand) && isArchive )
+                {
+                    continue;
+                }
+                
                 Assert.True(allowedEdges[provider.GetType()].Contains(demand.GetType()),
                     $"This is no valid edge: {provider.GetType()} --> {demand.GetType()}");
             }

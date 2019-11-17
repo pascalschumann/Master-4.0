@@ -80,8 +80,8 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
         private static void ArchiveStockExchangeProvidersWithoutChilds(
             IDbTransactionData dbTransactionData, IAggregator aggregator)
         {
-            Providers copyOfStockExchangeProviders =
-                new Providers(dbTransactionData.StockExchangeProvidersGetAll());
+            Providers copyOfStockExchangeProviders = new Providers();
+            copyOfStockExchangeProviders.AddAll(dbTransactionData.StockExchangeProvidersGetAll());
             foreach (var stockExchangeProvider in copyOfStockExchangeProviders)
             {
                 Demands stockExchangeDemands =

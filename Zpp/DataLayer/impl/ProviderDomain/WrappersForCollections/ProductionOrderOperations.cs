@@ -6,13 +6,14 @@ using Zpp.DataLayer.impl.WrappersForCollections;
 
 namespace Zpp.DataLayer.impl.ProviderDomain.WrappersForCollections
 {
-    public class ProductionOrderOperations : CollectionWrapperWithStackSet<ProductionOrderOperation>
+    public sealed class ProductionOrderOperations : CollectionWrapperWithStackSet<ProductionOrderOperation>
     {
         Dictionary<Id, Ids> _productionOrderToOperations = new Dictionary<Id, Ids>();
         
         public ProductionOrderOperations(IEnumerable<T_ProductionOrderOperation> list
-            ) : base(Wrap(list))
+            )
         {
+            AddAll(Wrap(list));
         }
 
         public ProductionOrderOperations()

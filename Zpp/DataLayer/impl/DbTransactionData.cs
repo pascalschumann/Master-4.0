@@ -497,13 +497,13 @@ namespace Zpp.DataLayer.impl
 
         public Demands CustomerOrderPartGetAll()
         {
-            List<Demand> demands = new List<Demand>();
+            Demands demands = new Demands();
             foreach (var demand in _customerOrderParts)
             {
                 demands.Add(new CustomerOrderPart(demand.ToIDemand()));
             }
 
-            return new Demands(demands);
+            return demands;
         }
 
         public void CustomerOrderPartAdd(T_CustomerOrderPart customerOrderPart)

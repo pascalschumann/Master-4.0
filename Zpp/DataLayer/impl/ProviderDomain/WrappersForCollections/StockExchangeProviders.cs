@@ -8,10 +8,11 @@ namespace Zpp.DataLayer.impl.ProviderDomain.WrappersForCollections
     /**
      * wraps the collection with all stockExchangeProviders
      */
-    public class StockExchangeProviders : Providers
+    public sealed class StockExchangeProviders : Providers
     {
-        public StockExchangeProviders(List<T_StockExchange> iDemands) : base(ToProviders(iDemands))
+        public StockExchangeProviders(List<T_StockExchange> iDemands)
         {
+            AddAll(ToProviders(iDemands));
         }
 
         private static List<Provider> ToProviders(List<T_StockExchange> Providers)

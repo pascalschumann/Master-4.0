@@ -10,20 +10,22 @@ namespace Zpp.DataLayer.impl.DemandDomain.WrappersForCollections
     /**
      * wraps the collection with all productionOrderBoms
      */
-    public class ProductionOrderBoms : Demands
+    public sealed class ProductionOrderBoms : Demands
     {
         Dictionary<Id, Ids> _operationToBom = new Dictionary<Id, Ids>();
         
-        public ProductionOrderBoms(List<T_ProductionOrderBom> iDemands) : base(ToDemands(iDemands))
+        public ProductionOrderBoms(List<T_ProductionOrderBom> iDemands)
         {
+            AddAll(ToDemands(iDemands));
         }
 
         public ProductionOrderBoms()
         {
         }
 
-        public ProductionOrderBoms(List<Demand> demands) : base(demands)
+        public ProductionOrderBoms(List<Demand> demands)
         {
+            AddAll(demands);
         }
 
         private static List<Demand> ToDemands(List<T_ProductionOrderBom> iDemands)

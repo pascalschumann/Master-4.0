@@ -4,14 +4,16 @@ using Zpp.DataLayer.impl.WrappersForCollections;
 
 namespace Zpp.Util.Graph.impl
 {
-    public class Nodes : CollectionWrapperWithStackSet<INode>, INodes
+    public sealed class Nodes : CollectionWrapperWithStackSet<INode>, INodes
     {
-        public Nodes(IEnumerable<INode> list) : base(list)
+        public Nodes(IEnumerable<INode> list)
         {
+            AddAll(list);
         }
 
-        public Nodes(INode item) : base(item)
+        public Nodes(INode item)
         {
+            Add(item);
         }
 
         public Nodes()

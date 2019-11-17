@@ -7,14 +7,16 @@ namespace Zpp.DataLayer.impl.ProviderDomain.WrappersForCollections
     /**
      * wraps the collection with all purchaseOrderParts
      */
-    public class PurchaseOrderParts : Providers
+    public sealed class PurchaseOrderParts : Providers
     {
-        public PurchaseOrderParts(List<Provider> providers) : base(providers)
+        public PurchaseOrderParts(List<Provider> providers) 
         {
+            AddAll(providers);
         }
         
-        public PurchaseOrderParts(List<T_PurchaseOrderPart> iDemands) : base(ToProviders(iDemands))
+        public PurchaseOrderParts(List<T_PurchaseOrderPart> iDemands)
         {
+            AddAll(ToProviders(iDemands));
         }
 
         private static List<Provider> ToProviders(List<T_PurchaseOrderPart> Providers)

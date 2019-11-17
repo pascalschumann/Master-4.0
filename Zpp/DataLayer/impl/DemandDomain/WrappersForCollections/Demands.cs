@@ -12,10 +12,6 @@ namespace Zpp.DataLayer.impl.DemandDomain.WrappersForCollections
     {
         private readonly HierarchyNumber _hierarchyNumber;
 
-        public Demands(IEnumerable<Demand> list) : base(list)
-        {
-        }
-
         public Demands()
         {
         }

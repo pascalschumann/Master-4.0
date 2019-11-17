@@ -7,22 +7,25 @@ namespace Zpp.DataLayer.impl.ProviderDomain.WrappersForCollections
     /**
      * wraps the collection with all productionOrders
      */
-    public class ProductionOrders : Providers
+    public sealed class ProductionOrders : Providers
     {
-        public ProductionOrders(List<Provider> providers) : base(providers)
+        public ProductionOrders(List<Provider> providers)
         {
+            AddAll(providers);
         }
 
         public ProductionOrders()
         {
         }
 
-        public ProductionOrders(Provider provider) : base(provider)
+        public ProductionOrders(Provider provider)
         {
+            Add(provider);
         }
         
-        public ProductionOrders(List<T_ProductionOrder> iDemands) : base(ToProviders(iDemands))
+        public ProductionOrders(List<T_ProductionOrder> iDemands)
         {
+            AddAll(ToProviders(iDemands));
         }
 
         private static List<Provider> ToProviders(List<T_ProductionOrder> Providers)

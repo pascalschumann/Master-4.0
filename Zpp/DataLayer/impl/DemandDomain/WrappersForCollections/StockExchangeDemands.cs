@@ -8,11 +8,12 @@ namespace Zpp.DataLayer.impl.DemandDomain.WrappersForCollections
     /**
      * wraps the collection with all stockExchangeDemands
      */
-    public class StockExchangeDemands : Demands
+    public sealed class StockExchangeDemands : Demands
     {
         public StockExchangeDemands(List<T_StockExchange> iDemands
-            ) : base(ToDemands(iDemands))
+            )
         {
+            AddAll(ToDemands(iDemands));
         }
 
         private static List<Demand> ToDemands(List<T_StockExchange> iDemands)

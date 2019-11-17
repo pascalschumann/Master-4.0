@@ -14,14 +14,6 @@ namespace Zpp.DataLayer.impl.ProviderDomain.WrappersForCollections
      */
     public class Providers : CollectionWrapperWithStackSet<Provider>
     {
-        public Providers(IEnumerable<Provider> list) : base(list)
-        {
-        }
-        
-        public Providers(Provider provider) : base(provider)
-        {
-        }
-
         public Providers()
         {
         }
@@ -76,7 +68,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.WrappersForCollections
 
         public Demands CalculateUnsatisfiedDemands(Demands demands)
         {
-            List<Demand> unSatisfiedDemands = new List<Demand>();
+            Demands unSatisfiedDemands = new Demands();
             Dictionary<Provider, Quantity> reservableQuantityToProvider =
                 new Dictionary<Provider, Quantity>();
             foreach (var provider in StackSet)
@@ -112,7 +104,7 @@ namespace Zpp.DataLayer.impl.ProviderDomain.WrappersForCollections
                 }
             }
             
-            return new Demands(unSatisfiedDemands);
+            return unSatisfiedDemands;
         }
 
         public Provider GetProviderById(Id id)

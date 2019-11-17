@@ -10,22 +10,6 @@ namespace Zpp.DataLayer.impl.WrappersForCollections
     {
         protected readonly IStackSet<T> StackSet = new StackSet<T>();
 
-        /**
-         * Init collectionWrapper with a copy of given list
-         */
-        protected CollectionWrapperWithStackSet(IEnumerable<T> list)
-        {
-            foreach (var item in list)
-            {
-                StackSet.Push(item);
-            }
-        }
-        
-        protected CollectionWrapperWithStackSet(T item)
-        {
-            StackSet.Push(item);
-        }
-
         protected CollectionWrapperWithStackSet()
         {
         }

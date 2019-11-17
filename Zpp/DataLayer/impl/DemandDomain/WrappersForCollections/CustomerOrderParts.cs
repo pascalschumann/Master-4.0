@@ -7,10 +7,15 @@ namespace Zpp.DataLayer.impl.DemandDomain.WrappersForCollections
     /**
      * wraps collection with all customerOrderParts
      */
-    public class CustomerOrderParts : Demands
+    public sealed class CustomerOrderParts : Demands
     {
         public CustomerOrderParts(List<T_CustomerOrderPart> iDemands
-            ) : base(ToDemands(iDemands))
+            )
+        {
+            AddAll(ToDemands(iDemands));
+        }
+
+        public CustomerOrderParts()
         {
         }
 

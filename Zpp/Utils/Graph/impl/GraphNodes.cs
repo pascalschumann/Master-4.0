@@ -3,10 +3,11 @@ using Zpp.DataLayer.impl.WrappersForCollections;
 
 namespace Zpp.Util.Graph.impl
 {
-    public class GraphNodes: CollectionWrapperWithStackSet<IGraphNode>
+    public sealed class GraphNodes: CollectionWrapperWithStackSet<IGraphNode>
     {
-        internal GraphNodes(IEnumerable<IGraphNode> list) : base(list)
+        internal GraphNodes(IEnumerable<IGraphNode> list)
         {
+            AddAll(list);
         }
 
         internal GraphNodes()

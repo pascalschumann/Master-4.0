@@ -7,10 +7,11 @@ namespace Zpp.DataLayer.impl.WrappersForCollections
     /**
      * wraps the collection with all purchaseOrders
      */
-    public class PurchaseOrders: CollectionWrapperWithStackSet<PurchaseOrder>
+    public sealed class PurchaseOrders: CollectionWrapperWithStackSet<PurchaseOrder>
     {
-        public PurchaseOrders(List<PurchaseOrder> list) : base(list)
+        public PurchaseOrders(List<PurchaseOrder> list) : base()
         {
+            AddAll(list);
         }
 
         public PurchaseOrders()

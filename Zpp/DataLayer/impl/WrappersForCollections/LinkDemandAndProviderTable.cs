@@ -12,14 +12,15 @@ namespace Zpp.DataLayer.impl.WrappersForCollections
     /**
      * wraps ILinkDemandAndProvider
      */
-    public class LinkDemandAndProviderTable : CollectionWrapperWithStackSet<ILinkDemandAndProvider>
+    public sealed class LinkDemandAndProviderTable : CollectionWrapperWithStackSet<ILinkDemandAndProvider>
     {
         private readonly Dictionary<Id, Ids> _indexDemandId = new Dictionary<Id, Ids>();
         private readonly Dictionary<Id, Ids> _indexProviderId = new Dictionary<Id, Ids>();
 
 
-        public LinkDemandAndProviderTable(IEnumerable<ILinkDemandAndProvider> list) : base(list)
+        public LinkDemandAndProviderTable(IEnumerable<ILinkDemandAndProvider> list)
         {
+            AddAll(list);
         }
 
         public LinkDemandAndProviderTable()

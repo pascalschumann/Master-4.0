@@ -102,8 +102,8 @@ namespace Zpp.Test.Integration_Tests
                     $"per interval (0-{testConfiguration.SimulationInterval}) in {cycles} cycle(s).");
                 
                 // TODO: revert this
-                customerOrderCount *= 10;
-                // customerOrderCount += customerOrderCountOriginal;
+                // customerOrderCount *= 10;
+                customerOrderCount += customerOrderCountOriginal;
                 testConfiguration.CustomerOrderPartQuantity = customerOrderCount;
             }
         }

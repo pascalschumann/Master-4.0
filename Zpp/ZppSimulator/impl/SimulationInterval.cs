@@ -24,6 +24,16 @@ namespace Zpp.ZppSimulator.impl
         {
             return dueTime.GetValue() < StartAt;
         }
+
+        public DueTime GetStart()
+        {
+            return new DueTime((int)StartAt);
+        }
+        
+        public DueTime GetEnd()
+        {
+            return new DueTime((int)EndAt);
+        }
     }
     
     

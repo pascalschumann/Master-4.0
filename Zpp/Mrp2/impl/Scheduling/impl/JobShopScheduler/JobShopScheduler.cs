@@ -18,6 +18,22 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
         private readonly IDbMasterDataCache _dbMasterDataCache =
             ZppConfiguration.CacheManager.GetMasterDataCache();
 
+        private void CorrectIdleStartTimesOfMachines(IEnumerable<ProductionOrderOperation> operations,
+            Dictionary<Id, List<Resource>> resourcesByResourceSkillId)
+        {
+            foreach (var operation in operations)
+            {
+                foreach (var resource in resourcesByResourceSkillId[operation.GetResourceSkillId()])
+                {
+                    if (resource.GetValue().Id.Equals(operation.GetValue().ResourceId) &&
+                        resource.GetIdleStartTime().GetValue() < operation.GetEndTime())
+                    {
+                        resource.SetIdleStartTime(new DueTime(operation.GetEndTime()));
+                    }
+                }
+            }
+        }
+
         public void ScheduleWithGifflerThompsonAsZaepfel(IPriorityRule priorityRule,
             IDirectedGraph<INode> productionOrderToOperationGraph)
         {
@@ -30,24 +46,17 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
                         .GetResourcesByResourceSkillId(resourceSkill.GetId()));
             }
 
-            // set correct idleStartTimes in resources from operations in progress
-            /*IDbTransactionData dbTransactionData =
+            // set correct idleStartTimes in resources from operations of last cycle(s)
+            IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.GetDbTransactionData();
-            foreach (var operation in dbTransactionData.ProductionOrderOperationGetAll())
-            {
-                if (operation.IsInProgress())
-                {
-                    foreach (var resource in resourcesByResourceSkillId[
-                        operation.GetResourceSkillId()])
-                    {
-                        if (resource.GetValue().Id.Equals(operation.GetValue().ResourceId) &&
-                            resource.GetIdleStartTime().GetValue() < operation.GetEndTime())
-                        {
-                            resource.SetIdleStartTime(new DueTime(operation.GetEndTime()));
-                        }
-                    }
-                }
-            }*/
+            IDbTransactionData dbTransactionDataArchive =
+                ZppConfiguration.CacheManager.GetDbTransactionDataArchive();
+            // TODO: This is a huge performance impact, consider having an T_Resource with new field IdleStartTime
+            // so the following collection iterations can be skipped (Archive operations can be huge)
+            CorrectIdleStartTimesOfMachines(dbTransactionData.ProductionOrderOperationGetAll(),
+                resourcesByResourceSkillId);
+            CorrectIdleStartTimesOfMachines(dbTransactionDataArchive.ProductionOrderOperationGetAll(),
+                resourcesByResourceSkillId);
 
 
             /*
@@ -183,7 +192,7 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
                                 n.SetStartTime(o1.GetEndTime());
                             }
                         }
-                        
+
                         // prepare for next round
                         productionOrderToOperationGraph.RemoveNode(o1AsNode, true);
                     }
@@ -206,7 +215,7 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
                 foreach (var leaf in leafs)
                 {
                     S.Push((ProductionOrderOperation) leaf.GetEntity());
-                }   
+                }
             }
 
             return S;

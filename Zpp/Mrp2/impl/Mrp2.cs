@@ -16,6 +16,7 @@ using Zpp.Util;
 using Zpp.Util.Graph;
 using Zpp.Util.Graph.impl;
 using Zpp.Util.Performance;
+using Zpp.ZppSimulator.impl;
 
 namespace Zpp.Mrp2.impl
 {
@@ -23,10 +24,12 @@ namespace Zpp.Mrp2.impl
     {
         private readonly IJobShopScheduler _jobShopScheduler = new JobShopScheduler();
         private readonly PerformanceMonitors _performanceMonitors;
+        private readonly SimulationInterval _simulationInterval;
 
-        public Mrp2(PerformanceMonitors performanceMonitors)
+        public Mrp2(PerformanceMonitors performanceMonitors, SimulationInterval simulationInterval)
         {
             _performanceMonitors = performanceMonitors;
+            _simulationInterval = simulationInterval;
         }
 
         private void ManufacturingResourcePlanning(Demands dbDemands)
@@ -57,7 +60,7 @@ namespace Zpp.Mrp2.impl
             ScheduleBackwardFirst(orderOperationGraph);
             AssertEveryDemandAndProviderIsScheduled();
 
-            ScheduleForward(orderOperationGraph);
+            ScheduleForward(orderOperationGraph, _simulationInterval);
             ScheduleBackwardSecond(orderOperationGraph);
 
             _performanceMonitors.Stop(InstanceToTrack.BackwardForwardBackwardScheduling);
@@ -164,9 +167,9 @@ namespace Zpp.Mrp2.impl
             backwardsScheduler.ScheduleBackward();
         }
 
-        private void ScheduleForward(OrderOperationGraph orderOperationGraph)
+        private void ScheduleForward(OrderOperationGraph orderOperationGraph, SimulationInterval simulationInterval)
         {
-            IForwardScheduler forwardScheduler = new ForwardScheduler(orderOperationGraph);
+            IForwardScheduler forwardScheduler = new ForwardScheduler(orderOperationGraph, simulationInterval);
             forwardScheduler.ScheduleForward();
         }
 

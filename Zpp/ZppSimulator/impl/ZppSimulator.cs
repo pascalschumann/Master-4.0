@@ -20,15 +20,13 @@ namespace Zpp.ZppSimulator.impl
     public class ZppSimulator : IZppSimulator
     {
         private readonly PerformanceMonitors _performanceMonitors;
-
-        private readonly IMrp2 _mrp2;
+        
         private readonly IConfirmationManager _confirmationManager = new ConfirmationManager();
         private ICustomerOrderCreator _customerOrderCreator = null;
 
         public ZppSimulator()
         {
             _performanceMonitors = new PerformanceMonitors();
-            _mrp2 = new Mrp2.impl.Mrp2(_performanceMonitors);
         }
 
         public void StartOneCycle(SimulationInterval simulationInterval)
@@ -48,7 +46,8 @@ namespace Zpp.ZppSimulator.impl
 
             // Mrp2
             _performanceMonitors.Start(InstanceToTrack.Mrp2);
-            _mrp2.StartMrp2();
+            Mrp2.impl.Mrp2 mrp2 = new Mrp2.impl.Mrp2(_performanceMonitors, simulationInterval);
+            mrp2.StartMrp2();
             _performanceMonitors.Stop(InstanceToTrack.Mrp2);
             DebuggingTools.PrintStateToFiles(simulationInterval, dbTransactionData, "1_after_mrp2",
                 true);
@@ -111,7 +110,8 @@ namespace Zpp.ZppSimulator.impl
             _customerOrderCreator.CreateCustomerOrders(simulationInterval, customerOrderQuantity);
 
             // execute mrp2
-            _mrp2.StartMrp2();
+            Mrp2.impl.Mrp2 mrp2 = new Mrp2.impl.Mrp2(_performanceMonitors, simulationInterval);
+            mrp2.StartMrp2();
 
             DebuggingTools.PrintStateToFiles(simulationInterval,
                 ZppConfiguration.CacheManager.GetDbTransactionData(), "", true);

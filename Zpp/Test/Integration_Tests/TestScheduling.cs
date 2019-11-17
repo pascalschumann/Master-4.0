@@ -268,24 +268,27 @@ namespace Zpp.Test.Integration_Tests
                     traversedOperations.Push(new Node(currentPredecessor));
 
                     // transition time MUST be before the start of Operation
-                    int expectedStartBackward =
+                    int expectedStartBackwardLowerLimit =
                         lastOperation.GetValue().EndBackward.GetValueOrDefault() +
                         TransitionTimer.GetTransitionTimeFactor() *
                         currentOperation.GetValue().Duration;
                     int actualStartBackward = currentOperation.GetValue().StartBackward
                         .GetValueOrDefault();
-                    Assert.True(expectedStartBackward.Equals(actualStartBackward),
+                    Assert.True(actualStartBackward >= expectedStartBackwardLowerLimit,
                         $"The transition time between the operations is not correct: " +
-                        $"expectedStartBackward: {expectedStartBackward}, actualStartBackward {actualStartBackward}");
+                        $"expectedStartBackward: {expectedStartBackwardLowerLimit}, actualStartBackward {actualStartBackward}");
 
                     INodes predecessorNodesRecursive =
                         productionOrderToOperationGraph.GetPredecessorNodesRecursive(new Node(currentPredecessor));
-                    IStackSet<ProductionOrderOperation> newPredecessorNodes =
-                        new StackSet<ProductionOrderOperation>(
-                            predecessorNodesRecursive.Select(x =>
-                                (ProductionOrderOperation) x.GetEntity()));
-                    ValidatePredecessorOperationsTransitionTimeIsCorrect(newPredecessorNodes,
-                        currentOperation, productionOrderToOperationGraph, traversedOperations);
+                    if (predecessorNodesRecursive != null)
+                    {
+                        IStackSet<ProductionOrderOperation> newPredecessorNodes =
+                            new StackSet<ProductionOrderOperation>(
+                                predecessorNodesRecursive.Select(x =>
+                                    (ProductionOrderOperation) x.GetEntity()));
+                        ValidatePredecessorOperationsTransitionTimeIsCorrect(newPredecessorNodes,
+                            currentOperation, productionOrderToOperationGraph, traversedOperations);
+                    }
                 }
                 else
                 {

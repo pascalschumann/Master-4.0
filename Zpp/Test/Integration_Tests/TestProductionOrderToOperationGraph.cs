@@ -1,13 +1,17 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using Xunit;
 using Zpp.DataLayer;
+using Zpp.DataLayer.impl.ProviderDomain.Wrappers;
 using Zpp.DataLayer.impl.ProviderDomain.WrappersForCollections;
+using Zpp.Mrp2.impl.Scheduling.impl;
 using Zpp.Test.Configuration;
 using Zpp.Util;
 using Zpp.Util.Graph;
 using Zpp.Util.Graph.impl;
+using Zpp.Util.StackSet;
 using Zpp.ZppSimulator;
 
 namespace Zpp.Test.Integration_Tests
@@ -36,11 +40,11 @@ namespace Zpp.Test.Integration_Tests
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.ReloadTransactionData();
 
-            ProductionOrderToOperationGraph productionOrderToOperationGraph =
-                new ProductionOrderToOperationGraph();
+            IDirectedGraph<INode> operationGraph =
+                new OperationGraph(new OrderOperationGraph());
 
-            ProductionOrderOperations productionOrderOperations =
-                productionOrderToOperationGraph.GetAllOperations();
+            IEnumerable<ProductionOrderOperation> productionOrderOperations =
+                operationGraph.GetNodes().Select(x=>(ProductionOrderOperation)x.GetNode().GetEntity());
             foreach (var productionOrderOperation in dbTransactionData
                 .ProductionOrderOperationGetAll())
             {

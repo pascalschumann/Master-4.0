@@ -67,7 +67,7 @@ namespace Zpp.Mrp2.impl
 
             // job shop scheduling
             _performanceMonitors.Start(InstanceToTrack.JobShopScheduling);
-            JobShopScheduling();
+            JobShopScheduling(orderOperationGraph);
             _performanceMonitors.Stop(InstanceToTrack.JobShopScheduling);
         }
 
@@ -173,7 +173,7 @@ namespace Zpp.Mrp2.impl
             forwardScheduler.ScheduleForward();
         }
 
-        private void JobShopScheduling()
+        private void JobShopScheduling(OrderOperationGraph orderOperationGraph)
         {
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.GetDbTransactionData();
@@ -199,10 +199,10 @@ namespace Zpp.Mrp2.impl
             }
 
             // start !
-            IDirectedGraph<INode> productionOrderToOperationGraph =
-                new ProductionOrderToOperationGraph();
+            IDirectedGraph<INode> operationGraph =
+                new OperationGraph(orderOperationGraph);
             _jobShopScheduler.ScheduleWithGifflerThompsonAsZaepfel(
-                new PriorityRule(productionOrderToOperationGraph), productionOrderToOperationGraph);
+                new PriorityRule(operationGraph), operationGraph);
         }
 
         public void StartMrp2()

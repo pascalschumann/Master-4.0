@@ -9,11 +9,11 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
 {
     public class PriorityRule : IPriorityRule
     {
-        private readonly IDirectedGraph<INode> _productionOrderToOperationGraph;
+        private readonly IDirectedGraph<INode> _operationGraph;
 
-        public PriorityRule(IDirectedGraph<INode> productionOrderToOperationGraph)
+        public PriorityRule(IDirectedGraph<INode> operationGraph)
         {
-            _productionOrderToOperationGraph = productionOrderToOperationGraph;
+            _operationGraph = operationGraph;
         }
 
         public ProductionOrderOperation GetHighestPriorityOperation(DueTime now,

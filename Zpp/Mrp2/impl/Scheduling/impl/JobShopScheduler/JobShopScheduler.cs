@@ -35,7 +35,7 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
         }
 
         public void ScheduleWithGifflerThompsonAsZaepfel(IPriorityRule priorityRule,
-            IDirectedGraph<INode> productionOrderToOperationGraph)
+            IDirectedGraph<INode> operationGraph)
         {
             Dictionary<Id, List<Resource>> resourcesByResourceSkillId =
                 new Dictionary<Id, List<Resource>>();
@@ -75,7 +75,7 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
             IStackSet<ProductionOrderOperation> S = new StackSet<ProductionOrderOperation>();
 
             // Bestimme initiale Menge: S = a
-            S = CreateS(productionOrderToOperationGraph);
+            S = CreateS(operationGraph);
 
             // t(o) = 0 für alle o aus S
             foreach (var o in S)
@@ -178,7 +178,7 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
                         INode o1AsNode = new Node(o1);
 
                         INodes allPredecessorsRecursive =
-                            productionOrderToOperationGraph.GetPredecessorNodesRecursive(o1AsNode);
+                            operationGraph.GetPredecessorNodesRecursive(o1AsNode);
                         if (allPredecessorsRecursive != null)
                         {
                             IStackSet<ProductionOrderOperation> N =
@@ -194,10 +194,10 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
                         }
 
                         // prepare for next round
-                        productionOrderToOperationGraph.RemoveNode(o1AsNode, true);
+                        operationGraph.RemoveNode(o1AsNode, true);
                     }
 
-                    S = CreateS(productionOrderToOperationGraph);
+                    S = CreateS(operationGraph);
                 }
             }
         }

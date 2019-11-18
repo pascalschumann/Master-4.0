@@ -214,16 +214,16 @@ namespace Zpp.Test.Integration_Tests
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.ReloadTransactionData();
 
-            ProductionOrderToOperationGraph productionOrderToOperationGraph =
-                new ProductionOrderToOperationGraph();
+            IDirectedGraph<INode> operationGraph =
+                new OperationGraph(new OrderOperationGraph());
 
             IStackSet<INode> innerLeafs =
-                productionOrderToOperationGraph.GetLeafNodes().ToStackSet();
+                operationGraph.GetLeafNodes().ToStackSet();
             IStackSet<INode> traversedNodes = new StackSet<INode>();
             foreach (var leaf in innerLeafs)
             {
                 INodes predecessorNodesRecursive =
-                    productionOrderToOperationGraph.GetPredecessorNodesRecursive(leaf);
+                    operationGraph.GetPredecessorNodesRecursive(leaf);
                 IStackSet<ProductionOrderOperation> newPredecessorNodes =
                     new StackSet<ProductionOrderOperation>(
                         predecessorNodesRecursive.Select(x =>
@@ -232,7 +232,7 @@ namespace Zpp.Test.Integration_Tests
                 ProductionOrderOperation
                     lastOperation = (ProductionOrderOperation) leaf.GetEntity();
                 ValidatePredecessorOperationsTransitionTimeIsCorrect(newPredecessorNodes,
-                    lastOperation, productionOrderToOperationGraph, traversedNodes);
+                    lastOperation, operationGraph, traversedNodes);
                 traversedNodes.Push(leaf);
             }
 
@@ -252,7 +252,7 @@ namespace Zpp.Test.Integration_Tests
         private void ValidatePredecessorOperationsTransitionTimeIsCorrect(
             IStackSet<ProductionOrderOperation> predecessorOperations,
             ProductionOrderOperation lastOperation,
-            ProductionOrderToOperationGraph productionOrderToOperationGraph,
+            IDirectedGraph<INode> operationGraph,
             IStackSet<INode> traversedOperations)
         {
             if (predecessorOperations == null)
@@ -279,7 +279,7 @@ namespace Zpp.Test.Integration_Tests
                         $"expectedStartBackward: {expectedStartBackwardLowerLimit}, actualStartBackward {actualStartBackward}");
 
                     INodes predecessorNodesRecursive =
-                        productionOrderToOperationGraph.GetPredecessorNodesRecursive(new Node(currentPredecessor));
+                        operationGraph.GetPredecessorNodesRecursive(new Node(currentPredecessor));
                     if (predecessorNodesRecursive != null)
                     {
                         IStackSet<ProductionOrderOperation> newPredecessorNodes =
@@ -287,7 +287,7 @@ namespace Zpp.Test.Integration_Tests
                                 predecessorNodesRecursive.Select(x =>
                                     (ProductionOrderOperation) x.GetEntity()));
                         ValidatePredecessorOperationsTransitionTimeIsCorrect(newPredecessorNodes,
-                            currentOperation, productionOrderToOperationGraph, traversedOperations);
+                            currentOperation, operationGraph, traversedOperations);
                     }
                 }
                 else

@@ -9,6 +9,6 @@ namespace Zpp.Mrp2.impl.Scheduling
          * Giffler-Thomson
          */
         void ScheduleWithGifflerThompsonAsZaepfel(IPriorityRule priorityRule,
-            IDirectedGraph<INode> productionOrderToOperationGraph);
+            IDirectedGraph<INode> operationGraph);
     }
 }

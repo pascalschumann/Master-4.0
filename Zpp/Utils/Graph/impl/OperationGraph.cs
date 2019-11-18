@@ -4,6 +4,7 @@ using Master40.DB.Data.WrappersForPrimitives;
 using Zpp.DataLayer;
 using Zpp.DataLayer.impl;
 using Zpp.DataLayer.impl.ProviderDomain.Wrappers;
+using Zpp.Mrp2.impl.Scheduling.impl;
 using Zpp.Util.StackSet;
 
 namespace Zpp.Util.Graph.impl
@@ -16,6 +17,20 @@ namespace Zpp.Util.Graph.impl
         public OperationGraph(ProductionOrder productionOrder) : base()
         {
             CreateGraph2(productionOrder);
+        }
+        
+        public OperationGraph(OrderOperationGraph orderOperationGraph) : base()
+        {
+            IStackSet<IGraphNode> nodes = new StackSet<IGraphNode>(orderOperationGraph.GetNodes());
+            foreach (var graphNode in nodes)
+            {
+                if (graphNode.GetNode().GetEntity().GetType() != typeof(ProductionOrderOperation))
+                {
+                    orderOperationGraph.RemoveNode(graphNode.GetNode(), true);
+                }
+            }
+
+            _nodes = orderOperationGraph.GetNodes();
         }
 
         private void CreateGraph2(ProductionOrder productionOrder)

@@ -240,6 +240,13 @@ namespace Zpp.Test.Integration_Tests.Verification
                     dbTransactionDataArchive.DemandsGetById(providerToDemand.GetDemandId());
                 Provider provider =
                     dbTransactionDataArchive.ProvidersGetById(providerToDemand.GetProviderId());
+                
+                // this is a special case, doc can be found at TODO
+                if (provider ==null && demand.GetType() == typeof(StockExchangeDemand))
+                {
+                    continue;
+                }
+                
                 Assert.NotNull(demand);
                 Assert.NotNull(provider);
             }

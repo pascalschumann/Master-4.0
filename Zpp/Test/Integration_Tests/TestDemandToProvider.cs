@@ -60,30 +60,7 @@ namespace Zpp.Test.Integration_Tests
                     $"The demand {unsatisfiedDemand} should be satisfied, but it is NOT.");
             }
         }
-
-        [Fact]
-        public void TestAllDemandsAreSatisfiedByProvidersOfDemandToProviderTable()
-        {
-            IZppSimulator zppSimulator = new ZppSimulator.impl.ZppSimulator();
-            zppSimulator.StartTestCycle();
-
-            IDbTransactionData dbTransactionData =
-                ZppConfiguration.CacheManager.ReloadTransactionData();
-
-            Demands allDbDemands = dbTransactionData.DemandsGetAll();
-            foreach (var demand in allDbDemands)
-            {
-                Quantity satisfiedQuantity = Quantity.Null();
-                dbTransactionData.DemandToProviderGetAll().Select(x =>
-                {
-                    satisfiedQuantity.IncrementBy(x.Quantity.GetValueOrDefault());
-                    return x;
-                }).Where(x => x.GetDemandId().Equals(demand.GetId()));
-                Assert.True(satisfiedQuantity.Equals(demand.GetQuantity()),
-                    $"Demand {demand} is not satisfied.");
-            }
-        }
-
+        
         [Fact]
         public void TestEveryQuantityOnArrowIsPositive()
         {

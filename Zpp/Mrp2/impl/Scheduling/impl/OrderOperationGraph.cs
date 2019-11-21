@@ -29,8 +29,8 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
             // it's nearly impossible to correctly identify those (with performance in mind)
 
             // CreateGraph(dbTransactionData, aggregator);
-            IDirectedGraph<INode> orderOperationGraph = CreateGraph3();
-            _nodes = orderOperationGraph.GetNodes();
+            DemandToProviderGraph demandToProviderGraph = CreateGraph3();
+            _nodes = demandToProviderGraph.GetNodes();
 
             if (IsEmpty())
             {

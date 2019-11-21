@@ -297,27 +297,6 @@ namespace Zpp.Test.Integration_Tests
                 }
             }
         }
-
-        [Theory]
-        [InlineData(TestConfigurationFileNames.DESK_COP_5_LOTSIZE_2)]
-        [InlineData(TestConfigurationFileNames.TRUCK_COP_5_LOTSIZE_2)]
-        public void TestEndMinusStartBackwardsEqualsDuration(string testConfigurationFileName)
-        {
-            InitThisTest(testConfigurationFileName);
-
-            IDbTransactionData dbTransactionData =
-                ZppConfiguration.CacheManager.ReloadTransactionData();
-
-            foreach (var productionOrderOperation in dbTransactionData
-                .ProductionOrderOperationGetAll().GetAll())
-            {
-                int EndMinusStartBackwards =
-                    productionOrderOperation.GetValue().EndBackward.GetValueOrDefault() -
-                    productionOrderOperation.GetValue().StartBackward.GetValueOrDefault();
-                Assert.True(
-                    EndMinusStartBackwards.Equals(productionOrderOperation.GetValue().Duration),
-                    "EndMinusStartBackwards does not equals the duration.");
-            }
-        }
+        
     }
 }

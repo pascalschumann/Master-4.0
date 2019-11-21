@@ -1,8 +1,0 @@
-﻿"P(PrO);10223;Tisch;\n2; Start/End/Due: 262/262/262;" -> "PrOO;10227;Tisch zusammenbauen";
-"P(PrO);10286;Tisch;\n2; Start/End/Due: 1326/1326/1326;" -> "PrOO;10290;Tisch zusammenbauen";
-"PrOO;10227;Tisch zusammenbauen" -> "P(PrO);10246;Tischbein;\n8; Start/End/Due: 174/174/174;";
-"P(PrO);10246;Tischbein;\n8; Start/End/Due: 174/174/174;" -> "PrOO;10250;Flizgleiter anstecken";
-"PrOO;10250;Flizgleiter anstecken" -> "PrOO;10253;Anschraubplatte anschweißen";
-"PrOO;10290;Tisch zusammenbauen" -> "P(PrO);10307;Tischbein;\n8; Start/End/Due: 1238/1238/1238;";
-"P(PrO);10307;Tischbein;\n8; Start/End/Due: 1238/1238/1238;" -> "PrOO;10311;Flizgleiter anstecken";
-"PrOO;10311;Flizgleiter anstecken" -> "PrOO;10314;Anschraubplatte anschweißen";

@@ -30,20 +30,27 @@ namespace Zpp.Test.Integration_Tests.Verification
                 ZppConfiguration.CacheManager.GetDbTransactionDataArchive();
             IAggregator aggregatorArchive = new Aggregator(dbTransactionDataArchive);
 
-            VerifyEveryOperationIsPlanned(dbTransactionData);
-            VerifyEveryOperationIsPlanned(dbTransactionDataArchive);
+            VerifyEveryOperationIsCorrectlyPlanned(dbTransactionData);
+            VerifyEveryOperationIsCorrectlyPlanned(dbTransactionDataArchive);
             
             VerifyEveryMachineHasOnlyOneOperationAtAnyTime(aggregator);
             VerifyEveryMachineHasOnlyOneOperationAtAnyTime(aggregatorArchive);
             
         }
 
-        private void VerifyEveryOperationIsPlanned(IDbTransactionData dbTransactionData)
+        private void VerifyEveryOperationIsCorrectlyPlanned(IDbTransactionData dbTransactionData)
         {
             foreach (var operation in dbTransactionData.ProductionOrderOperationGetAll())
             {
+                // Ist operation überhaupt geplant
                 Assert.True(operation.GetStartTime() >= 0);
+                Assert.True(operation.GetStartTime() != operation.GetEndTime());
                 Assert.True(operation.GetValue().ResourceId != null);
+                
+                //  Alle ProductionOrderOperations sind nach ihrem Start ohne Unterbrechung bis zum Ende durchzuführen.
+                // Daraus folgt, dass Endzeit minus Startzeit der definierten Dauer in M\_Operation entsprechen muss.
+                Assert.True(operation.GetEndTime() - operation.GetStartTime() == operation.GetDuration().GetValue());
+                
             }
         }
 

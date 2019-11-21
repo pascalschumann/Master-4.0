@@ -206,9 +206,9 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
          * @return: all leafs of all operationGraphs
          */
         private IStackSet<ProductionOrderOperation> CreateS(
-            IDirectedGraph<INode> productionOrderToOperationGraph)
+            IDirectedGraph<INode> operationGraph)
         {
-            INodes leafs = productionOrderToOperationGraph.GetLeafNodes();
+            INodes leafs = operationGraph.GetLeafNodes();
             IStackSet<ProductionOrderOperation> S = new StackSet<ProductionOrderOperation>();
             if (leafs != null)
             {

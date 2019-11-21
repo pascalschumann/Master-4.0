@@ -145,7 +145,57 @@ namespace Zpp.Test.Integration_Tests.Verification
             // ZPP should only use the archive for the rest of the test
             ZppConfiguration.CacheManager.UseArchiveForGetters();
 
-            // Für jede noch vorhandene ProductionOrder muss es mind. eine  Operation geben.
+            // Ein CustomerOrderParts darf kein Kind haben und muss beendet sein
+            Ids customerOrderIds = new Ids();
+            foreach (var demand in dbTransactionDataArchive.CustomerOrderPartGetAll())
+            {
+                CustomerOrderPart customerOrderPart = (CustomerOrderPart) demand;
+                customerOrderIds.Add(customerOrderPart.GetCustomerOrderId());
+                Providers childs = aggregator.GetAllChildProvidersOf(customerOrderPart);
+                Assert.False(childs.Any());
+                Assert.True(customerOrderPart.IsFinished());
+            }
+
+            // Ein PurchaseOrderPart darf kein Elter haben und muss beendet sein.
+            Ids purchaseOrderIds = new Ids();
+            foreach (var demand in dbTransactionDataArchive.PurchaseOrderPartGetAll())
+            {
+                PurchaseOrderPart purchaseOrderPart = (PurchaseOrderPart) demand;
+                purchaseOrderIds.Add(purchaseOrderPart.GetPurchaseOrderId());
+
+                Assert.True(purchaseOrderPart.IsFinished());
+                Demands demands = aggregator.GetAllParentDemandsOf(demand);
+                Assert.True(demands == null || demands.Any() == false);
+            }
+
+            // Für jede CustomerOrder muss es mind. noch ein CustomerOrderPart geben.
+            foreach (var customerOrder in dbTransactionDataArchive.CustomerOrderGetAll())
+            {
+                Assert.True(customerOrderIds.Contains(customerOrder.GetId()));
+            }
+
+            // Für jede PurchaseOrder muss es mind. noch ein PurchaseOrderPart geben.
+            foreach (var purchaseOrder in dbTransactionDataArchive.PurchaseOrderGetAll())
+            {
+                Assert.True(purchaseOrderIds.Contains(purchaseOrder.GetId()));
+            }
+            
+            // Ein StockExchangeProvider muss mind. ein Kind haben.
+            foreach (var stockExchangeProvider in dbTransactionDataArchive.StockExchangeProvidersGetAll())
+            {
+                Demands childs = aggregator.GetAllChildDemandsOf(stockExchangeProvider);
+                Assert.True(childs.Any());
+            }
+            
+            // Ein StockExchangeDemand muss beendet und geschlossen sein.
+            foreach (var stockExchangeDemand in dbTransactionDataArchive.StockExchangeDemandsGetAll())
+            {
+                bool isOpen = OpenDemandManager.IsOpen((StockExchangeDemand) stockExchangeDemand);
+                Assert.True(stockExchangeDemand.IsFinished() && isOpen == false);
+            }
+
+            // Eine ProductionOrder muss beendet sein und für eine ProductionOrder
+            // muss es mind. eine  Operation geben.
             Ids productionOrderIds = new Ids();
             Ids operationIds = new Ids();
             foreach (var operation in dbTransactionDataArchive.ProductionOrderOperationGetAll())
@@ -158,76 +208,26 @@ namespace Zpp.Test.Integration_Tests.Verification
 
                 operationIds.Add(operation.GetId());
             }
-
-            foreach (var productionOrder in dbTransactionDataArchive.ProductionOrderGetAll())
-            {
-                Assert.True(productionOrderIds.Contains(productionOrder.GetId()));
-            }
-
-            //Alle CustomerOrderParts, ProductionOrders müssen beendet sein.
             foreach (var provider in dbTransactionDataArchive.ProductionOrderGetAll())
             {
                 ProductionOrder productionOrder = (ProductionOrder) provider;
-                Assert.True(productionOrder.DetermineProductionOrderState().Equals(State.Finished));
+                Assert.True(productionOrder.DetermineProductionOrderState()
+                    .Equals(State.Finished));
+                Assert.True(productionOrderIds.Contains(productionOrder.GetId()));
             }
-
-            Ids customerOrderIds = new Ids();
-            foreach (var demand in dbTransactionDataArchive.CustomerOrderPartGetAll())
-            {
-                CustomerOrderPart customerOrderPart = (CustomerOrderPart) demand;
-                customerOrderIds.Add(customerOrderPart.GetCustomerOrderId());
-                Assert.True(customerOrderPart.IsFinished());
-            }
-
-            // Für jede vorhandene ProductionOrderBom muss es die dazugehörige
-            // Operation da sein.
+            
+            // Für jede ProductionOrderBom muss die dazugehörige Operation da sein.
             foreach (var demand in dbTransactionDataArchive.ProductionOrderBomGetAll())
             {
                 ProductionOrderBom productionOrderBom = (ProductionOrderBom) demand;
                 operationIds.Contains(productionOrderBom.GetProductionOrderOperationId());
             }
 
-            // Es darf nur beendete und geschlossene StockExchangeDemands geben.
-            foreach (var stockExchangeDemand in
-                dbTransactionDataArchive.StockExchangeDemandsGetAll())
-            {
-                bool isOpen = OpenDemandManager.IsOpen((StockExchangeDemand) stockExchangeDemand);
-                Assert.True(stockExchangeDemand.IsFinished() && isOpen == false);
-            }
-
-            // Jeder vorhandene StockExchangeProvider muss ein Kind haben.
-            foreach (var stockExchangeProvider in dbTransactionDataArchive
-                .StockExchangeProvidersGetAll())
-            {
-                Demands childs = aggregator.GetAllChildDemandsOf(stockExchangeProvider);
-                Assert.True(childs.Any());
-            }
-
-            // Für jede CustomerOrder muss es mind. ein CustomerOrderPart geben.
-            foreach (var customerOrder in dbTransactionDataArchive.CustomerOrderGetAll())
-            {
-                Assert.True(customerOrderIds.Contains(customerOrder.GetId()));
-            }
-
-            // Für jede PurchaseOrder muss es mind. ein PurchaseOrderPart geben.
-            Ids purchaseOrderIds = new Ids();
-            foreach (var demand in dbTransactionDataArchive.PurchaseOrderPartGetAll())
-            {
-                PurchaseOrderPart purchaseOrderPart = (PurchaseOrderPart) demand;
-                purchaseOrderIds.Add(purchaseOrderPart.GetPurchaseOrderId());
-            }
-
-            foreach (var purchaseOrder in dbTransactionDataArchive.PurchaseOrderGetAll())
-            {
-                Assert.True(purchaseOrderIds.Contains(purchaseOrder.GetId()));
-            }
-
             // Für jeden DemandToProvider und ProviderToDemand müssen die dazugehörigen
             // Demands und Provider existieren.
             foreach (var demandToProvider in dbTransactionDataArchive.DemandToProviderGetAll())
             {
-                Demand demand =
-                    dbTransactionDataArchive.DemandsGetById(demandToProvider.GetDemandId());
+                Demand demand = dbTransactionDataArchive.DemandsGetById(demandToProvider.GetDemandId());
                 Provider provider =
                     dbTransactionDataArchive.ProvidersGetById(demandToProvider.GetProviderId());
                 Assert.NotNull(demand);
@@ -236,19 +236,18 @@ namespace Zpp.Test.Integration_Tests.Verification
 
             foreach (var providerToDemand in dbTransactionDataArchive.ProviderToDemandGetAll())
             {
-                Demand demand =
-                    dbTransactionDataArchive.DemandsGetById(providerToDemand.GetDemandId());
+                Demand demand = dbTransactionDataArchive.DemandsGetById(providerToDemand.GetDemandId());
                 Provider provider =
                     dbTransactionDataArchive.ProvidersGetById(providerToDemand.GetProviderId());
-                
-                // this is a special case, doc can be found at TODO
-                if (provider ==null && demand.GetType() == typeof(StockExchangeDemand))
-                {
-                    continue;
-                }
-                
                 Assert.NotNull(demand);
-                Assert.NotNull(provider);
+                if (demand.GetType() == typeof(StockExchangeDemand) && provider == null)
+                {
+                    // no check for notNull, because stockExchangeProviders can be inconsistent TODO doc
+                }
+                else
+                {
+                    Assert.NotNull(provider);   
+                }
             }
         }
     }

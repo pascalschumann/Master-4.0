@@ -162,6 +162,10 @@ namespace Zpp.DataLayer.impl
         {
             Demands demands = new Demands();
             Ids ids = _dbTransactionData.DemandToProviderGetAll().GetByProviderId(provider.GetId());
+            if (ids == null)
+            {
+                return null;
+            }
             foreach (var id in ids)
             {
                 T_DemandToProvider demandToProvider =

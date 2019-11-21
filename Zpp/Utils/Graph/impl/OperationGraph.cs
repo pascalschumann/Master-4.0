@@ -40,7 +40,7 @@ namespace Zpp.Util.Graph.impl
             IEnumerable<ProductionOrderOperation> productionOrderOperations = dbTransactionData
                 .ProductionOrderOperationGetAll().GetAll().Where(x =>
                     x.GetValue().ProductionOrderId.Equals(productionOrder.GetId().GetValue()))
-                .OrderBy(x => x.GetHierarchyNumber().GetValue());
+                .OrderByDescending(x => x.GetHierarchyNumber().GetValue());
             ;
             if (productionOrderOperations.Any() == false)
             {

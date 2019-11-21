@@ -29,8 +29,8 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
             // it's nearly impossible to correctly identify those (with performance in mind)
 
             // CreateGraph(dbTransactionData, aggregator);
-            DemandToProviderGraph demandToProviderGraph = CreateGraph3();
-            _nodes = demandToProviderGraph.GetNodes();
+            IDirectedGraph<INode> orderOperationGraph = CreateGraph3();
+            _nodes = orderOperationGraph.GetNodes();
 
             if (IsEmpty())
             {
@@ -40,7 +40,7 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
 
         /**
          * No need to traverse --> graph is ready, just do some modifications:
-         * remove ProductionOrderBoms, replace ProductionOrder by operationGraph
+         * remove ProductionOrderBoms, replace ProductionOrder by operationGraph, ...
          */
         private DemandToProviderGraph CreateGraph3()
         {
@@ -59,7 +59,16 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
                     {
                         OperationGraph operationGraph =
                             new OperationGraph((ProductionOrder) productionOrder);
+                        INodes leafOfOperationGraph = operationGraph.GetLeafNodes();
                         demandToProviderGraph.ReplaceNodeByDirectedGraph(productionOrderBomNode, operationGraph);
+                        /*// remove all arrows from leaf, since material must be ready to the
+                        // corresponding operation not to first operation 
+                        INodes successorsOfLeaf =
+                            demandToProviderGraph.GetSuccessorNodes(leafOfOperationGraph.GetAny());
+                        foreach (var successor in successorsOfLeaf)
+                        {
+                            demandToProviderGraph.RemoveEdge(leafOfOperationGraph.GetAny(), successor);
+                        }*///  --> somehow not neccessary
                     }
                 }
             }

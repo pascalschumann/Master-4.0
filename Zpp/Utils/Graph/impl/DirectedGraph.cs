@@ -555,5 +555,13 @@ namespace Zpp.Util.Graph.impl
         {
             return _nodes;
         }
+
+        public void RemoveEdge(INode parent, INode child)
+        {
+            IGraphNode parentGraphNode = _nodes.GetById(parent.GetId());
+            IGraphNode childGraphNode = _nodes.GetById(child.GetId());
+            parentGraphNode.RemoveSuccessor(childGraphNode);
+            childGraphNode.RemovePredecessor(parentGraphNode);
+        }
     }
 }

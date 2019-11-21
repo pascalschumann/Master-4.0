@@ -86,5 +86,7 @@ namespace Zpp.Util.Graph
         INode GetNode(Id id);
 
         IStackSet<IGraphNode> GetNodes();
+
+        void RemoveEdge(INode parent, INode child);
     }
 }

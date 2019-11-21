@@ -21,7 +21,7 @@ namespace Zpp.Test.Configuration
 
         private const string OPERATION_DESK = "Tisch zusammenbauen";
         private const string OPERATION_DESK_LEG_1 = "Anschraubplatte anschweißen";
-        private const string OPERATION_DESK_LEG_2 = "Flizgleiter anstecken";
+        private const string OPERATION_DESK_LEG_2 = "Filzgleiter anstecken";
 
         private const string BUSINESS_PARTNER_DESK_DISTRIBUTOR = "Tischverkäufer";
         private const string BUSINESS_PARTNER_WHOLESALE = "Teile Großhandel";

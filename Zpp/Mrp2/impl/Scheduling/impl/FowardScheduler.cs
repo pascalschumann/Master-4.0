@@ -60,6 +60,9 @@ namespace Zpp.Mrp2.impl.Scheduling.impl
                             // COPs are not allowed to change
                             if (predecessorScheduleNode.GetType() != typeof(CustomerOrderPart))
                             {
+                                // don't take getDueTime() since in case of a demand,
+                                // this will be the startTime, which is to early
+
                                 // This must be the maximum endTime of all childs !!!
                                 DueTime maxEndTime = iAsScheduleNode.GetEndTimeBackward();
                                 foreach (var successor in _orderOperationGraph.GetSuccessorNodes(

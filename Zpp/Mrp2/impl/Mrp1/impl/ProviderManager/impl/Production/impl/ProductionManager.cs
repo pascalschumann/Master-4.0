@@ -10,6 +10,7 @@ using Zpp.DataLayer.impl.DemandDomain.WrappersForCollections;
 using Zpp.DataLayer.impl.ProviderDomain;
 using Zpp.DataLayer.impl.ProviderDomain.Wrappers;
 using Zpp.DataLayer.impl.WrapperForEntities;
+using Zpp.Mrp2.impl.Mrp1.impl.Production.impl.ProductionTypes;
 using Zpp.Scheduling.impl;
 using Zpp.Util;
 
@@ -17,9 +18,7 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Production.impl
 {
     public class ProductionManager
     {
-        private readonly Dictionary<M_Operation, ProductionOrderOperation>
-            _alreadyCreatedProductionOrderOperations =
-                new Dictionary<M_Operation, ProductionOrderOperation>();
+        
 
         private readonly IDbMasterDataCache _dbMasterDataCache =
             ZppConfiguration.CacheManager.GetMasterDataCache();
@@ -52,31 +51,38 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Production.impl
                 };
                 entityCollector.Add(demandToProvider);
             }
-            
+
+
             return entityCollector;
         }
-        
-        private EntityCollector CreateProductionOrder(Demand demand, Quantity quantity)
+
+        private EntityCollector CreateProductionOrder(Demand demand, Quantity lotSize)
         {
-            if (quantity == null || quantity.GetValue() == null)
+            if (!demand.GetArticle().ToBuild)
             {
-                throw new MrpRunException("Quantity is not set.");
+                throw new MrpRunException(
+                    "You are trying to create a productionOrder for a purchaseArticle.");
             }
-            T_ProductionOrder tProductionOrder = new T_ProductionOrder();
-            // [ArticleId],[Quantity],[Name],[DueTime],[ProviderId]
-            tProductionOrder.DueTime = demand.GetStartTimeBackward().GetValue();
-            tProductionOrder.Article = demand.GetArticle();
-            tProductionOrder.ArticleId = demand.GetArticle().Id;
-            tProductionOrder.Name = $"ProductionOrder for Demand {demand.GetArticle()}";
-            tProductionOrder.Quantity = quantity.GetValue().GetValueOrDefault();
 
-            ProductionOrder productionOrder =
-                new ProductionOrder(tProductionOrder);
+            IProductionOrderCreator productionOrderCreator;
+            switch (ZppConfiguration.ProductionType)
+            {
+                case ProductionType.AssemblyLine:
+                    productionOrderCreator = new ProductionOrderCreatorAssemblyLine();
+                    break;
+                case ProductionType.WorkshopProduction:
+                    productionOrderCreator = new ProductionOrderCreatorWorkshop();
+                    break;
+                case ProductionType.WorkshopProductionClassic:
+                    productionOrderCreator = new ProductionOrderCreatorWorkshopClassic();
+                    break;
+                default:
+                    productionOrderCreator = null;
+                    break;
+            }
 
-            EntityCollector entityCollector = new EntityCollector();
-            entityCollector.Add(productionOrder);
-            
-            return entityCollector;
+
+            return productionOrderCreator.CreateProductionOrder(demand, lotSize);
         }
 
         /// <summary>
@@ -89,7 +95,7 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Production.impl
         /// <param name="quantity">of production article to produce
         /// --> is used for childs as: articleBom.Quantity * quantity</param>
         /// <returns></returns>
-        public Demands CreateProductionOrderBoms(M_Article article,
+        public static Demands CreateProductionOrderBoms(M_Article article,
             Provider parentProductionOrder, Quantity quantity)
         {
             IDbTransactionData dbTransactionData =
@@ -99,11 +105,27 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Production.impl
             if (readArticle.ArticleBoms != null && readArticle.ArticleBoms.Any())
             {
                 List<Demand> newDemands = new List<Demand>();
+                IProductionOrderBomCreator productionOrderBomCreator;
+                switch (ZppConfiguration.ProductionType)
+                {
+                    case ProductionType.AssemblyLine:
+                        productionOrderBomCreator = new ProductionOrderBomCreatorAssemblyLine();
+                        break;
+                    case ProductionType.WorkshopProduction:
+                        productionOrderBomCreator = new ProductionOrderBomCreatorWorkshop();
+                        break;
+                    case ProductionType.WorkshopProductionClassic:
+                        productionOrderBomCreator = new ProductionOrderBomCreatorWorkshopClassic();
+                        break;
+                    default:
+                        productionOrderBomCreator = null;
+                        break;
+                }
 
                 foreach (M_ArticleBom articleBom in readArticle.ArticleBoms)
                 {
                     newDemands.AddRange(
-                        CreateProductionOrderBomsForArticleBom(articleBom,
+                        productionOrderBomCreator.CreateProductionOrderBomsForArticleBom(articleBom,
                             quantity, (ProductionOrder) parentProductionOrder));
                 }
                 
@@ -124,58 +146,6 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Production.impl
             }
 
             return null;
-        }
-        
-        private Demands CreateProductionOrderBomsForArticleBom(
-            M_ArticleBom articleBom, Quantity quantity,
-            ProductionOrder parentProductionOrder)
-        {
-            
-            Demands newProductionOrderBoms = new Demands();
-            ProductionOrderOperation productionOrderOperation = null;
-            if (articleBom.OperationId == null)
-            {
-                throw new MrpRunException(
-                    "Every PrOBom must have an operation. Add an operation to the articleBom.");
-            }
-
-            // load articleBom.Operation
-            if (articleBom.Operation == null)
-            {
-                articleBom.Operation =
-                    _dbMasterDataCache.M_OperationGetById(
-                        new Id(articleBom.OperationId.GetValueOrDefault()));
-            }
-
-            // don't create an productionOrderOperation twice, take existing
-            if (_alreadyCreatedProductionOrderOperations.ContainsKey(articleBom.Operation))
-            {
-
-                    productionOrderOperation =
-                        _alreadyCreatedProductionOrderOperations[articleBom.Operation];
-
-            }
-
-            ProductionOrderBom newProductionOrderBom =
-                ProductionOrderBom.CreateTProductionOrderBom(articleBom, parentProductionOrder,
-                    productionOrderOperation, quantity);
-
-            if (newProductionOrderBom.HasOperation() == false)
-            {
-                throw new MrpRunException(
-                    "Every PrOBom must have an operation. Add an operation to the articleBom.");
-            }
-
-            if (_alreadyCreatedProductionOrderOperations.ContainsKey(articleBom.Operation) == false)
-            {
-                _alreadyCreatedProductionOrderOperations.Add(articleBom.Operation,
-                    newProductionOrderBom.GetProductionOrderOperation());
-            }
-
-            newProductionOrderBoms.Add(newProductionOrderBom);
-
-
-            return newProductionOrderBoms;
         }
 
         public static T_ProductionOrderOperation CreateProductionOrderOperation(

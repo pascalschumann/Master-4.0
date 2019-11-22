@@ -64,7 +64,7 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Production.impl
                     "You are trying to create a productionOrder for a purchaseArticle.");
             }
 
-            IProductionOrderCreator productionOrderCreator = new ProductionOrderCreatorWorkshopClassic();
+            IProductionOrderCreator productionOrderCreator = new ProductionOrderCreator();
 
             return productionOrderCreator.CreateProductionOrder(demand, lotSize);
         }
@@ -89,7 +89,7 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Production.impl
             if (readArticle.ArticleBoms != null && readArticle.ArticleBoms.Any())
             {
                 List<Demand> newDemands = new List<Demand>();
-                IProductionOrderBomCreator productionOrderBomCreator = new ProductionOrderBomCreatorWorkshopClassic();
+                IProductionOrderBomCreator productionOrderBomCreator = new ProductionOrderBomCreator();
 
                 foreach (M_ArticleBom articleBom in readArticle.ArticleBoms)
                 {

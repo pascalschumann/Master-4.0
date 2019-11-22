@@ -13,7 +13,7 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Production.impl.ProductionTypes
      * (articleBom.Quantity) ProductionOrderBoms will be created
      * ProductionOrderOperation.Duration == articleBom.Duration * quantity
      */
-    public class ProductionOrderBomCreatorWorkshopClassic
+    public class ProductionOrderBomCreator
     : IProductionOrderBomCreator
     {
         private readonly Dictionary<M_Operation, ProductionOrderOperation>
@@ -22,7 +22,7 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Production.impl.ProductionTypes
         private readonly IDbMasterDataCache _dbMasterDataCache =
             ZppConfiguration.CacheManager.GetMasterDataCache();
 
-        public ProductionOrderBomCreatorWorkshopClassic()
+        public ProductionOrderBomCreator()
         {
 
         }

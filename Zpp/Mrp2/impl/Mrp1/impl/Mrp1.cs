@@ -41,8 +41,7 @@ namespace Zpp.Mrp2.impl.Mrp1.impl
                 EntityCollector response =
                     MaterialRequirementsPlanningForOneDemand(firstDemandInQueue.GetDemand(), providerManager);
                 allCreatedEntities.AddAll(response);
-
-                // TODO: EnqueueAll()
+                
                 foreach (var demand in response.GetDemands())
                 {
                     demandQueue.Enqueue(new DemandQueueNode(demand),

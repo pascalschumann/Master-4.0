@@ -24,10 +24,7 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Production.impl.ProductionTypes
 
         public ProductionOrderBomCreatorWorkshopClassic()
         {
-            if (ZppConfiguration.ProductionType.Equals(ProductionType.WorkshopProductionClassic) == false)
-            {
-                throw new MrpRunException("This is class is intended for productionType AssemblyLine.");
-            }
+
         }
 
         public Demands CreateProductionOrderBomsForArticleBom(

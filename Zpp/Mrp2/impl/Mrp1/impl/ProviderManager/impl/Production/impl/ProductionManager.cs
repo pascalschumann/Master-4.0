@@ -64,23 +64,7 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Production.impl
                     "You are trying to create a productionOrder for a purchaseArticle.");
             }
 
-            IProductionOrderCreator productionOrderCreator;
-            switch (ZppConfiguration.ProductionType)
-            {
-                case ProductionType.AssemblyLine:
-                    productionOrderCreator = new ProductionOrderCreatorAssemblyLine();
-                    break;
-                case ProductionType.WorkshopProduction:
-                    productionOrderCreator = new ProductionOrderCreatorWorkshop();
-                    break;
-                case ProductionType.WorkshopProductionClassic:
-                    productionOrderCreator = new ProductionOrderCreatorWorkshopClassic();
-                    break;
-                default:
-                    productionOrderCreator = null;
-                    break;
-            }
-
+            IProductionOrderCreator productionOrderCreator = new ProductionOrderCreatorWorkshopClassic();
 
             return productionOrderCreator.CreateProductionOrder(demand, lotSize);
         }
@@ -105,22 +89,7 @@ namespace Zpp.Mrp2.impl.Mrp1.impl.Production.impl
             if (readArticle.ArticleBoms != null && readArticle.ArticleBoms.Any())
             {
                 List<Demand> newDemands = new List<Demand>();
-                IProductionOrderBomCreator productionOrderBomCreator;
-                switch (ZppConfiguration.ProductionType)
-                {
-                    case ProductionType.AssemblyLine:
-                        productionOrderBomCreator = new ProductionOrderBomCreatorAssemblyLine();
-                        break;
-                    case ProductionType.WorkshopProduction:
-                        productionOrderBomCreator = new ProductionOrderBomCreatorWorkshop();
-                        break;
-                    case ProductionType.WorkshopProductionClassic:
-                        productionOrderBomCreator = new ProductionOrderBomCreatorWorkshopClassic();
-                        break;
-                    default:
-                        productionOrderBomCreator = null;
-                        break;
-                }
+                IProductionOrderBomCreator productionOrderBomCreator = new ProductionOrderBomCreatorWorkshopClassic();
 
                 foreach (M_ArticleBom articleBom in readArticle.ArticleBoms)
                 {

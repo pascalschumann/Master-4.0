@@ -7,10 +7,6 @@ namespace Zpp
 {
     public static class ZppConfiguration
     {
-        // public static ProductionType ProductionType = ProductionType.AssemblyLine;
-        // public static ProductionType ProductionType = ProductionType.WorkshopProduction;
-        public static ProductionType ProductionType = ProductionType.WorkshopProductionClassic;
-
         public static readonly ICacheManager CacheManager = new CacheManager();
 
         // if true, no log info or files are created (e.g. PrintState() etc.)

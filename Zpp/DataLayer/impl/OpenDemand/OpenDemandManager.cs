@@ -136,7 +136,6 @@ namespace Zpp.DataLayer.impl.OpenDemand
                         {
                             quantityOfOpenDemandToReserve = openDemand.GetOpenQuantity();
                             _openDemands.Remove(openDemand);
-                            remainingQuantity.DecrementBy(quantityOfOpenDemandToReserve);
                         }
                         else if (remainingQuantity.Equals(openDemand.GetOpenQuantity()))
                         {
@@ -144,7 +143,6 @@ namespace Zpp.DataLayer.impl.OpenDemand
                             isLastIteration = true;
                             quantityOfOpenDemandToReserve = openDemand.GetOpenQuantity();
                             _openDemands.Remove(openDemand);
-                            remainingQuantity.DecrementBy(quantityOfOpenDemandToReserve);
                         }
                         else
                         {
@@ -153,8 +151,8 @@ namespace Zpp.DataLayer.impl.OpenDemand
                             quantityOfOpenDemandToReserve = new Quantity(remainingQuantity);
                             // adapt openDemand
                             openDemand.GetOpenQuantity().DecrementBy(remainingQuantity);
-                            remainingQuantity.DecrementBy(quantityOfOpenDemandToReserve);
                         }
+                        remainingQuantity.DecrementBy(quantityOfOpenDemandToReserve);
 
                         T_ProviderToDemand providerToDemand = new T_ProviderToDemand()
                         {

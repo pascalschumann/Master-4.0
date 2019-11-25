@@ -164,10 +164,10 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
                     }
 
 
-                    // t(o) = d(o1) für alle o aus K ohne alle o1 
+                    // t(o) = d(letzte o1 aus allO1) für alle o aus K (ohne alle o1) 
                     foreach (var o in K)
                     {
-                        o.SetStartTime(allO1[0].GetEndTime());
+                        o.SetStartTime(allO1[allO1.Count-1].GetEndTime());
                     }
 
                     /*if N(o1) not empty then

@@ -46,7 +46,7 @@ namespace Zpp.Util.Performance
         {
             string instanceToTrack = Enum.GetName(typeof(InstanceToTrack), _instanceToTrack);
             string objectAsString =
-                $"\"{instanceToTrack}\": \"{DebuggingTools.Prettify(_stopwatch.Elapsed.Ticks)}\",";
+                $"\"{instanceToTrack}\": \"{_stopwatch.Elapsed.Ticks}\",";
             return objectAsString;
         }
 

@@ -51,7 +51,7 @@ namespace Zpp.Util.Performance
             // long currentMemoryUsage = GC.GetTotalMemory(false);
             long currentMemoryUsage = Process.GetCurrentProcess().WorkingSet64;
             report +=
-                $"\"CurrentMemoryUsage\": \"{DebuggingTools.Prettify(currentMemoryUsage)}\"" +
+                $"\"CurrentMemoryUsage\": \"{currentMemoryUsage}\"" +
                 Environment.NewLine;
             report += "}" + Environment.NewLine;
 

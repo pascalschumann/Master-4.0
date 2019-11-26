@@ -112,8 +112,7 @@ namespace Zpp.DataLayer.impl
         {
             return _articleBoms.GetById(id);
         }
-
-        // TODO: replace these implementations by Dictionary via Id
+        
         public M_Article M_ArticleGetById(Id id)
         {
             return _articles.GetById(id);

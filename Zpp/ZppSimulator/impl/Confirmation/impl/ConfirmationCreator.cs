@@ -18,7 +18,7 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
         {
             /*ISimulator simulator = new Simulator();
             simulator.ProcessCurrentInterval(simulationInterval, _orderGenerator);*/
-            // --> does not work correctly, use trivial impl instead TODO: Just an info for you Martin
+            // --> (Martin's impl) does not work correctly, use trivial impl instead TODO: Just an info for you Martin
 
             IDbTransactionData dbTransactionData =
                 ZppConfiguration.CacheManager.GetDbTransactionData();

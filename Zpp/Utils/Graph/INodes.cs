@@ -3,7 +3,7 @@ using Zpp.DataLayer.impl.WrappersForCollections;
 
 namespace Zpp.Util.Graph
 {
-    public interface INodes : ICollectionWrapper<INode> // TODO: this should be done for all collectionWrappers
+    public interface INodes : ICollectionWrapper<INode>
     {
         IEnumerable<T> As<T>();
 

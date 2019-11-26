@@ -30,12 +30,6 @@ namespace Zpp.DataLayer.impl.DemandDomain
             _demand = demand;
             
         }
-        
-        // TODO: use this method
-        private int CalculatePriority(int dueTime, int operationDuration, int currentTime)
-        {
-            return dueTime - operationDuration - currentTime;
-        }
 
         public abstract IDemand ToIDemand();
 

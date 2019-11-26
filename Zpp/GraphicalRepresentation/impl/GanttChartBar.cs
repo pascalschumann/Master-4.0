@@ -2,8 +2,7 @@ namespace Zpp.GraphicalRepresentation.impl
 {
     public class GanttChartBar
     {
-        // TODO: remove or use unused properties
-        
+       
         // not used by gantt chart app
         public string article { get; set; }
         

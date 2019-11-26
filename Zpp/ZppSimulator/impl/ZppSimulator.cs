@@ -60,10 +60,10 @@ namespace Zpp.ZppSimulator.impl
                 "2_after_create_confirmations", false);
 
             // ApplyConfirmations
-            // TODO: remove these two lines
-            DemandToProviderGraph demandToProviderGraph = new DemandToProviderGraph();
+            // TODO: disable these two lines
+            /*DemandToProviderGraph demandToProviderGraph = new DemandToProviderGraph();
             string demandToProviderGraphString = demandToProviderGraph.ToString();
-            /*ZppConfiguration.CacheManager.UseArchiveForGetters();
+            ZppConfiguration.CacheManager.UseArchiveForGetters();
             DemandToProviderGraph demandToProviderGraphArchive = new DemandToProviderGraph();
             string demandToProviderGraphArchiveString = demandToProviderGraphArchive.ToString();
             ZppConfiguration.CacheManager.UseArchiveForGettersRevert();*/
@@ -75,8 +75,8 @@ namespace Zpp.ZppSimulator.impl
             DebuggingTools.PrintStateToFiles(simulationInterval, dbTransactionData,
                 "3_after_apply_confirmations", false);
             
-            // TODO: remove following lines
-             DemandToProviderGraph demandToProviderGraph2 = new DemandToProviderGraph();
+            // TODO: disable following lines
+            /* DemandToProviderGraph demandToProviderGraph2 = new DemandToProviderGraph();
             string demandToProviderGraphString2 = demandToProviderGraph2.ToString();
             /*ZppConfiguration.CacheManager.UseArchiveForGetters();
             DemandToProviderGraph demandToProviderGraphArchive2 = new DemandToProviderGraph();
@@ -127,7 +127,6 @@ namespace Zpp.ZppSimulator.impl
 
         public void StartPerformanceStudy(bool shouldPersist)
         {
-            // TODO: disable if log files
             ZppConfiguration.IsInPerformanceMode = true;
 
             int maxSimulatingTime = ZppConfiguration.CacheManager.GetTestConfiguration()
@@ -163,8 +162,7 @@ namespace Zpp.ZppSimulator.impl
 
             _performanceMonitors.Stop();
             performanceLog += $"{_performanceMonitors.ToString()}]";
-
-            // TODO: enable this again
+            
             // DebuggingTools.PrintStateToFiles(dbTransactionData, true);
             DebuggingTools.WritePerformanceLog(performanceLog);
 

@@ -21,11 +21,7 @@ namespace Zpp.DataLayer
     {
         // TODO: M_* methods should be removed
         M_Article M_ArticleGetById(Id id);
-        
-        M_ArticleBom M_ArticleBomGetById(Id id);
-        
-        List<M_BusinessPartner> M_BusinessPartnerGetAll();
-        
+
         void DemandToProvidersRemoveAll();
 
         void DemandsAdd(Demand demand);

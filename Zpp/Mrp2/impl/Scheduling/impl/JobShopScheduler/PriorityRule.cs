@@ -32,7 +32,7 @@ namespace Zpp.Mrp2.impl.Scheduling.impl.JobShopScheduler
                 ProductionOrder productionOrder =
                     dbTransactionData.ProductionOrderGetById(productionOrderOperation
                         .GetProductionOrderId());
-                // TODO: This is different from specification
+                // TODO: This is this correct ?
                 DueTime minStartNextOfParentProvider = productionOrder.GetStartTimeBackward();
 
                 Priority priority = GetPriorityOfProductionOrderOperation(now,

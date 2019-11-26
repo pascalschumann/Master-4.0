@@ -29,10 +29,8 @@ namespace Zpp.DataLayer.impl
     {
         private readonly ProductionDomainContext _productionDomainContext;
 
-        // TODO: These 3 lines should be removed
+        // TODO: This line should be removed
         private readonly List<M_Article> _articles;
-        private readonly List<M_ArticleBom> _articleBoms;
-        private readonly List<M_BusinessPartner> _businessPartners;
 
         // T_*
 
@@ -70,10 +68,7 @@ namespace Zpp.DataLayer.impl
             _productionDomainContext = productionDomainContext;
 
             // cache tables
-            // TODO: These 3 lines should be removed
-            _businessPartners = _productionDomainContext.BusinessPartners.ToList();
-            _articleBoms = _productionDomainContext.ArticleBoms.Include(m => m.ArticleChild)
-                .ToList();
+            // TODO: This line should be removed
             _articles = _productionDomainContext.Articles.Include(m => m.ArticleBoms)
                 .ThenInclude(m => m.ArticleChild).Include(m => m.ArticleBoms)
                 .ThenInclude(x => x.Operation).ThenInclude(x => x.ResourceSkill)
@@ -111,16 +106,6 @@ namespace Zpp.DataLayer.impl
                 new LinkDemandAndProviderTable(_productionDomainContext.ProviderToDemand);
         }
 
-        public List<M_BusinessPartner> M_BusinessPartnerGetAll()
-        {
-            return _businessPartners;
-        }
-
-        public M_ArticleBom M_ArticleBomGetById(Id id)
-        {
-            return _articleBoms.Single(x => x.Id == id.GetValue());
-        }
-
         public M_Article M_ArticleGetById(Id id)
         {
             return _articles.Single(x => x.Id == id.GetValue());
@@ -134,8 +119,7 @@ namespace Zpp.DataLayer.impl
 
         internal void PersistDbCache()
         {
-            // TODO: performance issue: Batch insert, since those T_* didn't exist before anyways, update is useless
-            // TODO: SaveChanges at the end only once
+            // TODO: performance issue: Batch insert
 
             // first collect all T_* entities
             List<T_ProductionOrderBom> tProductionOrderBoms =
@@ -233,7 +217,7 @@ namespace Zpp.DataLayer.impl
         {
             TEntity foundEntity = dbSet.Find(entity.Id);
             if (foundEntity == null
-                ) // TODO: performance issue: a select before every insert is a no go
+                )
                 // it's not in DB yet
             {
                 productionDomainContext.Entry(entity).State = EntityState.Added;
@@ -524,8 +508,6 @@ namespace Zpp.DataLayer.impl
         public void Dispose()
         {
             _articles.Clear();
-            _articleBoms.Clear();
-            _businessPartners.Clear();
             _customerOrders.Clear();
             _productionOrders.Clear();
             _purchaseOrders.Clear();

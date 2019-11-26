@@ -395,7 +395,7 @@ namespace Zpp.ZppSimulator.impl.Confirmation.impl
                 }
 
                 List<ILinkDemandAndProvider> demandAndProviderLinks =
-                    aggregator.GetArrowsToAndFrom(demandOrProvider); // TODO: why
+                    aggregator.GetArrowsToAndFrom(demandOrProvider);
                 dbTransactionData.DeleteAllFrom(demandAndProviderLinks);
 
                 dbTransactionData.DeleteA(demandOrProvider);

@@ -14,6 +14,7 @@ namespace Zpp.ZppSimulator.impl.CustomerOrder.impl
     {
         private IOrderGenerator _orderGenerator = null;
         private readonly Quantity _defaultCustomerOrderQuantityPerCycle = new Quantity(10);
+        private int _createdCustomerOrdersCount = 0;
 
         public CustomerOrderCreator(Quantity defaultCustomerOrderQuantityPerCycle)
         {
@@ -38,6 +39,12 @@ namespace Zpp.ZppSimulator.impl.CustomerOrder.impl
                 ZppConfiguration.CacheManager.GetDbTransactionData();
             TestConfiguration testConfiguration =
                 ZppConfiguration.CacheManager.GetTestConfiguration();
+            // skip creating COs, if goal has reached
+            if (_createdCustomerOrdersCount >= testConfiguration.CustomerOrderPartQuantity)
+            {
+                return;
+            }
+            
             int cycles =
                 testConfiguration.SimulationMaximumDuration /
                 testConfiguration.SimulationInterval;
@@ -84,6 +91,7 @@ namespace Zpp.ZppSimulator.impl.CustomerOrder.impl
             }
             dbTransactionData.CustomerOrderPartAddAll(createdCustomerOrderParts);
             dbTransactionData.CustomerOrderAddAll(createdCustomerOrders);
+            _createdCustomerOrdersCount += createdCustomerOrders.Count;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.Interfaces;
 using Newtonsoft.Json;
 
@@ -12,14 +13,21 @@ namespace Master40.DB.DataModel
         [JsonIgnore]
         public virtual ICollection<T_ProductionOrderBom> ProductionOrderBoms {get; set; }
         [JsonIgnore]
-        public virtual ICollection<T_ProductionOrderBom> ProdProductionOrderBomChilds { get; set; }
+        public virtual ICollection<T_ProductionOrderBom> ProductionOrderBomChilds { get; set; }
         public decimal Quantity { get; set; }
         public string Name { get; set; }
         public int DueTime { get; set; }
         [JsonIgnore]
-        public virtual ICollection<T_ProductionOrderOperation> ProductionOrderWorkSchedule { get; set; }
+        public virtual ICollection<T_ProductionOrderOperation> ProductionOrderOperations { get; set; }
 
-        public int ProviderId { get; set; }
-        public T_Provider Provider { get; set; }
+        public M_Article GetArticle()
+        {
+            return Article;
+        }
+
+        public Quantity GetQuantity()
+        {
+            return new Quantity(Quantity);
+        }
     }
 }

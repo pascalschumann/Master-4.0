@@ -3,9 +3,19 @@ mono: none
 dist: bionic
 dotnet: 2.2
 
+services:
+  - docker
+
 install:
-- dotnet restore
+  - source $TRAVIS_BUILD_DIR/.travis/stage_install.sh
+  - dotnet restore
+  
 
 script:
-- dotnet build
-- dotnet test Zpp/Zpp.csproj
+  - dotnet test --filter Master40.XUnitTest.SimulationImmutables.JobPriorityRules
+  - dotnet test --filter Master40.XUnitTest.SimulationEnvironment.Configuration
+  - dotnet test --filter Master40.XUnitTest.Agents
+  - dotnet test Zpp/Zpp.csproj --filter FullyQualifiedName!~TestPerformanceStudy
+  
+notifications:
+  slack: infocomhtw:7H5jePcDELUv916neaRS3LQ1

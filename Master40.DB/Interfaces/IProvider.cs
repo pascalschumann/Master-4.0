@@ -1,11 +1,13 @@
+using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 
 namespace Master40.DB.Interfaces
 {
-    public interface IProvider 
+    public interface IProvider: IBaseEntity
     {
-        int Id { get; set; }
-        int ProviderId { get; set; }
-        T_Provider Provider { get; set; }
+       
+        M_Article GetArticle();
+
+        Quantity GetQuantity();
     }
 }

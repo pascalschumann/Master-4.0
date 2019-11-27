@@ -100,15 +100,18 @@ namespace Zpp.Test.Integration_Tests
                 performanceLogLastCycles += "{" + performanceMonitor.ToString();
                 long currentMemoryUsage = Process.GetCurrentProcess().WorkingSet64;
                 performanceLogLastCycles +=
-                    $"\"CurrentMemoryUsage\": \"{currentMemoryUsage}\"," +
+                    $"\"CurrentMemoryUsage\": \"{currentMemoryUsage}\"" +
                     Environment.NewLine;
                 performanceLogLastCycles += "}" + Environment.NewLine;
                 
                 customerOrderCount += customerOrderCountOriginal;
                 testConfiguration.CustomerOrderPartQuantity = customerOrderCount;
             }
+            // just for correct log name
+            customerOrderCount -= customerOrderCountOriginal;
+            testConfiguration.CustomerOrderPartQuantity = customerOrderCount;
 
-            performanceLogLastCycles = "]";
+            performanceLogLastCycles += "]";
             string logType = $"_{testConfiguration.Name}_cycles_{cycles}_COs_{testConfiguration.CustomerOrderPartQuantity}_lastCycles";
             ;
             DebuggingTools.WritePerformanceLog(performanceLogLastCycles, logType);

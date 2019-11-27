@@ -47,7 +47,7 @@ namespace Zpp.Test.Unit_Tests
                         // Console.WriteLine();
 
                         Assert.True(new FileInfo(pngFileName).Exists,
-                            "SVG was not converted to PNG.");
+                            $"SVG was not converted to PNG: {command}");
                     }
                 }
             }

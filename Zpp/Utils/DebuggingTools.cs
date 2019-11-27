@@ -90,7 +90,11 @@ namespace Zpp.Util
                 ZppConfiguration.CacheManager.GetTestConfiguration();
             int cycles = testConfiguration.SimulationMaximumDuration /
                          testConfiguration.SimulationInterval;
-            type = $"_{testConfiguration.Name}_cycles_{cycles}_COs_{testConfiguration.CustomerOrderPartQuantity}";
+            if (type.Equals(""))
+            {
+                type = $"_{testConfiguration.Name}_cycles_{cycles}_COs_{testConfiguration.CustomerOrderPartQuantity}";    
+            }
+            
             WriteToFile($"{performanceLogFileName}{type}{defaultFileExtension}", content);
             
         }

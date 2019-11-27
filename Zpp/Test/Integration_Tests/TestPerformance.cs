@@ -6,6 +6,7 @@ using Xunit;
 using Xunit.Abstractions;
 using Zpp.Test.Configuration;
 using Zpp.Util;
+using Zpp.Util.Performance;
 using Zpp.ZppSimulator;
 
 namespace Zpp.Test.Integration_Tests
@@ -65,8 +66,9 @@ namespace Zpp.Test.Integration_Tests
 
         private void ExecutePerformanceStudy(string testConfigurationFileName, bool shouldPersist)
         {
-            Stopwatch stopwatch = new Stopwatch();
-            int maxPossibleCops = int.MaxValue / 100;
+            PerformanceMonitor performanceMonitor = new PerformanceMonitor(InstanceToTrack.Global);
+            // int maxPossibleCops = int.MaxValue / 100;
+            int maxPossibleCops = 1000;
             
             ZppConfiguration.CacheManager.ReadInTestConfiguration(testConfigurationFileName);
             TestConfiguration testConfiguration =
@@ -80,30 +82,36 @@ namespace Zpp.Test.Integration_Tests
             int cycles = testConfiguration.SimulationMaximumDuration /
                          testConfiguration.SimulationInterval;
 
+            string performanceLogLastCycles = "[";
             // n cycles here each cycle create & plan configured CustomerOrderPart 
             while (customerOrderCount <= maxPossibleCops && elapsedMinutes < 5)
             {
                 InitThisTest(testConfigurationFileName);
                 
                 IZppSimulator zppSimulator = new ZppSimulator.impl.ZppSimulator();
-                stopwatch.Start();
+                performanceMonitor.Start();
+                
                 zppSimulator.StartPerformanceStudy(shouldPersist);
-                stopwatch.Stop();
-
-                elapsedMinutes = stopwatch.Elapsed.Minutes;
-                elapsedSeconds = stopwatch.Elapsed.Seconds;
-
-                stopwatch.Reset();
-
-                Assert.True(elapsedMinutes < maxTime,
-                    $"{testConfigurationFileName}, without Db persistence: " +
-                    $"simulation needs  with {elapsedMinutes}:{elapsedSeconds} min longer than {maxTime} min for " +
-                    $"CustomerOrderCount ({customerOrderCount}) " +
-                    $"per interval (0-{testConfiguration.SimulationInterval}) in {cycles} cycle(s).");
+                performanceMonitor.Stop();
+                if (performanceLogLastCycles.Length>1)
+                {
+                    performanceLogLastCycles += ",";
+                }
+                performanceLogLastCycles += "{" + performanceMonitor.ToString();
+                long currentMemoryUsage = Process.GetCurrentProcess().WorkingSet64;
+                performanceLogLastCycles +=
+                    $"\"CurrentMemoryUsage\": \"{currentMemoryUsage}\"," +
+                    Environment.NewLine;
+                performanceLogLastCycles += "}" + Environment.NewLine;
                 
                 customerOrderCount += customerOrderCountOriginal;
                 testConfiguration.CustomerOrderPartQuantity = customerOrderCount;
             }
+
+            performanceLogLastCycles = "]";
+            string logType = $"_{testConfiguration.Name}_cycles_{cycles}_COs_{testConfiguration.CustomerOrderPartQuantity}_lastCycles";
+            ;
+            DebuggingTools.WritePerformanceLog(performanceLogLastCycles, logType);
         }
 
         /**

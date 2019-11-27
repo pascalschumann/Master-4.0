@@ -28,16 +28,6 @@ namespace Zpp.Util.Performance
             _monitors[instancesToTrack].Stop();
         }
 
-        public void Start()
-        {
-            _monitors[InstanceToTrack.Global].Start();
-        }
-
-        public void Stop()
-        {
-            _monitors[InstanceToTrack.Global].Stop();
-        }
-        
         public override string ToString()
         {
             // create report

@@ -55,13 +55,16 @@ namespace Zpp.DataLayer.impl.OpenDemand
         {
             foreach (var stock in ZppConfiguration.CacheManager.GetMasterDataCache().M_StockGetAll())
             {
-                Id articleId = new Id(stock.ArticleForeignKey);
+                if (stock.Current > 0)
+                {
+                    Id articleId = new Id(stock.ArticleForeignKey);
                 
-                Demand stockExchangeDemand =
-                    StockExchangeDemand.CreateStockExchangeStockDemand(articleId,
-                        new DueTime(0), new Quantity(stock.Current));
-                stockExchangeDemand.SetReadOnly();
-                dbTransactionData.DemandsAdd(stockExchangeDemand);
+                    Demand stockExchangeDemand =
+                        StockExchangeDemand.CreateStockExchangeStockDemand(articleId,
+                            new DueTime(0), new Quantity(stock.Current));
+                    stockExchangeDemand.SetReadOnly();
+                    dbTransactionData.DemandsAdd(stockExchangeDemand);
+                }
             }
         }
 

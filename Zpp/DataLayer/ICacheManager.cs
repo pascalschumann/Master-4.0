@@ -12,6 +12,10 @@ namespace Zpp.DataLayer
     {
         void InitByReadingFromDatabase(string testConfiguration, bool addInitialStockLevels);
         
+        /**
+         * Reloads TransactionData from database.
+         * Only reload after DbPersist() Call ! Else the TransactionData is away
+         */
         IDbTransactionData ReloadTransactionData();
 
         IDbMasterDataCache GetMasterDataCache();

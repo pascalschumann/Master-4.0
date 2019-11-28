@@ -138,9 +138,6 @@ namespace Zpp.ZppSimulator.impl
 
             _customerOrderCreator = new CustomerOrderCreator(customerOrderQuantity);
 
-            // init transactionData
-            ZppConfiguration.CacheManager.ReloadTransactionData();
-
             string performanceLogCycles = "[";
             _performanceMonitors.Start(InstanceToTrack.Global);
 

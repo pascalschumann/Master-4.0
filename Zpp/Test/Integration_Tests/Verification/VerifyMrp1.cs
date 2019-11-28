@@ -101,13 +101,13 @@ namespace Zpp.Test.Integration_Tests.Verification
          * Verifies that,
          * for demand (parent) --> provider (child) direction following takes effect:
          * - COP  --> SE:W
-         * - PrOB --> SE:W | NONE
+         * - PrOB --> SE:W
          * - SE:I --> PuOP | PrO
          *
          * for provider (parent) --> demand (child) direction following takes effect:
          * - PuOP --> NONE
          * - PrO  --> PrOB
-         * - SE:W --> SE:I | NONE
+         * - SE:W --> SE:I
          *
          * where SE:I = StockExchangeDemand
          * and SE:W = StockExchangeProvider

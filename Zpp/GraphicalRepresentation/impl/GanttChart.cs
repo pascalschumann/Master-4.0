@@ -1,9 +1,12 @@
 using System.Collections.Generic;
+using Master40.DB.Data.Helper;
 using Master40.DB.Data.WrappersForPrimitives;
 using Master40.DB.DataModel;
 using Newtonsoft.Json;
 using Zpp.DataLayer;
 using Zpp.DataLayer.impl.ProviderDomain.Wrappers;
+using Zpp.Util.Graph;
+using Zpp.Util.Graph.impl;
 
 namespace Zpp.GraphicalRepresentation.impl
 {
@@ -38,6 +41,59 @@ namespace Zpp.GraphicalRepresentation.impl
                 AddGanttChartBar(ganttChartBar);
 
             }
+        }
+
+        public GanttChart(IDirectedGraph<INode> orderOperationGraph)
+        {
+            Dictionary<Id, List<Interval>> groups = new Dictionary<Id, List<Interval>>();
+            foreach (var graphNode in orderOperationGraph.GetNodes())
+            {
+                IScheduleNode node = graphNode.GetNode().GetEntity();
+                if (node.GetType() != typeof(ProductionOrderOperation) && node.GetType() != typeof(PurchaseOrderPart))
+                {
+                    continue;
+                }
+                GanttChartBar ganttChartBar = new GanttChartBar();
+
+                ganttChartBar.operation = node.GetId().ToString();
+                ganttChartBar.operationId = node.GetId().ToString();
+                ganttChartBar.resource = DetermineFreeGroup(groups,
+                    new Interval(node.GetStartTimeBackward(), node.GetEndTimeBackward())).ToString();
+
+                ;
+                ganttChartBar.start = node.GetStartTimeBackward().GetValue().ToString();
+                ganttChartBar.end = node.GetEndTimeBackward().GetValue().ToString();
+
+                ganttChartBar.groupId = ganttChartBar.resource;
+
+                AddGanttChartBar(ganttChartBar);
+            }
+        }
+
+        private static Id DetermineFreeGroup(Dictionary<Id, List<Interval>> groups, Interval givenInterval)
+        {
+            
+            foreach (var groupId in groups.Keys)
+            {
+                bool occupied = false;
+                foreach (var interval in groups[groupId])
+                {
+                    if (givenInterval.Intersects(interval))
+                    {
+                        occupied = true;
+                    }
+                }
+
+                if (occupied == false)
+                {
+                    return groupId;
+                }
+            }
+
+            Id newGroupId = IdGeneratorHolder.GetIdGenerator().GetNewId();
+            groups.Add(newGroupId, new List<Interval>());
+            groups[newGroupId].Add(givenInterval);
+            return newGroupId;
         }
 
         public void AddGanttChartBar(GanttChartBar ganttChartBar)

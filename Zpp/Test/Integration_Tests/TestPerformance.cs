@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using Xunit;
 using Xunit.Abstractions;
@@ -131,5 +132,16 @@ namespace Zpp.Test.Integration_Tests
             IZppSimulator zppSimulator = new ZppSimulator.impl.ZppSimulator();
             zppSimulator.StartMultipleTestCycles();
         }
+
+        [Fact]
+        public void TestCpuCycles()
+        {
+            PerformanceMonitor performanceMonitor = new PerformanceMonitor(InstanceToTrack.Global);
+            performanceMonitor.Start();
+            System.Threading.Thread.Sleep(1000);
+            performanceMonitor.Stop();
+            Assert.True(performanceMonitor.GetMeasuredCpuCycles() < 3000000);
+        }
+        
     }
 }

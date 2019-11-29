@@ -11,6 +11,10 @@ namespace Zpp.Util.Graph.impl
 {
     public class DemandToProviderGraph : DirectedGraph
     {
+        // This is never updated and only for ToString() Method
+        // and represents the original state, when it was created
+        private  readonly List<IEdge> _originalEdges = new List<IEdge>();
+        
         public DemandToProviderGraph() : base()
         {
             IDbTransactionData dbTransactionData =
@@ -38,7 +42,9 @@ namespace Zpp.Util.Graph.impl
 
                 INode fromNode = new Node(demand);
                 INode toNode = new Node(provider);
-                AddEdge(new Edge(demandToProvider, fromNode, toNode));
+                IEdge edge = new Edge(demandToProvider, fromNode, toNode);
+                AddEdge(edge);
+                _originalEdges.Add(edge);
             }
 
             foreach (var providerToDemand in dbTransactionData.ProviderToDemandGetAll())
@@ -59,7 +65,9 @@ namespace Zpp.Util.Graph.impl
 
                 INode fromNode = new Node(provider);
                 INode toNode = new Node(demand);
-                AddEdge(new Edge(providerToDemand, fromNode, toNode));
+                IEdge edge = new Edge(providerToDemand, fromNode, toNode);
+                AddEdge(edge);
+                _originalEdges.Add(edge);
             }
         }
         
@@ -71,14 +79,13 @@ namespace Zpp.Util.Graph.impl
         public override string ToString()
         {
             string mystring = "";
-            IStackSet<IEdge> edges = GetEdges();
 
-            if (edges == null)
+            if (_originalEdges == null)
             {
                 return mystring;
             }
 
-            foreach (var edge in edges)
+            foreach (var edge in _originalEdges)
             {
                 // foreach (var edge in GetAllEdgesFromTailNode(fromNode))
                 // {

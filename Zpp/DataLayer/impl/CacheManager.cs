@@ -151,16 +151,16 @@ namespace Zpp.DataLayer.impl
 
         public void Dispose()
         {
-            _openDemandManager.Dispose();
+            _openDemandManager?.Dispose();
             _openDemandManager = null;
             _dbMasterDataCache = null;
             _testConfiguration = null;
 
-            _productionDomainContext.Database.CloseConnection();
-            _dbTransactionData.Dispose();
+            _productionDomainContext?.Database?.CloseConnection();
+            _dbTransactionData?.Dispose();
 
-            _productionDomainContextArchive.Database.CloseConnection();
-            _dbTransactionDataArchive.Dispose();
+            _productionDomainContextArchive?.Database?.CloseConnection();
+            _dbTransactionDataArchive?.Dispose();
 
             _productionDomainContext = null;
             _productionDomainContextArchive = null;

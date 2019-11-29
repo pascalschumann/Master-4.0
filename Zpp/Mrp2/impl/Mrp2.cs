@@ -51,11 +51,6 @@ namespace Zpp.Mrp2.impl
             _performanceMonitors.Start(InstanceToTrack.BackwardForwardBackwardScheduling);
 
             OrderOperationGraph orderOperationGraph = new OrderOperationGraph();
-            string orderOperationGraphString = "";
-            if (ZppConfiguration.IsInPerformanceMode == false)
-            {
-                orderOperationGraphString = orderOperationGraph.ToString();
-            }
 
             ScheduleBackwardFirst(orderOperationGraph);
             AssertEveryDemandAndProviderIsScheduled();

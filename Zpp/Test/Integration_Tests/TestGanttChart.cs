@@ -1,8 +1,10 @@
 using System.IO;
 using System.Text;
+using Master40.DB.Data.WrappersForPrimitives;
 using Xunit;
 using Zpp.DataLayer;
 using Zpp.GraphicalRepresentation;
+using Zpp.GraphicalRepresentation.impl;
 using Zpp.Test.Configuration;
 using Zpp.Test.Integration_Tests;
 using Zpp.Util;
@@ -43,6 +45,15 @@ namespace Zpp.Test.Ordergraphs.GanttChart
 
             IZppSimulator zppSimulator = new ZppSimulator.impl.ZppSimulator();
             zppSimulator.StartTestCycle();
+        }
+
+        [Fact]
+        public void TestDetermineFreeGroup()
+        {
+            //  first case overlapping
+            Interval interval1 = new Interval(new Id(1), new DueTime(740), new DueTime(836));
+            Interval interval2 = new Interval(new Id(2), new DueTime(736), new DueTime(836));
+            Assert.True(interval1.IntersectsExclusive(interval2));
         }
     }
 }

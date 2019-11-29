@@ -23,7 +23,7 @@ namespace Zpp.GraphicalRepresentation.impl
                 GanttChartBar ganttChartBar = new GanttChartBar();
                 T_ProductionOrderOperation tProductionOrderOperation = productionOrderOperation.GetValue();
 
-                ganttChartBar.operation = productionOrderOperation.ToString();
+                ganttChartBar.operation = productionOrderOperation.GetId().ToString();
                 ganttChartBar.operationId = tProductionOrderOperation.Id.ToString();
                 if (tProductionOrderOperation.Resource == null)
                 {
@@ -58,7 +58,7 @@ namespace Zpp.GraphicalRepresentation.impl
                 ganttChartBar.operation = node.GetId().ToString();
                 ganttChartBar.operationId = node.GetId().ToString();
                 ganttChartBar.resource = DetermineFreeGroup(groups,
-                    new Interval(node.GetStartTimeBackward(), node.GetEndTimeBackward())).ToString();
+                    new Interval(node.GetId(), node.GetStartTimeBackward(), node.GetEndTimeBackward())).ToString();
 
                 ;
                 ganttChartBar.start = node.GetStartTimeBackward().GetValue().ToString();
@@ -70,7 +70,7 @@ namespace Zpp.GraphicalRepresentation.impl
             }
         }
 
-        private static Id DetermineFreeGroup(Dictionary<Id, List<Interval>> groups, Interval givenInterval)
+        public static Id DetermineFreeGroup(Dictionary<Id, List<Interval>> groups, Interval givenInterval)
         {
             
             foreach (var groupId in groups.Keys)
@@ -78,7 +78,7 @@ namespace Zpp.GraphicalRepresentation.impl
                 bool occupied = false;
                 foreach (var interval in groups[groupId])
                 {
-                    if (givenInterval.Intersects(interval))
+                    if (givenInterval.IntersectsExclusive(interval))
                     {
                         occupied = true;
                     }
@@ -86,6 +86,7 @@ namespace Zpp.GraphicalRepresentation.impl
 
                 if (occupied == false)
                 {
+                    groups[groupId].Add(givenInterval);
                     return groupId;
                 }
             }

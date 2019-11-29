@@ -4,21 +4,20 @@ namespace Zpp.GraphicalRepresentation.impl
 {
     public class Interval
     {
-        public DueTime Start { get; }
-        public DueTime End { get; }
+        private readonly Id _id;
+        private readonly DueTime _start;
+        private readonly DueTime _end;
 
-        public Interval(DueTime start, DueTime end)
+        public Interval(Id id, DueTime start, DueTime end)
         {
-            Start = start;
-            End = end;
+            _id = id;
+            _start = start;
+            _end = end;
         }
 
-        public bool Intersects(Interval other)
+        public bool IntersectsExclusive(Interval other)
         {
-            return (other.Start.IsGreaterThanOrEqualTo(Start) &&
-                    End.IsGreaterThanOrEqualTo(other.Start)) ||
-                   (other.End.IsGreaterThanOrEqualTo(Start) &&
-                    End.IsGreaterThanOrEqualTo(other.End));
+            return _start.IsSmallerThan(other._end) && other._start.IsSmallerThan(_end);
         }
     }
 }
